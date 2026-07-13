@@ -1,0 +1,87 @@
+/* ==========================================================================
+   resources/css/style.css
+   --------------------------------------------------------------------------
+   Asal file ini: src/styles/theme.css + fonts.css (React/Vite project).
+   Isinya MURNI CSS3 (custom properties / CSS variables) - TIDAK ada satupun
+   kode React di sini, jadi dipindahkan APA ADANYA tanpa diubah.
+
+   Utility class seperti "bg-white", "flex", "rounded-2xl", dst pada HTML
+   tetap dipertahankan namanya (sesuai instruksi: jangan ubah nama class)
+   dan di-generate oleh Tailwind CDN yang dimuat di layout utama
+   (resources/views/layouts/app.blade.php). Tailwind CDN murni JavaScript
+   Vanilla (bukan React/JSX), hanya membaca class HTML dan membuat CSS-nya
+   secara otomatis di browser - sama seperti Bootstrap 5 dimuat lewat CDN.
+
+   Custom property (variabel warna, radius, dsb) di bawah ini dipetakan ke
+   Tailwind lewat konfigurasi di layout (tailwind.config), supaya class
+   semacam "bg-primary" / "text-foreground" tetap identik dengan React.
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+  --font-size: 16px;
+  font-family: 'Poppins', sans-serif;
+  --background: #FFF7FA;
+  --foreground: #1F2937;
+  --card: #ffffff;
+  --card-foreground: #1F2937;
+  --popover: #ffffff;
+  --popover-foreground: #1F2937;
+  --primary: #EC4899;
+  --primary-foreground: #ffffff;
+  --secondary: #FBCFE8;
+  --secondary-foreground: #BE185D;
+  --muted: #FFF0F7;
+  --muted-foreground: #9CA3AF;
+  --accent: #FCE7F3;
+  --accent-foreground: #BE185D;
+  --destructive: #EF4444;
+  --destructive-foreground: #ffffff;
+  --border: #F1F5F9;
+  --input: transparent;
+  --input-background: #FFF5F9;
+  --switch-background: #FBCFE8;
+  --font-weight-medium: 600;
+  --font-weight-normal: 400;
+  --ring: #EC4899;
+  --chart-1: #EC4899;
+  --chart-2: #BE185D;
+  --chart-3: #F472B6;
+  --chart-4: #FBCFE8;
+  --chart-5: #FCE7F3;
+  --radius: 1rem;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #1F2937;
+  --sidebar-primary: #EC4899;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #FFF0F7;
+  --sidebar-accent-foreground: #BE185D;
+  --sidebar-border: #F9EEF4;
+  --sidebar-ring: #EC4899;
+}
+
+html {
+  font-size: var(--font-size);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: 'Poppins', sans-serif;
+  margin: 0;
+}
+
+/* Default typography (setara @layer base pada React, hanya efektif jika
+   tidak ada utility class text-* yang meng-override di elemen tsb) */
+h1 { font-size: 1.5rem;  font-weight: var(--font-weight-medium); line-height: 1.5; }
+h2 { font-size: 1.25rem; font-weight: var(--font-weight-medium); line-height: 1.5; }
+h3 { font-size: 1.125rem;font-weight: var(--font-weight-medium); line-height: 1.5; }
+h4 { font-size: 1rem;    font-weight: var(--font-weight-medium); line-height: 1.5; }
+label  { font-size: 1rem; font-weight: var(--font-weight-medium); line-height: 1.5; }
+button { font-size: 1rem; font-weight: var(--font-weight-medium); line-height: 1.5; cursor: pointer; }
+input  { font-size: 1rem; font-weight: var(--font-weight-normal); line-height: 1.5; }
+
+/* Halaman full-height (dulunya #root { height:100% } pada index.html React) */
+html, body { height: 100%; }
+#app { height: 100%; }
