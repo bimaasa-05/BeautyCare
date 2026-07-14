@@ -41,7 +41,7 @@
                 </span>
                 Data User
             </a>
-            <a href="#" class="nav-item" title="Kelola data pelanggan yang terdaftar">
+            <a href="{{ route('admin.pelanggan.index') }}" class="nav-item {{ request()->routeIs('admin.pelanggan.index') ? 'active' : '' }}" class="nav-item" title="Kelola data pelanggan yang terdaftar">
                 <span class="nav-icon">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="8.5" cy="7" r="4" />
