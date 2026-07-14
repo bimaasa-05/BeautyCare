@@ -10,8 +10,8 @@ Route::get('/', function () {
     return view('landing.index');
 })->name('home');
 
-Route::get('/dashboard', function () {
-    return view('dashboard.dashboard');
+Route::get('/pelanggan/dashboard', function () {
+    return view('pelanggan.dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
