@@ -6,9 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Dashboard - BeautyCare</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
-        rel="stylesheet">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
@@ -19,69 +17,49 @@
     <link rel="stylesheet" href="{{ asset('assets/css/responsive.css') }}">
 
     <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-        }
+    .sidebar-toggle {
+        display: none;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 8px;
+    }
 
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
+    .sidebar-toggle svg {
+        width: 24px;
+        height: 24px;
+        color: var(--dark);
+    }
 
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
+    .sidebar-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.3);
+        z-index: 90;
+    }
 
-        ::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 10px;
-        }
+    .sidebar-overlay.active {
+        display: block;
+    }
 
-        ::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
-        }
-
+    @media (max-width: 768px) {
         .sidebar-toggle {
-            display: none;
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 8px;
+            display: flex;
+            align-items: center;
         }
-
-        .sidebar-toggle svg {
-            width: 24px;
-            height: 24px;
-            color: var(--dark);
-        }
-
-        .sidebar-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.3);
-            z-index: 90;
-        }
-
-        .sidebar-overlay.active {
-            display: block;
-        }
-
-        @media (max-width: 768px) {
-            .sidebar-toggle {
-                display: flex;
-                align-items: center;
-            }
-        }
+    }
     </style>
 </head>
 
 <body>
     <!-- Page Loader -->
-
+    <div class="page-loader">
+        <div class="loader-spinner"></div>
+    </div>
 
     <div class="dashboard-layout">
         @include('layouts.sidebar')
@@ -90,237 +68,500 @@
             @include('layouts.header2')
 
             <!-- Dashboard Content -->
-            <div class="flex-1 overflow-hidden">
-                <div class="flex h-full bg-[#FFF7FA]">
-                    <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
-                        <main class="flex-1 overflow-y-auto p-5">
-                            <div class="space-y-5">
+            <div class="dashboard-content">
+                <!-- Stats Row -->
+                <div class="stats-row">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon primary">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M12 20h9" />
+                                    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+                                </svg>
+                            </div>
+                            <span class="stat-change up">+12%</span>
+                        </div>
+                        <div class="stat-value">Rp 128,5 jt</div>
+                        <div class="stat-label">Total Pendapatan</div>
+                    </div>
 
-                                <div class="grid grid-cols-4 gap-4">
-                                    <div
-                                        class="bg-white rounded-2xl p-5 shadow-[0_2px_16px_rgba(236,72,153,0.08)] border border-pink-50 hover:shadow-[0_4px_24px_rgba(236,72,153,0.14)] transition-all duration-300">
-                                        <div class="flex items-start justify-between mb-4">
-                                            <div
-                                                class="w-11 h-11 rounded-xl bg-gradient-to-br from-pink-400 to-rose-500 flex items-center justify-center shadow-sm">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                                                    class="text-white">
-                                                    <path d="M8 2v4"></path>
-                                                    <path d="M16 2v4"></path>
-                                                    <rect width="18" height="18" x="3" y="4" rx="2"></rect>
-                                                    <path d="M3 10h18"></path>
-                                                </svg>
-                                            </div>
-                                            <span
-                                                class="flex items-center gap-1 text-xs font-semibold px-2 py-1 rounded-full text-emerald-600 bg-emerald-50">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11"
-                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                    <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline>
-                                                    <polyline points="16 7 22 7 22 13"></polyline>
-                                                </svg>0%
-                                            </span>
-                                        </div>
-                                        <p class="text-sm text-gray-400 font-medium mb-1">Booking Hari Ini</p>
-                                        <p class="text-2xl font-bold text-gray-800">6</p>
-                                        <p class="text-xs text-gray-400 mt-1">3 selesai, 3 akan datang</p>
-                                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon primary">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                                    <line x1="16" y1="2" x2="16" y2="6" />
+                                    <line x1="8" y1="2" x2="8" y2="6" />
+                                    <line x1="3" y1="10" x2="21" y2="10" />
+                                </svg>
+                            </div>
+                            <span class="stat-change up">+8%</span>
+                        </div>
+                        <div class="stat-value">1.247</div>
+                        <div class="stat-label">Total Booking</div>
+                    </div>
 
-                                    <div
-                                        class="bg-white rounded-2xl p-5 shadow-[0_2px_16px_rgba(236,72,153,0.08)] border border-pink-50 hover:shadow-[0_4px_24px_rgba(236,72,153,0.14)] transition-all duration-300">
-                                        <div class="flex items-start justify-between mb-4">
-                                            <div
-                                                class="w-11 h-11 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-sm">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                                                    class="text-white">
-                                                    <path
-                                                        d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z">
-                                                    </path>
-                                                </svg>
-                                            </div>
-                                            <span
-                                                class="flex items-center gap-1 text-xs font-semibold px-2 py-1 rounded-full text-emerald-600 bg-emerald-50">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11"
-                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                    <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline>
-                                                    <polyline points="16 7 22 7 22 13"></polyline>
-                                                </svg>2%
-                                            </span>
-                                        </div>
-                                        <p class="text-sm text-gray-400 font-medium mb-1">Rating Saya</p>
-                                        <p class="text-2xl font-bold text-gray-800">4.9</p>
-                                        <p class="text-xs text-gray-400 mt-1">Dari 248 ulasan</p>
-                                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon success">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                                    <circle cx="8.5" cy="7" r="4" />
+                                    <polyline points="17 11 19 13 23 9" />
+                                </svg>
+                            </div>
+                            <span class="stat-change up">+15%</span>
+                        </div>
+                        <div class="stat-value">856</div>
+                        <div class="stat-label">Total Pelanggan</div>
+                    </div>
 
-                                    <div
-                                        class="bg-white rounded-2xl p-5 shadow-[0_2px_16px_rgba(236,72,153,0.08)] border border-pink-50 hover:shadow-[0_4px_24px_rgba(236,72,153,0.14)] transition-all duration-300">
-                                        <div class="flex items-start justify-between mb-4">
-                                            <div
-                                                class="w-11 h-11 rounded-xl bg-gradient-to-br from-violet-400 to-purple-500 flex items-center justify-center shadow-sm">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                                                    class="text-white">
-                                                    <circle cx="12" cy="12" r="10"></circle>
-                                                    <polyline points="12 6 12 12 16 14"></polyline>
-                                                </svg>
-                                            </div>
-                                        </div>
-                                        <p class="text-sm text-gray-400 font-medium mb-1">Jam Kerja</p>
-                                        <p class="text-2xl font-bold text-gray-800">08:00–17:00</p>
-                                        <p class="text-xs text-gray-400 mt-1">Aktif hari ini</p>
-                                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon warning">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
+                                    <line x1="8" y1="21" x2="16" y2="21" />
+                                    <line x1="12" y1="17" x2="12" y2="21" />
+                                </svg>
+                            </div>
+                            <span class="stat-change down">-2%</span>
+                        </div>
+                        <div class="stat-value">24</div>
+                        <div class="stat-label">Total Karyawan</div>
+                    </div>
 
-                                    <div
-                                        class="bg-white rounded-2xl p-5 shadow-[0_2px_16px_rgba(236,72,153,0.08)] border border-pink-50 hover:shadow-[0_4px_24px_rgba(236,72,153,0.14)] transition-all duration-300">
-                                        <div class="flex items-start justify-between mb-4">
-                                            <div
-                                                class="w-11 h-11 rounded-xl bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center shadow-sm">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                                                    class="text-white">
-                                                    <path
-                                                        d="m15.477 12.89 1.515 8.526a.5.5 0 0 1-.81.47l-3.58-2.687a1 1 0 0 0-1.197 0l-3.586 2.686a.5.5 0 0 1-.81-.469l1.514-8.526">
-                                                    </path>
-                                                    <circle cx="12" cy="8" r="6"></circle>
-                                                </svg>
-                                            </div>
-                                        </div>
-                                        <p class="text-sm text-gray-400 font-medium mb-1">Peringkat</p>
-                                        <p class="text-2xl font-bold text-gray-800">#1</p>
-                                        <p class="text-xs text-gray-400 mt-1">Dari 6 beautician</p>
-                                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon info">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path
+                                        d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+                                    <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+                                </svg>
+                            </div>
+                            <span class="stat-change up">+5%</span>
+                        </div>
+                        <div class="stat-value">1.420</div>
+                        <div class="stat-label">Produq Terjual</div>
+                    </div>
+                </div>
+
+                <!-- Dashboard Grid: Charts -->
+                <div class="dashboard-grid">
+                    <!-- Pendapatan Chart -->
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3>Grafik Pendapatan</h3>
+                            <div class="chart-actions">
+                                <select>
+                                    <option>Tahun Ini</option>
+                                    <option>Bulan Ini</option>
+                                    <option>Minggu Ini</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="chart-body">
+                            <canvas id="chartPendapatan" height="280"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Mini Charts Right -->
+                    <div class="mini-charts">
+                        <div class="mini-chart-card">
+                            <div class="mc-header">
+                                <h3>Grafik Booking</h3>
+                                <span class="mc-total">196</span>
+                            </div>
+                            <div class="mc-body" id="miniChartBooking">
+                                <span class="bar bar-primary" data-height="30"></span>
+                                <span class="bar bar-primary" data-height="50"></span>
+                                <span class="bar bar-primary" data-height="40"></span>
+                                <span class="bar bar-primary" data-height="65"></span>
+                                <span class="bar bar-primary" data-height="55"></span>
+                                <span class="bar bar-primary" data-height="80"></span>
+                                <span class="bar bar-primary" data-height="70"></span>
+                            </div>
+                        </div>
+
+                        <div class="mini-chart-card">
+                            <div class="mc-header">
+                                <h3>Jadwal Hari Ini</h3>
+                                <span class="mc-total">12</span>
+                            </div>
+                            <div style="display:grid;gap:10px;">
+                                <div style="display:flex;align-items:center;gap:10px;font-size:13px;">
+                                    <span style="color:var(--primary);font-weight:600;">09:00</span>
+                                    <span style="color:var(--gray);">-</span>
+                                    <span style="flex:1;">Facial & Massage</span>
+                                    <span class="badge badge-success">Confirmed</span>
                                 </div>
-
-                                <div class="grid grid-cols-3 gap-5">
-
-                                    <div
-                                        class="col-span-2 bg-white rounded-2xl p-5 border border-pink-50 shadow-[0_2px_16px_rgba(236,72,153,0.07)]">
-                                        <h3 class="font-bold text-gray-800 mb-4">Jadwal Hari Ini</h3>
-                                        <div class="space-y-3">
-
-                                            <div
-                                                class="flex items-center gap-4 p-4 rounded-xl border bg-[#FFF7FA] border-pink-50">
-                                                <div class="text-center w-14 flex-shrink-0">
-                                                    <p class="text-sm font-bold text-gray-700">09:00</p>
-                                                    <p class="text-xs text-gray-400">90 menit</p>
-                                                </div>
-                                                <div class="w-px h-8 bg-pink-100"></div>
-                                                <div class="flex-1">
-                                                    <p class="text-sm font-bold text-gray-800">Sari Dewi</p>
-                                                    <p class="text-xs text-gray-400">Hair Treatment</p>
-                                                </div>
-                                                <span
-                                                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border bg-blue-50 text-blue-600 border-blue-100">Dikonfirmasi</span>
-                                            </div>
-
-                                            <div
-                                                class="flex items-center gap-4 p-4 rounded-xl border bg-violet-50 border-violet-100">
-                                                <div class="text-center w-14 flex-shrink-0">
-                                                    <p class="text-sm font-bold text-gray-700">10:30</p>
-                                                    <p class="text-xs text-gray-400">60 menit</p>
-                                                </div>
-                                                <div class="w-px h-8 bg-pink-100"></div>
-                                                <div class="flex-1">
-                                                    <p class="text-sm font-bold text-gray-800">Maya Putri</p>
-                                                    <p class="text-xs text-gray-400">Deep Cleansing Facial</p>
-                                                </div>
-                                                <span
-                                                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border bg-violet-50 text-violet-600 border-violet-100">Berlangsung</span>
-                                            </div>
-
-                                            <div
-                                                class="flex items-center gap-4 p-4 rounded-xl border bg-[#FFF7FA] border-pink-50">
-                                                <div class="text-center w-14 flex-shrink-0">
-                                                    <p class="text-sm font-bold text-gray-700">13:00</p>
-                                                    <p class="text-xs text-gray-400">45 menit</p>
-                                                </div>
-                                                <div class="w-px h-8 bg-pink-100"></div>
-                                                <div class="flex-1">
-                                                    <p class="text-sm font-bold text-gray-800">Rina Susanti</p>
-                                                    <p class="text-xs text-gray-400">Gel Manicure</p>
-                                                </div>
-                                                <span
-                                                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border bg-amber-50 text-amber-600 border-amber-100">Menunggu</span>
-                                            </div>
-
-                                            <div
-                                                class="flex items-center gap-4 p-4 rounded-xl border bg-[#FFF7FA] border-pink-50">
-                                                <div class="text-center w-14 flex-shrink-0">
-                                                    <p class="text-sm font-bold text-gray-700">14:00</p>
-                                                    <p class="text-xs text-gray-400">120 menit</p>
-                                                </div>
-                                                <div class="w-px h-8 bg-pink-100"></div>
-                                                <div class="flex-1">
-                                                    <p class="text-sm font-bold text-gray-800">Fitri Handayani</p>
-                                                    <p class="text-xs text-gray-400">Bridal Makeup</p>
-                                                </div>
-                                                <span
-                                                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border bg-blue-50 text-blue-600 border-blue-100">Dikonfirmasi</span>
-                                            </div>
-
-                                            <div
-                                                class="flex items-center gap-4 p-4 rounded-xl border bg-[#FFF7FA] border-pink-50">
-                                                <div class="text-center w-14 flex-shrink-0">
-                                                    <p class="text-sm font-bold text-gray-700">15:30</p>
-                                                    <p class="text-xs text-gray-400">60 menit</p>
-                                                </div>
-                                                <div class="w-px h-8 bg-pink-100"></div>
-                                                <div class="flex-1">
-                                                    <p class="text-sm font-bold text-gray-800">Indah Lestari</p>
-                                                    <p class="text-xs text-gray-400">Swedish Massage</p>
-                                                </div>
-                                                <span
-                                                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border bg-red-50 text-red-500 border-red-100">Dibatalkan</span>
-                                            </div>
-
-                                            <div
-                                                class="flex items-center gap-4 p-4 rounded-xl border bg-gray-50 border-gray-100">
-                                                <div class="text-center w-14 flex-shrink-0">
-                                                    <p class="text-sm font-bold text-gray-700">16:00</p>
-                                                    <p class="text-xs text-gray-400">75 menit</p>
-                                                </div>
-                                                <div class="w-px h-8 bg-pink-100"></div>
-                                                <div class="flex-1">
-                                                    <p class="text-sm font-bold text-gray-800">Citra Wulandari</p>
-                                                    <p class="text-xs text-gray-400">Eyelash Extension</p>
-                                                </div>
-                                                <span
-                                                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border bg-emerald-50 text-emerald-600 border-emerald-100">Selesai</span>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div
-                                        class="bg-white rounded-2xl p-5 border border-pink-50 shadow-[0_2px_16px_rgba(236,72,153,0.07)]">
-                                        <h3 class="font-bold text-gray-800 mb-4">Performa Bulan Ini</h3>
-                                        <div class="space-y-3">
-                                            <div class="p-3 bg-pink-50 rounded-xl">
-                                                <p class="text-xs text-gray-400 mb-1">Booking Selesai</p>
-                                                <p class="text-xl font-bold text-gray-800">42</p>
-                                                <p class="text-xs text-gray-400">dari 48 total</p>
-                                            </div>
-                                            <div class="p-3 bg-pink-50 rounded-xl">
-                                                <p class="text-xs text-gray-400 mb-1">Kepuasan Pelanggan</p>
-                                                <p class="text-xl font-bold text-gray-800">96%</p>
-                                                <p class="text-xs text-gray-400">4.9/5 rata-rata</p>
-                                            </div>
-                                            <div class="p-3 bg-pink-50 rounded-xl">
-                                                <p class="text-xs text-gray-400 mb-1">Kontribusi Revenue</p>
-                                                <p class="text-xl font-bold text-gray-800">Rp 10,5jt</p>
-                                                <p class="text-xs text-gray-400">dari total salon</p>
-                                            </div>
-                                        </div>
-                                    </div>
-
+                                <div style="display:flex;align-items:center;gap:10px;font-size:13px;">
+                                    <span style="color:var(--primary);font-weight:600;">10:30</span>
+                                    <span style="color:var(--gray);">-</span>
+                                    <span style="flex:1;">Haircut & Styling</span>
+                                    <span class="badge badge-warning">Pending</span>
+                                </div>
+                                <div style="display:flex;align-items:center;gap:10px;font-size:13px;">
+                                    <span style="color:var(--primary);font-weight:600;">13:00</span>
+                                    <span style="color:var(--gray);">-</span>
+                                    <span style="flex:1;">Manicure & Pedicure</span>
+                                    <span class="badge badge-success">Confirmed</span>
+                                </div>
+                                <div style="display:flex;align-items:center;gap:10px;font-size:13px;">
+                                    <span style="color:var(--primary);font-weight:600;">14:30</span>
+                                    <span style="color:var(--gray);">-</span>
+                                    <span style="flex:1;">Body Spa</span>
+                                    <span class="badge badge-info">Completed</span>
                                 </div>
                             </div>
-                        </main>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dashboard Bottom Grid -->
+                <div class="dashboard-bottom-grid">
+                    <!-- Layanan Terlaris -->
+                    <div class="table-widget">
+                        <div class="tw-header">
+                            <h3>Layanan Terlaris</h3>
+                            <a href="#">Lihat Semua</a>
+                        </div>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Layanan</th>
+                                    <th>Kategori</th>
+                                    <th>Terjual</th>
+                                    <th>Pendapatan</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="td-flex">Facial Treatment</div>
+                                    </td>
+                                    <td>Skincare</td>
+                                    <td>128</td>
+                                    <td>Rp 25,6 jt</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="td-flex">Haircut Premium</div>
+                                    </td>
+                                    <td>Salon</td>
+                                    <td>96</td>
+                                    <td>Rp 14,4 jt</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="td-flex">Body Massage</div>
+                                    </td>
+                                    <td>Spa</td>
+                                    <td>84</td>
+                                    <td>Rp 16,8 jt</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="td-flex">Nail Art Design</div>
+                                    </td>
+                                    <td>Nail Art</td>
+                                    <td>72</td>
+                                    <td>Rp 10,8 jt</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="td-flex">Hair Color</div>
+                                    </td>
+                                    <td>Salon</td>
+                                    <td>65</td>
+                                    <td>Rp 13,0 jt</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Produk Terlaris -->
+                    <div class="table-widget">
+                        <div class="tw-header">
+                            <h3>Produk Terlaris</h3>
+                            <a href="#">Lihat Semua</a>
+                        </div>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Produk</th>
+                                    <th>Kategori</th>
+                                    <th>Terjual</th>
+                                    <th>Stok</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="td-flex">Serum Vitamin C</div>
+                                    </td>
+                                    <td>Skincare</td>
+                                    <td>245</td>
+                                    <td><span class="badge badge-success">Tersedia</span></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="td-flex">Shampoo Premium</div>
+                                    </td>
+                                    <td>Hair Care</td>
+                                    <td>198</td>
+                                    <td><span class="badge badge-warning">Limited</span></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="td-flex">Nail Polish Set</div>
+                                    </td>
+                                    <td>Nail Art</td>
+                                    <td>167</td>
+                                    <td><span class="badge badge-success">Tersedia</span></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="td-flex">Moisturizer Cream</div>
+                                    </td>
+                                    <td>Skincare</td>
+                                    <td>145</td>
+                                    <td><span class="badge badge-danger">Habis</span></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="td-flex">Hair Mask</div>
+                                    </td>
+                                    <td>Hair Care</td>
+                                    <td>123</td>
+                                    <td><span class="badge badge-success">Tersedia</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Dashboard Bottom Row -->
+                <div class="dashboard-bottom-row">
+                    <!-- Karyawan Aktif -->
+                    <div class="list-widget">
+                        <div class="lw-header">
+                            <h3>Karyawan Aktif</h3>
+                            <a href="#" style="font-size:13px;color:var(--primary);font-weight:500;">Lihat Semua</a>
+                        </div>
+                        <div class="employee-grid">
+                            <div class="employee-card">
+                                <img src="https://ui-avatars.com/api/?name=Sari+Dewi&background=FFE5EF&color=FF4F87&size=36"
+                                    alt="Sari">
+                                <div class="ec-info">
+                                    <h4>Sari Dewi</h4>
+                                    <p>Stylist</p>
+                                </div>
+                                <span class="ec-status online"></span>
+                            </div>
+                            <div class="employee-card">
+                                <img src="https://ui-avatars.com/api/?name=Rina+Putri&background=FFE5EF&color=FF4F87&size=36"
+                                    alt="Rina">
+                                <div class="ec-info">
+                                    <h4>Rina Putri</h4>
+                                    <p>Terapis</p>
+                                </div>
+                                <span class="ec-status online"></span>
+                            </div>
+                            <div class="employee-card">
+                                <img src="https://ui-avatars.com/api/?name=Bagus+Adi&background=FFE5EF&color=FF4F87&size=36"
+                                    alt="Bagus">
+                                <div class="ec-info">
+                                    <h4>Bagus Adi</h4>
+                                    <p>Barberman</p>
+                                </div>
+                                <span class="ec-status break"></span>
+                            </div>
+                            <div class="employee-card">
+                                <img src="https://ui-avatars.com/api/?name=Maya+Sari&background=FFE5EF&color=FF4F87&size=36"
+                                    alt="Maya">
+                                <div class="ec-info">
+                                    <h4>Maya Sari</h4>
+                                    <p>Nail Artist</p>
+                                </div>
+                                <span class="ec-status online"></span>
+                            </div>
+                            <div class="employee-card">
+                                <img src="https://ui-avatars.com/api/?name=Dimas+Arif&background=FFE5EF&color=FF4F87&size=36"
+                                    alt="Dimas">
+                                <div class="ec-info">
+                                    <h4>Dimas Arif</h4>
+                                    <p>Stylist</p>
+                                </div>
+                                <span class="ec-status offline"></span>
+                            </div>
+                            <div class="employee-card">
+                                <img src="https://ui-avatars.com/api/?name=Dewi+Lestari&background=FFE5EF&color=FF4F87&size=36"
+                                    alt="Dewi">
+                                <div class="ec-info">
+                                    <h4>Dewi Lestari</h4>
+                                    <p>Makeup Artist</p>
+                                </div>
+                                <span class="ec-status online"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Ringkasan Stok -->
+                    <div class="list-widget">
+                        <div class="lw-header">
+                            <h3>Ringkasan Stok</h3>
+                            <a href="#" style="font-size:13px;color:var(--primary);font-weight:500;">Kelola</a>
+                        </div>
+                        <div class="stock-grid">
+                            <div class="stock-item">
+                                <div class="stock-icon primary">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path
+                                            d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+                                    </svg>
+                                </div>
+                                <div class="stock-info">
+                                    <h4>Serum Vitamin C</h4>
+                                    <p>Skincare</p>
+                                </div>
+                                <div class="stock-bar">
+                                    <div class="fill primary" style="width:75%"></div>
+                                </div>
+                                <span class="stock-qty">48</span>
+                            </div>
+                            <div class="stock-item">
+                                <div class="stock-icon warning">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path
+                                            d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+                                    </svg>
+                                </div>
+                                <div class="stock-info">
+                                    <h4>Shampoo Premium</h4>
+                                    <p>Hair Care</p>
+                                </div>
+                                <div class="stock-bar">
+                                    <div class="fill warning" style="width:30%"></div>
+                                </div>
+                                <span class="stock-qty">12</span>
+                            </div>
+                            <div class="stock-item">
+                                <div class="stock-icon success">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path
+                                            d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+                                    </svg>
+                                </div>
+                                <div class="stock-info">
+                                    <h4>Nail Polish Set</h4>
+                                    <p>Nail Art</p>
+                                </div>
+                                <div class="stock-bar">
+                                    <div class="fill success" style="width:90%"></div>
+                                </div>
+                                <span class="stock-qty">86</span>
+                            </div>
+                            <div class="stock-item">
+                                <div class="stock-icon info">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path
+                                            d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+                                    </svg>
+                                </div>
+                                <div class="stock-info">
+                                    <h4>Moisturizer Cream</h4>
+                                    <p>Skincare</p>
+                                </div>
+                                <div class="stock-bar">
+                                    <div class="fill info" style="width:10%"></div>
+                                </div>
+                                <span class="stock-qty">3</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Booking Terbaru -->
+                    <div class="list-widget">
+                        <div class="lw-header">
+                            <h3>Booking Terbaru</h3>
+                            <a href="#" style="font-size:13px;color:var(--primary);font-weight:500;">Lihat Semua</a>
+                        </div>
+                        <div class="booking-list">
+                            <div class="booking-item">
+                                <img src="https://ui-avatars.com/api/?name=Ani+Wijaya&background=FFE5EF&color=FF4F87&size=40"
+                                    alt="Ani">
+                                <div class="booking-info">
+                                    <h4>Ani Wijaya</h4>
+                                    <p>Facial Treatment</p>
+                                </div>
+                                <span class="booking-time">09:00</span>
+                            </div>
+                            <div class="booking-item">
+                                <img src="https://ui-avatars.com/api/?name=Rudi+Hartono&background=FFE5EF&color=FF4F87&size=40"
+                                    alt="Rudi">
+                                <div class="booking-info">
+                                    <h4>Rudi Hartono</h4>
+                                    <p>Haircut Premium</p>
+                                </div>
+                                <span class="booking-time">10:30</span>
+                            </div>
+                            <div class="booking-item">
+                                <img src="https://ui-avatars.com/api/?name=Sinta+Dewi&background=FFE5EF&color=FF4F87&size=40"
+                                    alt="Sinta">
+                                <div class="booking-info">
+                                    <h4>Sinta Dewi</h4>
+                                    <p>Manicure & Pedicure</p>
+                                </div>
+                                <span class="booking-time">13:00</span>
+                            </div>
+                            <div class="booking-item">
+                                <img src="https://ui-avatars.com/api/?name=Adi+Putra&background=FFE5EF&color=FF4F87&size=40"
+                                    alt="Adi">
+                                <div class="booking-info">
+                                    <h4>Adi Putra</h4>
+                                    <p>Body Spa</p>
+                                </div>
+                                <span class="booking-time">14:30</span>
+                            </div>
+                            <div class="booking-item">
+                                <img src="https://ui-avatars.com/api/?name=Maya+Anggraini&background=FFE5EF&color=FF4F87&size=40"
+                                    alt="Maya">
+                                <div class="booking-info">
+                                    <h4>Maya Anggraini</h4>
+                                    <p>Hair Color & Styling</p>
+                                </div>
+                                <span class="booking-time">16:00</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
+        </main>
+    </div>
+
+    <script>
+    // Set current date
+    const now = new Date();
+    const options = {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    };
+    document.getElementById('currentDate').textContent = now.toLocaleDateString('id-ID', options);
+    </script>
+    <script src="{{ asset('assets/js/dashboard.js') }}"></script>
+</body>
+
+</html>
