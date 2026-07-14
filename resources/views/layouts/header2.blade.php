@@ -20,8 +20,8 @@
     <div class="right-section">
         <div class="search-box">
             <span class="search-icon">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="11" cy="11" r="8" />
                     <line x1="21" y1="21" x2="16.65" y2="16.65" />
                 </svg>
@@ -50,8 +50,8 @@
         </button>
 
         <div class="user-profile">
-            <img src="https://ui-avatars.com/api/?name=Admin+BeautyCare&background=FF4F87&color=fff&size=34"
-                alt="Admin">
+            <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name) }}&background=FF4F87&color=fff&size=44"
+                alt="Profile">
             <div class="up-info">
                 <h4>{{ auth()->user()->name }}</h4>
 
