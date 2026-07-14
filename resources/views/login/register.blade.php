@@ -289,24 +289,13 @@
                         <div class="form-group">
                             <label class="form-label" for="password">Password</label>
                             <input type="password" id="password" name="password" class="form-input"
-                                placeholder="Min. 8 karakter" required>
+                                placeholder="Masukan Password" required>
                         </div>
                         <div class="form-group">
                             <label class="form-label" for="password_confirmation">Konfirmasi Password</label>
                             <input type="password" id="password_confirmation" name="password_confirmation"
                                 class="form-input" placeholder="Ulangi password" required>
                         </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label" for="role">Daftar Sebagai</label>
-                        <select id="role" name="role" class="form-input" required>
-                            <option value="pelanggan" {{ old('role') == 'pelanggan' ? 'selected' : '' }}>Pelanggan
-                            </option>
-                            <option value="beautycian" {{ old('role') == 'beautycian' ? 'selected' : 'beautycian' }}>
-                                BeautyCian
-                            </option>
-                        </select>
                     </div>
 
                     <div class="terms">
