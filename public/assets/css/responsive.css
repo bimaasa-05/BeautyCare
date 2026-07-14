@@ -1,0 +1,322 @@
+/* =============================================
+   BEAUTYCARE - RESPONSIVE STYLES
+   ============================================= */
+
+/* ---- 1920px & up ---- */
+@media screen and (min-width: 1920px) {
+  .container {
+    max-width: 1400px;
+  }
+  .hero-content h1 {
+    font-size: 56px;
+  }
+}
+
+/* ---- 1600px ---- */
+@media screen and (max-width: 1600px) {
+  .container {
+    max-width: 1200px;
+  }
+}
+
+/* ---- 1440px ---- */
+@media screen and (max-width: 1440px) {
+  .stats-row {
+    gap: 14px;
+  }
+  .stat-card .stat-value {
+    font-size: 24px;
+  }
+}
+
+/* ---- 1366px ---- */
+@media screen and (max-width: 1366px) {
+  .features-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .stats-row {
+    grid-template-columns: repeat(5, 1fr);
+  }
+  .dashboard-grid {
+    grid-template-columns: 1.5fr 1fr;
+  }
+}
+
+/* ---- 1280px ---- */
+@media screen and (max-width: 1280px) {
+  .pricing-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  .hero-content h1 {
+    font-size: 42px;
+  }
+  .search-box {
+    min-width: 220px;
+  }
+}
+
+/* ---- 1024px (Laptop) ---- */
+@media screen and (max-width: 1024px) {
+  .features-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .how-steps {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .how-steps::before {
+    display: none;
+  }
+  .layanan-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .pricing-grid {
+    grid-template-columns: 1fr;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+  .pricing-card.featured {
+    transform: scale(1);
+  }
+  .footer-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .testimoni-card {
+    min-width: calc(50% - 12px);
+  }
+
+  /* Dashboard */
+  .stats-row {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+  .dashboard-bottom-grid {
+    grid-template-columns: 1fr;
+  }
+  .dashboard-bottom-row {
+    grid-template-columns: 1fr 1fr;
+  }
+  .search-box {
+    min-width: 180px;
+  }
+}
+
+/* ---- 768px (Tablet) ---- */
+@media screen and (max-width: 768px) {
+  /* Landing */
+  .navbar-nav {
+    display: none;
+    position: fixed;
+    top: var(--navbar-height);
+    left: 0;
+    right: 0;
+    background: var(--white);
+    flex-direction: column;
+    padding: 20px;
+    gap: 16px;
+    box-shadow: var(--shadow-md);
+    z-index: 999;
+  }
+  .navbar-nav.open {
+    display: flex;
+  }
+  .navbar-toggle {
+    display: flex;
+  }
+  .hero .container {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  .hero-content {
+    text-align: center;
+  }
+  .hero-content p {
+    margin: 0 auto 32px;
+  }
+  .hero-buttons {
+    justify-content: center;
+  }
+  .hero-image .floating-card {
+    display: none;
+  }
+  .about-grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  .keunggulan-grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  .keunggulan-list {
+    grid-template-columns: 1fr;
+  }
+  .contact-grid {
+    grid-template-columns: 1fr;
+  }
+  .contact-form .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  /* Dashboard */
+  .sidebar {
+    transform: translateX(-100%);
+  }
+  .sidebar.open {
+    transform: translateX(0);
+    box-shadow: var(--shadow-xl);
+  }
+  .main-content {
+    margin-left: 0;
+  }
+  .navbar-top {
+    padding: 0 16px;
+  }
+  .dashboard-content {
+    padding: 16px;
+  }
+  .stats-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .dashboard-bottom-row {
+    grid-template-columns: 1fr;
+  }
+  .search-box {
+    min-width: 140px;
+  }
+  .navbar-top .date-display {
+    display: none;
+  }
+  .navbar-top .user-profile .up-info {
+    display: none;
+  }
+  .employee-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Login */
+  .login-container {
+    grid-template-columns: 1fr;
+  }
+  .login-left {
+    display: none;
+  }
+  .login-right {
+    padding: 40px 24px;
+  }
+}
+
+/* ---- 576px ---- */
+@media screen and (max-width: 576px) {
+  .section {
+    padding: 60px 0;
+  }
+  .section-header h2 {
+    font-size: 28px;
+  }
+  .hero-content h1 {
+    font-size: 32px;
+  }
+  .features-grid {
+    grid-template-columns: 1fr;
+  }
+  .how-steps {
+    grid-template-columns: 1fr;
+  }
+  .layanan-grid {
+    grid-template-columns: 1fr;
+  }
+  .stats-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .testimoni-card {
+    min-width: 100%;
+  }
+  .stats-row {
+    grid-template-columns: 1fr 1fr;
+  }
+  .footer-grid {
+    grid-template-columns: 1fr;
+  }
+  .pricing-card {
+    padding: 24px 20px;
+  }
+}
+
+/* ---- 430px ---- */
+@media screen and (max-width: 430px) {
+  .hero-content h1 {
+    font-size: 28px;
+  }
+  .stats-row {
+    grid-template-columns: 1fr 1fr;
+  }
+  .stat-card .stat-value {
+    font-size: 20px;
+  }
+  .stat-card {
+    padding: 14px;
+  }
+  .chart-card .chart-body canvas {
+    height: 200px !important;
+  }
+  .navbar-top .left-section h2 {
+    font-size: 16px;
+  }
+  .search-box {
+    min-width: 100px;
+  }
+  .search-box input {
+    font-size: 12px;
+  }
+}
+
+/* ---- 414px ---- */
+@media screen and (max-width: 414px) {
+  .stats-row {
+    gap: 10px;
+  }
+  .dashboard-content {
+    padding: 12px;
+  }
+}
+
+/* ---- 390px ---- */
+@media screen and (max-width: 390px) {
+  .stats-row {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .stat-card .stat-value {
+    font-size: 18px;
+  }
+}
+
+/* ---- 375px ---- */
+@media screen and (max-width: 375px) {
+  .navbar-top {
+    padding: 0 12px;
+  }
+  .navbar-icon-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 16px;
+  }
+}
+
+/* ---- 360px ---- */
+@media screen and (max-width: 360px) {
+  .stats-row {
+    grid-template-columns: 1fr 1fr;
+  }
+  .stat-card {
+    padding: 12px;
+  }
+  .stat-card .stat-value {
+    font-size: 16px;
+  }
+}

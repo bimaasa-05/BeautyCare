@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="120" height="36" viewBox="0 0 120 36">
+  <rect x="0" y="2" width="32" height="32" rx="8" fill="#FF4F87"/>
+  <path d="M16 10C14 10 10 12 10 18C10 24 14 26 16 26C18 26 22 24 22 18C22 12 18 10 16 10Z" fill="white" opacity="0.9"/>
+  <text x="40" y="25" font-family="Poppins, sans-serif" font-size="20" font-weight="700" fill="#FF4F87">BeautyCare</text>
+</svg>
