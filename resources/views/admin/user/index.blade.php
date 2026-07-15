@@ -11,7 +11,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/dashboard.css') }}">
@@ -56,12 +56,29 @@
     </style>
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; }
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+    body {
+        font-family: 'Inter', sans-serif;
+    }
+
+    ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+    }
     </style>
 </head>
 
@@ -79,25 +96,30 @@
 
             <!-- Dashboard Content -->
             <div class="flex-1 overflow-y-auto p-8">
-                
-                <div class="bg-white rounded-2xl p-6 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] flex flex-col h-full min-h-[580px] justify-between">
+
+                <div
+                    class="bg-white rounded-2xl p-6 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] flex flex-col h-full min-h-[580px] justify-between">
                     <div>
                         <div class="flex justify-between items-center mb-6">
                             <div>
                                 <h3 class="text-[16px] font-bold text-gray-800">Semua User</h3>
                                 <p class="text-[12px] text-gray-400 mt-0.5">Total 1.284 pelanggan</p>
                             </div>
-                            
+
                             <div class="flex items-center gap-3">
                                 <div class="relative">
-                                    <i class="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
-                                    <input type="text" placeholder="Cari pelanggan..." class="bg-gray-50 border border-gray-100 text-[12px] rounded-full pl-9 pr-4 py-2 w-[220px] focus:outline-none focus:border-pink-300 transition-all placeholder-gray-400">
+                                    <i
+                                        class="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+                                    <input type="text" placeholder="Cari pelanggan..."
+                                        class="bg-gray-50 border border-gray-100 text-[12px] rounded-full pl-9 pr-4 py-2 w-[220px] focus:outline-none focus:border-pink-300 transition-all placeholder-gray-400">
                                 </div>
-                                <button class="flex items-center gap-2 border border-gray-200 text-gray-600 text-[12px] font-medium px-4 py-2 rounded-full hover:bg-gray-50 transition-colors">
+                                <button
+                                    class="flex items-center gap-2 border border-gray-200 text-gray-600 text-[12px] font-medium px-4 py-2 rounded-full hover:bg-gray-50 transition-colors">
                                     <i class="fa-solid fa-sliders text-gray-400"></i> Filter
                                 </button>
-                                <button class="flex items-center gap-2 bg-[#de3b7c] text-white text-[12px] font-semibold px-4 py-2 rounded-full hover:bg-[#c62f6b] transition-colors shadow-sm">
-                                    <i class="fa-solid fa-plus"></i> Tambah
+                                <button
+                                    class="flex items-center gap-2 bg-[#de3b7c] text-white text-[12px] font-semibold px-4 py-2 rounded-full hover:bg-[#c62f6b] transition-colors shadow-sm">
+                                    <a href="{{ route('admin.user.create') }}">Tambah</a>
                                 </button>
                             </div>
                         </div>
@@ -105,7 +127,8 @@
                         <div class="overflow-x-auto">
                             <table class="w-full text-left border-collapse">
                                 <thead>
-                                    <tr class="text-[11px] font-bold text-gray-400 uppercase border-b border-gray-100 bg-gray-50/50">
+                                    <tr
+                                        class="text-[11px] font-bold text-gray-400 uppercase border-b border-gray-100 bg-gray-50/50">
                                         <th class="py-3 px-4">Nama Lengkap</th>
                                         <th class="py-3 px-4">Email</th>
                                         <th class="py-3 px-4">Password</th>
@@ -118,23 +141,36 @@
                                 <tbody class="text-[13px] text-gray-700 divide-y divide-gray-50">
                                     <tr class="hover:bg-gray-50/50 transition-colors">
                                         <td class="py-3.5 px-4 flex items-center gap-3">
-                                            <div class="w-8 h-8 rounded-full bg-pink-400 text-white flex items-center justify-center font-bold text-[11px]">SD</div>
+                                            <div
+                                                class="w-8 h-8 rounded-full bg-pink-400 text-white flex items-center justify-center font-bold text-[11px]">
+                                                SD</div>
                                             <span class="font-semibold text-gray-800">Sari Dewi Kusuma</span>
                                         </td>
                                         <td class="py-3.5 px-4 font-medium text-gray-500">admin@gmail.com</td>
                                         <td class="py-3.5 px-4">
-                                            <span class="px-2.5 py-0.5 bg-amber-50 text-amber-600 border border-amber-100 rounded-full text-[11px] font-semibold">......</span>
+                                            <span
+                                                class="px-2.5 py-0.5 bg-amber-50 text-amber-600 border border-amber-100 rounded-full text-[11px] font-semibold">......</span>
                                         </td>
                                         <td class="py-3.5 px-4 font-bold text-gray-800">FOTO</td>
                                         <td class="py-3.5 px-4 text-gray-500 font-medium">085723706843</td>
                                         <td class="py-3.5 px-4">
-                                            <span class="px-2.5 py-0.5 bg-emerald-50 text-emerald-600 rounded-full text-[11px] font-semibold">Aktif</span>
+                                            <span
+                                                class="px-2.5 py-0.5 bg-emerald-50 text-emerald-600 rounded-full text-[11px] font-semibold">Aktif</span>
                                         </td>
                                         <td class="py-3.5 px-4 text-center">
                                             <div class="flex items-center justify-center gap-2">
-                                                <button class="w-7 h-7 text-blue-500 bg-blue-50 hover:bg-blue-100 rounded-md transition-colors"><i class="fa-regular fa-eye text-xs"></i></button>
-                                                <button class="w-7 h-7 text-amber-500 bg-amber-50 hover:bg-amber-100 rounded-md transition-colors"><i class="fa-regular fa-pen-to-square text-xs"></i></button>
-                                                <button class="w-7 h-7 text-red-500 bg-red-50 hover:bg-red-100 rounded-md transition-colors"><i class="fa-regular fa-trash-can text-xs"></i></button>
+                                                <button
+                                                    class="w-7 h-7 text-blue-500 bg-blue-50 hover:bg-blue-100 rounded-md transition-colors"><i
+                                                        class="fa-regular fa-eye text-xs"></i>
+                                                </button>
+                                                <button
+                                                    class="w-7 h-7 text-amber-500 bg-amber-50 hover:bg-amber-100 rounded-md transition-colors"><i
+                                                        class="fa-regular fa-pen-to-square text-xs"></i>
+                                                </button>
+                                                <button
+                                                    class="w-7 h-7 text-red-500 bg-red-50 hover:bg-red-100 rounded-md transition-colors"><i
+                                                        class="fa-regular fa-trash-can text-xs"></i>
+                                                </button>
                                             </div>
                                         </td>
                                     </tr>
