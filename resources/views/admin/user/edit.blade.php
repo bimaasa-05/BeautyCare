@@ -152,6 +152,21 @@
                             </div>
 
                             <div>
+                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Role</label>
+                                <select name="role"
+                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all @error('role') border-red-300 @enderror">
+                                    <option value="" disabled>Pilih role</option>
+                                    <option value="admin" {{ old('role', $user->role) == 'admin' ? 'selected' : '' }}>Admin</option>
+                                    <option value="kasir" {{ old('role', $user->role) == 'kasir' ? 'selected' : '' }}>Kasir</option>
+                                    <option value="beautycian" {{ old('role', $user->role) == 'beautycian' ? 'selected' : '' }}>Beautycian</option>
+                                    <option value="pelanggan" {{ old('role', $user->role) == 'pelanggan' ? 'selected' : '' }}>Pelanggan</option>
+                                </select>
+                                @error('role')
+                                    <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div>
                                 <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Status</label>
                                 <select name="status"
                                     class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all @error('status') border-red-300 @enderror">
