@@ -99,249 +99,76 @@
             <div class="flex-1 overflow-y-auto p-8">
                 
                 <div class="flex justify-between items-center mb-6">
-                    <p class="text-[13px] font-medium text-gray-400">6 beautician terdaftar</p>
+                    <p class="text-[13px] font-medium text-gray-400">{{ $beautician->count() }} beautician terdaftar</p>
                     
                     <div class="flex items-center gap-3">
                         <div class="relative">
                             <i class="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
                             <input type="text" placeholder="Cari beautician..." class="bg-white border border-gray-200 text-[12px] rounded-full pl-9 pr-4 py-2 w-[220px] focus:outline-none focus:border-pink-300 transition-all placeholder-gray-400 shadow-sm">
                         </div>
-                        <button class="flex items-center gap-2 bg-[#de3b7c] text-white text-[12px] font-semibold px-4 py-2 rounded-full hover:bg-[#c62f6b] transition-colors shadow-sm">
+                        <a href="{{ route('admin.beautician.create') }}" class="flex items-center gap-2 bg-[#de3b7c] text-white text-[12px] font-semibold px-4 py-2 rounded-full hover:bg-[#c62f6b] transition-colors shadow-sm">
                             <i class="fa-solid fa-plus"></i> Tambah
-                        </button>
+                        </a>
                     </div>
                 </div>
 
                 <div class="grid grid-cols-3 gap-6">
-                    
+                    @forelse ($beautician as $b)
                     <div class="bg-white rounded-3xl p-6 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] border border-pink-50/50">
                         <div class="flex justify-between items-start mb-6">
                             <div class="flex items-center gap-3">
-                                <div class="w-12 h-12 rounded-full bg-[#f472b6] text-white flex items-center justify-center font-bold text-lg">AR</div>
+                                <div class="w-12 h-12 rounded-full bg-[#f472b6] text-white flex items-center justify-center font-bold text-lg">{{ strtoupper(substr($b->nama, 0, 2)) }}</div>
                                 <div>
-                                    <h3 class="font-bold text-gray-800 text-[15px]">Aulia Rahmawati</h3>
-                                    <p class="text-[12px] text-gray-400 mt-0.5">Hair & Coloring</p>
+                                    <h3 class="font-bold text-gray-800 text-[15px]">{{ $b->nama }}</h3>
+                                    <p class="text-[12px] text-gray-400 mt-0.5">{{ $b->jabatan }}</p>
                                 </div>
                             </div>
-                            <span class="px-2.5 py-1 bg-emerald-50 text-emerald-500 font-semibold text-[11px] rounded-lg border border-emerald-100">Tersedia</span>
+                            @if ($b->status == 1)
+                                <span class="px-2.5 py-1 bg-emerald-50 text-emerald-500 font-semibold text-[11px] rounded-lg border border-emerald-100">Tersedia</span>
+                            @elseif ($b->status == 2)
+                                <span class="px-2.5 py-1 bg-orange-50 text-orange-500 font-semibold text-[11px] rounded-lg border border-orange-100">Sibuk</span>
+                            @else
+                                <span class="px-2.5 py-1 bg-gray-100 text-gray-500 font-semibold text-[11px] rounded-lg border border-gray-200">Libur</span>
+                            @endif
                         </div>
 
                         <div class="grid grid-cols-3 gap-3 mb-5">
                             <div class="bg-[#fdf2f8] rounded-2xl py-2.5 flex flex-col items-center justify-center">
-                                <span class="text-[#de3b7c] font-bold text-[15px] mb-0.5">4.9</span>
+                                <span class="text-[#de3b7c] font-bold text-[15px] mb-0.5">-</span>
                                 <span class="text-[10px] text-gray-400 font-medium">Rating</span>
                             </div>
                             <div class="bg-[#fdf2f8] rounded-2xl py-2.5 flex flex-col items-center justify-center">
-                                <span class="text-[#de3b7c] font-bold text-[15px] mb-0.5">248</span>
+                                <span class="text-[#de3b7c] font-bold text-[15px] mb-0.5">-</span>
                                 <span class="text-[10px] text-gray-400 font-medium">Booking</span>
                             </div>
                             <div class="bg-[#fdf2f8] rounded-2xl py-2.5 flex flex-col items-center justify-center">
-                                <span class="text-[#de3b7c] font-bold text-[15px] mb-0.5">5 tahun</span>
+                                <span class="text-[#de3b7c] font-bold text-[15px] mb-0.5">-</span>
                                 <span class="text-[10px] text-gray-400 font-medium">Pengalaman</span>
                             </div>
                         </div>
 
                         <div class="flex items-center text-[12px] text-gray-400 font-medium mb-5">
-                            <i class="fa-regular fa-clock mr-2 text-gray-300"></i> 08:00 - 17:00
+                            <i class="fa-regular fa-clock mr-2 text-gray-300"></i> -
                         </div>
 
                         <div class="flex gap-2.5">
                             <button class="flex-1 bg-[#fdf2f8] text-[#de3b7c] font-bold text-[13px] py-2.5 rounded-2xl hover:bg-pink-100 transition-colors">Jadwal</button>
-                            <button class="w-10 h-10 flex items-center justify-center text-amber-500 bg-amber-50 border border-amber-100 hover:bg-amber-100 rounded-2xl transition-colors"><i class="fa-regular fa-pen-to-square text-[13px]"></i></button>
-                            <button class="w-10 h-10 flex items-center justify-center text-red-500 bg-red-50 border border-red-100 hover:bg-red-100 rounded-2xl transition-colors"><i class="fa-regular fa-trash-can text-[13px]"></i></button>
+                            <a href="{{ route('admin.beautician.edit', $b->id_karyawan) }}" class="w-10 h-10 flex items-center justify-center text-amber-500 bg-amber-50 border border-amber-100 hover:bg-amber-100 rounded-2xl transition-colors"><i class="fa-regular fa-pen-to-square text-[13px]"></i></a>
+                            <form action="{{ route('admin.beautician.destroy', $b->id_karyawan) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus beautician ini?')" class="inline">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="w-10 h-10 flex items-center justify-center text-red-500 bg-red-50 border border-red-100 hover:bg-red-100 rounded-2xl transition-colors"><i class="fa-regular fa-trash-can text-[13px]"></i></button>
+                            </form>
                         </div>
                     </div>
-
-                    <div class="bg-white rounded-3xl p-6 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] border border-pink-50/50">
-                        <div class="flex justify-between items-start mb-6">
-                            <div class="flex items-center gap-3">
-                                <div class="w-12 h-12 rounded-full bg-[#fb7185] text-white flex items-center justify-center font-bold text-lg">DP</div>
-                                <div>
-                                    <h3 class="font-bold text-gray-800 text-[15px]">Dewi Puspita</h3>
-                                    <p class="text-[12px] text-gray-400 mt-0.5">Facial & Skincare</p>
-                                </div>
-                            </div>
-                            <span class="px-2.5 py-1 bg-orange-50 text-orange-500 font-semibold text-[11px] rounded-lg border border-orange-100">Sibuk</span>
-                        </div>
-
-                        <div class="grid grid-cols-3 gap-3 mb-5">
-                            <div class="bg-[#fdf2f8] rounded-2xl py-2.5 flex flex-col items-center justify-center">
-                                <span class="text-[#de3b7c] font-bold text-[15px] mb-0.5">4.8</span>
-                                <span class="text-[10px] text-gray-400 font-medium">Rating</span>
-                            </div>
-                            <div class="bg-[#fdf2f8] rounded-2xl py-2.5 flex flex-col items-center justify-center">
-                                <span class="text-[#de3b7c] font-bold text-[15px] mb-0.5">186</span>
-                                <span class="text-[10px] text-gray-400 font-medium">Booking</span>
-                            </div>
-                            <div class="bg-[#fdf2f8] rounded-2xl py-2.5 flex flex-col items-center justify-center">
-                                <span class="text-[#de3b7c] font-bold text-[15px] mb-0.5">3 tahun</span>
-                                <span class="text-[10px] text-gray-400 font-medium">Pengalaman</span>
-                            </div>
-                        </div>
-
-                        <div class="flex items-center text-[12px] text-gray-400 font-medium mb-5">
-                            <i class="fa-regular fa-clock mr-2 text-gray-300"></i> 09:00 - 18:00
-                        </div>
-
-                        <div class="flex gap-2.5">
-                            <button class="flex-1 bg-[#fdf2f8] text-[#de3b7c] font-bold text-[13px] py-2.5 rounded-2xl hover:bg-pink-100 transition-colors">Jadwal</button>
-                            <button class="w-10 h-10 flex items-center justify-center text-amber-500 bg-amber-50 border border-amber-100 hover:bg-amber-100 rounded-2xl transition-colors"><i class="fa-regular fa-pen-to-square text-[13px]"></i></button>
-                            <button class="w-10 h-10 flex items-center justify-center text-red-500 bg-red-50 border border-red-100 hover:bg-red-100 rounded-2xl transition-colors"><i class="fa-regular fa-trash-can text-[13px]"></i></button>
+                    @empty
+                    <div class="col-span-3 flex items-center justify-center py-16">
+                        <div class="text-center">
+                            <i class="fa-regular fa-face-frown text-5xl text-gray-300 mb-4"></i>
+                            <p class="text-gray-400 text-[13px] font-medium">Belum ada data beautician</p>
                         </div>
                     </div>
-
-                    <div class="bg-white rounded-3xl p-6 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] border border-pink-50/50">
-                        <div class="flex justify-between items-start mb-6">
-                            <div class="flex items-center gap-3">
-                                <div class="w-12 h-12 rounded-full bg-[#c084fc] text-white flex items-center justify-center font-bold text-lg">RA</div>
-                                <div>
-                                    <h3 class="font-bold text-gray-800 text-[15px]">Rizky Amelia</h3>
-                                    <p class="text-[12px] text-gray-400 mt-0.5">Nail Art</p>
-                                </div>
-                            </div>
-                            <span class="px-2.5 py-1 bg-emerald-50 text-emerald-500 font-semibold text-[11px] rounded-lg border border-emerald-100">Tersedia</span>
-                        </div>
-
-                        <div class="grid grid-cols-3 gap-3 mb-5">
-                            <div class="bg-[#fdf2f8] rounded-2xl py-2.5 flex flex-col items-center justify-center">
-                                <span class="text-[#de3b7c] font-bold text-[15px] mb-0.5">4.7</span>
-                                <span class="text-[10px] text-gray-400 font-medium">Rating</span>
-                            </div>
-                            <div class="bg-[#fdf2f8] rounded-2xl py-2.5 flex flex-col items-center justify-center">
-                                <span class="text-[#de3b7c] font-bold text-[15px] mb-0.5">172</span>
-                                <span class="text-[10px] text-gray-400 font-medium">Booking</span>
-                            </div>
-                            <div class="bg-[#fdf2f8] rounded-2xl py-2.5 flex flex-col items-center justify-center">
-                                <span class="text-[#de3b7c] font-bold text-[15px] mb-0.5">4 tahun</span>
-                                <span class="text-[10px] text-gray-400 font-medium">Pengalaman</span>
-                            </div>
-                        </div>
-
-                        <div class="flex items-center text-[12px] text-gray-400 font-medium mb-5">
-                            <i class="fa-regular fa-clock mr-2 text-gray-300"></i> 08:00 - 18:00
-                        </div>
-
-                        <div class="flex gap-2.5">
-                            <button class="flex-1 bg-[#fdf2f8] text-[#de3b7c] font-bold text-[13px] py-2.5 rounded-2xl hover:bg-pink-100 transition-colors">Jadwal</button>
-                            <button class="w-10 h-10 flex items-center justify-center text-amber-500 bg-amber-50 border border-amber-100 hover:bg-amber-100 rounded-2xl transition-colors"><i class="fa-regular fa-pen-to-square text-[13px]"></i></button>
-                            <button class="w-10 h-10 flex items-center justify-center text-red-500 bg-red-50 border border-red-100 hover:bg-red-100 rounded-2xl transition-colors"><i class="fa-regular fa-trash-can text-[13px]"></i></button>
-                        </div>
-                    </div>
-
-                    <div class="bg-white rounded-3xl p-6 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] border border-pink-50/50">
-                        <div class="flex justify-between items-start mb-6">
-                            <div class="flex items-center gap-3">
-                                <div class="w-12 h-12 rounded-full bg-[#a855f7] text-white flex items-center justify-center font-bold text-lg">NK</div>
-                                <div>
-                                    <h3 class="font-bold text-gray-800 text-[15px]">Nadia Kusuma</h3>
-                                    <p class="text-[12px] text-gray-400 mt-0.5">Full Body Massage</p>
-                                </div>
-                            </div>
-                            <span class="px-2.5 py-1 bg-gray-100 text-gray-500 font-semibold text-[11px] rounded-lg border border-gray-200">Libur</span>
-                        </div>
-
-                        <div class="grid grid-cols-3 gap-3 mb-5">
-                            <div class="bg-[#fdf2f8] rounded-2xl py-2.5 flex flex-col items-center justify-center">
-                                <span class="text-[#de3b7c] font-bold text-[15px] mb-0.5">5</span>
-                                <span class="text-[10px] text-gray-400 font-medium">Rating</span>
-                            </div>
-                            <div class="bg-[#fdf2f8] rounded-2xl py-2.5 flex flex-col items-center justify-center">
-                                <span class="text-[#de3b7c] font-bold text-[15px] mb-0.5">312</span>
-                                <span class="text-[10px] text-gray-400 font-medium">Booking</span>
-                            </div>
-                            <div class="bg-[#fdf2f8] rounded-2xl py-2.5 flex flex-col items-center justify-center">
-                                <span class="text-[#de3b7c] font-bold text-[15px] mb-0.5">6 tahun</span>
-                                <span class="text-[10px] text-gray-400 font-medium">Pengalaman</span>
-                            </div>
-                        </div>
-
-                        <div class="flex items-center text-[12px] text-gray-400 font-medium mb-5">
-                            <i class="fa-regular fa-clock mr-2 text-gray-300"></i> 10:00 - 20:00
-                        </div>
-
-                        <div class="flex gap-2.5">
-                            <button class="flex-1 bg-[#fdf2f8] text-[#de3b7c] font-bold text-[13px] py-2.5 rounded-2xl hover:bg-pink-100 transition-colors">Jadwal</button>
-                            <button class="w-10 h-10 flex items-center justify-center text-amber-500 bg-amber-50 border border-amber-100 hover:bg-amber-100 rounded-2xl transition-colors"><i class="fa-regular fa-pen-to-square text-[13px]"></i></button>
-                            <button class="w-10 h-10 flex items-center justify-center text-red-500 bg-red-50 border border-red-100 hover:bg-red-100 rounded-2xl transition-colors"><i class="fa-regular fa-trash-can text-[13px]"></i></button>
-                        </div>
-                    </div>
-
-                    <div class="bg-white rounded-3xl p-6 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] border border-pink-50/50">
-                        <div class="flex justify-between items-start mb-6">
-                            <div class="flex items-center gap-3">
-                                <div class="w-12 h-12 rounded-full bg-[#f43f5e] text-white flex items-center justify-center font-bold text-lg">PM</div>
-                                <div>
-                                    <h3 class="font-bold text-gray-800 text-[15px]">Putri Maharani</h3>
-                                    <p class="text-[12px] text-gray-400 mt-0.5">Makeup & Hijab</p>
-                                </div>
-                            </div>
-                            <span class="px-2.5 py-1 bg-emerald-50 text-emerald-500 font-semibold text-[11px] rounded-lg border border-emerald-100">Tersedia</span>
-                        </div>
-
-                        <div class="grid grid-cols-3 gap-3 mb-5">
-                            <div class="bg-[#fdf2f8] rounded-2xl py-2.5 flex flex-col items-center justify-center">
-                                <span class="text-[#de3b7c] font-bold text-[15px] mb-0.5">4.6</span>
-                                <span class="text-[10px] text-gray-400 font-medium">Rating</span>
-                            </div>
-                            <div class="bg-[#fdf2f8] rounded-2xl py-2.5 flex flex-col items-center justify-center">
-                                <span class="text-[#de3b7c] font-bold text-[15px] mb-0.5">134</span>
-                                <span class="text-[10px] text-gray-400 font-medium">Booking</span>
-                            </div>
-                            <div class="bg-[#fdf2f8] rounded-2xl py-2.5 flex flex-col items-center justify-center">
-                                <span class="text-[#de3b7c] font-bold text-[15px] mb-0.5">2 tahun</span>
-                                <span class="text-[10px] text-gray-400 font-medium">Pengalaman</span>
-                            </div>
-                        </div>
-
-                        <div class="flex items-center text-[12px] text-gray-400 font-medium mb-5">
-                            <i class="fa-regular fa-clock mr-2 text-gray-300"></i> 08:00 - 17:00
-                        </div>
-
-                        <div class="flex gap-2.5">
-                            <button class="flex-1 bg-[#fdf2f8] text-[#de3b7c] font-bold text-[13px] py-2.5 rounded-2xl hover:bg-pink-100 transition-colors">Jadwal</button>
-                            <button class="w-10 h-10 flex items-center justify-center text-amber-500 bg-amber-50 border border-amber-100 hover:bg-amber-100 rounded-2xl transition-colors"><i class="fa-regular fa-pen-to-square text-[13px]"></i></button>
-                            <button class="w-10 h-10 flex items-center justify-center text-red-500 bg-red-50 border border-red-100 hover:bg-red-100 rounded-2xl transition-colors"><i class="fa-regular fa-trash-can text-[13px]"></i></button>
-                        </div>
-                    </div>
-
-                    <div class="bg-white rounded-3xl p-6 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] border border-pink-50/50">
-                        <div class="flex justify-between items-start mb-6">
-                            <div class="flex items-center gap-3">
-                                <div class="w-12 h-12 rounded-full bg-[#f9a8d4] text-white flex items-center justify-center font-bold text-lg">SW</div>
-                                <div>
-                                    <h3 class="font-bold text-gray-800 text-[15px]">Sinta Widyasari</h3>
-                                    <p class="text-[12px] text-gray-400 mt-0.5">Eyelash & Eyebrow</p>
-                                </div>
-                            </div>
-                            <span class="px-2.5 py-1 bg-emerald-50 text-emerald-500 font-semibold text-[11px] rounded-lg border border-emerald-100">Tersedia</span>
-                        </div>
-
-                        <div class="grid grid-cols-3 gap-3 mb-5">
-                            <div class="bg-[#fdf2f8] rounded-2xl py-2.5 flex flex-col items-center justify-center">
-                                <span class="text-[#de3b7c] font-bold text-[15px] mb-0.5">4.8</span>
-                                <span class="text-[10px] text-gray-400 font-medium">Rating</span>
-                            </div>
-                            <div class="bg-[#fdf2f8] rounded-2xl py-2.5 flex flex-col items-center justify-center">
-                                <span class="text-[#de3b7c] font-bold text-[15px] mb-0.5">198</span>
-                                <span class="text-[10px] text-gray-400 font-medium">Booking</span>
-                            </div>
-                            <div class="bg-[#fdf2f8] rounded-2xl py-2.5 flex flex-col items-center justify-center">
-                                <span class="text-[#de3b7c] font-bold text-[15px] mb-0.5">3 tahun</span>
-                                <span class="text-[10px] text-gray-400 font-medium">Pengalaman</span>
-                            </div>
-                        </div>
-
-                        <div class="flex items-center text-[12px] text-gray-400 font-medium mb-5">
-                            <i class="fa-regular fa-clock mr-2 text-gray-300"></i> 09:00 - 18:00
-                        </div>
-
-                        <div class="flex gap-2.5">
-                            <button class="flex-1 bg-[#fdf2f8] text-[#de3b7c] font-bold text-[13px] py-2.5 rounded-2xl hover:bg-pink-100 transition-colors">Jadwal</button>
-                            <button class="w-10 h-10 flex items-center justify-center text-amber-500 bg-amber-50 border border-amber-100 hover:bg-amber-100 rounded-2xl transition-colors"><i class="fa-regular fa-pen-to-square text-[13px]"></i></button>
-                            <button class="w-10 h-10 flex items-center justify-center text-red-500 bg-red-50 border border-red-100 hover:bg-red-100 rounded-2xl transition-colors"><i class="fa-regular fa-trash-can text-[13px]"></i></button>
-                        </div>
-                    </div>
-
+                    @endforelse
                 </div>
 
             </div>

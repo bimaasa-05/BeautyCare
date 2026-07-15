@@ -13,7 +13,7 @@
         </button>
         <div>
             <h2>Dashboard</h2>
-            <span class="page-title">Selamat datang, {{ ucfirst(auth()->user()->role) }}!</span>
+            <span class="page-title">Selamat datang, {{ ucfirst(auth()->user()->nama) }}!</span>
         </div>
     </div>
 
@@ -50,7 +50,7 @@
         </button>
 
         <div class="user-profile">
-            <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name) }}&background=FF4F87&color=fff&size=44"
+            <img src="{{ auth()->user()->foto ? asset('storage/' . auth()->user()->foto) : asset('assets/img/default-avatar.png') }}"
                 alt="Profile">
             <div class="up-info">
                 <h4>{{ auth()->user()->name }}</h4>
