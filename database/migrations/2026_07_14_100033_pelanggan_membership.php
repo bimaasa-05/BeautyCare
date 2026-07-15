@@ -11,8 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->string('no_hp', 20)->nullable()->after('email');
+        // pelanggan_membership
+        Schema::create('pelanggan_membership', function (Blueprint $table) {
+            $table->id('id_pelanggan_membership');
+            $table->integer('id_pelanggan')->unique();
+            $table->integer('id_member')->unique();
+            $table->text('keterangan');
         });
     }
 
@@ -21,8 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('no_hp');
-        });
+        //
     }
 };
