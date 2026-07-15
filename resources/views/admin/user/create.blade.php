@@ -108,7 +108,7 @@
                         </a>
                     </div>
 
-                    <form action="" method="POST" enctype="multipart/form-data">
+                    <form action="{{ route('admin.user.store') }}" method="POST" enctype="multipart/form-data">
                         @csrf
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -157,8 +157,8 @@
                                 <select name="status"
                                     class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all @error('status') border-red-300 @enderror">
                                     <option value="" disabled selected>Pilih status</option>
-                                    <option value="Aktif" {{ old('status') == 'Aktif' ? 'selected' : '' }}>Aktif</option>
-                                    <option value="Tidak Aktif" {{ old('status') == 'Tidak Aktif' ? 'selected' : '' }}>Tidak Aktif</option>
+                                    <option value="aktif" {{ old('status') == 'aktif' ? 'selected' : '' }}>Aktif</option>
+                                    <option value="non_aktif" {{ old('status') == 'non_aktif' ? 'selected' : '' }}>Non Aktif</option>
                                 </select>
                                 @error('status')
                                     <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
