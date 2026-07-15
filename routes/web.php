@@ -24,7 +24,8 @@ Route::middleware('auth')->group(function () {
         })->name('admin.dashboard');
 
         Route::get('/admin/users', [UserController::class, 'index'])->name('admin.user.index');
-    });
+        Route::get('/admin/users/create', [UserController::class, 'create'])->name('admin.user.create');
+        });
     Route::middleware(['role:kasir'])->group(function () {
         Route::get('/kasir/dashboard', function () {
             return view('kasir.dashboard');
