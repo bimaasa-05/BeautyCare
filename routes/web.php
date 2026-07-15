@@ -2,14 +2,16 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\PelangganController;
+use App\Http\Controllers\BeauticianController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('landing.index');
 })->name('home');
 
-Route::get('/dashboard', function () {
-    return view('dashboard.dashboard');
+Route::get('/pelanggan/dashboard', function () {
+    return view('pelanggan.dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
@@ -26,6 +28,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/users', [UserController::class, 'index'])->name('admin.user.index');
         Route::get('/admin/users/create', [UserController::class, 'create'])->name('admin.user.create');
         });
+        Route::get('/admin/pelanggan', [PelangganController::class, 'index'])->name('admin.pelanggan.index');
+        Route::get('/admin/beautician', [BeauticianController::class, 'index'])->name('admin.beautician.index');
+    });
     Route::middleware(['role:kasir'])->group(function () {
         Route::get('/kasir/dashboard', function () {
             return view('kasir.dashboard');
