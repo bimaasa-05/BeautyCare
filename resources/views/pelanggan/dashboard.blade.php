@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Dashboard Beautycian - BeautyCare</title>
+    <title>Dashboard - BeautyCare</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -69,7 +69,7 @@
 
             <!-- Dashboard Content -->
             <div class="dashboard-content">
-                <!-- Stats Row - Beautycian: Fokus Treatment & Jadwal -->
+                <!-- Stats Row - Pelanggan: Fokus Personal -->
                 <div class="stats-row">
                     <div class="stat-card">
                         <div class="stat-header">
@@ -82,10 +82,10 @@
                                     <line x1="3" y1="10" x2="21" y2="10" />
                                 </svg>
                             </div>
-                            <span class="stat-change up">+4%</span>
+                            <span class="stat-change up">+2</span>
                         </div>
-                        <div class="stat-value">6</div>
-                        <div class="stat-label">Jadwal Hari Ini</div>
+                        <div class="stat-value">8</div>
+                        <div class="stat-label">Total Booking Saya</div>
                     </div>
 
                     <div class="stat-card">
@@ -93,15 +93,14 @@
                             <div class="stat-icon success">
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                                    <circle cx="8.5" cy="7" r="4" />
-                                    <polyline points="17 11 19 13 23 9" />
+                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                                    <polyline points="22 4 12 14.01 9 11.01" />
                                 </svg>
                             </div>
-                            <span class="stat-change up">+10%</span>
+                            <span class="stat-change up">+1</span>
                         </div>
-                        <div class="stat-value">12</div>
-                        <div class="stat-label">Pelanggan Ditangani</div>
+                        <div class="stat-value">2</div>
+                        <div class="stat-label">Booking Aktif</div>
                     </div>
 
                     <div class="stat-card">
@@ -112,10 +111,10 @@
                                     <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
                                 </svg>
                             </div>
-                            <span class="stat-change up">+8%</span>
+                            <span class="stat-change up">+6</span>
                         </div>
-                        <div class="stat-value">24</div>
-                        <div class="stat-label">Layanan Selesai</div>
+                        <div class="stat-value">6</div>
+                        <div class="stat-label">Riwayat Treatment</div>
                     </div>
 
                     <div class="stat-card">
@@ -126,10 +125,10 @@
                                     <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
                                 </svg>
                             </div>
-                            <span class="stat-change up">+2%</span>
+                            <span class="stat-change up">+150</span>
                         </div>
-                        <div class="stat-value">4,9</div>
-                        <div class="stat-label">Rating Rata-rata</div>
+                        <div class="stat-value">850</div>
+                        <div class="stat-label">Poin Reward</div>
                     </div>
 
                     <div class="stat-card">
@@ -137,33 +136,33 @@
                             <div class="stat-icon primary">
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <circle cx="12" cy="12" r="10" />
-                                    <polyline points="12 6 12 12 16 14" />
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                                    <circle cx="12" cy="7" r="4" />
                                 </svg>
                             </div>
-                            <span class="stat-change up">+6%</span>
+                            <span class="stat-change up">+3</span>
                         </div>
-                        <div class="stat-value">7,5 jam</div>
-                        <div class="stat-label">Jam Kerja</div>
+                        <div class="stat-value">3</div>
+                        <div class="stat-label">Kunjungan Bulan Ini</div>
                     </div>
                 </div>
 
                 <!-- Dashboard Grid: Charts -->
                 <div class="dashboard-grid">
-                    <!-- Grafik Layanan -->
+                    <!-- Grafik Riwayat Booking -->
                     <div class="chart-card">
                         <div class="chart-header">
-                            <h3>Grafik Layanan Perawatan</h3>
+                            <h3>Grafik Riwayat Booking</h3>
                             <div class="chart-actions">
                                 <select>
-                                    <option>Minggu Ini</option>
-                                    <option>Bulan Ini</option>
+                                    <option>3 Bulan</option>
+                                    <option>6 Bulan</option>
                                     <option>Tahun Ini</option>
                                 </select>
                             </div>
                         </div>
                         <div class="chart-body">
-                            <canvas id="chartLayanan" height="280"></canvas>
+                            <canvas id="chartRiwayat" height="280"></canvas>
                         </div>
                     </div>
 
@@ -171,52 +170,46 @@
                     <div class="mini-charts">
                         <div class="mini-chart-card">
                             <div class="mc-header">
-                                <h3>Jam Kerja per Hari</h3>
-                                <span class="mc-total">7,5</span>
+                                <h3>Layanan Favorit</h3>
+                                <span class="mc-total">3</span>
                             </div>
-                            <div class="mc-body" id="miniChartJam">
-                                <span class="bar bar-primary" data-height="60"></span>
-                                <span class="bar bar-primary" data-height="75"></span>
-                                <span class="bar bar-primary" data-height="45"></span>
+                            <div class="mc-body" id="miniChartFavorit">
                                 <span class="bar bar-primary" data-height="80"></span>
-                                <span class="bar bar-primary" data-height="70"></span>
-                                <span class="bar bar-primary" data-height="50"></span>
-                                <span class="bar bar-primary" data-height="30"></span>
+                                <span class="bar bar-success" data-height="55"></span>
+                                <span class="bar bar-info" data-height="40"></span>
+                                <span class="bar bar-warning" data-height="25"></span>
                             </div>
                             <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--gray);margin-top:8px;">
-                                <span>Sen</span><span>Sel</span><span>Rab</span><span>Kam</span><span>Jum</span><span>Sab</span><span>Min</span>
+                                <span>Facial</span>
+                                <span>Massage</span>
+                                <span>Haircut</span>
+                                <span>Nail Art</span>
                             </div>
                         </div>
 
                         <div class="mini-chart-card">
                             <div class="mc-header">
-                                <h3>Jadwal Perawatan</h3>
-                                <span class="mc-total">6</span>
+                                <h3>Booking Mendatang</h3>
+                                <span class="mc-total">2</span>
                             </div>
                             <div style="display:grid;gap:8px;">
                                 <div style="display:flex;align-items:center;gap:10px;font-size:13px;">
-                                    <span style="color:var(--primary);font-weight:600;">09:00</span>
+                                    <span style="color:var(--primary);font-weight:600;">12 Jul</span>
                                     <span style="color:var(--gray);">-</span>
                                     <span style="flex:1;">Facial Treatment</span>
-                                    <span class="badge badge-success">Selesai</span>
+                                    <span class="badge badge-success">Confirmed</span>
                                 </div>
                                 <div style="display:flex;align-items:center;gap:10px;font-size:13px;">
-                                    <span style="color:var(--primary);font-weight:600;">10:30</span>
+                                    <span style="color:var(--primary);font-weight:600;">15 Jul</span>
                                     <span style="color:var(--gray);">-</span>
                                     <span style="flex:1;">Body Massage</span>
-                                    <span class="badge badge-primary">Berjalan</span>
+                                    <span class="badge badge-warning">Pending</span>
                                 </div>
-                                <div style="display:flex;align-items:center;gap:10px;font-size:13px;">
-                                    <span style="color:var(--primary);font-weight:600;">13:00</span>
+                                <div style="display:flex;align-items:center;gap:10px;font-size:13px;opacity:0.5;">
+                                    <span style="color:var(--primary);font-weight:600;">18 Jul</span>
                                     <span style="color:var(--gray);">-</span>
-                                    <span style="flex:1;">Hair Color & Styling</span>
-                                    <span class="badge badge-warning">Antri</span>
-                                </div>
-                                <div style="display:flex;align-items:center;gap:10px;font-size:13px;">
-                                    <span style="color:var(--primary);font-weight:600;">15:00</span>
-                                    <span style="color:var(--gray);">-</span>
-                                    <span style="flex:1;">Manicure & Pedicure</span>
-                                    <span class="badge badge-warning">Antri</span>
+                                    <span style="flex:1;">Manicure Pedicure</span>
+                                    <span class="badge badge-primary">Rencana</span>
                                 </div>
                             </div>
                         </div>
@@ -225,101 +218,101 @@
 
                 <!-- Dashboard Bottom Grid -->
                 <div class="dashboard-bottom-grid">
-                    <!-- Riwayat Treatment -->
+                    <!-- Riwayat Treatment Saya -->
                     <div class="table-widget">
                         <div class="tw-header">
-                            <h3>Riwayat Treatment</h3>
+                            <h3>Riwayat Treatment Saya</h3>
                             <a href="#">Lihat Semua</a>
                         </div>
                         <table class="data-table">
                             <thead>
                                 <tr>
-                                    <th>Pelanggan</th>
+                                    <th>Tanggal</th>
                                     <th>Layanan</th>
-                                    <th>Waktu</th>
+                                    <th>Terapis</th>
                                     <th>Status</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td><div class="td-flex">Ani Wijaya</div></td>
+                                    <td><div class="td-flex">10 Jul 2026</div></td>
                                     <td>Facial Treatment</td>
-                                    <td>09:00 - 10:15</td>
+                                    <td>Sari Dewi</td>
                                     <td><span class="badge badge-success">Selesai</span></td>
                                 </tr>
                                 <tr>
-                                    <td><div class="td-flex">Sinta Dewi</div></td>
-                                    <td>Body Massage</td>
-                                    <td>10:30 - 12:00</td>
-                                    <td><span class="badge badge-primary">Berjalan</span></td>
-                                </tr>
-                                <tr>
-                                    <td><div class="td-flex">Rudi Hartono</div></td>
+                                    <td><div class="td-flex">28 Jun 2026</div></td>
                                     <td>Haircut Premium</td>
-                                    <td>08:00 - 08:45</td>
+                                    <td>Dimas Arif</td>
                                     <td><span class="badge badge-success">Selesai</span></td>
                                 </tr>
                                 <tr>
-                                    <td><div class="td-flex">Maya Anggraini</div></td>
+                                    <td><div class="td-flex">15 Jun 2026</div></td>
+                                    <td>Body Massage</td>
+                                    <td>Rina Putri</td>
+                                    <td><span class="badge badge-success">Selesai</span></td>
+                                </tr>
+                                <tr>
+                                    <td><div class="td-flex">01 Jun 2026</div></td>
                                     <td>Nail Art Design</td>
-                                    <td>11:00 - 12:30</td>
+                                    <td>Maya Sari</td>
                                     <td><span class="badge badge-success">Selesai</span></td>
                                 </tr>
                                 <tr>
-                                    <td><div class="td-flex">Dewi Lestari</div></td>
+                                    <td><div class="td-flex">20 Mei 2026</div></td>
                                     <td>Hair Color</td>
-                                    <td>13:00 - 15:00</td>
-                                    <td><span class="badge badge-warning">Antri</span></td>
+                                    <td>Dewi Lestari</td>
+                                    <td><span class="badge badge-success">Selesai</span></td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
 
-                    <!-- Produk Sering Digunakan -->
+                    <!-- Produk Favorit Saya -->
                     <div class="table-widget">
                         <div class="tw-header">
-                            <h3>Produk Sering Digunakan</h3>
-                            <a href="#">Detail</a>
+                            <h3>Produk Favorit Saya</h3>
+                            <a href="#">Beli Lagi</a>
                         </div>
                         <table class="data-table">
                             <thead>
                                 <tr>
                                     <th>Produk</th>
                                     <th>Kategori</th>
-                                    <th>Digunakan</th>
-                                    <th>Stok</th>
+                                    <th>Dibeli</th>
+                                    <th>Harga</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
                                     <td><div class="td-flex">Serum Vitamin C</div></td>
                                     <td>Skincare</td>
-                                    <td>18 kali</td>
-                                    <td><span class="badge badge-success">Tersedia</span></td>
+                                    <td>3x</td>
+                                    <td>Rp 125rb</td>
                                 </tr>
                                 <tr>
                                     <td><div class="td-flex">Moisturizer Cream</div></td>
                                     <td>Skincare</td>
-                                    <td>14 kali</td>
-                                    <td><span class="badge badge-danger">Habis</span></td>
+                                    <td>2x</td>
+                                    <td>Rp 85rb</td>
                                 </tr>
                                 <tr>
                                     <td><div class="td-flex">Shampoo Premium</div></td>
                                     <td>Hair Care</td>
-                                    <td>12 kali</td>
-                                    <td><span class="badge badge-warning">Limited</span></td>
+                                    <td>2x</td>
+                                    <td>Rp 65rb</td>
                                 </tr>
                                 <tr>
                                     <td><div class="td-flex">Hair Mask</div></td>
                                     <td>Hair Care</td>
-                                    <td>10 kali</td>
-                                    <td><span class="badge badge-success">Tersedia</span></td>
+                                    <td>1x</td>
+                                    <td>Rp 95rb</td>
                                 </tr>
                                 <tr>
-                                    <td><div class="td-flex">Nail Polish Set</div></td>
-                                    <td>Nail Art</td>
-                                    <td>8 kali</td>
-                                    <td><span class="badge badge-success">Tersedia</span></td>
+                                    <td><div class="td-flex">Body Lotion</div></td>
+                                    <td>Body Care</td>
+                                    <td>1x</td>
+                                    <td>Rp 75rb</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -328,61 +321,111 @@
 
                 <!-- Dashboard Bottom Row -->
                 <div class="dashboard-bottom-row">
-                    <!-- Ulasan Pelanggan -->
+                    <!-- Promo Terbaru -->
                     <div class="list-widget">
                         <div class="lw-header">
-                            <h3>Ulasan Pelanggan</h3>
+                            <h3>Promo Terbaru</h3>
                             <a href="#" style="font-size:13px;color:var(--primary);font-weight:500;">Lihat Semua</a>
                         </div>
                         <div class="booking-list">
                             <div class="booking-item">
-                                <img src="https://ui-avatars.com/api/?name=Ani+Wijaya&background=FFE5EF&color=FF4F87&size=40" alt="Ani">
+                                <img src="https://ui-avatars.com/api/?name=PROMO+1&background=FFE5EF&color=FF4F87&size=40&format=svg&font-size=0.30" alt="Promo">
                                 <div class="booking-info">
-                                    <h4>Ani Wijaya</h4>
-                                    <p>"Facialnya bikin wajah glowing! Makasih"</p>
+                                    <h4>Diskon 20% Facial Treatment</h4>
+                                    <p>Berlaku hingga 31 Juli 2026</p>
                                 </div>
-                                <div style="display:flex;gap:2px;">
-                                    <span style="color:#FFB74D;">&#9733;</span><span style="color:#FFB74D;">&#9733;</span><span style="color:#FFB74D;">&#9733;</span><span style="color:#FFB74D;">&#9733;</span><span style="color:#FFB74D;">&#9733;</span>
-                                </div>
+                                <span class="badge badge-primary">20%</span>
                             </div>
                             <div class="booking-item">
-                                <img src="https://ui-avatars.com/api/?name=Rina+Putri&background=FFE5EF&color=FF4F87&size=40" alt="Rina">
+                                <img src="https://ui-avatars.com/api/?name=PROMO+2&background=FFF3E0&color=FF9800&size=40&format=svg&font-size=0.30" alt="Promo">
                                 <div class="booking-info">
-                                    <h4>Rina Putri</h4>
-                                    <p>"Massage nya enak banget, badan rileks"</p>
+                                    <h4>Buy 1 Get 1 Hair Mask</h4>
+                                    <p>Untuk pembelian produk Hair Care</p>
                                 </div>
-                                <div style="display:flex;gap:2px;">
-                                    <span style="color:#FFB74D;">&#9733;</span><span style="color:#FFB74D;">&#9733;</span><span style="color:#FFB74D;">&#9733;</span><span style="color:#FFB74D;">&#9733;</span><span style="color:#E0E0E0;">&#9733;</span>
-                                </div>
+                                <span class="badge badge-warning">BOGO</span>
                             </div>
                             <div class="booking-item">
-                                <img src="https://ui-avatars.com/api/?name=Bagus+Adi&background=FFE5EF&color=FF4F87&size=40" alt="Bagus">
+                                <img src="https://ui-avatars.com/api/?name=PROMO+3&background=E8F5E9&color=4CAF50&size=40&format=svg&font-size=0.30" alt="Promo">
                                 <div class="booking-info">
-                                    <h4>Bagus Adi</h4>
-                                    <p>"Potongan rambutnya rapi, recommended!"</p>
+                                    <h4>Paket Body Massage + Sauna</h4>
+                                    <p>Harga spesial Rp 250rb (hemat 40%)</p>
                                 </div>
-                                <div style="display:flex;gap:2px;">
-                                    <span style="color:#FFB74D;">&#9733;</span><span style="color:#FFB74D;">&#9733;</span><span style="color:#FFB74D;">&#9733;</span><span style="color:#FFB74D;">&#9733;</span><span style="color:#FFB74D;">&#9733;</span>
-                                </div>
+                                <span class="badge badge-success">Paket</span>
                             </div>
                             <div class="booking-item">
-                                <img src="https://ui-avatars.com/api/?name=Maya+Sari&background=FFE5EF&color=FF4F87&size=40" alt="Maya">
+                                <img src="https://ui-avatars.com/api/?name=PROMO+4&background=E3F2FD&color=2196F3&size=40&format=svg&font-size=0.30" alt="Promo">
                                 <div class="booking-info">
-                                    <h4>Maya Sari</h4>
-                                    <p>"Nail artnya cantik, detail banget!"</p>
+                                    <h4>Double Poin Weekend</h4>
+                                    <p>Dapatkan 2x lipat poin setiap weekend</p>
                                 </div>
-                                <div style="display:flex;gap:2px;">
-                                    <span style="color:#FFB74D;">&#9733;</span><span style="color:#FFB74D;">&#9733;</span><span style="color:#FFB74D;">&#9733;</span><span style="color:#FFB74D;">&#9733;</span><span style="color:#FFB74D;">&#9733;</span>
-                                </div>
+                                <span class="badge badge-info">2x Poin</span>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Produk Favorit -->
+                    <!-- Layanan Populer -->
                     <div class="list-widget">
                         <div class="lw-header">
-                            <h3>Produk Favorit Pelanggan</h3>
-                            <a href="#" style="font-size:13px;color:var(--primary);font-weight:500;">Lihat Semua</a>
+                            <h3>Layanan Populer</h3>
+                            <a href="#" style="font-size:13px;color:var(--primary);font-weight:500;">Booking</a>
+                        </div>
+                        <div class="employee-grid">
+                            <div class="employee-card">
+                                <img src="https://ui-avatars.com/api/?name=FT&background=FFE5EF&color=FF4F87&size=36" alt="Facial">
+                                <div class="ec-info">
+                                    <h4>Facial Treatment</h4>
+                                    <p>Skincare - Mulai Rp 150rb</p>
+                                </div>
+                                <span class="ec-status online"></span>
+                            </div>
+                            <div class="employee-card">
+                                <img src="https://ui-avatars.com/api/?name=BM&background=FFE5EF&color=FF4F87&size=36" alt="Massage">
+                                <div class="ec-info">
+                                    <h4>Body Massage</h4>
+                                    <p>Spa - Mulai Rp 200rb</p>
+                                </div>
+                                <span class="ec-status online"></span>
+                            </div>
+                            <div class="employee-card">
+                                <img src="https://ui-avatars.com/api/?name=HC&background=FFE5EF&color=FF4F87&size=36" alt="Haircut">
+                                <div class="ec-info">
+                                    <h4>Haircut Premium</h4>
+                                    <p>Salon - Mulai Rp 100rb</p>
+                                </div>
+                                <span class="ec-status online"></span>
+                            </div>
+                            <div class="employee-card">
+                                <img src="https://ui-avatars.com/api/?name=NA&background=FFE5EF&color=FF4F87&size=36" alt="Nail">
+                                <div class="ec-info">
+                                    <h4>Nail Art Design</h4>
+                                    <p>Nail Art - Mulai Rp 120rb</p>
+                                </div>
+                                <span class="ec-status break"></span>
+                            </div>
+                            <div class="employee-card">
+                                <img src="https://ui-avatars.com/api/?name=HC&background=FFE5EF&color=FF4F87&size=36" alt="Hair Color">
+                                <div class="ec-info">
+                                    <h4>Hair Color</h4>
+                                    <p>Salon - Mulai Rp 250rb</p>
+                                </div>
+                                <span class="ec-status online"></span>
+                            </div>
+                            <div class="employee-card">
+                                <img src="https://ui-avatars.com/api/?name=MP&background=FFE5EF&color=FF4F87&size=36" alt="Manicure">
+                                <div class="ec-info">
+                                    <h4>Manicure & Pedicure</h4>
+                                    <p>Nail Art - Mulai Rp 130rb</p>
+                                </div>
+                                <span class="ec-status online"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Rekomendasi -->
+                    <div class="list-widget">
+                        <div class="lw-header">
+                            <h3>Rekomendasi Untukmu</h3>
+                            <a href="#" style="font-size:13px;color:var(--primary);font-weight:500;">Lihat</a>
                         </div>
                         <div class="stock-grid">
                             <div class="stock-item">
@@ -390,102 +433,52 @@
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" /></svg>
                                 </div>
                                 <div class="stock-info">
-                                    <h4>Serum Vitamin C</h4>
-                                    <p>Skincare - Diminati</p>
+                                    <h4>Body Scrub</h4>
+                                    <p>Exfoliating - Baru</p>
                                 </div>
                                 <div class="stock-bar">
-                                    <div class="fill primary" style="width:90%"></div>
+                                    <div class="fill primary" style="width:85%"></div>
                                 </div>
-                                <span class="stock-qty">90%</span>
+                                <span style="font-size:12px;color:var(--primary);font-weight:500;">Cocok</span>
                             </div>
                             <div class="stock-item">
                                 <div class="stock-icon success">
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" /></svg>
                                 </div>
                                 <div class="stock-info">
-                                    <h4>Hair Mask</h4>
+                                    <h4>Hair Serum</h4>
                                     <p>Hair Care - Populer</p>
                                 </div>
                                 <div class="stock-bar">
-                                    <div class="fill success" style="width:75%"></div>
+                                    <div class="fill success" style="width:72%"></div>
                                 </div>
-                                <span class="stock-qty">75%</span>
+                                <span style="font-size:12px;color:var(--success);font-weight:500;">Rekomendasi</span>
                             </div>
                             <div class="stock-item">
                                 <div class="stock-icon warning">
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" /></svg>
                                 </div>
                                 <div class="stock-info">
-                                    <h4>Shampoo Premium</h4>
-                                    <p>Hair Care - Cukup</p>
+                                    <h4>Face Mask Sheet</h4>
+                                    <p>Skincare - Limited</p>
                                 </div>
                                 <div class="stock-bar">
                                     <div class="fill warning" style="width:45%"></div>
                                 </div>
-                                <span class="stock-qty">45%</span>
+                                <span style="font-size:12px;color:var(--warning);font-weight:500;">Promo</span>
                             </div>
                             <div class="stock-item">
                                 <div class="stock-icon info">
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" /></svg>
                                 </div>
                                 <div class="stock-info">
-                                    <h4>Body Lotion</h4>
-                                    <p>Body Care - Baru</p>
+                                    <h4>Night Cream</h4>
+                                    <p>Skincare - Best Seller</p>
                                 </div>
                                 <div class="stock-bar">
-                                    <div class="fill info" style="width:20%"></div>
+                                    <div class="fill info" style="width:90%"></div>
                                 </div>
-                                <span class="stock-qty">20%</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Booking Mendatang -->
-                    <div class="list-widget">
-                        <div class="lw-header">
-                            <h3>Booking Mendatang</h3>
-                            <a href="#" style="font-size:13px;color:var(--primary);font-weight:500;">Atur</a>
-                        </div>
-                        <div class="booking-list">
-                            <div class="booking-item">
-                                <img src="https://ui-avatars.com/api/?name=Nina+Zahra&background=FFE5EF&color=FF4F87&size=40" alt="Nina">
-                                <div class="booking-info">
-                                    <h4>Nina Zahra</h4>
-                                    <p>Facial Treatment</p>
-                                </div>
-                                <span class="booking-time">Besok 09:00</span>
-                            </div>
-                            <div class="booking-item">
-                                <img src="https://ui-avatars.com/api/?name=Dian+Sari&background=FFE5EF&color=FF4F87&size=40" alt="Dian">
-                                <div class="booking-info">
-                                    <h4>Dian Sari</h4>
-                                    <p>Body Massage + Sauna</p>
-                                </div>
-                                <span class="booking-time">Besok 10:30</span>
-                            </div>
-                            <div class="booking-item">
-                                <img src="https://ui-avatars.com/api/?name=Adi+Santoso&background=FFE5EF&color=FF4F87&size=40" alt="Adi">
-                                <div class="booking-info">
-                                    <h4>Adi Santoso</h4>
-                                    <p>Haircut & Beard Trim</p>
-                                </div>
-                                <span class="booking-time">Besok 13:00</span>
-                            </div>
-                            <div class="booking-item">
-                                <img src="https://ui-avatars.com/api/?name=Rina+Melati&background=FFE5EF&color=FF4F87&size=40" alt="Rina">
-                                <div class="booking-info">
-                                    <h4>Rina Melati</h4>
-                                    <p>Nail Art Design</p>
-                                </div>
-                                <span class="booking-time">Lusa 11:00</span>
-                            </div>
-                            <div class="booking-item">
-                                <img src="https://ui-avatars.com/api/?name=Fajar+Alam&background=FFE5EF&color=FF4F87&size=40" alt="Fajar">
-                                <div class="booking-info">
-                                    <h4>Fajar Alam</h4>
-                                    <p>Hair Color Premium</p>
-                                </div>
-                                <span class="booking-time">Lusa 14:00</span>
+                                <span style="font-size:12px;color:var(--info);font-weight:500;">Best</span>
                             </div>
                         </div>
                     </div>
