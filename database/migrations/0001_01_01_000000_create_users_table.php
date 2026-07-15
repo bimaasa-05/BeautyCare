@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('password');
             $table->enum('role', ['admin', 'kasir', 'beautycian', 'pelanggan',])->default('pelanggan');
             $table->timestamp('email_verifi ed_at')->nullable();
-            $table->string('foto', 255);
+            $table->string('foto', 255)->nullable();
             $table->enum('status', ['aktif', 'non_aktif', 'suspend'])->default('non_aktif');
             $table->rememberToken();
             $table->timestamps();
