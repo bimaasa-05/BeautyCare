@@ -26,6 +26,8 @@ Route::middleware('auth')->group(function () {
         })->name('admin.dashboard');
 
         Route::get('/admin/users', [UserController::class, 'index'])->name('admin.user.index');
+        Route::get('/admin/users/create', [UserController::class, 'create'])->name('admin.user.create');
+        });
         Route::get('/admin/pelanggan', [PelangganController::class, 'index'])->name('admin.pelanggan.index');
         Route::get('/admin/beautician', [BeauticianController::class, 'index'])->name('admin.beautician.index');
     });
