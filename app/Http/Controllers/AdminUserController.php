@@ -27,13 +27,13 @@ class AdminUserController extends Controller
             'email'    => 'required|email|unique:users,email',
             'password' => 'required|string|min:6',
             'no_hp'    => 'nullable|string|max:20',
+            'role'     => 'required|in:admin,kasir,beautycian,pelanggan',
             'status'   => 'required|in:aktif,non_aktif',
             'foto'     => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
-        $data = $request->only(['nama', 'email', 'no_hp', 'status']);
+        $data = $request->only(['nama', 'email', 'no_hp', 'role', 'status']);
         $data['password'] = Hash::make($request->password);
-        $data['role'] = 'admin';
 
         if ($request->hasFile('foto')) {
             $data['foto'] = $request->file('foto')->store('users', 'public');
@@ -57,11 +57,12 @@ class AdminUserController extends Controller
             'email'    => 'required|email|unique:users,email,' . $user->id,
             'password' => 'nullable|string|min:6',
             'no_hp'    => 'nullable|string|max:20',
+            'role'     => 'required|in:admin,kasir,beautycian,pelanggan',
             'status'   => 'required|in:aktif,non_aktif',
             'foto'     => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
-        $data = $request->only(['nama', 'email', 'no_hp', 'status']);
+        $data = $request->only(['nama', 'email', 'no_hp', 'role', 'status']);
 
         if ($request->filled('password')) {
             $data['password'] = Hash::make($request->password);
