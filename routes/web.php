@@ -38,6 +38,11 @@ Route::middleware('auth')->group(function () {
         Route::put('/admin/pelanggan/{pelanggan}', [AdminPelangganController::class, 'update'])->name('admin.pelanggan.update');
         Route::delete('/admin/pelanggan/{pelanggan}', [AdminPelangganController::class, 'destroy'])->name('admin.pelanggan.destroy');
         Route::get('/admin/beautician', [AdminBeautycianController::class, 'index'])->name('admin.beautician.index');
+        Route::get('/admin/beautician/create', [AdminBeautycianController::class, 'create'])->name('admin.beautician.create');
+        Route::post('/admin/beautician', [AdminBeautycianController::class, 'store'])->name('admin.beautician.store');
+        Route::get('/admin/beautician/{beautician}/edit', [AdminBeautycianController::class, 'edit'])->name('admin.beautician.edit');
+        Route::put('/admin/beautician/{beautician}', [AdminBeautycianController::class, 'update'])->name('admin.beautician.update');
+        Route::delete('/admin/beautician/{beautician}', [AdminBeautycianController::class, 'destroy'])->name('admin.beautician.destroy');
     });
 
 
