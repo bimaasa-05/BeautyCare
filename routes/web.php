@@ -27,6 +27,10 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/admin/users', [AdminUserController::class, 'index'])->name('admin.user.index');
         Route::get('/admin/users/create', [AdminUserController::class, 'create'])->name('admin.user.create');
+        Route::post('/admin/users', [AdminUserController::class, 'store'])->name('admin.user.store');
+        Route::get('/admin/users/{user}/edit', [AdminUserController::class, 'edit'])->name('admin.user.edit');
+        Route::put('/admin/users/{user}', [AdminUserController::class, 'update'])->name('admin.user.update');
+        Route::delete('/admin/users/{user}', [AdminUserController::class, 'destroy'])->name('admin.user.destroy');
         Route::get('/admin/pelanggan', [AdminPelangganController::class, 'index'])->name('admin.pelanggan.index');
         Route::get('/admin/beautician', [AdminBeautycianController::class, 'index'])->name('admin.beautician.index');
     });
