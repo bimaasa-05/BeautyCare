@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('alamat');
             $table->bigInteger('id_member')->nullable();
             $table->text('catatan_alergi');
-            $table->string('foto');
+            $table->string('foto')->nullable();
         });
     }
 
