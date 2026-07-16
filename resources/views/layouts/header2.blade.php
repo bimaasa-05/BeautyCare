@@ -13,7 +13,7 @@
         </button>
         <div>
             <h2>Dashboard</h2>
-            <span class="page-title">Selamat datang, {{ ucfirst(auth()->user()->role) }}!</span>
+            <span class="page-title">Selamat datang, {{ auth()->user()->name }}!</span>
         </div>
     </div>
 
@@ -60,4 +60,5 @@
             </div>
         </div>
     </div>
+    @include('partials.toast')
 </header>
