@@ -8,9 +8,21 @@ use Illuminate\Support\Facades\Storage;
 
 class AdminLayananController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $layanan = Layanan::orderBy('id_layanan', 'desc')->get();
+        $layanan = Layanan::orderBy('id_layanan', 'desc');
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $layanan->where('nm_layanan', 'like', "%{$search}%");
+        }
+
+        $layanan = $layanan->get();
+
+        if ($request->ajax()) {
+            return view('admin.layanan.partials.grid', compact('layanan'));
+        }
+
         return view('admin.layanan.index', compact('layanan'));
     }
 
@@ -50,12 +62,12 @@ class AdminLayananController extends Controller
     public function update(Request $request, Layanan $layanan)
     {
         $request->validate([
-            'nm_layanan'  => 'required|string|max:20',
-            'id_kategori' => 'required|integer|max:100',
-            'durasi'      => 'required|integer',
-            'harga'       => 'required|numeric|min:0',
+            'nm_layanan'  => 'sometimes|required|string|max:20',
+            'id_kategori' => 'sometimes|required|integer|max:100',
+            'durasi'      => 'sometimes|required|integer',
+            'harga'       => 'sometimes|required|numeric|min:0',
             'foto'          => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-            'status'      => 'required|in:aktif,suspend',
+            'status'      => 'sometimes|required|in:aktif,suspend',
         ]);
 
         $data = $request->only(['nm_layanan', 'id_kategori', 'durasi', 'harga', 'status']);
