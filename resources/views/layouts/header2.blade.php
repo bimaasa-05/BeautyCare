@@ -1,3 +1,38 @@
+@php
+use Illuminate\Support\Str;
+
+if (!isset($pageTitle)) {
+    $routeName = request()->route()?->getName();
+    $pageTitle = 'Dashboard';
+
+    if ($routeName) {
+        $parts = explode('.', $routeName);
+        $last = end($parts);
+
+        $actionLabels = [
+            'index' => '',
+            'create' => 'Tambah',
+            'edit' => 'Edit',
+            'show' => 'Detail',
+        ];
+
+        if ($last === 'dashboard') {
+            $roleLabels = ['admin' => 'Admin', 'kasir' => 'Kasir', 'beautycian' => 'Beautycian', 'pelanggan' => 'Pelanggan'];
+            $role = $parts[0] ?? '';
+            $pageTitle = 'Dashboard ' . ($roleLabels[$role] ?? Str::title($role));
+        } elseif ($routeName === 'pelanggan.booking') {
+            $pageTitle = 'Booking Saya';
+        } elseif (isset($actionLabels[$last]) && count($parts) >= 2) {
+            $entity = $parts[count($parts) - 2];
+            $name = Str::title(str_replace(['-', '_'], ' ', $entity));
+            $pageTitle = $actionLabels[$last] ? $actionLabels[$last] . ' ' . $name : $name;
+        } else {
+            $pageTitle = Str::title(str_replace(['-', '_'], ' ', $last));
+        }
+    }
+}
+@endphp
+
 <!-- Navbar Top -->
 <header class="navbar-top">
     <div class="left-section">
@@ -12,7 +47,7 @@
             </svg>
         </button>
         <div>
-            <h2>Dashboard</h2>
+            <h2>{{ $pageTitle }}</h2>
             <span class="page-title">Selamat datang, {{ auth()->user()->nama }}!</span>
         </div>
     </div>
