@@ -10,7 +10,7 @@
     </div>
 
     <div class="sidebar-profile">
-        <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->nama) }}&background=FF4F87&color=fff&size=44"
+        <img src="{{ auth()->user()->foto ? asset('storage/' . auth()->user()->foto) : asset('assets/img/default-avatar.png') }}"
             alt="Profile">
         <div class="sp-info">
             <h4>{{ auth()->user()->nama }}</h4>
