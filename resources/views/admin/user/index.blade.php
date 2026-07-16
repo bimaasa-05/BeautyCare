@@ -129,6 +129,7 @@
                                 <thead>
                                     <tr
                                         class="text-[11px] font-bold text-gray-400 uppercase border-b border-gray-100 bg-gray-50/50">
+                                        <th class="py-3 px-4 w-10">#</th>
                                         <th class="py-3 px-4">Nama Lengkap</th>
                                         <th class="py-3 px-4">Email</th>
                                         <th class="py-3 px-4">Password</th>
@@ -140,6 +141,7 @@
                                 </thead>
                                 <tbody class="text-[13px] text-gray-700 divide-y divide-gray-50">
                                     <tr class="hover:bg-gray-50/50 transition-colors">
+                                        <td class="py-3.5 px-4 text-gray-400 font-medium text-center text-[12px]">1</td>
                                         <td class="py-3.5 px-4 flex items-center gap-3">
                                             <div
                                                 class="w-8 h-8 rounded-full bg-pink-400 text-white flex items-center justify-center font-bold text-[11px]">
