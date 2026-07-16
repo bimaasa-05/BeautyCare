@@ -114,10 +114,46 @@
                                     <input type="text" id="searchPelanggan" placeholder="Cari pelanggan..."
                                         class="bg-gray-50 border border-gray-100 text-[12px] rounded-full pl-9 pr-4 py-2 w-[220px] focus:outline-none focus:border-pink-300 transition-all placeholder-gray-400">
                                 </div>
-                                <button
-                                    class="flex items-center gap-2 border border-gray-200 text-gray-600 text-[12px] font-medium px-4 py-2 rounded-full hover:bg-gray-50 transition-colors">
-                                    <i class="fa-solid fa-sliders text-gray-400"></i> Filter
-                                </button>
+                                <div class="relative filter-pelanggan">
+                                    <button onclick="toggleFilterPelanggan()"
+                                        class="flex items-center gap-2 border border-gray-200 text-gray-600 text-[12px] font-medium px-4 py-2 rounded-full hover:bg-gray-50 transition-colors">
+                                        <i class="fa-solid fa-sliders text-gray-400"></i> Filter
+                                    </button>
+                                    <div id="filterPelangganPanel"
+                                        class="hidden absolute right-0 mt-2 w-52 bg-white rounded-xl shadow-lg border border-gray-100 p-4 z-50">
+                                        <p class="text-[11px] font-semibold text-gray-500 mb-2 uppercase tracking-wider">Urutkan</p>
+                                        <div class="space-y-2 mb-3">
+                                            <label class="flex items-center gap-2 text-[12px] text-gray-700 cursor-pointer">
+                                                <input type="radio" name="filter_sort" value="desc" checked
+                                                    onchange="applyFilterPelanggan()">
+                                                Terbaru
+                                            </label>
+                                            <label class="flex items-center gap-2 text-[12px] text-gray-700 cursor-pointer">
+                                                <input type="radio" name="filter_sort" value="asc"
+                                                    onchange="applyFilterPelanggan()">
+                                                Terlama
+                                            </label>
+                                        </div>
+                                        <p class="text-[11px] font-semibold text-gray-500 mb-2 uppercase tracking-wider">Member</p>
+                                        <div class="space-y-2">
+                                            <label class="flex items-center gap-2 text-[12px] text-gray-700 cursor-pointer">
+                                                <input type="radio" name="filter_member" value="" checked
+                                                    onchange="applyFilterPelanggan()">
+                                                Semua
+                                            </label>
+                                            <label class="flex items-center gap-2 text-[12px] text-gray-700 cursor-pointer">
+                                                <input type="radio" name="filter_member" value="yes"
+                                                    onchange="applyFilterPelanggan()">
+                                                Punya Member
+                                            </label>
+                                            <label class="flex items-center gap-2 text-[12px] text-gray-700 cursor-pointer">
+                                                <input type="radio" name="filter_member" value="no"
+                                                    onchange="applyFilterPelanggan()">
+                                                Tanpa Member
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
                                 <a href="{{ route('admin.pelanggan.create') }}"
                                     class="flex items-center gap-2 bg-[#de3b7c] text-white text-[12px] font-semibold px-4 py-2 rounded-full hover:bg-[#c62f6b] transition-colors shadow-sm">
                                     <i class="fa-solid fa-plus"></i> Tambah
@@ -155,20 +191,51 @@
     </div>
 
     <script>
+        function getFilterParamsPelanggan() {
+            const params = new URLSearchParams();
+            const q = document.getElementById('searchPelanggan').value.trim();
+            if (q) params.set('search', q);
+            const sort = document.querySelector('.filter-pelanggan input[name="filter_sort"]:checked');
+            if (sort) params.set('filter_sort', sort.value);
+            const member = document.querySelector('.filter-pelanggan input[name="filter_member"]:checked');
+            if (member && member.value) params.set('filter_member', member.value);
+            return params.toString();
+        }
+
+        function fetchPelanggan() {
+            fetch('{{ route('admin.pelanggan.index') }}?' + getFilterParamsPelanggan(), {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            })
+            .then(res => res.text())
+            .then(html => {
+                document.getElementById('pelangganTableBody').innerHTML = html;
+            })
+            .catch(() => location.reload());
+        }
+
+        function toggleFilterPelanggan() {
+            document.getElementById('filterPelangganPanel').classList.toggle('hidden');
+        }
+
+        function applyFilterPelanggan() {
+            document.getElementById('filterPelangganPanel').classList.add('hidden');
+            fetchPelanggan();
+        }
+
+        document.addEventListener('click', function(e) {
+            const panel = document.getElementById('filterPelangganPanel');
+            if (panel && !panel.classList.contains('hidden')) {
+                const btn = document.querySelector('.filter-pelanggan');
+                if (btn && !btn.contains(e.target)) {
+                    panel.classList.add('hidden');
+                }
+            }
+        });
+
         let searchTimer;
         document.getElementById('searchPelanggan').addEventListener('input', function() {
             clearTimeout(searchTimer);
-            const q = this.value.trim();
-            searchTimer = setTimeout(() => {
-                fetch('{{ route('admin.pelanggan.index') }}?search=' + encodeURIComponent(q), {
-                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
-                })
-                .then(res => res.text())
-                .then(html => {
-                    document.getElementById('pelangganTableBody').innerHTML = html;
-                })
-                .catch(() => location.reload());
-            }, 400);
+            searchTimer = setTimeout(fetchPelanggan, 400);
         });
 
         // Set current date

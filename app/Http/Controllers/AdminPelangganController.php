@@ -10,7 +10,7 @@ class AdminPelangganController extends Controller
 {
     public function index(Request $request)
     {
-        $pelanggan = Pelanggan::orderBy('id_pelanggan', 'desc');
+        $pelanggan = Pelanggan::orderBy('id_pelanggan', $request->filter_sort === 'asc' ? 'asc' : 'desc');
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -20,6 +20,14 @@ class AdminPelangganController extends Controller
                   ->orWhere('email', 'like', "%{$search}%")
                   ->orWhere('alamat', 'like', "%{$search}%");
             });
+        }
+
+        if ($request->filled('filter_member')) {
+            if ($request->filter_member === 'yes') {
+                $pelanggan->whereNotNull('id_member');
+            } elseif ($request->filter_member === 'no') {
+                $pelanggan->whereNull('id_member');
+            }
         }
 
         $pelanggan = $pelanggan->get();
