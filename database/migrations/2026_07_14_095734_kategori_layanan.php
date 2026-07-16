@@ -12,6 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         //
+        Schema::create('kategori_layanan', function (Blueprint $table) {
+            $table->id('id_kategori_layanan');
+            $table->string('nm_layanan');
+            $table->string('deskripsi');
+            $table->enum('status', ['tersedia', 'belum_tersedia']);
+        });
     }
 
     /**
@@ -20,11 +26,5 @@ return new class extends Migration
     public function down(): void
     {
         //
-        Schema::create('kategori_layanan', function (Blueprint $table) {
-            $table->id('id_kategori_layanan');
-            $table->string('nm_layanan');
-            $table->string('deskripsi');
-            $table->enum('status', ['tersedia', 'belum_tersedia']);
-        });
     }
 };
