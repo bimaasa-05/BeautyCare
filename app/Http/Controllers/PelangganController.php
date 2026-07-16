@@ -29,9 +29,18 @@ class PelangganController extends Controller
 
         if ($search) {
             $bookings = $bookings->filter(function ($b) use ($search) {
-                return strpos(strtolower($b->status), strtolower($search)) !== false
-                    || strpos(strtolower($b->tanggal), strtolower($search)) !== false
-                    || strpos(strtolower($b->catatan), strtolower($search)) !== false;
+                $keyword = strtolower($search);
+                $idBooking = '#' . str_pad($b->id_booking, 3, '0', STR_PAD_LEFT);
+                $namaKaryawan = $b->karyawan ? strtolower($b->karyawan->nama) : '';
+                $nmLayanan = $b->detail && $b->detail->layanan ? strtolower($b->detail->layanan->nm_layanan) : '';
+
+                return str_contains(strtolower($b->status), $keyword)
+                    || str_contains(strtolower($b->tanggal), $keyword)
+                    || str_contains(strtolower($b->jam), $keyword)
+                    || str_contains(strtolower($b->catatan), $keyword)
+                    || str_contains($namaKaryawan, $keyword)
+                    || str_contains($nmLayanan, $keyword)
+                    || str_contains(strtolower($idBooking), $keyword);
             });
         }
 
