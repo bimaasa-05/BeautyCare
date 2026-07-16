@@ -9,9 +9,34 @@ use Illuminate\Support\Facades\Storage;
 
 class AdminUserController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::orderBy('created_at', 'desc')->get();
+        $users = User::orderBy('created_at', 'desc');
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $users->where(function ($q) use ($search) {
+                $q->where('nama', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('no_hp', 'like', "%{$search}%")
+                  ->orWhere('role', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->filled('filter_role')) {
+            $users->where('role', $request->filter_role);
+        }
+
+        if ($request->filled('filter_status')) {
+            $users->where('status', $request->filter_status);
+        }
+
+        $users = $users->get();
+
+        if ($request->ajax()) {
+            return view('admin.user.partials.table', compact('users'));
+        }
+
         return view('admin.user.index', compact('users'));
     }
 
