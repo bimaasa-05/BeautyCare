@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Tambah User - BeautyCare</title>
+    <title>Edit Pelanggan - BeautyCare</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -83,7 +83,6 @@
 </head>
 
 <body>
-    <!-- Page Loader -->
     <div class="page-loader">
         <div class="loader-spinner"></div>
     </div>
@@ -94,37 +93,37 @@
         <main class="main-content">
             @include('layouts.header2')
 
-            <!-- Dashboard Content -->
             <div class="flex-1 overflow-y-auto p-8">
                 <div class="bg-white rounded-2xl p-6 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)]">
                     <div class="flex justify-between items-center mb-6">
                         <div>
-                            <h3 class="text-[16px] font-bold text-gray-800">Tambah User</h3>
-                            <p class="text-[12px] text-gray-400 mt-0.5">Buat pengguna baru</p>
+                            <h3 class="text-[16px] font-bold text-gray-800">Edit Pelanggan</h3>
+                            <p class="text-[12px] text-gray-400 mt-0.5">Ubah data pelanggan</p>
                         </div>
-                        <a href="{{ route('admin.user.index') }}"
+                        <a href="{{ route('admin.pelanggan.index') }}"
                             class="flex items-center gap-2 border border-gray-200 text-gray-600 text-[12px] font-medium px-4 py-2 rounded-full hover:bg-gray-50 transition-colors">
                             <i class="fa-solid fa-arrow-left"></i> Kembali
                         </a>
                     </div>
 
-                    <form action="{{ route('admin.user.store') }}" method="POST" enctype="multipart/form-data">
+                    <form action="{{ route('admin.pelanggan.update', $pelanggan->id_pelanggan) }}" method="POST" enctype="multipart/form-data">
                         @csrf
+                        @method('PUT')
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                             <div>
                                 <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Nama Lengkap</label>
-                                <input type="text" name="nama" value="{{ old('nama') }}"
-                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('nama') border-red-300 @enderror"
+                                <input type="text" name="nm_pelanggan" value="{{ old('nm_pelanggan', $pelanggan->nm_pelanggan) }}"
+                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('nm_pelanggan') border-red-300 @enderror"
                                     placeholder="Masukkan nama lengkap">
-                                @error('nama')
+                                @error('nm_pelanggan')
                                     <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
 
                             <div>
                                 <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Email</label>
-                                <input type="email" name="email" value="{{ old('email') }}"
+                                <input type="email" name="email" value="{{ old('email', $pelanggan->email) }}"
                                     class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('email') border-red-300 @enderror"
                                     placeholder="Masukkan alamat email">
                                 @error('email')
@@ -133,18 +132,8 @@
                             </div>
 
                             <div>
-                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Password</label>
-                                <input type="password" name="password"
-                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('password') border-red-300 @enderror"
-                                    placeholder="Masukkan password">
-                                @error('password')
-                                    <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <div>
                                 <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">No HP</label>
-                                <input type="number" name="no_hp" value="{{ old('no_hp') }}"
+                                <input type="number" name="no_hp" value="{{ old('no_hp', $pelanggan->no_hp) }}"
                                     class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('no_hp') border-red-300 @enderror"
                                     placeholder="Masukkan nomor HP">
                                 @error('no_hp')
@@ -153,29 +142,21 @@
                             </div>
 
                             <div>
-                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Role</label>
-                                <select name="role"
-                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all @error('role') border-red-300 @enderror">
-                                    <option value="" disabled selected>Pilih role</option>
-                                    <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Admin</option>
-                                    <option value="kasir" {{ old('role') == 'kasir' ? 'selected' : '' }}>Kasir</option>
-                                    <option value="beautycian" {{ old('role') == 'beautycian' ? 'selected' : '' }}>Beautycian</option>
-                                    <option value="pelanggan" {{ old('role') == 'pelanggan' ? 'selected' : '' }}>Pelanggan</option>
-                                </select>
-                                @error('role')
+                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Alamat</label>
+                                <input type="text" name="alamat" value="{{ old('alamat', $pelanggan->alamat) }}"
+                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('alamat') border-red-300 @enderror"
+                                    placeholder="Masukkan alamat">
+                                @error('alamat')
                                     <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
 
                             <div>
-                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Status</label>
-                                <select name="status"
-                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all @error('status') border-red-300 @enderror">
-                                    <option value="" disabled selected>Pilih status</option>
-                                    <option value="aktif" {{ old('status') == 'aktif' ? 'selected' : '' }}>Aktif</option>
-                                    <option value="non_aktif" {{ old('status') == 'non_aktif' ? 'selected' : '' }}>Non Aktif</option>
-                                </select>
-                                @error('status')
+                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Member ID</label>
+                                <input type="number" name="id_member" value="{{ old('id_member', $pelanggan->id_member) }}"
+                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('id_member') border-red-300 @enderror"
+                                    placeholder="Masukkan ID member (opsional)">
+                                @error('id_member')
                                     <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
@@ -187,15 +168,28 @@
                                 @error('foto')
                                     <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
                                 @enderror
+                                @if ($pelanggan->foto)
+                                    <p class="text-[11px] text-gray-400 mt-1">Foto saat ini: {{ $pelanggan->foto }}</p>
+                                @endif
+                            </div>
+
+                            <div class="md:col-span-2">
+                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Catatan Alergi</label>
+                                <textarea name="catatan_alergi" rows="3"
+                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('catatan_alergi') border-red-300 @enderror"
+                                    placeholder="Masukkan catatan alergi">{{ old('catatan_alergi', $pelanggan->catatan_alergi) }}</textarea>
+                                @error('catatan_alergi')
+                                    <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
+                                @enderror
                             </div>
                         </div>
 
                         <div class="flex items-center gap-3 mt-6 pt-5 border-t border-gray-100">
                             <button type="submit"
                                 class="flex items-center gap-2 bg-[#de3b7c] text-white text-[13px] font-semibold px-6 py-2.5 rounded-full hover:bg-[#c62f6b] transition-colors shadow-sm">
-                                <i class="fa-solid fa-floppy-disk"></i> Simpan
+                                <i class="fa-solid fa-floppy-disk"></i> Update
                             </button>
-                            <a href="{{ route('admin.user.index') }}"
+                            <a href="{{ route('admin.pelanggan.index') }}"
                                 class="flex items-center gap-2 border border-gray-200 text-gray-600 text-[13px] font-medium px-6 py-2.5 rounded-full hover:bg-gray-50 transition-colors">
                                 Batal
                             </a>
@@ -207,7 +201,6 @@
     </div>
 
     <script>
-        // Set current date
         const now = new Date();
         const options = {
             weekday: 'long',

@@ -103,7 +103,8 @@
                         <div class="flex justify-between items-center mb-6">
                             <div>
                                 <h3 class="text-[16px] font-bold text-gray-800">Semua Pelanggan</h3>
-                                <p class="text-[12px] text-gray-400 mt-0.5">Total 1.284 pelanggan</p>
+                                <p class="text-[12px] text-gray-400 mt-0.5">Total {{ $pelanggan->count() }} pelanggan
+                                </p>
                             </div>
 
                             <div class="flex items-center gap-3">
@@ -117,10 +118,10 @@
                                     class="flex items-center gap-2 border border-gray-200 text-gray-600 text-[12px] font-medium px-4 py-2 rounded-full hover:bg-gray-50 transition-colors">
                                     <i class="fa-solid fa-sliders text-gray-400"></i> Filter
                                 </button>
-                                <button
+                                <a href="{{ route('admin.pelanggan.create') }}"
                                     class="flex items-center gap-2 bg-[#de3b7c] text-white text-[12px] font-semibold px-4 py-2 rounded-full hover:bg-[#c62f6b] transition-colors shadow-sm">
                                     <i class="fa-solid fa-plus"></i> Tambah
-                                </button>
+                                </a>
                             </div>
                         </div>
 
@@ -141,36 +142,57 @@
                                     </tr>
                                 </thead>
                                 <tbody class="text-[13px] text-gray-700 divide-y divide-gray-50">
-                                    <tr class="hover:bg-gray-50/50 transition-colors">
-                                        <td class="py-3.5 px-4 text-gray-400 font-medium text-center text-[12px]">1</td>
-                                        <td class="py-3.5 px-4 flex items-center gap-3">
-                                            <div
-                                                class="w-8 h-8 rounded-full bg-pink-400 text-white flex items-center justify-center font-bold text-[11px]">
-                                                SD</div>
-                                            <span class="font-semibold text-gray-800">Sari Dewi Kusuma</span>
-                                        </td>
-                                        <td class="py-3.5 px-4 text-gray-500 font-medium">085723706843</td>
-                                        <td class="py-3.5 px-4 font-medium text-gray-500">admin@gmail.com</td>
-                                        <td class="py-3.5 px-4 font-medium text-gray-500">desa dukuh</td>
-                                        <td class="py-3.5 px-4 font-medium text-gray-500">01</td>
-                                        <td class="py-3.5 px-4 font-medium text-gray-500">Rmbut Gatal</td>
-                                        <td class="py-3.5 px-4 font-medium text-gray-500">
-                                            <div class="w-8 h-8 rounded-full bg-pink-400 text-white flex items-center justify-center font-bold text-[11px]">SD</div>
-                                        </td>
-                                        <td class="py-3.5 px-4 text-center">
-                                            <div class="flex items-center justify-center gap-2">
-                                                <button
-                                                    class="w-7 h-7 text-blue-500 bg-blue-50 hover:bg-blue-100 rounded-md transition-colors"><i
-                                                        class="fa-regular fa-eye text-xs"></i></button>
-                                                <button
-                                                    class="w-7 h-7 text-amber-500 bg-amber-50 hover:bg-amber-100 rounded-md transition-colors"><i
-                                                        class="fa-regular fa-pen-to-square text-xs"></i></button>
-                                                <button
-                                                    class="w-7 h-7 text-red-500 bg-red-50 hover:bg-red-100 rounded-md transition-colors"><i
-                                                        class="fa-regular fa-trash-can text-xs"></i></button>
-                                            </div>
-                                        </td>
-                                    </tr>
+                                    =======
+                                    @forelse ($pelanggan as $p)
+                                        <tr class="hover:bg-gray-50/50 transition-colors">
+                                            <td class="py-3.5 px-4 font-medium text-gray-500">{{ $p->nm_pelanggan }}
+                                            </td>
+                                            <td class="py-3.5 px-4 text-gray-500 font-medium">{{ $p->no_hp ?? '-' }}
+                                            </td>
+                                            <td class="py-3.5 px-4 font-medium text-gray-500">{{ $p->email }}</td>
+                                            <td class="py-3.5 px-4 font-medium text-gray-500">{{ $p->alamat }}</td>
+                                            <td class="py-3.5 px-4 font-medium text-gray-500">
+                                                {{ $p->id_member ?? '-' }}
+                                            </td>
+                                            <td class="py-3.5 px-4 font-medium text-gray-500">{{ $p->catatan_alergi }}
+                                            </td>
+                                            <td class="py-3.5 px-4">
+                                                @if ($p->foto)
+                                                    <img src="{{ asset('storage/' . $p->foto) }}" alt="foto"
+                                                        class="w-8 h-8 rounded-full object-cover">
+                                                @else
+                                                    <span class="text-gray-400">-</span>
+                                                @endif
+                                            </td>
+                                            <td class="py-3.5 px-4 text-center">
+                                                <div class="flex items-center justify-center gap-2">
+                                                    <a href="{{ route('admin.pelanggan.edit', $p->id_pelanggan) }}"
+                                                        class="w-7 h-7 inline-flex items-center justify-center text-amber-500 bg-amber-50 hover:bg-amber-100 rounded-md transition-colors"><i
+                                                            class="fa-regular fa-pen-to-square text-xs"></i>
+                                                    </a>
+                                                    <form
+                                                        action="{{ route('admin.pelanggan.destroy', $p->id_pelanggan) }}"
+                                                        method="POST"
+                                                        onsubmit="return confirm('Yakin ingin menghapus pelanggan ini?')"
+                                                        class="inline">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit"
+                                                            class="w-7 h-7 text-red-500 bg-red-50 hover:bg-red-100 rounded-md transition-colors"><i
+                                                                class="fa-regular fa-trash-can text-xs"></i>
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="8" class="py-8 text-center text-gray-400 text-[13px]">Belum
+                                                ada
+                                                data pelanggan</td>
+                                        </tr>
+                                    @endforelse
+
                                 </tbody>
                             </table>
                         </div>
