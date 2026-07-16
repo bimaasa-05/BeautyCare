@@ -142,9 +142,9 @@
                                     </tr>
                                 </thead>
                                 <tbody class="text-[13px] text-gray-700 divide-y divide-gray-50">
-                                    =======
                                     @forelse ($pelanggan as $p)
                                         <tr class="hover:bg-gray-50/50 transition-colors">
+                                            <td class="py-3.5 px-4 font-medium text-gray-500">{{ $loop->iteration }}</td>
                                             <td class="py-3.5 px-4 font-medium text-gray-500">{{ $p->nm_pelanggan }}
                                             </td>
                                             <td class="py-3.5 px-4 text-gray-500 font-medium">{{ $p->no_hp ?? '-' }}

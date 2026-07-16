@@ -104,5 +104,7 @@ Route::middleware('auth')->group(function () {
     //--------------------------------------------------
 });
 
+{{!-- Pelanggan Routes --}}
+
 
 require __DIR__ . '/auth.php';
