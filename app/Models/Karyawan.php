@@ -13,7 +13,6 @@ class Karyawan extends Model
     protected $fillable = [
         'id_user',
         'NIP',
-        'nama',
         'jabatan',
         'alamat',
         'tgl_lahir',
@@ -21,5 +20,11 @@ class Karyawan extends Model
         'komisi',
         'tgl_masuk',
         'status',
+        'role',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'id_user');
+    }
 }

@@ -14,9 +14,8 @@ return new class extends Migration
         //
         Schema::create('karyawan', function (Blueprint $table) {
             $table->id('id_karyawan');
-            $table->integer('id_user')->unique();
+            $table->foreignId('id_user')->unique()->constrained('users', 'id')->onDelete('cascade');
             $table->string('NIP');
-            $table->string('nama', 100);
             $table->string('jabatan', 50);
             $table->string('alamat', 255);
             $table->date('tgl_lahir');
@@ -24,7 +23,6 @@ return new class extends Migration
             $table->decimal('komisi', 5);
             $table->date('tgl_masuk');
             $table->tinyInteger('status');
-            $table->enum('role', ['Beautycian', 'Kasir']);
         });
     }
 
@@ -33,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //
+        Schema::dropIfExists('karyawan');
     }
 };

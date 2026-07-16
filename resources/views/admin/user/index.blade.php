@@ -135,6 +135,7 @@
                                         <th class="py-3 px-4">Password</th>
                                         <th class="py-3 px-4">Foto</th>
                                         <th class="py-3 px-4">Nomor Hp</th>
+                                        <th class="py-3 px-4">Role</th>
                                         <th class="py-3 px-4">Status</th>
                                         <th class="py-3 px-4 text-center">Aksi</th>
                                     </tr>
@@ -142,13 +143,14 @@
                                 <tbody class="text-[13px] text-gray-700 divide-y divide-gray-50">
                                     @forelse ($users as $user)
                                         <tr class="hover:bg-gray-50/50 transition-colors">
-                                            <td class="py-3.5 px-4 font-medium text-gray-500">{{ $user->nama }}</td>
-                                            <td class="py-3.5 px-4 font-medium text-gray-500">{{ $user->email }}</td>
+                                            <td class="py-3.5 px-4 font-medium text-gray-500">{{ $loop->iteration }}</td>
+                                            <td class="py-3.5 px-4 font-medium text-gray-800">{{ $user->nama }}</td>
+                                            <td class="py-3.5 px-4 text-gray-500">{{ $user->email }}</td>
                                             <td class="py-3.5 px-4">
                                                 <span
-                                                    class="px-2.5 py-0.5 bg-amber-50 text-amber-600 border border-amber-100 rounded-full text-[11px] font-semibold">{{ $user->password }}</span>
+                                                    class="px-2.5 py-0.5 bg-amber-50 text-amber-600 border border-amber-100 rounded-full text-[11px] font-semibold">{{ Str::limit($user->password, 15) }}</span>
                                             </td>
-                                            <td class="py-3.5 px-4 font-bold text-gray-800">
+                                            <td class="py-3.5 px-4">
                                                 @if ($user->foto)
                                                     <img src="{{ asset('storage/' . $user->foto) }}" alt="foto"
                                                         class="w-8 h-8 rounded-full object-cover">
@@ -156,7 +158,14 @@
                                                     <span class="text-gray-400">-</span>
                                                 @endif
                                             </td>
-                                            <td class="py-3.5 px-4 text-gray-500 font-medium">{{ $user->no_hp ?? '-' }}
+                                            <td class="py-3.5 px-4 text-gray-500">{{ $user->no_hp ?? '-' }}
+                                            </td>
+                                            <td class="py-3.5 px-4">
+                                                @php
+                                                    $roleColors = ['admin' => 'bg-purple-50 text-purple-600 border-purple-100', 'kasir' => 'bg-blue-50 text-blue-600 border-blue-100', 'beautycian' => 'bg-pink-50 text-pink-600 border-pink-100', 'pelanggan' => 'bg-teal-50 text-teal-600 border-teal-100'];
+                                                    $roleClass = $roleColors[$user->role] ?? 'bg-gray-50 text-gray-600 border-gray-100';
+                                                @endphp
+                                                <span class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold border {{ $roleClass }}">{{ ucfirst($user->role) }}</span>
                                             </td>
                                             <td class="py-3.5 px-4">
                                                 @if ($user->status === 'aktif')
@@ -190,7 +199,7 @@
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="7" class="py-8 text-center text-gray-400 text-[13px]">Belum
+                                            <td colspan="9" class="py-8 text-center text-gray-400 text-[13px]">Belum
                                                 ada data user</td>
                                         </tr>
                                     @endforelse
