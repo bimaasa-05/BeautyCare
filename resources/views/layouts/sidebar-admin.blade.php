@@ -63,7 +63,7 @@
 
         <div class="nav-section">
             <div class="nav-section-title">Layanan & Produk</div>
-            <a href="#" class="nav-item" title="Kelola daftar layanan yang tersedia">
+            <a href="{{ route('admin.layanan.index') }}" class="nav-item {{ request()->routeIs('admin.layanan.index') ? 'active' : '' }}" class="nav-item" title="Kelola daftar layanan yang tersedia">
                 <span class="nav-icon">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
