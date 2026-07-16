@@ -18,67 +18,67 @@
     <link rel="stylesheet" href="{{ asset('assets/css/responsive.css') }}">
 
     <style>
-    .sidebar-toggle {
-        display: none;
-        background: none;
-        border: none;
-        cursor: pointer;
-        padding: 8px;
-    }
-
-    .sidebar-toggle svg {
-        width: 24px;
-        height: 24px;
-        color: var(--dark);
-    }
-
-    .sidebar-overlay {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0, 0, 0, 0.3);
-        z-index: 90;
-    }
-
-    .sidebar-overlay.active {
-        display: block;
-    }
-
-    @media (max-width: 768px) {
         .sidebar-toggle {
-            display: flex;
-            align-items: center;
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
         }
-    }
+
+        .sidebar-toggle svg {
+            width: 24px;
+            height: 24px;
+            color: var(--dark);
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: 90;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar-toggle {
+                display: flex;
+                align-items: center;
+            }
+        }
     </style>
 
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-    body {
-        font-family: 'Inter', sans-serif;
-    }
+        body {
+            font-family: 'Inter', sans-serif;
+        }
 
-    ::-webkit-scrollbar {
-        width: 6px;
-        height: 6px;
-    }
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
 
-    ::-webkit-scrollbar-track {
-        background: transparent;
-    }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
 
-    ::-webkit-scrollbar-thumb {
-        background: #cbd5e1;
-        border-radius: 10px;
-    }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
 
-    ::-webkit-scrollbar-thumb:hover {
-        background: #94a3b8;
-    }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
     </style>
 </head>
 
@@ -103,7 +103,7 @@
                         <div class="flex justify-between items-center mb-6">
                             <div>
                                 <h3 class="text-[16px] font-bold text-gray-800">Semua User</h3>
-                                <p class="text-[12px] text-gray-400 mt-0.5">Total 1.284 pelanggan</p>
+                                <p class="text-[12px] text-gray-400 mt-0.5">Total {{ $users->count() }} pengguna</p>
                             </div>
 
                             <div class="flex items-center gap-3">
@@ -140,42 +140,60 @@
                                     </tr>
                                 </thead>
                                 <tbody class="text-[13px] text-gray-700 divide-y divide-gray-50">
-                                    <tr class="hover:bg-gray-50/50 transition-colors">
-                                        <td class="py-3.5 px-4 text-gray-400 font-medium text-center text-[12px]">1</td>
-                                        <td class="py-3.5 px-4 flex items-center gap-3">
-                                            <div
-                                                class="w-8 h-8 rounded-full bg-pink-400 text-white flex items-center justify-center font-bold text-[11px]">
-                                                SD</div>
-                                            <span class="font-semibold text-gray-800">Sari Dewi Kusuma</span>
-                                        </td>
-                                        <td class="py-3.5 px-4 font-medium text-gray-500">admin@gmail.com</td>
-                                        <td class="py-3.5 px-4">
-                                            <span
-                                                class="px-2.5 py-0.5 bg-amber-50 text-amber-600 border border-amber-100 rounded-full text-[11px] font-semibold">......</span>
-                                        </td>
-                                        <td class="py-3.5 px-4 font-bold text-gray-800">FOTO</td>
-                                        <td class="py-3.5 px-4 text-gray-500 font-medium">085723706843</td>
-                                        <td class="py-3.5 px-4">
-                                            <span
-                                                class="px-2.5 py-0.5 bg-emerald-50 text-emerald-600 rounded-full text-[11px] font-semibold">Aktif</span>
-                                        </td>
-                                        <td class="py-3.5 px-4 text-center">
-                                            <div class="flex items-center justify-center gap-2">
-                                                <button
-                                                    class="w-7 h-7 text-blue-500 bg-blue-50 hover:bg-blue-100 rounded-md transition-colors"><i
-                                                        class="fa-regular fa-eye text-xs"></i>
-                                                </button>
-                                                <button
-                                                    class="w-7 h-7 text-amber-500 bg-amber-50 hover:bg-amber-100 rounded-md transition-colors"><i
-                                                        class="fa-regular fa-pen-to-square text-xs"></i>
-                                                </button>
-                                                <button
-                                                    class="w-7 h-7 text-red-500 bg-red-50 hover:bg-red-100 rounded-md transition-colors"><i
-                                                        class="fa-regular fa-trash-can text-xs"></i>
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
+                                    @forelse ($users as $user)
+                                        <tr class="hover:bg-gray-50/50 transition-colors">
+                                            <td class="py-3.5 px-4 font-medium text-gray-500">{{ $user->nama }}</td>
+                                            <td class="py-3.5 px-4 font-medium text-gray-500">{{ $user->email }}</td>
+                                            <td class="py-3.5 px-4">
+                                                <span
+                                                    class="px-2.5 py-0.5 bg-amber-50 text-amber-600 border border-amber-100 rounded-full text-[11px] font-semibold">{{ $user->password }}</span>
+                                            </td>
+                                            <td class="py-3.5 px-4 font-bold text-gray-800">
+                                                @if ($user->foto)
+                                                    <img src="{{ asset('storage/' . $user->foto) }}" alt="foto"
+                                                        class="w-8 h-8 rounded-full object-cover">
+                                                @else
+                                                    <span class="text-gray-400">-</span>
+                                                @endif
+                                            </td>
+                                            <td class="py-3.5 px-4 text-gray-500 font-medium">{{ $user->no_hp ?? '-' }}
+                                            </td>
+                                            <td class="py-3.5 px-4">
+                                                @if ($user->status === 'aktif')
+                                                    <span
+                                                        class="px-2.5 py-0.5 bg-emerald-50 text-emerald-600 rounded-full text-[11px] font-semibold">Aktif</span>
+                                                @else
+                                                    <span
+                                                        class="px-2.5 py-0.5 bg-red-50 text-red-600 rounded-full text-[11px] font-semibold">Non
+                                                        Aktif</span>
+                                                @endif
+                                            </td>
+                                            <td class="py-3.5 px-4 text-center">
+                                                <div class="flex items-center justify-center gap-2">
+                                                    <a href="{{ route('admin.user.edit', $user->id) }}"
+                                                        class="w-7 h-7 inline-flex items-center justify-center text-amber-500 bg-amber-50 hover:bg-amber-100 rounded-md transition-colors"><i
+                                                            class="fa-regular fa-pen-to-square text-xs"></i>
+                                                    </a>
+                                                    <form action="{{ route('admin.user.destroy', $user->id) }}"
+                                                        method="POST"
+                                                        onsubmit="return confirm('Yakin ingin menghapus user ini?')"
+                                                        class="inline">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit"
+                                                            class="w-7 h-7 text-red-500 bg-red-50 hover:bg-red-100 rounded-md transition-colors"><i
+                                                                class="fa-regular fa-trash-can text-xs"></i>
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="7" class="py-8 text-center text-gray-400 text-[13px]">Belum
+                                                ada data user</td>
+                                        </tr>
+                                    @endforelse
                                 </tbody>
                             </table>
                         </div>
@@ -187,15 +205,15 @@
     </div>
 
     <script>
-    // Set current date
-    const now = new Date();
-    const options = {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-    };
-    document.getElementById('currentDate').textContent = now.toLocaleDateString('id-ID', options);
+        // Set current date
+        const now = new Date();
+        const options = {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        };
+        document.getElementById('currentDate').textContent = now.toLocaleDateString('id-ID', options);
     </script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
 </body>

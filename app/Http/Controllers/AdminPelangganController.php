@@ -1,0 +1,89 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Pelanggan;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+
+class AdminPelangganController extends Controller
+{
+    public function index()
+    {
+        $pelanggan = Pelanggan::orderBy('id_pelanggan', 'desc')->get();
+        return view('admin.pelanggan.index', compact('pelanggan'));
+    }
+
+    public function create()
+    {
+        return view('admin.pelanggan.create');
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'nm_pelanggan'  => 'required|string|max:100',
+            'no_hp'         => 'nullable|string|max:20',
+            'email'         => 'required|email|max:100',
+            'alamat'        => 'required|string',
+            'id_member'     => 'nullable|integer',
+            'catatan_alergi'=> 'required|string',
+            'foto'          => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+        ]);
+
+        $data = $request->only(['nm_pelanggan', 'no_hp', 'email', 'alamat', 'id_member', 'catatan_alergi']);
+
+        if ($request->hasFile('foto')) {
+            $data['foto'] = $request->file('foto')->store('pelanggan', 'public');
+        }
+
+        Pelanggan::create($data);
+
+        return redirect()->route('admin.pelanggan.index')
+            ->with('success', 'Pelanggan berhasil ditambahkan.');
+    }
+
+    public function edit(Pelanggan $pelanggan)
+    {
+        return view('admin.pelanggan.edit', compact('pelanggan'));
+    }
+
+    public function update(Request $request, Pelanggan $pelanggan)
+    {
+        $request->validate([
+            'nm_pelanggan'  => 'required|string|max:100',
+            'no_hp'         => 'nullable|string|max:20',
+            'email'         => 'required|email|max:100',
+            'alamat'        => 'required|string',
+            'id_member'     => 'nullable|integer',
+            'catatan_alergi'=> 'required|string',
+            'foto'          => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+        ]);
+
+        $data = $request->only(['nm_pelanggan', 'no_hp', 'email', 'alamat', 'id_member', 'catatan_alergi']);
+
+        if ($request->hasFile('foto')) {
+            if ($pelanggan->foto) {
+                Storage::disk('public')->delete($pelanggan->foto);
+            }
+            $data['foto'] = $request->file('foto')->store('pelanggan', 'public');
+        }
+
+        $pelanggan->update($data);
+
+        return redirect()->route('admin.pelanggan.index')
+            ->with('success', 'Pelanggan berhasil diperbarui.');
+    }
+
+    public function destroy(Pelanggan $pelanggan)
+    {
+        if ($pelanggan->foto) {
+            Storage::disk('public')->delete($pelanggan->foto);
+        }
+
+        $pelanggan->delete();
+
+        return redirect()->route('admin.pelanggan.index')
+            ->with('success', 'Pelanggan berhasil dihapus.');
+    }
+}

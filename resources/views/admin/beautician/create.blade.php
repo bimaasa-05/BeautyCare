@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Tambah User - BeautyCare</title>
+    <title>Tambah Beautician - BeautyCare</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -99,16 +99,16 @@
                 <div class="bg-white rounded-2xl p-6 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)]">
                     <div class="flex justify-between items-center mb-6">
                         <div>
-                            <h3 class="text-[16px] font-bold text-gray-800">Tambah User</h3>
-                            <p class="text-[12px] text-gray-400 mt-0.5">Buat pengguna baru</p>
+                            <h3 class="text-[16px] font-bold text-gray-800">Tambah Beautician</h3>
+                            <p class="text-[12px] text-gray-400 mt-0.5">Buat data beautician baru</p>
                         </div>
-                        <a href="{{ route('admin.user.index') }}"
+                        <a href="{{ route('admin.beautician.index') }}"
                             class="flex items-center gap-2 border border-gray-200 text-gray-600 text-[12px] font-medium px-4 py-2 rounded-full hover:bg-gray-50 transition-colors">
                             <i class="fa-solid fa-arrow-left"></i> Kembali
                         </a>
                     </div>
 
-                    <form action="{{ route('admin.user.store') }}" method="POST" enctype="multipart/form-data">
+                    <form action="{{ route('admin.beautician.store') }}" method="POST">
                         @csrf
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -123,46 +123,85 @@
                             </div>
 
                             <div>
-                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Email</label>
-                                <input type="email" name="email" value="{{ old('email') }}"
-                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('email') border-red-300 @enderror"
-                                    placeholder="Masukkan alamat email">
-                                @error('email')
+                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">NIP</label>
+                                <input type="text" name="NIP" value="{{ old('NIP') }}"
+                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('NIP') border-red-300 @enderror"
+                                    placeholder="Masukkan NIP">
+                                @error('NIP')
                                     <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
 
                             <div>
-                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Password</label>
-                                <input type="password" name="password"
-                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('password') border-red-300 @enderror"
-                                    placeholder="Masukkan password">
-                                @error('password')
+                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Jabatan</label>
+                                <input type="text" name="jabatan" value="{{ old('jabatan') }}"
+                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('jabatan') border-red-300 @enderror"
+                                    placeholder="Contoh: Hair & Coloring, Facial, Nail Art">
+                                @error('jabatan')
                                     <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
 
                             <div>
-                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">No HP</label>
-                                <input type="number" name="no_hp" value="{{ old('no_hp') }}"
-                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('no_hp') border-red-300 @enderror"
-                                    placeholder="Masukkan nomor HP">
-                                @error('no_hp')
-                                    <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <div>
-                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Role</label>
-                                <select name="role"
-                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all @error('role') border-red-300 @enderror">
-                                    <option value="" disabled selected>Pilih role</option>
-                                    <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Admin</option>
-                                    <option value="kasir" {{ old('role') == 'kasir' ? 'selected' : '' }}>Kasir</option>
-                                    <option value="beautycian" {{ old('role') == 'beautycian' ? 'selected' : '' }}>Beautycian</option>
-                                    <option value="pelanggan" {{ old('role') == 'pelanggan' ? 'selected' : '' }}>Pelanggan</option>
+                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Pilih User <span class="text-red-400">*</span></label>
+                                <select name="id_user"
+                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all @error('id_user') border-red-300 @enderror" required>
+                                    <option value="" disabled selected>Pilih user beautician</option>
+                                    @foreach ($users as $user)
+                                        <option value="{{ $user->id }}" {{ old('id_user') == $user->id ? 'selected' : '' }}>
+                                            {{ $user->nama }} ({{ $user->email }})
+                                        </option>
+                                    @endforeach
                                 </select>
-                                @error('role')
+                                @error('id_user')
+                                    <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div>
+                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Tanggal Lahir</label>
+                                <input type="date" name="tgl_lahir" value="{{ old('tgl_lahir') }}"
+                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('tgl_lahir') border-red-300 @enderror">
+                                @error('tgl_lahir')
+                                    <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div>
+                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Tanggal Masuk</label>
+                                <input type="date" name="tgl_masuk" value="{{ old('tgl_masuk') }}"
+                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('tgl_masuk') border-red-300 @enderror">
+                                @error('tgl_masuk')
+                                    <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div>
+                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Gaji</label>
+                                <input type="number" step="0.01" name="gaji" value="{{ old('gaji') }}"
+                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('gaji') border-red-300 @enderror"
+                                    placeholder="Masukkan gaji">
+                                @error('gaji')
+                                    <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div>
+                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Komisi (%)</label>
+                                <input type="number" step="0.01" name="komisi" value="{{ old('komisi') }}"
+                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('komisi') border-red-300 @enderror"
+                                    placeholder="Masukkan komisi">
+                                @error('komisi')
+                                    <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div>
+                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Alamat</label>
+                                <textarea name="alamat" rows="2"
+                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('alamat') border-red-300 @enderror"
+                                    placeholder="Masukkan alamat">{{ old('alamat') }}</textarea>
+                                @error('alamat')
                                     <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
@@ -172,19 +211,11 @@
                                 <select name="status"
                                     class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all @error('status') border-red-300 @enderror">
                                     <option value="" disabled selected>Pilih status</option>
-                                    <option value="aktif" {{ old('status') == 'aktif' ? 'selected' : '' }}>Aktif</option>
-                                    <option value="non_aktif" {{ old('status') == 'non_aktif' ? 'selected' : '' }}>Non Aktif</option>
+                                    <option value="1" {{ old('status') == '1' ? 'selected' : '' }}>Tersedia</option>
+                                    <option value="2" {{ old('status') == '2' ? 'selected' : '' }}>Sibuk</option>
+                                    <option value="0" {{ old('status') == '0' ? 'selected' : '' }}>Libur</option>
                                 </select>
                                 @error('status')
-                                    <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <div>
-                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Foto</label>
-                                <input type="file" name="foto"
-                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2 focus:outline-none focus:border-pink-300 focus:bg-white transition-all file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-[11px] file:font-semibold file:bg-pink-50 file:text-[#de3b7c] hover:file:bg-pink-100 @error('foto') border-red-300 @enderror">
-                                @error('foto')
                                     <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
@@ -195,7 +226,7 @@
                                 class="flex items-center gap-2 bg-[#de3b7c] text-white text-[13px] font-semibold px-6 py-2.5 rounded-full hover:bg-[#c62f6b] transition-colors shadow-sm">
                                 <i class="fa-solid fa-floppy-disk"></i> Simpan
                             </button>
-                            <a href="{{ route('admin.user.index') }}"
+                            <a href="{{ route('admin.beautician.index') }}"
                                 class="flex items-center gap-2 border border-gray-200 text-gray-600 text-[13px] font-medium px-6 py-2.5 rounded-full hover:bg-gray-50 transition-colors">
                                 Batal
                             </a>
@@ -207,7 +238,6 @@
     </div>
 
     <script>
-        // Set current date
         const now = new Date();
         const options = {
             weekday: 'long',

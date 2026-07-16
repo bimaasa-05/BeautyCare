@@ -10,11 +10,10 @@
     </div>
 
     <div class="sidebar-profile">
-        <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->nama) }}&background=FF4F87&color=fff&size=44"
-            alt="Profile">
+        <img src="{{ auth()->user()->foto ? asset('storage/' . auth()->user()->foto) : asset('assets/img/default-avatar.png') }}" alt="Profile">
         <div class="sp-info">
             <h4>{{ auth()->user()->nama }}</h4>
-            <span class="sp-badge">Admin</span>
+            <span class="sp-badge">{{ auth()->user()->role }}</span>
         </div>
     </div>
 
