@@ -8,9 +8,26 @@ use Illuminate\Support\Facades\Storage;
 
 class AdminPelangganController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $pelanggan = Pelanggan::orderBy('id_pelanggan', 'desc')->get();
+        $pelanggan = Pelanggan::orderBy('id_pelanggan', 'desc');
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $pelanggan->where(function ($q) use ($search) {
+                $q->where('nm_pelanggan', 'like', "%{$search}%")
+                  ->orWhere('no_hp', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('alamat', 'like', "%{$search}%");
+            });
+        }
+
+        $pelanggan = $pelanggan->get();
+
+        if ($request->ajax()) {
+            return view('admin.pelanggan.partials.table', compact('pelanggan'));
+        }
+
         return view('admin.pelanggan.index', compact('pelanggan'));
     }
 

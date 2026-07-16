@@ -139,7 +139,7 @@
                             </div>
 
                             <div>
-                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Jabatan</label>
+                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Karyawan/Kerjaan</label>
                                 <input type="text" name="jabatan" value="{{ old('jabatan') }}"
                                     class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('jabatan') border-red-300 @enderror"
                                     placeholder="Contoh: Hair & Coloring, Facial, Nail Art">

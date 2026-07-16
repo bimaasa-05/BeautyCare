@@ -111,7 +111,7 @@
                                 <div class="relative">
                                     <i
                                         class="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
-                                    <input type="text" placeholder="Cari pelanggan..."
+                                    <input type="text" id="searchPelanggan" placeholder="Cari pelanggan..."
                                         class="bg-gray-50 border border-gray-100 text-[12px] rounded-full pl-9 pr-4 py-2 w-[220px] focus:outline-none focus:border-pink-300 transition-all placeholder-gray-400">
                                 </div>
                                 <button
@@ -141,58 +141,8 @@
                                         <th class="py-3 px-4 text-center">Aksi</th>
                                     </tr>
                                 </thead>
-                                <tbody class="text-[13px] text-gray-700 divide-y divide-gray-50">
-                                    @forelse ($pelanggan as $p)
-                                        <tr class="hover:bg-gray-50/50 transition-colors">
-                                            <td class="py-3.5 px-4 font-medium text-gray-500">{{ $loop->iteration }}</td>
-                                            <td class="py-3.5 px-4 font-medium text-gray-500">{{ $p->nm_pelanggan }}
-                                            </td>
-                                            <td class="py-3.5 px-4 text-gray-500 font-medium">{{ $p->no_hp ?? '-' }}
-                                            </td>
-                                            <td class="py-3.5 px-4 font-medium text-gray-500">{{ $p->email }}</td>
-                                            <td class="py-3.5 px-4 font-medium text-gray-500">{{ $p->alamat }}</td>
-                                            <td class="py-3.5 px-4 font-medium text-gray-500">
-                                                {{ $p->id_member ?? '-' }}
-                                            </td>
-                                            <td class="py-3.5 px-4 font-medium text-gray-500">{{ $p->catatan_alergi }}
-                                            </td>
-                                            <td class="py-3.5 px-4">
-                                                @if ($p->foto)
-                                                    <img src="{{ asset('storage/' . $p->foto) }}" alt="foto"
-                                                        class="w-8 h-8 rounded-full object-cover">
-                                                @else
-                                                    <span class="text-gray-400">-</span>
-                                                @endif
-                                            </td>
-                                            <td class="py-3.5 px-4 text-center">
-                                                <div class="flex items-center justify-center gap-2">
-                                                    <a href="{{ route('admin.pelanggan.edit', $p->id_pelanggan) }}"
-                                                        class="w-7 h-7 inline-flex items-center justify-center text-amber-500 bg-amber-50 hover:bg-amber-100 rounded-md transition-colors"><i
-                                                            class="fa-regular fa-pen-to-square text-xs"></i>
-                                                    </a>
-                                                    <form
-                                                        action="{{ route('admin.pelanggan.destroy', $p->id_pelanggan) }}"
-                                                        method="POST"
-                                                        onsubmit="return confirm('Yakin ingin menghapus pelanggan ini?')"
-                                                        class="inline">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit"
-                                                            class="w-7 h-7 text-red-500 bg-red-50 hover:bg-red-100 rounded-md transition-colors"><i
-                                                                class="fa-regular fa-trash-can text-xs"></i>
-                                                        </button>
-                                                    </form>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    @empty
-                                        <tr>
-                                            <td colspan="8" class="py-8 text-center text-gray-400 text-[13px]">Belum
-                                                ada
-                                                data pelanggan</td>
-                                        </tr>
-                                    @endforelse
-
+                                <tbody id="pelangganTableBody" class="text-[13px] text-gray-700 divide-y divide-gray-50">
+                                    @include('admin.pelanggan.partials.table')
                                 </tbody>
                             </table>
                         </div>
@@ -205,6 +155,22 @@
     </div>
 
     <script>
+        let searchTimer;
+        document.getElementById('searchPelanggan').addEventListener('input', function() {
+            clearTimeout(searchTimer);
+            const q = this.value.trim();
+            searchTimer = setTimeout(() => {
+                fetch('{{ route('admin.pelanggan.index') }}?search=' + encodeURIComponent(q), {
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                })
+                .then(res => res.text())
+                .then(html => {
+                    document.getElementById('pelangganTableBody').innerHTML = html;
+                })
+                .catch(() => location.reload());
+            }, 400);
+        });
+
         // Set current date
         const now = new Date();
         const options = {

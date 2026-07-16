@@ -8,9 +8,29 @@ use Illuminate\Http\Request;
 
 class AdminBeautycianController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $beautician = Karyawan::with('user')->orderBy('id_karyawan', 'desc')->get();
+        $beautician = Karyawan::with('user')->orderBy('id_karyawan', 'desc');
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $beautician->where(function ($q) use ($search) {
+                $q->where('jabatan', 'like', "%{$search}%")
+                  ->orWhere('NIP', 'like', "%{$search}%")
+                  ->orWhere('alamat', 'like', "%{$search}%")
+                  ->orWhereHas('user', function ($uq) use ($search) {
+                      $uq->where('nama', 'like', "%{$search}%")
+                         ->orWhere('role', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        $beautician = $beautician->get();
+
+        if ($request->ajax()) {
+            return view('admin.beautician.partials.grid', compact('beautician'));
+        }
+
         return view('admin.beautician.index', compact('beautician'));
     }
 
