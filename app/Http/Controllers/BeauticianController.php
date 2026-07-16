@@ -8,6 +8,6 @@ class BeauticianController extends Controller
 {
     public function index()
     {
-        
+        return view('beautician.index');
     }
 }
