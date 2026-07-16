@@ -13,7 +13,7 @@
         </button>
         <div>
             <h2>Dashboard</h2>
-            <span class="page-title">Selamat datang, {{ auth()->user()->name }}!</span>
+            <span class="page-title">Selamat datang, {{ auth()->user()->nama }}!</span>
         </div>
     </div>
 
@@ -50,10 +50,10 @@
         </button>
 
         <div class="user-profile">
-            <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name) }}&background=FF4F87&color=fff&size=44"
+            <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->nama) }}&background=FF4F87&color=fff&size=44"
                 alt="Profile">
             <div class="up-info">
-                <h4>{{ auth()->user()->name }}</h4>
+                <h4>{{ auth()->user()->nama }}</h4>
 
                 <span class="sp-badge">{{ ucfirst(auth()->user()->role) }}
                 </span>
