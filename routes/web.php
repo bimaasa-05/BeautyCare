@@ -9,6 +9,7 @@ use App\Http\Controllers\BeautycianController;
 use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\AdminPelangganController;
 use App\Http\Controllers\AdminBeautycianController;
+use App\Http\Controllers\AdminLayananController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -45,6 +46,13 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/beautician/{beautician}/edit', [AdminBeautycianController::class, 'edit'])->name('admin.beautician.edit');
         Route::put('/admin/beautician/{beautician}', [AdminBeautycianController::class, 'update'])->name('admin.beautician.update');
         Route::delete('/admin/beautician/{beautician}', [AdminBeautycianController::class, 'destroy'])->name('admin.beautician.destroy');
+        
+        Route::get('/admin/layanan', [AdminLayananController::class, 'index'])->name('admin.layanan.index');
+        Route::get('/admin/layanan/create', [AdminLayananController::class, 'create'])->name('admin.layanan.create');
+        Route::post('/admin/layanan', [AdminLayananController::class, 'store'])->name('admin.layanan.store');
+        Route::get('/admin/layanan/{layanan}/edit', [AdminLayananController::class, 'edit'])->name('admin.layanan.edit');
+        Route::put('/admin/layanan/{layanan}', [AdminLayananController::class, 'update'])->name('admin.layanan.update');
+        Route::delete('/admin/layanan/{layanan}', [AdminLayananController::class, 'destroy'])->name('admin.layanan.destroy');
     });
 
 
@@ -91,8 +99,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/pelanggan/dashboard', function () {
         return view('pelanggan.dashboard');
     })->middleware(['auth', 'verified'])->name('dashboard');
-    
-     Route::get('/pelanggan/booking', [PelangganController::class, 'index'])->name('pelanggan.booking');
+     Route::get('pelanggan/booking', [PelangganController::class, 'index'])->name('pelanggan.booking');
+     
     //--------------------------------------------------
 });
 
