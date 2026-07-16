@@ -23,6 +23,14 @@ class AdminUserController extends Controller
             });
         }
 
+        if ($request->filled('filter_role')) {
+            $users->where('role', $request->filter_role);
+        }
+
+        if ($request->filled('filter_status')) {
+            $users->where('status', $request->filter_status);
+        }
+
         $users = $users->get();
 
         if ($request->ajax()) {

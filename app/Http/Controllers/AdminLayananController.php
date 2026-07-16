@@ -17,6 +17,14 @@ class AdminLayananController extends Controller
             $layanan->where('nm_layanan', 'like', "%{$search}%");
         }
 
+        if ($request->filled('filter_kategori')) {
+            $layanan->where('id_kategori', $request->filter_kategori);
+        }
+
+        if ($request->filled('filter_status')) {
+            $layanan->where('status', $request->filter_status);
+        }
+
         $layanan = $layanan->get();
 
         if ($request->ajax()) {

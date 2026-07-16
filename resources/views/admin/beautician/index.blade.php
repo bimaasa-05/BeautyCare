@@ -109,6 +109,38 @@
                                 <input type="text" id="searchBeautician" placeholder="Cari beautician..."
                                     class="bg-white border border-gray-200 text-[12px] rounded-full pl-9 pr-4 py-2 w-[220px] focus:outline-none focus:border-pink-300 transition-all placeholder-gray-400 shadow-sm">
                             </div>
+                            <div class="relative filter-beautician">
+                                <button onclick="toggleFilterBeautician()"
+                                    class="flex items-center gap-2 border border-gray-200 text-gray-600 text-[12px] font-medium px-4 py-2 rounded-full hover:bg-gray-50 transition-colors">
+                                    <i class="fa-solid fa-sliders text-gray-400"></i> Filter
+                                </button>
+                                <div id="filterBeauticianPanel"
+                                    class="hidden absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-100 p-4 z-50">
+                                    <p class="text-[11px] font-semibold text-gray-500 mb-2 uppercase tracking-wider">Status</p>
+                                    <div class="space-y-2">
+                                        <label class="flex items-center gap-2 text-[12px] text-gray-700 cursor-pointer">
+                                            <input type="radio" name="filter_status" value="" checked
+                                                onchange="applyFilterBeautician()">
+                                            Semua
+                                        </label>
+                                        <label class="flex items-center gap-2 text-[12px] text-gray-700 cursor-pointer">
+                                            <input type="radio" name="filter_status" value="1"
+                                                onchange="applyFilterBeautician()">
+                                            Tersedia
+                                        </label>
+                                        <label class="flex items-center gap-2 text-[12px] text-gray-700 cursor-pointer">
+                                            <input type="radio" name="filter_status" value="2"
+                                                onchange="applyFilterBeautician()">
+                                            Sibuk
+                                        </label>
+                                        <label class="flex items-center gap-2 text-[12px] text-gray-700 cursor-pointer">
+                                            <input type="radio" name="filter_status" value="0"
+                                                onchange="applyFilterBeautician()">
+                                            Libur
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
                             <a href="{{ route('admin.beautician.create') }}"
                                 class="flex items-center gap-2 bg-[#de3b7c] text-white text-[12px] font-semibold px-4 py-2 rounded-full hover:bg-[#c62f6b] transition-colors shadow-sm">
                                 <i class="fa-solid fa-plus"></i> Tambah
@@ -126,20 +158,49 @@
     </div>
 
     <script>
+        function getFilterParamsBeautician() {
+            const params = new URLSearchParams();
+            const q = document.getElementById('searchBeautician').value.trim();
+            if (q) params.set('search', q);
+            const status = document.querySelector('input[name="filter_status"]:checked');
+            if (status && status.value) params.set('filter_status', status.value);
+            return params.toString();
+        }
+
+        function fetchBeautician() {
+            fetch('{{ route('admin.beautician.index') }}?' + getFilterParamsBeautician(), {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            })
+            .then(res => res.text())
+            .then(html => {
+                document.getElementById('beauticianGrid').innerHTML = html;
+            })
+            .catch(() => location.reload());
+        }
+
+        function toggleFilterBeautician() {
+            document.getElementById('filterBeauticianPanel').classList.toggle('hidden');
+        }
+
+        function applyFilterBeautician() {
+            document.getElementById('filterBeauticianPanel').classList.add('hidden');
+            fetchBeautician();
+        }
+
+        document.addEventListener('click', function(e) {
+            const panel = document.getElementById('filterBeauticianPanel');
+            if (panel && !panel.classList.contains('hidden')) {
+                const btn = document.querySelector('.filter-beautician');
+                if (btn && !btn.contains(e.target)) {
+                    panel.classList.add('hidden');
+                }
+            }
+        });
+
         let searchTimer;
         document.getElementById('searchBeautician').addEventListener('input', function() {
             clearTimeout(searchTimer);
-            const q = this.value.trim();
-            searchTimer = setTimeout(() => {
-                fetch('{{ route('admin.beautician.index') }}?search=' + encodeURIComponent(q), {
-                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
-                })
-                .then(res => res.text())
-                .then(html => {
-                    document.getElementById('beauticianGrid').innerHTML = html;
-                })
-                .catch(() => location.reload());
-            }, 400);
+            searchTimer = setTimeout(fetchBeautician, 400);
         });
 
         // Set current date

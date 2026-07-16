@@ -113,14 +113,65 @@
                                     <input type="text" id="searchUser" placeholder="Cari user..."
                                         class="bg-gray-50 border border-gray-100 text-[12px] rounded-full pl-9 pr-4 py-2 w-[220px] focus:outline-none focus:border-pink-300 transition-all placeholder-gray-400">
                                 </div>
-                                <button
-                                    class="flex items-center gap-2 border border-gray-200 text-gray-600 text-[12px] font-medium px-4 py-2 rounded-full hover:bg-gray-50 transition-colors">
-                                    <i class="fa-solid fa-sliders text-gray-400"></i> Filter
-                                </button>
-                                <button
+                                <div class="relative filter-user">
+                                    <button onclick="toggleFilterUser()"
+                                        class="flex items-center gap-2 border border-gray-200 text-gray-600 text-[12px] font-medium px-4 py-2 rounded-full hover:bg-gray-50 transition-colors">
+                                        <i class="fa-solid fa-sliders text-gray-400"></i> Filter
+                                    </button>
+                                    <div id="filterUserPanel"
+                                        class="hidden absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-100 p-4 z-50">
+                                        <p class="text-[11px] font-semibold text-gray-500 mb-2 uppercase tracking-wider">Role</p>
+                                        <div class="space-y-2 mb-3">
+                                            <label class="flex items-center gap-2 text-[12px] text-gray-700 cursor-pointer">
+                                                <input type="radio" name="filter_role" value="" checked
+                                                    onchange="applyFilterUser()">
+                                                Semua
+                                            </label>
+                                            <label class="flex items-center gap-2 text-[12px] text-gray-700 cursor-pointer">
+                                                <input type="radio" name="filter_role" value="admin"
+                                                    onchange="applyFilterUser()">
+                                                Admin
+                                            </label>
+                                            <label class="flex items-center gap-2 text-[12px] text-gray-700 cursor-pointer">
+                                                <input type="radio" name="filter_role" value="kasir"
+                                                    onchange="applyFilterUser()">
+                                                Kasir
+                                            </label>
+                                            <label class="flex items-center gap-2 text-[12px] text-gray-700 cursor-pointer">
+                                                <input type="radio" name="filter_role" value="beautycian"
+                                                    onchange="applyFilterUser()">
+                                                Beautycian
+                                            </label>
+                                            <label class="flex items-center gap-2 text-[12px] text-gray-700 cursor-pointer">
+                                                <input type="radio" name="filter_role" value="pelanggan"
+                                                    onchange="applyFilterUser()">
+                                                Pelanggan
+                                            </label>
+                                        </div>
+                                        <p class="text-[11px] font-semibold text-gray-500 mb-2 uppercase tracking-wider">Status</p>
+                                        <div class="space-y-2">
+                                            <label class="flex items-center gap-2 text-[12px] text-gray-700 cursor-pointer">
+                                                <input type="radio" name="filter_status" value="" checked
+                                                    onchange="applyFilterUser()">
+                                                Semua
+                                            </label>
+                                            <label class="flex items-center gap-2 text-[12px] text-gray-700 cursor-pointer">
+                                                <input type="radio" name="filter_status" value="aktif"
+                                                    onchange="applyFilterUser()">
+                                                Aktif
+                                            </label>
+                                            <label class="flex items-center gap-2 text-[12px] text-gray-700 cursor-pointer">
+                                                <input type="radio" name="filter_status" value="non_aktif"
+                                                    onchange="applyFilterUser()">
+                                                Non Aktif
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <a href="{{ route('admin.user.create') }}"
                                     class="flex items-center gap-2 bg-[#de3b7c] text-white text-[12px] font-semibold px-4 py-2 rounded-full hover:bg-[#c62f6b] transition-colors shadow-sm">
-                                    <a href="{{ route('admin.user.create') }}">Tambah</a>
-                                </button>
+                                    <i class="fa-solid fa-plus"></i> Tambah
+                                </a>
                             </div>
                         </div>
 
@@ -153,20 +204,51 @@
     </div>
 
     <script>
+        function getFilterParamsUser() {
+            const params = new URLSearchParams();
+            const q = document.getElementById('searchUser').value.trim();
+            if (q) params.set('search', q);
+            const role = document.querySelector('.filter-user input[name="filter_role"]:checked');
+            if (role && role.value) params.set('filter_role', role.value);
+            const status = document.querySelector('.filter-user input[name="filter_status"]:checked');
+            if (status && status.value) params.set('filter_status', status.value);
+            return params.toString();
+        }
+
+        function fetchUser() {
+            fetch('{{ route('admin.user.index') }}?' + getFilterParamsUser(), {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            })
+            .then(res => res.text())
+            .then(html => {
+                document.getElementById('userTableBody').innerHTML = html;
+            })
+            .catch(() => location.reload());
+        }
+
+        function toggleFilterUser() {
+            document.getElementById('filterUserPanel').classList.toggle('hidden');
+        }
+
+        function applyFilterUser() {
+            document.getElementById('filterUserPanel').classList.add('hidden');
+            fetchUser();
+        }
+
+        document.addEventListener('click', function(e) {
+            const panel = document.getElementById('filterUserPanel');
+            if (panel && !panel.classList.contains('hidden')) {
+                const btn = document.querySelector('.filter-user');
+                if (btn && !btn.contains(e.target)) {
+                    panel.classList.add('hidden');
+                }
+            }
+        });
+
         let searchTimer;
         document.getElementById('searchUser').addEventListener('input', function() {
             clearTimeout(searchTimer);
-            const q = this.value.trim();
-            searchTimer = setTimeout(() => {
-                fetch('{{ route('admin.user.index') }}?search=' + encodeURIComponent(q), {
-                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
-                })
-                .then(res => res.text())
-                .then(html => {
-                    document.getElementById('userTableBody').innerHTML = html;
-                })
-                .catch(() => location.reload());
-            }, 400);
+            searchTimer = setTimeout(fetchUser, 400);
         });
 
         // Set current date

@@ -25,6 +25,10 @@ class AdminBeautycianController extends Controller
             });
         }
 
+        if ($request->filled('filter_status')) {
+            $beautician->where('status', $request->filter_status);
+        }
+
         $beautician = $beautician->get();
 
         if ($request->ajax()) {
