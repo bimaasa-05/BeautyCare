@@ -115,12 +115,10 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                             <div>
                                 <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Nama Lengkap</label>
-                                <input type="text" name="nama" value="{{ old('nama', $beautician->nama) }}"
-                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('nama') border-red-300 @enderror"
-                                    placeholder="Masukkan nama lengkap">
-                                @error('nama')
-                                    <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
-                                @enderror
+                                <input type="text" value="{{ $beautician->user?->nama ?? 'User tidak ditemukan' }}"
+                                    class="w-full bg-gray-100 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 cursor-not-allowed text-gray-500"
+                                    disabled>
+                                <input type="hidden" name="id_user" value="{{ $beautician->id_user }}">
                             </div>
 
                             <div>
@@ -139,22 +137,6 @@
                                     class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('jabatan') border-red-300 @enderror"
                                     placeholder="Contoh: Hair & Coloring, Facial, Nail Art">
                                 @error('jabatan')
-                                    <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <div>
-                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Pilih User <span class="text-red-400">*</span></label>
-                                <select name="id_user"
-                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all @error('id_user') border-red-300 @enderror" required>
-                                    <option value="" disabled>Pilih user beautician</option>
-                                    @foreach ($users as $user)
-                                        <option value="{{ $user->id }}" {{ old('id_user', $beautician->id_user) == $user->id ? 'selected' : '' }}>
-                                            {{ $user->nama }} ({{ $user->email }})
-                                        </option>
-                                    @endforeach
-                                </select>
-                                @error('id_user')
                                     <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
