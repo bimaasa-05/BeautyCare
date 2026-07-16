@@ -32,7 +32,7 @@
 
         <div class="nav-section">
             <div class="nav-section-title">Transaksi</div>
-            <a href="#" class="nav-item" title="Buat transaksi penjualan baru">
+            <a href="{{ route('kasir.transaksi.index') }}" class="nav-item {{ request()->routeIs('kasir.transaksi.*') ? 'active' : '' }}" title="Buat transaksi penjualan baru">
                 <span class="nav-icon">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M12 20h9" /><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
@@ -40,7 +40,7 @@
                 </span>
                 Transaksi
             </a>
-            <a href="#" class="nav-item" title="Proses check in pelanggan yang datang">
+            <a href="{{ route('kasir.checkin.index') }}" class="nav-item {{ request()->routeIs('kasir.checkin.*') ? 'active' : '' }}" title="Proses check in pelanggan yang datang">
                 <span class="nav-icon">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" /><polyline points="10 17 15 12 10 7" /><line x1="15" y1="12" x2="3" y2="12" />
@@ -48,7 +48,7 @@
                 </span>
                 Check In Pelanggan
             </a>
-            <a href="#" class="nav-item" title="Proses pembayaran pelanggan">
+            <a href="{{ route('kasir.pembayaran.index') }}" class="nav-item {{ request()->routeIs('kasir.pembayaran.*') ? 'active' : '' }}" title="Proses pembayaran pelanggan">
                 <span class="nav-icon">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <line x1="12" y1="1" x2="12" y2="23" /><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
@@ -56,7 +56,7 @@
                 </span>
                 Pembayaran
             </a>
-            <a href="#" class="nav-item" title="Cetak invoice transaksi">
+            <a href="{{ route('kasir.invoice.index') }}" class="nav-item {{ request()->routeIs('kasir.invoice.*') ? 'active' : '' }}" title="Cetak invoice transaksi">
                 <span class="nav-icon">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" />
@@ -65,7 +65,7 @@
                 </span>
                 Invoice
             </a>
-            <a href="#" class="nav-item" title="Lihat riwayat transaksi">
+            <a href="{{ route('kasir.riwayat-transaksi.index') }}" class="nav-item {{ request()->routeIs('kasir.riwayat-transaksi.*') ? 'active' : '' }}" title="Lihat riwayat transaksi">
                 <span class="nav-icon">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <rect x="3" y="4" width="18" height="18" rx="2" ry="2" /><line x1="16" y1="2" x2="16" y2="6" />
@@ -91,7 +91,7 @@
 
         <div class="nav-section">
             <div class="nav-section-title">Pelanggan</div>
-            <a href="#" class="nav-item" title="Data pelanggan yang terdaftar">
+            <a href="{{ route('kasir.pelanggan.index') }}" class="nav-item {{ request()->routeIs('kasir.pelanggan.*') ? 'active' : '' }}" title="Data pelanggan yang terdaftar">
                 <span class="nav-icon">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="8.5" cy="7" r="4" />
