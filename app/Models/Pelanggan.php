@@ -19,4 +19,9 @@ class Pelanggan extends Model
         'catatan_alergi',
         'foto',
     ];
+
+    public function membership()
+    {
+        return $this->belongsTo(Membership::class, 'id_member', 'id_member');
+    }
 }

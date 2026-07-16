@@ -13,7 +13,7 @@
         </button>
         <div>
             <h2>Dashboard</h2>
-            <span class="page-title">Selamat datang, {{ ucfirst(auth()->user()->nama) }}!</span>
+            <span class="page-title">Selamat datang, {{ auth()->user()->nama }}!</span>
         </div>
     </div>
 
@@ -53,11 +53,12 @@
             <img src="{{ auth()->user()->foto ? asset('storage/' . auth()->user()->foto) : asset('assets/img/default-avatar.png') }}"
                 alt="Profile">
             <div class="up-info">
-                <h4>{{ auth()->user()->name }}</h4>
+                <h4>{{ auth()->user()->nama }}</h4>
 
                 <span class="sp-badge">{{ ucfirst(auth()->user()->role) }}
                 </span>
             </div>
         </div>
     </div>
+    @include('partials.toast')
 </header>

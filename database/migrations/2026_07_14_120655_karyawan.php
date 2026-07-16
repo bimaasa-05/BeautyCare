@@ -24,6 +24,7 @@ return new class extends Migration
             $table->decimal('komisi', 5);
             $table->date('tgl_masuk');
             $table->tinyInteger('status');
+            $table->enum('role', ['Beautycian', 'Kasir']);
         });
     }
 

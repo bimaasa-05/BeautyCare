@@ -165,7 +165,7 @@
                             </div>
                         </div>
                         <div class="chart-body">
-                            <canvas id="chartPenjualan" height="280"></canvas>
+                            <canvas id="chartPendapatan" height="280"></canvas>
                         </div>
                     </div>
 
