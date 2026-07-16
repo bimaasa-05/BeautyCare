@@ -99,8 +99,14 @@ Route::middleware('auth')->group(function () {
     Route::get('/pelanggan/dashboard', function () {
         return view('pelanggan.dashboard');
     })->middleware(['auth', 'verified'])->name('dashboard');
-     Route::get('pelanggan/booking', [PelangganController::class, 'index'])->name('pelanggan.booking');
-     
+    Route::middleware(['role:pelanggan'])->group(function () {
+        Route::get('/pelanggan/booking', [PelangganController::class, 'index'])->name('pelanggan.booking');
+        Route::get('/pelanggan/booking/create', [PelangganController::class, 'create'])->name('pelanggan.booking.create');
+        Route::post('/pelanggan/booking', [PelangganController::class, 'store'])->name('pelanggan.booking.store');
+        Route::get('/pelanggan/booking/{id}/edit', [PelangganController::class, 'edit'])->name('pelanggan.booking.edit');
+        Route::put('/pelanggan/booking/{id}', [PelangganController::class, 'update'])->name('pelanggan.booking.update');
+        Route::delete('/pelanggan/booking/{id}', [PelangganController::class, 'destroy'])->name('pelanggan.booking.destroy');
+    });
     //--------------------------------------------------
 });
 
