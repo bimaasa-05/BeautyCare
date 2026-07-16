@@ -99,8 +99,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/pelanggan/dashboard', function () {
         return view('pelanggan.dashboard');
     })->middleware(['auth', 'verified'])->name('dashboard');
-    
-     Route::get('/pelanggan/booking', [PelangganController::class, 'index'])->name('pelanggan.booking');
+     Route::get('pelanggan/booking', [PelangganController::class, 'index'])->name('pelanggan.booking');
+     
     //--------------------------------------------------
 });
 
