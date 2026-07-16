@@ -117,10 +117,10 @@
                     <div class="bg-white rounded-3xl p-6 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] border border-pink-50/50">
                         <div class="flex justify-between items-start mb-6">
                             <div class="flex items-center gap-3">
-                                <div class="w-12 h-12 rounded-full bg-[#f472b6] text-white flex items-center justify-center font-bold text-lg">{{ strtoupper(substr($b->nama, 0, 2)) }}</div>
+                                <div class="w-12 h-12 rounded-full bg-[#f472b6] text-white flex items-center justify-center font-bold text-lg">{{ strtoupper(substr($b->user?->nama ?? '??', 0, 2)) }}</div>
                                 <div>
-                                    <h3 class="font-bold text-gray-800 text-[15px]">{{ $b->nama }}</h3>
-                                    <p class="text-[12px] text-gray-400 mt-0.5">{{ $b->jabatan }}</p>
+                                    <h3 class="font-bold text-gray-800 text-[15px]">{{ $b->user?->nama ?? 'User tidak ditemukan' }}</h3>
+                                    <p class="text-[12px] text-gray-400 mt-0.5">{{ $b->role }}</p>
                                 </div>
                             </div>
                             @if ($b->status == 1)
@@ -134,11 +134,11 @@
 
                         <div class="grid grid-cols-3 gap-3 mb-5">
                             <div class="bg-[#fdf2f8] rounded-2xl py-2.5 flex flex-col items-center justify-center">
-                                <span class="text-[#de3b7c] font-bold text-[15px] mb-0.5">-</span>
-                                <span class="text-[10px] text-gray-400 font-medium">Rating</span>
+                                <span class="text-[#de3b7c] font-bold text-[15px] mb-0.5">{{ $b->jabatan }}</span>
+                                <span class="text-[10px] text-gray-400 font-medium">Karyawan</span>
                             </div>
                             <div class="bg-[#fdf2f8] rounded-2xl py-2.5 flex flex-col items-center justify-center">
-                                <span class="text-[#de3b7c] font-bold text-[15px] mb-0.5">-</span>
+                                <span class="text-[#de3b7c] font-bold text-[15px] mb-0.5"></span>
                                 <span class="text-[10px] text-gray-400 font-medium">Booking</span>
                             </div>
                             <div class="bg-[#fdf2f8] rounded-2xl py-2.5 flex flex-col items-center justify-center">
