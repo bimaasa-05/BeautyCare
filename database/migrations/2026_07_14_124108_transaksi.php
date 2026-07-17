@@ -16,6 +16,7 @@ return new class extends Migration
             $table->id('id_transaksi');
             $table->integer('id_booking')->unique();
             $table->integer('id_pelanggan')->unique();
+            $table->integer('id_user')->unique(); //Untuk Id Role Kasir Jangan Mengguankan Yang Lainnya;
             $table->string('no_invoice', 30);
             $table->date('tanggal');
             $table->decimal('subtotal', 12);
@@ -25,8 +26,8 @@ return new class extends Migration
             $table->enum('metode_byr', ['Tunai', 'Qris', 'Transfer', 'Debit', 'Kredit']);
             $table->decimal('dibayar', 12);
             $table->decimal('kembali', 12);
-            $table->integer('id_kasir');
             $table->text('catatan');
+
             $table->tinyInteger('status');
         });
     }
