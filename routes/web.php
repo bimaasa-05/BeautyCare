@@ -106,6 +106,14 @@ Route::middleware('auth')->group(function () {
         Route::get('/pelanggan/booking/{id}/edit', [PelangganController::class, 'edit'])->name('pelanggan.booking.edit');
         Route::put('/pelanggan/booking/{id}', [PelangganController::class, 'update'])->name('pelanggan.booking.update');
         Route::delete('/pelanggan/booking/{id}', [PelangganController::class, 'destroy'])->name('pelanggan.booking.destroy');
+
+        Route::get('/pelanggan/reservasi', function () {
+            return view('pelanggan.reservasi.index');
+        })->name('pelanggan.reservasi');
+
+        Route::get('/pelanggan/treatment', function () {
+            return view('pelanggan.treatment.index');
+        })->name('pelanggan.treatment');
     });
     //--------------------------------------------------
 });
