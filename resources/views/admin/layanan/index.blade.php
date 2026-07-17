@@ -102,18 +102,10 @@
                             <div class="flex items-center gap-2 flex-wrap" id="kategoriFilters">
                                 <button data-kategori=""
                                     class="filter-kategori-btn px-3 py-2 rounded-xl text-xs font-bold transition-all bg-gradient-to-r from-[#EC4899] to-[#BE185D] text-white shadow-sm">Semua</button>
-                                <button data-kategori="1"
-                                    class="filter-kategori-btn px-3 py-2 rounded-xl text-xs font-bold transition-all bg-white border border-pink-100 text-gray-500 hover:border-pink-300 hover:text-[#EC4899]">Rambut</button>
-                                <button data-kategori="2"
-                                    class="filter-kategori-btn px-3 py-2 rounded-xl text-xs font-bold transition-all bg-white border border-pink-100 text-gray-500 hover:border-pink-300 hover:text-[#EC4899]">Wajah</button>
-                                <button data-kategori="3"
-                                    class="filter-kategori-btn px-3 py-2 rounded-xl text-xs font-bold transition-all bg-white border border-pink-100 text-gray-500 hover:border-pink-300 hover:text-[#EC4899]">Kuku</button>
-                                <button data-kategori="4"
-                                    class="filter-kategori-btn px-3 py-2 rounded-xl text-xs font-bold transition-all bg-white border border-pink-100 text-gray-500 hover:border-pink-300 hover:text-[#EC4899]">Tubuh</button>
-                                <button data-kategori="5"
-                                    class="filter-kategori-btn px-3 py-2 rounded-xl text-xs font-bold transition-all bg-white border border-pink-100 text-gray-500 hover:border-pink-300 hover:text-[#EC4899]">Makeup</button>
-                                <button data-kategori="6"
-                                    class="filter-kategori-btn px-3 py-2 rounded-xl text-xs font-bold transition-all bg-white border border-pink-100 text-gray-500 hover:border-pink-300 hover:text-[#EC4899]">Mata</button>
+                                @foreach ($kategoriLayanan as $k)
+                                <button data-kategori="{{ $k->id_kategori_layanan }}"
+                                    class="filter-kategori-btn px-3 py-2 rounded-xl text-xs font-bold transition-all bg-white border border-pink-100 text-gray-500 hover:border-pink-300 hover:text-[#EC4899]">{{ $k->nm_layanan }}</button>
+                                @endforeach
                             </div>
                                 <div class="flex items-center gap-3">
                                     <div class="relative">
@@ -136,14 +128,14 @@
                                                     Semua
                                                 </label>
                                                 <label class="flex items-center gap-2 text-[12px] text-gray-700 cursor-pointer">
-                                                    <input type="radio" name="filter_status" value="aktif"
+                                                    <input type="radio" name="filter_status" value="Tersedia"
                                                         onchange="applyFilterLayanan()">
-                                                    Aktif
+                                                    Tersedia
                                                 </label>
                                                 <label class="flex items-center gap-2 text-[12px] text-gray-700 cursor-pointer">
-                                                    <input type="radio" name="filter_status" value="suspend"
+                                                    <input type="radio" name="filter_status" value="Tidak Tersedia"
                                                         onchange="applyFilterLayanan()">
-                                                    Suspend
+                                                    Tidak Tersedia
                                                 </label>
                                             </div>
                                         </div>
@@ -185,11 +177,11 @@
                 if (!res.ok) throw new Error();
                 const parent = el.parentElement;
                 const arrow = parent.querySelector('svg');
-                el.className = val === 'aktif'
+                el.className = val === 'Tersedia'
                     ? 'text-[11px] font-semibold pl-3 pr-7 py-1.5 rounded-xl appearance-none cursor-pointer shadow-sm bg-emerald-50 text-emerald-600 border border-emerald-200 hover:bg-emerald-100 focus:outline-none focus:ring-2 focus:ring-pink-300 transition-all'
                     : 'text-[11px] font-semibold pl-3 pr-7 py-1.5 rounded-xl appearance-none cursor-pointer shadow-sm bg-rose-50 text-rose-600 border border-rose-200 hover:bg-rose-100 focus:outline-none focus:ring-2 focus:ring-pink-300 transition-all';
                 if (arrow) {
-                    arrow.className = 'w-3 h-3 ' + (val === 'aktif' ? 'text-emerald-500' : 'text-rose-500');
+                    arrow.className = 'w-3 h-3 ' + (val === 'Tersedia' ? 'text-emerald-500' : 'text-rose-500');
                 }
             })
             .catch(() => location.reload());

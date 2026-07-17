@@ -38,7 +38,7 @@
     </div>
     <div class="p-4">
         <div class="flex items-center justify-between mb-1.5">
-            <span class="text-[10px] font-bold text-[#EC4899] bg-pink-50 px-2 py-0.5 rounded-full">{{ $l->id_kategori }}</span>
+            <span class="text-[10px] font-bold text-[#EC4899] bg-pink-50 px-2 py-0.5 rounded-full">{{ $kategoriLayanan->firstWhere('id_kategori_layanan', $l->id_kategori)?->nm_layanan ?? 'Kategori #'.$l->id_kategori }}</span>
             <span class="text-[10px] text-gray-400 flex items-center gap-1">
                 <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="12" cy="12" r="10"></circle>
@@ -52,11 +52,11 @@
             <div class="relative">
                 <select onchange="updateStatus(this, {{ $l->id_layanan }})"
                     class="text-[11px] font-semibold pl-3 pr-7 py-1.5 rounded-xl appearance-none cursor-pointer shadow-sm
-                    @if ($l->status == 'aktif') bg-emerald-50 text-emerald-600 border border-emerald-200 hover:bg-emerald-100
+                    @if ($l->status == 'Tersedia') bg-emerald-50 text-emerald-600 border border-emerald-200 hover:bg-emerald-100
                     @else bg-rose-50 text-rose-600 border border-rose-200 hover:bg-rose-100 @endif
                     focus:outline-none focus:ring-2 focus:ring-pink-300 transition-all">
-                    <option value="aktif" {{ $l->status == 'aktif' ? 'selected' : '' }} class="text-gray-700 bg-white">Aktif</option>
-                    <option value="suspend" {{ $l->status == 'suspend' ? 'selected' : '' }} class="text-gray-700 bg-white">Suspend</option>
+                    <option value="Tersedia" {{ $l->status == 'Tersedia' ? 'selected' : '' }} class="text-gray-700 bg-white">Tersedia</option>
+                    <option value="Tidak Tersedia" {{ $l->status == 'Tidak Tersedia' ? 'selected' : '' }} class="text-gray-700 bg-white">Tidak Tersedia</option>
                 </select>
                 <div class="pointer-events-none absolute inset-y-0 right-2 flex items-center">
                     <svg class="w-3 h-3 @if ($l->status == 'aktif') text-emerald-500 @else text-rose-500 @endif" fill="none" stroke="currentColor" viewBox="0 0 24 24">
