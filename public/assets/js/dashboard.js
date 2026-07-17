@@ -323,6 +323,12 @@ function showToast(message, type) {
 
   container.appendChild(toast);
 
+  if (type === 'success') {
+    playSuccessSound();
+  } else if (type === 'warning') {
+    playWarningSound();
+  }
+
   requestAnimationFrame(function() {
     toast.classList.add('show');
   });
@@ -343,6 +349,50 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 /* ---- Responsive Charts ---- */
+/* ---- Notifikasi Suara "Ting" ---- */
+function playSuccessSound() {
+    try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.frequency.value = 880;
+        osc.type = 'sine';
+
+        gain.gain.setValueAtTime(0.3, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
+
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + 0.4);
+    } catch(e) {
+        console.log('Audio not supported');
+    }
+}
+
+/* ---- Notifikasi Suara Peringatan ---- */
+function playWarningSound() {
+    try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.frequency.value = 440;
+        osc.type = 'square';
+
+        gain.gain.setValueAtTime(0.2, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.6);
+
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + 0.6);
+    } catch(e) {
+        console.log('Audio not supported');
+    }
+}
+
 window.addEventListener('resize', function() {
   const pendapatanCanvas = document.getElementById('chartPendapatan');
   const bookingCanvas = document.getElementById('chartBooking');
