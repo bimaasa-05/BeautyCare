@@ -23,7 +23,7 @@
         <div class="navbar-actions">
             <a href="{{ route('login') }}" class="btn btn-outline btn-sm">Masuk</a>
             <a href="{{ route('register') }}" class="btn btn-primary btn-sm">Daftar</a>
-            <button class="navbar-toggle" aria-label="Toggle navigation menu">
+            <button type="button" class="navbar-toggle" aria-label="Toggle navigation menu">
                 <span></span>
                 <span></span>
                 <span></span>
