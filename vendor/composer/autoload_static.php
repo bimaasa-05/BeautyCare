@@ -629,6 +629,7 @@ class ComposerStaticInit1b50401571a196ecf97d5262a1ad38a1
 
     public static $classMap = array (
         'App\\Http\\Controllers\\AdminBeautycianController' => __DIR__ . '/../..' . '/app/Http/Controllers/AdminBeautycianController.php',
+        'App\\Http\\Controllers\\AdminKategoriController' => __DIR__ . '/../..' . '/app/Http/Controllers/AdminKategoriController.php',
         'App\\Http\\Controllers\\AdminLayananController' => __DIR__ . '/../..' . '/app/Http/Controllers/AdminLayananController.php',
         'App\\Http\\Controllers\\AdminPelangganController' => __DIR__ . '/../..' . '/app/Http/Controllers/AdminPelangganController.php',
         'App\\Http\\Controllers\\AdminUserController' => __DIR__ . '/../..' . '/app/Http/Controllers/AdminUserController.php',
@@ -644,6 +645,7 @@ class ComposerStaticInit1b50401571a196ecf97d5262a1ad38a1
         'App\\Http\\Controllers\\BeauticianController' => __DIR__ . '/../..' . '/app/Http/Controllers/BeauticianController.php',
         'App\\Http\\Controllers\\Controller' => __DIR__ . '/../..' . '/app/Http/Controllers/Controller.php',
         'App\\Http\\Controllers\\KasirPelangganController' => __DIR__ . '/../..' . '/app/Http/Controllers/KasirPelangganController.php',
+        'App\\Http\\Controllers\\KasirReservasiController' => __DIR__ . '/../..' . '/app/Http/Controllers/KasirReservasiController.php',
         'App\\Http\\Controllers\\KasirTransaksiController' => __DIR__ . '/../..' . '/app/Http/Controllers/KasirTransaksiController.php',
         'App\\Http\\Controllers\\PelangganController' => __DIR__ . '/../..' . '/app/Http/Controllers/PelangganController.php',
         'App\\Http\\Controllers\\ProfileController' => __DIR__ . '/../..' . '/app/Http/Controllers/ProfileController.php',
@@ -651,8 +653,12 @@ class ComposerStaticInit1b50401571a196ecf97d5262a1ad38a1
         'App\\Http\\Middleware\\CheckRole' => __DIR__ . '/../..' . '/app/Http/Middleware/CheckRole.php',
         'App\\Http\\Requests\\Auth\\LoginRequest' => __DIR__ . '/../..' . '/app/Http/Requests/Auth/LoginRequest.php',
         'App\\Http\\Requests\\ProfileUpdateRequest' => __DIR__ . '/../..' . '/app/Http/Requests/ProfileUpdateRequest.php',
+        'App\\Models\\Booking' => __DIR__ . '/../..' . '/app/Models/Booking.php',
+        'App\\Models\\DetailBooking' => __DIR__ . '/../..' . '/app/Models/DetailBooking.php',
         'App\\Models\\DetailTransaksi' => __DIR__ . '/../..' . '/app/Models/DetailTransaksi.php',
         'App\\Models\\Karyawan' => __DIR__ . '/../..' . '/app/Models/Karyawan.php',
+        'App\\Models\\KategoriLayanan' => __DIR__ . '/../..' . '/app/Models/KategoriLayanan.php',
+        'App\\Models\\KategoriProduk' => __DIR__ . '/../..' . '/app/Models/KategoriProduk.php',
         'App\\Models\\Layanan' => __DIR__ . '/../..' . '/app/Models/Layanan.php',
         'App\\Models\\Membership' => __DIR__ . '/../..' . '/app/Models/Membership.php',
         'App\\Models\\Pelanggan' => __DIR__ . '/../..' . '/app/Models/Pelanggan.php',
