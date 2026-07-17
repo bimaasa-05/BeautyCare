@@ -94,11 +94,16 @@
             @include('layouts.header2')
 
             <div class="flex-1 overflow-y-auto p-8">
-                <div class="bg-white rounded-2xl p-6 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)]">
+                <div class="bg-white rounded-2xl p-6 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] relative overflow-hidden">
+                    <div style="position:absolute;pointer-events:none;opacity:0.08;font-size:70px;top:-5px;right:-5px;">✨</div>
                     <div class="flex justify-between items-center mb-6">
                         <div>
-                            <h3 class="text-[16px] font-bold text-gray-800">Tambah Pelanggan</h3>
-                            <p class="text-[12px] text-gray-400 mt-0.5">Isi data pelanggan baru</p>
+                            <h3 class="text-[16px] font-bold text-gray-800">
+                                <i class="fa-solid fa-user-plus text-pink-500 mr-2"></i>Tambah Pelanggan
+                            </h3>
+                            <p class="text-[12px] text-gray-400 mt-0.5">
+                                <i class="fa-regular fa-pen-to-square text-pink-300 mr-1"></i>Isi data pelanggan baru
+                            </p>
                         </div>
                         <a href="{{ route('kasir.pelanggan.index') }}"
                             class="flex items-center gap-2 border border-gray-200 text-gray-600 text-[12px] font-medium px-4 py-2 rounded-full hover:bg-gray-50 transition-colors">
@@ -188,7 +193,7 @@
 
                         <div class="flex items-center gap-3 mt-6 pt-4 border-t border-gray-100">
                             <button type="submit"
-                                class="flex items-center gap-2 bg-[#de3b7c] text-white text-[13px] font-semibold px-6 py-2.5 rounded-full hover:bg-[#c62f6b] transition-colors shadow-sm">
+                                class="flex items-center gap-2 bg-[#FF4F87] text-white text-[13px] font-semibold px-6 py-2.5 rounded-full hover:bg-[#ff3a78] transition-all shadow-sm hover:shadow-md hover:shadow-pink-200">
                                 <i class="fa-solid fa-floppy-disk"></i> Simpan
                             </button>
                             <a href="{{ route('kasir.pelanggan.index') }}"
