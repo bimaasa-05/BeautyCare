@@ -4,6 +4,8 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PelangganController;
 use App\Http\Controllers\KasirPelangganController;
+use App\Http\Controllers\KasirTransaksiController;
+use App\Http\Controllers\KasirReservasiController;
 use App\Http\Controllers\BeauticianController;
 use App\Http\Controllers\BeautycianController;
 use App\Http\Controllers\AdminUserController;
@@ -71,9 +73,24 @@ Route::middleware('auth')->group(function () {
         Route::put('/kasir/pelanggan/{id}', [KasirPelangganController::class, 'update'])->name('kasir.pelanggan.update');
         Route::delete('/kasir/pelanggan/{id}', [KasirPelangganController::class, 'destroy'])->name('kasir.pelanggan.destroy');
 
-        Route::get('/kasir/transaksi', function () {
-            return view('kasir.transaksi.index');
-        })->name('kasir.transaksi.index');
+        Route::get('/kasir/transaksi', [KasirTransaksiController::class, 'index'])->name('kasir.transaksi.index');
+        Route::get('/kasir/transaksi/create', [KasirTransaksiController::class, 'create'])->name('kasir.transaksi.create');
+        Route::post('/kasir/transaksi', [KasirTransaksiController::class, 'store'])->name('kasir.transaksi.store');
+        Route::get('/kasir/transaksi/{id}', [KasirTransaksiController::class, 'show'])->name('kasir.transaksi.show');
+        Route::get('/kasir/transaksi/{id}/edit', [KasirTransaksiController::class, 'edit'])->name('kasir.transaksi.edit');
+        Route::put('/kasir/transaksi/{id}', [KasirTransaksiController::class, 'update'])->name('kasir.transaksi.update');
+        Route::delete('/kasir/transaksi/{id}', [KasirTransaksiController::class, 'destroy'])->name('kasir.transaksi.destroy');
+        Route::get('/kasir/transaksi/qris-code', [KasirTransaksiController::class, 'qrisCode'])->name('kasir.transaksi.qris-code');
+
+        Route::get('/kasir/reservasi', [KasirReservasiController::class, 'index'])->name('kasir.reservasi.index');
+        Route::get('/kasir/reservasi/create', [KasirReservasiController::class, 'create'])->name('kasir.reservasi.create');
+        Route::post('/kasir/reservasi', [KasirReservasiController::class, 'store'])->name('kasir.reservasi.store');
+        Route::get('/kasir/reservasi/get-layanan', [KasirReservasiController::class, 'getLayanan'])->name('kasir.reservasi.get-layanan');
+        Route::get('/kasir/reservasi/{id}', [KasirReservasiController::class, 'show'])->name('kasir.reservasi.show');
+        Route::get('/kasir/reservasi/{id}/edit', [KasirReservasiController::class, 'edit'])->name('kasir.reservasi.edit');
+        Route::put('/kasir/reservasi/{id}', [KasirReservasiController::class, 'update'])->name('kasir.reservasi.update');
+        Route::delete('/kasir/reservasi/{id}', [KasirReservasiController::class, 'destroy'])->name('kasir.reservasi.destroy');
+
         Route::get('/kasir/checkin', function () {
             return view('kasir.checkin.index');
         })->name('kasir.checkin.index');
