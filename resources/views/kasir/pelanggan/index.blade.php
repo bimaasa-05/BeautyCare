@@ -95,14 +95,19 @@
 
             <div class="flex-1 overflow-y-auto p-8">
                 <div
-                    class="bg-white rounded-2xl p-6 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] flex flex-col h-full min-h-[580px] justify-between">
+                    class="bg-white rounded-2xl p-6 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] flex flex-col h-full min-h-[580px] justify-between relative overflow-hidden">
+                    <div style="position:absolute;pointer-events:none;opacity:0.08;font-size:70px;top:-5px;right:-5px;">👥</div>
+                    <div style="position:absolute;pointer-events:none;opacity:0.08;font-size:45px;bottom:-5px;left:-5px;">🌸</div>
                     <div>
                         <div class="flex justify-between items-center mb-6">
                             <div>
-                                <h3 class="text-[16px] font-bold text-gray-800">Data Pelanggan</h3>
-                                <p class="text-[12px] text-gray-400 mt-0.5">Total {{ $TotalPelanggan->total() }}
-                                    pelanggan
-                                    terdaftar</p>
+                                <h3 class="text-[16px] font-bold text-gray-800">
+                                    <i class="fa-solid fa-users text-pink-500 mr-2"></i>Data Pelanggan
+                                </h3>
+                                <p class="text-[12px] text-gray-400 mt-0.5">
+                                    <i class="fa-regular fa-circle-check text-pink-300 mr-1"></i>
+                                    Total {{ $TotalPelanggan->total() }} pelanggan terdaftar
+                                </p>
                             </div>
 
                             <div class="flex items-center gap-3">
@@ -116,7 +121,7 @@
                                     </form>
                                 </div>
                                 <a href="{{ route('kasir.pelanggan.create') }}"
-                                    class="flex items-center gap-2 bg-[#de3b7c] text-white text-[12px] font-semibold px-4 py-2 rounded-full hover:bg-[#c62f6b] transition-colors shadow-sm">
+                                    class="flex items-center gap-2 bg-[#FF4F87] text-white text-[12px] font-semibold px-4 py-2 rounded-full hover:bg-[#ff3a78] transition-all shadow-sm hover:shadow-md hover:shadow-pink-200">
                                     <i class="fa-solid fa-plus"></i> Tambah
                                 </a>
                             </div>
@@ -126,7 +131,7 @@
                             <table class="w-full text-left border-collapse">
                                 <thead>
                                     <tr
-                                        class="text-[11px] font-bold text-gray-400 uppercase border-b border-gray-100 bg-gray-50/50">
+                                        class="text-[11px] font-bold text-gray-400 uppercase border-b border-gray-100 bg-pink-50/30">
                                         <th class="py-3 px-4 w-10">#</th>
                                         <th class="py-3 px-4">Nama Lengkap</th>
                                         <th class="py-3 px-4">Nomor Hp</th>
@@ -140,12 +145,12 @@
                                 </thead>
                                 <tbody class="text-[13px] text-gray-700 divide-y divide-gray-50">
                                     @forelse($pelanggan as $p)
-                                        <tr class="hover:bg-gray-50/50 transition-colors">
+                                        <tr class="transition-all duration-300 hover:bg-pink-50/30 hover:scale-[1.002]">
                                             <td class="py-3.5 px-4 text-gray-400 font-medium text-center text-[12px]">{{ $loop->iteration }}</td>
                                             <td class="py-3.5 px-4">
                                                 <div class="flex items-center gap-3">
                                                     <div
-                                                        class="w-8 h-8 rounded-full bg-pink-400 text-white flex items-center justify-center font-bold text-[11px]">
+                                                        class="w-8 h-8 rounded-full bg-gradient-to-br from-pink-400 to-pink-300 text-white flex items-center justify-center font-bold text-[11px] shadow-sm">
                                                         {{ strtoupper(substr($p->nm_pelanggan, 0, 2)) }}</div>
                                                     <span
                                                         class="font-semibold text-gray-800">{{ $p->nm_pelanggan }}</span>
@@ -157,15 +162,24 @@
                                             <td class="py-3.5 px-4 font-medium text-gray-500 max-w-[150px] truncate">
                                                 {{ $p->alamat }}</td>
                                             <td class="py-3.5 px-4 font-medium text-gray-500">
-                                                {{ $p->id_member ?? '-' }}</td>
+                                                @if($p->id_member)
+                                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-semibold bg-pink-50 text-pink-500">
+                                                        <i class="fa-regular fa-gem text-[9px]"></i> {{ $p->id_member }}
+                                                    </span>
+                                                @else
+                                                    <span class="text-gray-400">-</span>
+                                                @endif
+                                            </td>
                                             <td class="py-3.5 px-4 font-medium text-gray-500 max-w-[120px] truncate">
                                                 {{ $p->catatan_alergi ?? '-' }}</td>
                                             <td class="py-3.5 px-4 font-medium text-gray-500">
                                                 @if ($p->foto)
                                                     <img src="{{ asset('storage/' . $p->foto) }}" alt="foto"
-                                                        class="w-8 h-8 rounded-full object-cover">
+                                                        class="w-8 h-8 rounded-full object-cover ring-2 ring-pink-100">
                                                 @else
-                                                    <span class="text-gray-400">-</span>
+                                                    <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 text-[10px]">
+                                                        <i class="fa-regular fa-user"></i>
+                                                    </div>
                                                 @endif
                                             </td>
                                             <td class="py-3.5 px-4 text-center">
@@ -191,14 +205,17 @@
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="9" class="py-10 text-center">
-                                                <div class="flex flex-col items-center gap-2">
-                                                    <i class="fa-regular fa-user text-4xl text-gray-300"></i>
-                                                    <p class="text-gray-400 font-medium text-[14px]">Belum ada data
-                                                        pelanggan</p>
+                                            <td colspan="9" class="py-14 text-center">
+                                                <div class="flex flex-col items-center gap-3">
+                                                    <div class="w-20 h-20 rounded-full bg-pink-50 flex items-center justify-center">
+                                                        <i class="fa-regular fa-user text-3xl text-pink-200"></i>
+                                                    </div>
+                                                    <p class="text-gray-400 font-medium text-[14px]">Belum ada data pelanggan</p>
+                                                    <p class="text-gray-300 text-[12px] -mt-2">Tambahkan pelanggan baru untuk memulai</p>
                                                     <a href="{{ route('kasir.pelanggan.create') }}"
-                                                        class="text-[#de3b7c] text-[12px] font-semibold hover:underline">Tambah
-                                                        pelanggan sekarang</a>
+                                                        class="text-[#FF4F87] text-[12px] font-semibold hover:underline inline-flex items-center gap-1 mt-1">
+                                                        <i class="fa-solid fa-plus-circle"></i> Tambah pelanggan sekarang
+                                                    </a>
                                                 </div>
                                             </td>
                                         </tr>
