@@ -17,7 +17,7 @@ return new class extends Migration
             function (Blueprint $table) {
                 $table->id('id_kategori_produk');
                 $table->string('nm_produk', 100);
-                $table->tinyInteger('status');
+                $table->enum('status', ['tersedia', 'tidak_tersedia']);
             }
         );
     }
