@@ -155,8 +155,8 @@
                                     <select name="status"
                                         class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all @error('status') border-red-300 @enderror">
                                         <option value="" disabled>Pilih status</option>
-                                        <option value="1" {{ old('status', $kategori->status) == '1' ? 'selected' : '' }}>Aktif</option>
-                                        <option value="0" {{ old('status', $kategori->status) == '0' ? 'selected' : '' }}>Tidak Aktif</option>
+                                        <option value="tersedia" {{ old('status', $kategori->status) == 'tersedia' ? 'selected' : '' }}>Tersedia</option>
+                                        <option value="tidak_tersedia" {{ old('status', $kategori->status) == 'tidak_tersedia' ? 'selected' : '' }}>Tidak Tersedia</option>
                                     </select>
                                     @error('status')
                                         <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
