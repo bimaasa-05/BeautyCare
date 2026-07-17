@@ -113,10 +113,14 @@
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                             <div>
-                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">ID Kategori</label>
-                                <input type="number" name="id_kategori" value="{{ old('id_kategori') }}"
-                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('id_kategori') border-red-300 @enderror"
-                                    placeholder="Masukkan ID Kategori">
+                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Kategori</label>
+                                <select name="id_kategori"
+                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all @error('id_kategori') border-red-300 @enderror">
+                                    <option value="" disabled selected>Pilih kategori</option>
+                                    @foreach ($kategoriLayanan as $k)
+                                    <option value="{{ $k->id_kategori_layanan }}" {{ old('id_kategori') == $k->id_kategori_layanan ? 'selected' : '' }}>{{ $k->nm_layanan }}</option>
+                                    @endforeach
+                                </select>
                                 @error('id_kategori')
                                     <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
                                 @enderror
@@ -165,8 +169,8 @@
                                 <select name="status"
                                     class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all @error('status') border-red-300 @enderror">
                                     <option value="" disabled selected>Pilih status</option>
-                                    <option value="aktif" {{ old('status') == 'aktif' ? 'selected' : '' }}>Aktif</option>
-                                    <option value="suspend" {{ old('status') == 'suspend' ? 'selected' : '' }}>Suspend</option>
+                                    <option value="Tersedia" {{ old('status') == 'Tersedia' ? 'selected' : '' }}>Tersedia</option>
+                                    <option value="Tidak Tersedia" {{ old('status') == 'Tidak Tersedia' ? 'selected' : '' }}>Tidak Tersedia</option>
                                 </select>
                                 @error('status')
                                     <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>

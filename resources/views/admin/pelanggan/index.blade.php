@@ -111,13 +111,49 @@
                                 <div class="relative">
                                     <i
                                         class="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
-                                    <input type="text" placeholder="Cari pelanggan..."
+                                    <input type="text" id="searchPelanggan" placeholder="Cari pelanggan..."
                                         class="bg-gray-50 border border-gray-100 text-[12px] rounded-full pl-9 pr-4 py-2 w-[220px] focus:outline-none focus:border-pink-300 transition-all placeholder-gray-400">
                                 </div>
-                                <button
-                                    class="flex items-center gap-2 border border-gray-200 text-gray-600 text-[12px] font-medium px-4 py-2 rounded-full hover:bg-gray-50 transition-colors">
-                                    <i class="fa-solid fa-sliders text-gray-400"></i> Filter
-                                </button>
+                                <div class="relative filter-pelanggan">
+                                    <button onclick="toggleFilterPelanggan()"
+                                        class="flex items-center gap-2 border border-gray-200 text-gray-600 text-[12px] font-medium px-4 py-2 rounded-full hover:bg-gray-50 transition-colors">
+                                        <i class="fa-solid fa-sliders text-gray-400"></i> Filter
+                                    </button>
+                                    <div id="filterPelangganPanel"
+                                        class="hidden absolute right-0 mt-2 w-52 bg-white rounded-xl shadow-lg border border-gray-100 p-4 z-50">
+                                        <p class="text-[11px] font-semibold text-gray-500 mb-2 uppercase tracking-wider">Urutkan</p>
+                                        <div class="space-y-2 mb-3">
+                                            <label class="flex items-center gap-2 text-[12px] text-gray-700 cursor-pointer">
+                                                <input type="radio" name="filter_sort" value="desc" checked
+                                                    onchange="applyFilterPelanggan()">
+                                                Terbaru
+                                            </label>
+                                            <label class="flex items-center gap-2 text-[12px] text-gray-700 cursor-pointer">
+                                                <input type="radio" name="filter_sort" value="asc"
+                                                    onchange="applyFilterPelanggan()">
+                                                Terlama
+                                            </label>
+                                        </div>
+                                        <p class="text-[11px] font-semibold text-gray-500 mb-2 uppercase tracking-wider">Member</p>
+                                        <div class="space-y-2">
+                                            <label class="flex items-center gap-2 text-[12px] text-gray-700 cursor-pointer">
+                                                <input type="radio" name="filter_member" value="" checked
+                                                    onchange="applyFilterPelanggan()">
+                                                Semua
+                                            </label>
+                                            <label class="flex items-center gap-2 text-[12px] text-gray-700 cursor-pointer">
+                                                <input type="radio" name="filter_member" value="yes"
+                                                    onchange="applyFilterPelanggan()">
+                                                Punya Member
+                                            </label>
+                                            <label class="flex items-center gap-2 text-[12px] text-gray-700 cursor-pointer">
+                                                <input type="radio" name="filter_member" value="no"
+                                                    onchange="applyFilterPelanggan()">
+                                                Tanpa Member
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
                                 <a href="{{ route('admin.pelanggan.create') }}"
                                     class="flex items-center gap-2 bg-[#de3b7c] text-white text-[12px] font-semibold px-4 py-2 rounded-full hover:bg-[#c62f6b] transition-colors shadow-sm">
                                     <i class="fa-solid fa-plus"></i> Tambah
@@ -141,58 +177,8 @@
                                         <th class="py-3 px-4 text-center">Aksi</th>
                                     </tr>
                                 </thead>
-                                <tbody class="text-[13px] text-gray-700 divide-y divide-gray-50">
-                                    =======
-                                    @forelse ($pelanggan as $p)
-                                        <tr class="hover:bg-gray-50/50 transition-colors">
-                                            <td class="py-3.5 px-4 font-medium text-gray-500">{{ $p->nm_pelanggan }}
-                                            </td>
-                                            <td class="py-3.5 px-4 text-gray-500 font-medium">{{ $p->no_hp ?? '-' }}
-                                            </td>
-                                            <td class="py-3.5 px-4 font-medium text-gray-500">{{ $p->email }}</td>
-                                            <td class="py-3.5 px-4 font-medium text-gray-500">{{ $p->alamat }}</td>
-                                            <td class="py-3.5 px-4 font-medium text-gray-500">
-                                                {{ $p->id_member ?? '-' }}
-                                            </td>
-                                            <td class="py-3.5 px-4 font-medium text-gray-500">{{ $p->catatan_alergi }}
-                                            </td>
-                                            <td class="py-3.5 px-4">
-                                                @if ($p->foto)
-                                                    <img src="{{ asset('storage/' . $p->foto) }}" alt="foto"
-                                                        class="w-8 h-8 rounded-full object-cover">
-                                                @else
-                                                    <span class="text-gray-400">-</span>
-                                                @endif
-                                            </td>
-                                            <td class="py-3.5 px-4 text-center">
-                                                <div class="flex items-center justify-center gap-2">
-                                                    <a href="{{ route('admin.pelanggan.edit', $p->id_pelanggan) }}"
-                                                        class="w-7 h-7 inline-flex items-center justify-center text-amber-500 bg-amber-50 hover:bg-amber-100 rounded-md transition-colors"><i
-                                                            class="fa-regular fa-pen-to-square text-xs"></i>
-                                                    </a>
-                                                    <form
-                                                        action="{{ route('admin.pelanggan.destroy', $p->id_pelanggan) }}"
-                                                        method="POST"
-                                                        onsubmit="return confirm('Yakin ingin menghapus pelanggan ini?')"
-                                                        class="inline">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit"
-                                                            class="w-7 h-7 text-red-500 bg-red-50 hover:bg-red-100 rounded-md transition-colors"><i
-                                                                class="fa-regular fa-trash-can text-xs"></i>
-                                                        </button>
-                                                    </form>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    @empty
-                                        <tr>
-                                            <td colspan="8" class="py-8 text-center text-gray-400 text-[13px]">Belum
-                                                ada
-                                                data pelanggan</td>
-                                        </tr>
-                                    @endforelse
-
+                                <tbody id="pelangganTableBody" class="text-[13px] text-gray-700 divide-y divide-gray-50">
+                                    @include('admin.pelanggan.partials.table')
                                 </tbody>
                             </table>
                         </div>
@@ -205,6 +191,53 @@
     </div>
 
     <script>
+        function getFilterParamsPelanggan() {
+            const params = new URLSearchParams();
+            const q = document.getElementById('searchPelanggan').value.trim();
+            if (q) params.set('search', q);
+            const sort = document.querySelector('.filter-pelanggan input[name="filter_sort"]:checked');
+            if (sort) params.set('filter_sort', sort.value);
+            const member = document.querySelector('.filter-pelanggan input[name="filter_member"]:checked');
+            if (member && member.value) params.set('filter_member', member.value);
+            return params.toString();
+        }
+
+        function fetchPelanggan() {
+            fetch('{{ route('admin.pelanggan.index') }}?' + getFilterParamsPelanggan(), {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            })
+            .then(res => res.text())
+            .then(html => {
+                document.getElementById('pelangganTableBody').innerHTML = html;
+            })
+            .catch(() => location.reload());
+        }
+
+        function toggleFilterPelanggan() {
+            document.getElementById('filterPelangganPanel').classList.toggle('hidden');
+        }
+
+        function applyFilterPelanggan() {
+            document.getElementById('filterPelangganPanel').classList.add('hidden');
+            fetchPelanggan();
+        }
+
+        document.addEventListener('click', function(e) {
+            const panel = document.getElementById('filterPelangganPanel');
+            if (panel && !panel.classList.contains('hidden')) {
+                const btn = document.querySelector('.filter-pelanggan');
+                if (btn && !btn.contains(e.target)) {
+                    panel.classList.add('hidden');
+                }
+            }
+        });
+
+        let searchTimer;
+        document.getElementById('searchPelanggan').addEventListener('input', function() {
+            clearTimeout(searchTimer);
+            searchTimer = setTimeout(fetchPelanggan, 400);
+        });
+
         // Set current date
         const now = new Date();
         const options = {

@@ -12,6 +12,7 @@ use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\AdminPelangganController;
 use App\Http\Controllers\AdminBeautycianController;
 use App\Http\Controllers\AdminLayananController;
+use App\Http\Controllers\AdminKategoriController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -55,6 +56,13 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/layanan/{layanan}/edit', [AdminLayananController::class, 'edit'])->name('admin.layanan.edit');
         Route::put('/admin/layanan/{layanan}', [AdminLayananController::class, 'update'])->name('admin.layanan.update');
         Route::delete('/admin/layanan/{layanan}', [AdminLayananController::class, 'destroy'])->name('admin.layanan.destroy');
+
+        Route::get('/admin/kategori', [AdminKategoriController::class, 'index'])->name('admin.kategori.index');
+        Route::get('/admin/kategori/create', [AdminKategoriController::class, 'create'])->name('admin.kategori.create');
+        Route::post('/admin/kategori', [AdminKategoriController::class, 'store'])->name('admin.kategori.store');
+        Route::get('/admin/kategori/{id}/edit', [AdminKategoriController::class, 'edit'])->name('admin.kategori.edit');
+        Route::put('/admin/kategori/{id}', [AdminKategoriController::class, 'update'])->name('admin.kategori.update');
+        Route::delete('/admin/kategori/{id}', [AdminKategoriController::class, 'destroy'])->name('admin.kategori.destroy');
     });
 
 
@@ -116,8 +124,64 @@ Route::middleware('auth')->group(function () {
     Route::get('/pelanggan/dashboard', function () {
         return view('pelanggan.dashboard');
     })->middleware(['auth', 'verified'])->name('dashboard');
-     Route::get('pelanggan/booking', [PelangganController::class, 'index'])->name('pelanggan.booking');
-     
+    Route::middleware(['role:pelanggan'])->group(function () {
+        
+        //Route Booking
+        Route::get('/pelanggan/booking', [PelangganController::class, 'index'])->name('pelanggan.booking');
+        Route::get('/pelanggan/booking/create', [PelangganController::class, 'create'])->name('pelanggan.booking.create');
+        Route::post('/pelanggan/booking', [PelangganController::class, 'store'])->name('pelanggan.booking.store');
+        Route::get('/pelanggan/booking/{id}/edit', [PelangganController::class, 'edit'])->name('pelanggan.booking.edit');
+        Route::put('/pelanggan/booking/{id}', [PelangganController::class, 'update'])->name('pelanggan.booking.update');
+        Route::delete('/pelanggan/booking/{id}', [PelangganController::class, 'destroy'])->name('pelanggan.booking.destroy');
+
+        //Route Reservasi
+        Route::get('/pelanggan/reservasi', function () {
+            return view('pelanggan.reservasi.index');
+        })->name('pelanggan.reservasi');
+
+        //Route Treatment
+        Route::get('/pelanggan/treatment', function () {
+            return view('pelanggan.treatment.index');
+        })->name('pelanggan.treatment');
+
+        //Route Promo
+        Route::get('/pelanggan/promo', function () {
+            return view('pelanggan.promo.index');
+        })->name('pelanggan.promo');
+
+        //Route Profile
+        Route::get('/pelanggan/profile', function () {
+            return view('pelanggan.profile.index');
+        })->name('pelanggan.profile');
+
+        Route::post('/pelanggan/profile/update-foto', function (\Illuminate\Http\Request $req) {
+            $req->validate(['foto' => 'required|image|mimes:jpeg,png,jpg|max:2048']);
+            $user = auth()->user();
+            $file = $req->file('foto');
+            $path = $file->store('profile-pelanggan', 'public');
+            $user->update(['foto' => $path]);
+            return back()->with('success', 'Foto profil berhasil diperbarui!');
+        })->name('pelanggan.profile.update-foto');
+
+        Route::post('/pelanggan/profile/update', function (\Illuminate\Http\Request $req) {
+            $req->validate([
+                'nama' => 'required|string|max:255',
+                'email' => 'required|email|max:255|unique:users,email,' . auth()->id(),
+                'no_hp' => 'required|string|max:20',
+            ]);
+            auth()->user()->update($req->only(['nama', 'email', 'no_hp']));
+            return back()->with('success', 'Profil berhasil diperbarui!');
+        })->name('pelanggan.profile.update');
+
+        Route::post('/pelanggan/profile/update-password', function (\Illuminate\Http\Request $req) {
+            $req->validate([
+                'current_password' => 'required|current_password',
+                'new_password' => 'required|string|min:8|confirmed',
+            ]);
+            auth()->user()->update(['password' => bcrypt($req->new_password)]);
+            return back()->with('success', 'Password berhasil diperbarui!');
+        })->name('pelanggan.profile.update-password');
+    });
     //--------------------------------------------------
 });
 
