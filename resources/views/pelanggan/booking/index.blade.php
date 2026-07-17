@@ -371,6 +371,7 @@
         font-size: 13px;
         color: var(--dark);
         vertical-align: middle;
+        text-align: center;
     }
 
     .booking-table tbody td:first-child {
@@ -1005,10 +1006,6 @@
                                 <p class="text-[13px] text-white/80 mt-1">Booking sekarang dan dapatkan perawatan terbaik dari kami</p>
                             </div>
                         </div>
-                        <a href="{{ route('pelanggan.booking.create') }}"
-                           class="flex items-center gap-2.5 bg-white text-[#FF4F87] text-[14px] font-bold px-7 py-3 rounded-xl hover:bg-pink-50 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105">
-                            <i class="fa-solid fa-plus"></i> Booking Sekarang
-                        </a>
                     </div>
                 </div>
 

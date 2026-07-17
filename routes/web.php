@@ -100,12 +100,24 @@ Route::middleware('auth')->group(function () {
         return view('pelanggan.dashboard');
     })->middleware(['auth', 'verified'])->name('dashboard');
     Route::middleware(['role:pelanggan'])->group(function () {
+        
+        //Route Booking
         Route::get('/pelanggan/booking', [PelangganController::class, 'index'])->name('pelanggan.booking');
         Route::get('/pelanggan/booking/create', [PelangganController::class, 'create'])->name('pelanggan.booking.create');
         Route::post('/pelanggan/booking', [PelangganController::class, 'store'])->name('pelanggan.booking.store');
         Route::get('/pelanggan/booking/{id}/edit', [PelangganController::class, 'edit'])->name('pelanggan.booking.edit');
         Route::put('/pelanggan/booking/{id}', [PelangganController::class, 'update'])->name('pelanggan.booking.update');
         Route::delete('/pelanggan/booking/{id}', [PelangganController::class, 'destroy'])->name('pelanggan.booking.destroy');
+
+        //Route Reservasi
+        Route::get('/pelanggan/reservasi', function () {
+            return view('pelanggan.reservasi.index');
+        })->name('pelanggan.reservasi');
+
+        //Route Treatment
+        Route::get('/pelanggan/treatment', function () {
+            return view('pelanggan.treatment.index');
+        })->name('pelanggan.treatment');
     });
     //--------------------------------------------------
 });
