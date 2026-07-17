@@ -95,12 +95,12 @@
             @include('layouts.header2')
 
             <!-- Dashboard Content -->
-            <div class="flex-1 overflow-y-auto p-8">
+            <div class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
 
                 <div
                     class="bg-white rounded-2xl p-6 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] flex flex-col h-full min-h-[580px] justify-between">
                     <div>
-                        <div class="flex justify-between items-center mb-6">
+                        <div class="flex justify-between items-center mb-6 flex-wrap gap-3">
                             <div>
                                 <h3 class="text-[16px] font-bold text-gray-800">Semua User</h3>
                                 <p class="text-[12px] text-gray-400 mt-0.5">Total {{ $users->count() }} pengguna</p>
@@ -111,7 +111,7 @@
                                     <i
                                         class="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
                                     <input type="text" id="searchUser" placeholder="Cari user..."
-                                        class="bg-gray-50 border border-gray-100 text-[12px] rounded-full pl-9 pr-4 py-2 w-[220px] focus:outline-none focus:border-pink-300 transition-all placeholder-gray-400">
+                                        class="bg-gray-50 border border-gray-100 text-[12px] rounded-full pl-9 pr-4 py-2 w-full sm:w-[200px] lg:w-[220px] focus:outline-none focus:border-pink-300 transition-all placeholder-gray-400">
                                 </div>
                                 <div class="relative filter-user">
                                     <button onclick="toggleFilterUser()"

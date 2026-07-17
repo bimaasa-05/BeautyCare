@@ -96,9 +96,9 @@
 
             <!-- Dashboard Content -->
             <main class="flex-1 flex flex-col overflow-hidden relative">
-                <div class="flex-1 overflow-y-auto p-8">
+                <div class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
 
-                    <div class="flex justify-between items-center mb-6">
+                    <div class="flex justify-between items-center mb-6 flex-wrap gap-3">
                         <p class="text-[13px] font-medium text-gray-400">{{ $beautician->count() }} beautician terdaftar
                         </p>
 
@@ -107,7 +107,7 @@
                                 <i
                                     class="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
                                 <input type="text" id="searchBeautician" placeholder="Cari beautician..."
-                                    class="bg-white border border-gray-200 text-[12px] rounded-full pl-9 pr-4 py-2 w-[220px] focus:outline-none focus:border-pink-300 transition-all placeholder-gray-400 shadow-sm">
+                                    class="bg-white border border-gray-200 text-[12px] rounded-full pl-9 pr-4 py-2 w-full sm:w-[200px] lg:w-[220px] focus:outline-none focus:border-pink-300 transition-all placeholder-gray-400 shadow-sm">
                             </div>
                             <div class="relative filter-beautician">
                                 <button onclick="toggleFilterBeautician()"
@@ -148,7 +148,7 @@
                         </div>
                     </div>
 
-                    <div id="beauticianGrid" class="grid grid-cols-3 gap-6">
+                    <div id="beauticianGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                         @include('admin.beautician.partials.grid')
                     </div>
 
