@@ -161,8 +161,61 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="chart-body">
-                            <canvas id="chartRiwayat" height="280"></canvas>
+                        <div class="chart-body" style="padding: 16px 20px 12px;">
+                            <div style="display:flex;align-items:flex-end;height:220px;gap:12px;position:relative;padding:0 10px 28px;">
+                                <div style="position:absolute;left:0;right:0;bottom:28px;height:1px;background:var(--border);"></div>
+                                <div style="position:absolute;left:0;right:0;bottom:78px;height:1px;background:var(--border);"></div>
+                                <div style="position:absolute;left:0;right:0;bottom:128px;height:1px;background:var(--border);"></div>
+                                <div style="position:absolute;left:0;right:0;bottom:178px;height:1px;background:var(--border);"></div>
+                                <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;">
+                                    <div style="width:100%;height:120px;background:linear-gradient(180deg,#FF4F87,#FF7BA6);border-radius:6px 6px 0 0;transition:all 0.3s ease;position:relative;">
+                                        <div style="position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-size:10px;font-weight:700;color:var(--primary);background:#FFF5F8;padding:2px 6px;border-radius:4px;">8</div>
+                                    </div>
+                                    <span style="font-size:10px;color:var(--gray);font-weight:500;">Jan</span>
+                                </div>
+                                <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;">
+                                    <div style="width:100%;height:80px;background:linear-gradient(180deg,#FF4F87,#FF7BA6);border-radius:6px 6px 0 0;transition:all 0.3s ease;position:relative;">
+                                        <div style="position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-size:10px;font-weight:700;color:var(--primary);background:#FFF5F8;padding:2px 6px;border-radius:4px;">5</div>
+                                    </div>
+                                    <span style="font-size:10px;color:var(--gray);font-weight:500;">Feb</span>
+                                </div>
+                                <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;">
+                                    <div style="width:100%;height:150px;background:linear-gradient(180deg,#FF4F87,#FF7BA6);border-radius:6px 6px 0 0;transition:all 0.3s ease;position:relative;">
+                                        <div style="position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-size:10px;font-weight:700;color:var(--primary);background:#FFF5F8;padding:2px 6px;border-radius:4px;">10</div>
+                                    </div>
+                                    <span style="font-size:10px;color:var(--gray);font-weight:500;">Mar</span>
+                                </div>
+                                <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;">
+                                    <div style="width:100%;height:60px;background:linear-gradient(180deg,#FF4F87,#FF7BA6);border-radius:6px 6px 0 0;transition:all 0.3s ease;position:relative;">
+                                        <div style="position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-size:10px;font-weight:700;color:var(--primary);background:#FFF5F8;padding:2px 6px;border-radius:4px;">4</div>
+                                    </div>
+                                    <span style="font-size:10px;color:var(--gray);font-weight:500;">Apr</span>
+                                </div>
+                                <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;">
+                                    <div style="width:100%;height:105px;background:linear-gradient(180deg,#FF4F87,#FF7BA6);border-radius:6px 6px 0 0;transition:all 0.3s ease;position:relative;">
+                                        <div style="position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-size:10px;font-weight:700;color:var(--primary);background:#FFF5F8;padding:2px 6px;border-radius:4px;">7</div>
+                                    </div>
+                                    <span style="font-size:10px;color:var(--gray);font-weight:500;">Mei</span>
+                                </div>
+                                <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;">
+                                    <div style="width:100%;height:135px;background:linear-gradient(180deg,#FF4F87,#FF7BA6);border-radius:6px 6px 0 0;transition:all 0.3s ease;position:relative;">
+                                        <div style="position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-size:10px;font-weight:700;color:var(--primary);background:#FFF5F8;padding:2px 6px;border-radius:4px;">9</div>
+                                    </div>
+                                    <span style="font-size:10px;color:var(--gray);font-weight:500;">Jun</span>
+                                </div>
+                                <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;">
+                                    <div style="width:100%;height:45px;background:linear-gradient(180deg,#FF4F87,#FF7BA6);border-radius:6px 6px 0 0;transition:all 0.3s ease;position:relative;">
+                                        <div style="position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-size:10px;font-weight:700;color:var(--primary);background:#FFF5F8;padding:2px 6px;border-radius:4px;">3</div>
+                                    </div>
+                                    <span style="font-size:10px;color:var(--gray);font-weight:500;">Jul</span>
+                                </div>
+                            </div>
+                            <div style="display:flex;justify-content:space-between;padding:0 10px;margin-top:-4px;">
+                                <span style="font-size:9px;color:#ccc;">0</span>
+                                <span style="font-size:9px;color:#ccc;">5</span>
+                                <span style="font-size:9px;color:#ccc;">10</span>
+                                <span style="font-size:9px;color:#ccc;">15</span>
+                            </div>
                         </div>
                     </div>
 
