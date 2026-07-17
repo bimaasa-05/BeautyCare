@@ -23,8 +23,7 @@ return new class extends Migration
             $table->decimal('gaji', 12);
             $table->decimal('komisi', 5);
             $table->date('tgl_masuk');
-            $table->tinyInteger('status');
-            $table->enum('role', ['Beautycian', 'Kasir']);
+            $table->enum('status', ['Tersedia', 'Libur', 'Sibuk',]);
         });
     }
 
