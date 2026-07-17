@@ -114,8 +114,8 @@
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                             <div>
-                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Nama Lengkap</label>
-                                <input type="text" value="{{ $beautician->user?->nama ?? 'User tidak ditemukan' }}"
+                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">User</label>
+                                <input type="text" value="{{ $beautician->user?->nama ?? 'User tidak ditemukan' }} ({{ $beautician->user?->email ?? '' }})"
                                     class="w-full bg-gray-100 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 cursor-not-allowed text-gray-500"
                                     disabled>
                                 <input type="hidden" name="id_user" value="{{ $beautician->id_user }}">

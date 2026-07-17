@@ -40,7 +40,7 @@ class AdminBeautycianController extends Controller
 
     public function create()
     {
-        $users = User::where('role', 'beautycian')->whereDoesntHave('karyawan')->get();
+        $users = User::whereDoesntHave('karyawan')->get();
         return view('admin.beautician.create', compact('users'));
     }
 
@@ -67,7 +67,8 @@ class AdminBeautycianController extends Controller
     public function edit(Karyawan $beautician)
     {
         $beautician->load('user');
-        return view('admin.beautician.edit', compact('beautician'));
+        $users = User::all();
+        return view('admin.beautician.edit', compact('beautician', 'users'));
     }
 
     public function update(Request $request, Karyawan $beautician)
