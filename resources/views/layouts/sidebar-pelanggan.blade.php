@@ -10,8 +10,8 @@
     </div>
 
     <div class="sidebar-profile">
-        <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->nama) }}&background=FF4F87&color=fff&size=44"
-            alt="Profile">
+        <img src="{{ auth()->user()->foto ? asset('storage/' . auth()->user()->foto) : 'https://ui-avatars.com/api/?name='.urlencode(auth()->user()->nama).'&background=FF4F87&color=fff&size=44' }}"
+            alt="Profile" id="sidebarProfileImg">
         <div class="sp-info">
             <h4>{{ auth()->user()->nama }}</h4>
             <span class="sp-badge">{{ auth()->user()->role }}</span>
@@ -38,7 +38,7 @@
 
         <div class="nav-section">
             <div class="nav-section-title">Booking</div>
-            <a href="{{ route('pelanggan.booking') }}" class="nav-item" title="Booking treatment atau layanan baru">
+            <a href="{{ route('pelanggan.booking') }}" class="nav-item {{ request()->routeIs('pelanggan.booking*') ? 'active' : '' }}" title="Booking treatment atau layanan baru">
                 <span class="nav-icon">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -48,7 +48,7 @@
                 </span>
                 Booking Treatment
             </a>
-            <a href="#" class="nav-item" title="Lihat riwayat reservasi Anda">
+            <a href="{{ route('pelanggan.reservasi') }}" class="nav-item {{ request()->routeIs('pelanggan.reservasi') ? 'active' : '' }}" title="Lihat riwayat reservasi Anda">
                 <span class="nav-icon">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -60,7 +60,7 @@
                 </span>
                 Riwayat Reservasi
             </a>
-            <a href="#" class="nav-item" title="Lihat riwayat treatment Anda">
+            <a href="{{ route('pelanggan.treatment') }}" class="nav-item {{ request()->routeIs('pelanggan.treatment') ? 'active' : '' }}" title="Lihat riwayat treatment Anda">
                 <span class="nav-icon">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -74,7 +74,7 @@
 
         <div class="nav-section">
             <div class="nav-section-title">Promo</div>
-            <a href="#" class="nav-item" title="Lihat promo dan diskon tersedia">
+            <a href="{{ route('pelanggan.promo') }}" class="nav-item {{ request()->routeIs('pelanggan.promo') ? 'active' : '' }}" title="Lihat promo dan diskon tersedia">
                 <span class="nav-icon">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -91,7 +91,7 @@
 
         <div class="nav-section">
             <div class="nav-section-title">Akun</div>
-            <a href="#" class="nav-item" title="Kelola profil dan data diri Anda">
+            <a href="{{ route('pelanggan.profile') }}" class="nav-item {{ request()->routeIs('pelanggan.profile') ? 'active' : '' }}" title="Kelola profil dan data diri Anda">
                 <span class="nav-icon">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

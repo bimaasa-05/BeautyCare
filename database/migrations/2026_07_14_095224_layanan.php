@@ -19,7 +19,7 @@ return new class extends Migration
             $table->integer('durasi');
             $table->decimal('harga', 12);
             $table->string('foto');
-            $table->enum('status', ['aktif', 'suspend']);
+            $table->enum('status', ['Tersedia', 'Tidak Tersedia']);
         });
     }
 

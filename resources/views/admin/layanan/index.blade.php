@@ -99,99 +99,61 @@
                         <div class="space-y-4">
 
                             <div class="flex items-center justify-between flex-wrap gap-3">
-                                <div class="flex items-center gap-2 flex-wrap">
-                                    <button
-                                        class="px-3 py-2 rounded-xl text-xs font-bold transition-all bg-gradient-to-r from-[#EC4899] to-[#BE185D] text-white shadow-sm">Semua</button>
-                                    <button
-                                        class="px-3 py-2 rounded-xl text-xs font-bold transition-all bg-white border border-pink-100 text-gray-500 hover:border-pink-300 hover:text-[#EC4899]">Rambut</button>
-                                    <button
-                                        class="px-3 py-2 rounded-xl text-xs font-bold transition-all bg-white border border-pink-100 text-gray-500 hover:border-pink-300 hover:text-[#EC4899]">Wajah</button>
-                                    <button
-                                        class="px-3 py-2 rounded-xl text-xs font-bold transition-all bg-white border border-pink-100 text-gray-500 hover:border-pink-300 hover:text-[#EC4899]">Kuku</button>
-                                    <button
-                                        class="px-3 py-2 rounded-xl text-xs font-bold transition-all bg-white border border-pink-100 text-gray-500 hover:border-pink-300 hover:text-[#EC4899]">Tubuh</button>
-                                    <button
-                                        class="px-3 py-2 rounded-xl text-xs font-bold transition-all bg-white border border-pink-100 text-gray-500 hover:border-pink-300 hover:text-[#EC4899]">Makeup</button>
-                                    <button
-                                        class="px-3 py-2 rounded-xl text-xs font-bold transition-all bg-white border border-pink-100 text-gray-500 hover:border-pink-300 hover:text-[#EC4899]">Mata</button>
+                            <div class="flex items-center gap-2 flex-wrap" id="kategoriFilters">
+                                <button data-kategori=""
+                                    class="filter-kategori-btn px-3 py-2 rounded-xl text-xs font-bold transition-all bg-gradient-to-r from-[#EC4899] to-[#BE185D] text-white shadow-sm">Semua</button>
+                                @foreach ($kategoriLayanan as $k)
+                                <button data-kategori="{{ $k->id_kategori_layanan }}"
+                                    class="filter-kategori-btn px-3 py-2 rounded-xl text-xs font-bold transition-all bg-white border border-pink-100 text-gray-500 hover:border-pink-300 hover:text-[#EC4899]">{{ $k->nm_layanan }}</button>
+                                @endforeach
+                            </div>
+                                <div class="flex items-center gap-3">
+                                    <div class="relative">
+                                        <i class="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+                                        <input type="text" id="searchLayanan" placeholder="Cari layanan..."
+                                            class="bg-white border border-gray-200 text-[12px] rounded-full pl-9 pr-4 py-2 w-[220px] focus:outline-none focus:border-pink-300 transition-all placeholder-gray-400 shadow-sm">
+                                    </div>
+                                    <div class="relative filter-layanan">
+                                        <button onclick="toggleFilterLayanan()"
+                                            class="flex items-center gap-2 border border-gray-200 text-gray-600 text-[12px] font-medium px-4 py-2 rounded-full hover:bg-gray-50 transition-colors">
+                                            <i class="fa-solid fa-sliders text-gray-400"></i> Filter
+                                        </button>
+                                        <div id="filterLayananPanel"
+                                            class="hidden absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-100 p-4 z-50">
+                                            <p class="text-[11px] font-semibold text-gray-500 mb-2 uppercase tracking-wider">Status</p>
+                                            <div class="space-y-2">
+                                                <label class="flex items-center gap-2 text-[12px] text-gray-700 cursor-pointer">
+                                                    <input type="radio" name="filter_status" value="" checked
+                                                        onchange="applyFilterLayanan()">
+                                                    Semua
+                                                </label>
+                                                <label class="flex items-center gap-2 text-[12px] text-gray-700 cursor-pointer">
+                                                    <input type="radio" name="filter_status" value="Tersedia"
+                                                        onchange="applyFilterLayanan()">
+                                                    Tersedia
+                                                </label>
+                                                <label class="flex items-center gap-2 text-[12px] text-gray-700 cursor-pointer">
+                                                    <input type="radio" name="filter_status" value="Tidak Tersedia"
+                                                        onchange="applyFilterLayanan()">
+                                                    Tidak Tersedia
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <a href="{{ route('admin.layanan.create') }}"
+                                        class="flex items-center gap-1.5 px-3 py-2 bg-gradient-to-r from-[#EC4899] to-[#BE185D] text-white rounded-xl text-xs font-bold shadow-sm hover:opacity-95">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"
+                                            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                            stroke-linejoin="round">
+                                            <path d="M5 12h14"></path>
+                                            <path d="M12 5v14"></path>
+                                        </svg> Tambah Layanan
+                                    </a>
                                 </div>
-                                <a href="{{ route('admin.layanan.create') }}"
-                                    class="flex items-center gap-1.5 px-3 py-2 bg-gradient-to-r from-[#EC4899] to-[#BE185D] text-white rounded-xl text-xs font-bold shadow-sm hover:opacity-95">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round">
-                                        <path d="M5 12h14"></path>
-                                        <path d="M12 5v14"></path>
-                                    </svg> Tambah Layanan
-                                </a>
                             </div>
 
-                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                @forelse ($layanan as $l)
-                                <div
-                                    class="bg-white rounded-2xl overflow-hidden border border-pink-50 shadow-[0_2px_16px_rgba(236,72,153,0.06)] hover:shadow-[0_4px_24px_rgba(236,72,153,0.12)] transition-all group">
-                                    <div class="relative overflow-hidden h-40">
-                                        <img src="{{ asset('storage/' . $l->foto) }}"
-                                            alt="Hair Treatment"
-                                            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                                        <div
-                                            class="absolute top-3 left-3 bg-[#EC4899] text-white text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
-                                            ✨ Populer</div>
-                                        <div
-                                            class="absolute top-3 right-3 flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <button
-                                                class="w-7 h-7 bg-white rounded-lg flex items-center justify-center shadow text-amber-500 hover:bg-amber-50">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11"
-                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                    <path
-                                                        d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7">
-                                                    </path>
-                                                    <path
-                                                        d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z">
-                                                    </path>
-                                                </svg>
-                                            </button>
-                                            <button
-                                                class="w-7 h-7 bg-white rounded-lg flex items-center justify-center shadow text-red-400 hover:bg-red-50">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11"
-                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                    <path d="M3 6h18"></path>
-                                                    <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
-                                                    <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
-                                                    <line x1="10" x2="10" y1="11" y2="17"></line>
-                                                    <line x1="14" x2="14" y1="11" y2="17"></line>
-                                                </svg>
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <div class="p-4">
-                                        <div class="flex items-center justify-between mb-1.5">
-                                            <span
-                                                class="text-[10px] font-bold text-[#EC4899] bg-pink-50 px-2 py-0.5 rounded-full">{{ $l->id_kategori }}</span>
-                                            <span class="text-[10px] text-gray-400 flex items-center gap-1">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10"
-                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                    <circle cx="12" cy="12" r="10"></circle>
-                                                    <polyline points="12 6 12 12 16 14"></polyline>
-                                                </svg> 90 menit
-                                            </span>
-                                        </div>
-                                        <h3 class="font-bold text-gray-800 mb-2">{{ $l->nm_layanan }}</h3>
-                                        <div class="flex items-center justify-between">
-                                            <span class="text-base font-extrabold text-[#EC4899]">Rp {{ number_format($l->harga, 0, ',', '.') }}a</span>
-                                            <button
-                                                class="text-[10px] font-bold text-white bg-gradient-to-r from-[#EC4899] to-[#BE185D] px-2.5 py-1.5 rounded-xl hover:opacity-90">Booking</button>
-                                        </div>
-                                    </div>
-                                </div>
-                                @empty
-                                <div class="col-span-full bg-white p-8 rounded-2xl text-center shadow-sm border border-pink-50">
-                                    <p class="text-gray-500">Belum ada layanan yang ditambahkan.</p>
-                                </div>
-                                @endforelse
+                            <div id="layananGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                @include('admin.layanan.partials.grid')
                             </div>
                         </div>
                     </main>
@@ -201,21 +163,102 @@
     </div>
 
     <script>
-        // Set current date
-        const now = new Date();
-        const options = {
-            weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        };
-        document.getElementById('currentDate').textContent = now.toLocaleDateString('id-ID', options);
+        function updateStatus(el, id) {
+            const val = el.value;
+            fetch('/admin/layanan/' + id, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: JSON.stringify({ status: val })
+            })
+            .then(res => {
+                if (!res.ok) throw new Error();
+                const parent = el.parentElement;
+                const arrow = parent.querySelector('svg');
+                el.className = val === 'Tersedia'
+                    ? 'text-[11px] font-semibold pl-3 pr-7 py-1.5 rounded-xl appearance-none cursor-pointer shadow-sm bg-emerald-50 text-emerald-600 border border-emerald-200 hover:bg-emerald-100 focus:outline-none focus:ring-2 focus:ring-pink-300 transition-all'
+                    : 'text-[11px] font-semibold pl-3 pr-7 py-1.5 rounded-xl appearance-none cursor-pointer shadow-sm bg-rose-50 text-rose-600 border border-rose-200 hover:bg-rose-100 focus:outline-none focus:ring-2 focus:ring-pink-300 transition-all';
+                if (arrow) {
+                    arrow.className = 'w-3 h-3 ' + (val === 'Tersedia' ? 'text-emerald-500' : 'text-rose-500');
+                }
+            })
+            .catch(() => location.reload());
+        }
 
-        // Jika Anda memakai lucide icon, pastikan script-nya ada di header
+        function getFilterParamsLayanan() {
+            const params = new URLSearchParams();
+            const q = document.getElementById('searchLayanan').value.trim();
+            if (q) params.set('search', q);
+            const aktifKategori = document.querySelector('#kategoriFilters .filter-kategori-btn.active');
+            if (aktifKategori) {
+                const kid = aktifKategori.dataset.kategori;
+                if (kid) params.set('filter_kategori', kid);
+            }
+            const status = document.querySelector('.filter-layanan input[name="filter_status"]:checked');
+            if (status && status.value) params.set('filter_status', status.value);
+            return params.toString();
+        }
+
+        function fetchLayanan() {
+            fetch('{{ route('admin.layanan.index') }}?' + getFilterParamsLayanan(), {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            })
+            .then(res => res.text())
+            .then(html => {
+                document.getElementById('layananGrid').innerHTML = html;
+            })
+            .catch(() => location.reload());
+        }
+
+        document.querySelectorAll('#kategoriFilters .filter-kategori-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('#kategoriFilters .filter-kategori-btn').forEach(b => {
+                    b.className = 'filter-kategori-btn px-3 py-2 rounded-xl text-xs font-bold transition-all bg-white border border-pink-100 text-gray-500 hover:border-pink-300 hover:text-[#EC4899]';
+                    b.classList.remove('active');
+                });
+                if (this.dataset.kategori === '') {
+                    this.className = 'filter-kategori-btn px-3 py-2 rounded-xl text-xs font-bold transition-all bg-gradient-to-r from-[#EC4899] to-[#BE185D] text-white shadow-sm';
+                } else {
+                    this.className = 'filter-kategori-btn px-3 py-2 rounded-xl text-xs font-bold transition-all bg-gradient-to-r from-[#EC4899] to-[#BE185D] text-white shadow-sm';
+                }
+                this.classList.add('active');
+                fetchLayanan();
+            });
+        });
+
+        function toggleFilterLayanan() {
+            document.getElementById('filterLayananPanel').classList.toggle('hidden');
+        }
+
+        function applyFilterLayanan() {
+            document.getElementById('filterLayananPanel').classList.add('hidden');
+            fetchLayanan();
+        }
+
+        document.addEventListener('click', function(e) {
+            const panel = document.getElementById('filterLayananPanel');
+            if (panel && !panel.classList.contains('hidden')) {
+                const btn = document.querySelector('.filter-layanan');
+                if (btn && !btn.contains(e.target)) {
+                    panel.classList.add('hidden');
+                }
+            }
+        });
+
+        let searchTimer;
+        document.getElementById('searchLayanan').addEventListener('input', function() {
+            clearTimeout(searchTimer);
+            searchTimer = setTimeout(fetchLayanan, 400);
+        });
+
+        // Set current date
         if (typeof lucide !== 'undefined') {
             lucide.createIcons();
         }
     </script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
 </body>
+
 </html>

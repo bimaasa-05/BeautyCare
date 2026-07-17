@@ -18,6 +18,11 @@ class DetailBooking extends Model
         'subtotal',
     ];
 
+    public function booking()
+    {
+        return $this->belongsTo(Booking::class, 'id_booking', 'id_booking');
+    }
+
     public function layanan()
     {
         return $this->belongsTo(Layanan::class, 'id_layanan', 'id_layanan');
