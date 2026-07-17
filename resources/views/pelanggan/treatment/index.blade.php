@@ -664,33 +664,33 @@
                 </div>
 
                 <div class="filter-tabs">
-                    <a href="{{ route('pelanggan.reservasi') }}"
-                       class="filter-tab active">
+                    <a href="{{ route('pelanggan.treatment') }}"
+                       class="filter-tab {{ !request('status') ? 'active' : '' }}">
                         <span class="ft-dot" style="background: var(--primary);"></span>
                         Semua
                     </a>
-                    <a href="#"
-                       class="filter-tab">
+                    <a href="{{ route('pelanggan.treatment', ['status' => 'menunggu']) }}"
+                       class="filter-tab {{ request('status') === 'menunggu' ? 'active' : '' }}">
                         <span class="ft-dot" style="background: #D97706;"></span>
                         Menunggu
                     </a>
-                    <a href="#"
-                       class="filter-tab">
+                    <a href="{{ route('pelanggan.treatment', ['status' => 'dikonfirmasi']) }}"
+                       class="filter-tab {{ request('status') === 'dikonfirmasi' ? 'active' : '' }}">
                         <span class="ft-dot" style="background: #2563EB;"></span>
                         Dikonfirmasi
                     </a>
-                    <a href="#"
-                       class="filter-tab">
+                    <a href="{{ route('pelanggan.treatment', ['status' => 'diproses']) }}"
+                       class="filter-tab {{ request('status') === 'diproses' ? 'active' : '' }}">
                         <span class="ft-dot" style="background: #9333EA;"></span>
                         Diproses
                     </a>
-                    <a href="#"
-                       class="filter-tab">
+                    <a href="{{ route('pelanggan.treatment', ['status' => 'selesai']) }}"
+                       class="filter-tab {{ request('status') === 'selesai' ? 'active' : '' }}">
                         <span class="ft-dot" style="background: #059669;"></span>
                         Selesai
                     </a>
-                    <a href="#"
-                       class="filter-tab">
+                    <a href="{{ route('pelanggan.treatment', ['status' => 'dibatalkan']) }}"
+                       class="filter-tab {{ request('status') === 'dibatalkan' ? 'active' : '' }}">
                         <span class="ft-dot" style="background: #DC2626;"></span>
                         Dibatalkan
                     </a>

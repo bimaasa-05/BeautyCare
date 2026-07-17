@@ -126,6 +126,39 @@ Route::middleware('auth')->group(function () {
         Route::get('/pelanggan/treatment', function () {
             return view('pelanggan.treatment.index');
         })->name('pelanggan.treatment');
+
+        //Route Profile
+        Route::get('/pelanggan/profile', function () {
+            return view('pelanggan.profile.index');
+        })->name('pelanggan.profile');
+
+        Route::post('/pelanggan/profile/update-foto', function (\Illuminate\Http\Request $req) {
+            $req->validate(['foto' => 'required|image|mimes:jpeg,png,jpg|max:2048']);
+            $user = auth()->user();
+            $file = $req->file('foto');
+            $path = $file->store('profile-pelanggan', 'public');
+            $user->update(['foto' => $path]);
+            return back()->with('success', 'Foto profil berhasil diperbarui!');
+        })->name('pelanggan.profile.update-foto');
+
+        Route::post('/pelanggan/profile/update', function (\Illuminate\Http\Request $req) {
+            $req->validate([
+                'nama' => 'required|string|max:255',
+                'email' => 'required|email|max:255|unique:users,email,' . auth()->id(),
+                'no_hp' => 'required|string|max:20',
+            ]);
+            auth()->user()->update($req->only(['nama', 'email', 'no_hp']));
+            return back()->with('success', 'Profil berhasil diperbarui!');
+        })->name('pelanggan.profile.update');
+
+        Route::post('/pelanggan/profile/update-password', function (\Illuminate\Http\Request $req) {
+            $req->validate([
+                'current_password' => 'required|current_password',
+                'new_password' => 'required|string|min:8|confirmed',
+            ]);
+            auth()->user()->update(['password' => bcrypt($req->new_password)]);
+            return back()->with('success', 'Password berhasil diperbarui!');
+        })->name('pelanggan.profile.update-password');
     });
     //--------------------------------------------------
 });
