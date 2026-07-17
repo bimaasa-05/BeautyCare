@@ -639,27 +639,6 @@
                                 <p>Lihat seluruh riwayat treatment yang pernah Anda lakukan</p>
                             </div>
                         </div>
-                        <div class="ph-stats">
-                            <div class="ph-stat-item">
-                                <div class="ph-stat-num" id="totalCount">0</div>
-                                <div class="ph-stat-label">Total</div>
-                            </div>
-                            <div class="ph-stat-divider"></div>
-                            <div class="ph-stat-item">
-                                <div class="ph-stat-num" style="color: #F59E0B;" id="pendingCount">0</div>
-                                <div class="ph-stat-label">Pending</div>
-                            </div>
-                            <div class="ph-stat-divider"></div>
-                            <div class="ph-stat-item">
-                                <div class="ph-stat-num" style="color: #22C55E;" id="selesaiCount">0</div>
-                                <div class="ph-stat-label">Selesai</div>
-                            </div>
-                            <div class="ph-stat-divider"></div>
-                            <div class="ph-stat-item">
-                                <div class="ph-stat-num" style="color: #DC2626;" id="batalCount">0</div>
-                                <div class="ph-stat-label">Dibatalkan</div>
-                            </div>
-                        </div>
                     </div>
                 </div>
 
