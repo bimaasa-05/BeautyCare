@@ -23,7 +23,7 @@ return new class extends Migration
             $table->decimal('harga_jual', 12);
             $table->integer('stok');
             $table->string('foto');
-            $table->tinyInteger('status');
+            $table->enum('status', ['Tersedia', 'Habis', 'Belum Restok']);
         });
     }
 
