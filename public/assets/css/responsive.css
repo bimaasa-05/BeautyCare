@@ -170,6 +170,44 @@
     transform: translateX(0);
     box-shadow: var(--shadow-xl);
   }
+  .sidebar-logo {
+    position: relative;
+  }
+  .sidebar-close {
+    display: flex;
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 8px;
+    color: var(--gray);
+    transition: all 0.2s;
+  }
+  .sidebar-close:hover {
+    background: var(--hover);
+    color: var(--primary);
+  }
+  .sidebar-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 90;
+  }
+  .sidebar-overlay.active {
+    display: block;
+  }
+  .sidebar-nav .nav-item {
+    padding: 12px 14px;
+    font-size: 13px;
+  }
   .main-content {
     margin-left: 0;
   }

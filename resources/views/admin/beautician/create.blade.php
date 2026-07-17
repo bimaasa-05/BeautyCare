@@ -95,7 +95,7 @@
             @include('layouts.header2')
 
             <!-- Dashboard Content -->
-            <div class="flex-1 overflow-y-auto p-8">
+            <div class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
                 <div class="bg-white rounded-2xl p-6 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)]">
                     <div class="flex justify-between items-center mb-6">
                         <div>
