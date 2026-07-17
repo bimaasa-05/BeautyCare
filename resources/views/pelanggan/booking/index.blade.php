@@ -895,12 +895,6 @@
                                 <p>Kelola semua jadwal treatment BeautyCare Anda</p>
                             </div>
                         </div>
-                        <div class="ph-stats">
-                            <div class="ph-stat-item">
-                                <div class="ph-stat-num">{{ $total_booking }}</div>
-                                <div class="ph-stat-label">Total</div>
-                            </div>
-                        </div>
                     </div>
                 </div>
 
