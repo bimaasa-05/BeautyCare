@@ -29,7 +29,7 @@ class AdminKategoriController extends Controller
         if ($type === 'layanan') {
             $request->validate([
                 'nm_layanan' => 'required|string|max:255|unique:kategori_layanan,nm_layanan',
-                'status'     => 'required|in:tersedia,tidak_tersedia',
+                'status'     => 'required|in:tersedia,belum_tersedia',
             ]);
 
             KategoriLayanan::create($request->only(['nm_layanan', 'status']));
@@ -69,7 +69,7 @@ class AdminKategoriController extends Controller
         if ($type === 'layanan') {
             $request->validate([
                 'nm_layanan' => 'required|string|max:255|unique:kategori_layanan,nm_layanan,'.$id.',id_kategori_layanan',
-                'status'     => 'required|in:tersedia,tidak_tersedia',
+                'status'     => 'required|in:tersedia,belum_tersedia',
             ]);
 
             $kategori = KategoriLayanan::findOrFail($id);
