@@ -275,7 +275,7 @@
                     <div class="table-widget">
                         <div class="tw-header">
                             <h3>Riwayat Treatment Saya</h3>
-                            <a href="#">Lihat Semua</a>
+                            <a href="{{ route('pelanggan.treatment') }}">Lihat Semua</a>
                         </div>
                         <table class="data-table">
                             <thead>
@@ -378,7 +378,7 @@
                     <div class="list-widget">
                         <div class="lw-header">
                             <h3>Promo Terbaru</h3>
-                            <a href="#" style="font-size:13px;color:var(--primary);font-weight:500;">Lihat Semua</a>
+                            <a href="{{ route('pelanggan.promo') }}" style="font-size:13px;color:var(--primary);font-weight:500;">Lihat Semua</a>
                         </div>
                         <div class="booking-list">
                             <div class="booking-item">
@@ -420,7 +420,7 @@
                     <div class="list-widget">
                         <div class="lw-header">
                             <h3>Layanan Populer</h3>
-                            <a href="#" style="font-size:13px;color:var(--primary);font-weight:500;">Booking</a>
+                            <a href="{{ route('pelanggan.booking') }}" style="font-size:13px;color:var(--primary);font-weight:500;">Booking</a>
                         </div>
                         <div class="employee-grid">
                             <div class="employee-card">
