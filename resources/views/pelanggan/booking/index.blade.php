@@ -883,6 +883,27 @@
             @include('layouts.header2')
 
             <div class="dashboard-content">
+                <!-- ═══ Page Header Premium ═══ -->
+                <div class="page-header-premium">
+                    <div class="ph-content">
+                        <div class="ph-left">
+                            <div class="ph-icon-wrap">
+                                <i class="fa-regular fa-calendar-check"></i>
+                            </div>
+                            <div class="ph-text">
+                                <h3>Booking Saya</h3>
+                                <p>Kelola semua jadwal treatment BeautyCare Anda</p>
+                            </div>
+                        </div>
+                        <div class="ph-stats">
+                            <div class="ph-stat-item">
+                                <div class="ph-stat-num">{{ $total_booking }}</div>
+                                <div class="ph-stat-label">Total</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- ═══ Stats Row ═══ -->
                 <div class="stats-row">
                     <div class="stat-card">
