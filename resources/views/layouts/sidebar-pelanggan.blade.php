@@ -74,7 +74,7 @@
 
         <div class="nav-section">
             <div class="nav-section-title">Promo</div>
-            <a href="#" class="nav-item" title="Lihat promo dan diskon tersedia">
+            <a href="{{ route('pelanggan.promo') }}" class="nav-item {{ request()->routeIs('pelanggan.promo') ? 'active' : '' }}" title="Lihat promo dan diskon tersedia">
                 <span class="nav-icon">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
