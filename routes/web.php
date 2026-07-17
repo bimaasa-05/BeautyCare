@@ -127,6 +127,11 @@ Route::middleware('auth')->group(function () {
             return view('pelanggan.treatment.index');
         })->name('pelanggan.treatment');
 
+        //Route Promo
+        Route::get('/pelanggan/promo', function () {
+            return view('pelanggan.promo.index');
+        })->name('pelanggan.promo');
+
         //Route Profile
         Route::get('/pelanggan/profile', function () {
             return view('pelanggan.profile.index');
