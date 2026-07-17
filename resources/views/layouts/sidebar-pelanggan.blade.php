@@ -10,8 +10,8 @@
     </div>
 
     <div class="sidebar-profile">
-        <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->nama) }}&background=FF4F87&color=fff&size=44"
-            alt="Profile">
+        <img src="{{ auth()->user()->foto ? asset('storage/' . auth()->user()->foto) : 'https://ui-avatars.com/api/?name='.urlencode(auth()->user()->nama).'&background=FF4F87&color=fff&size=44' }}"
+            alt="Profile" id="sidebarProfileImg">
         <div class="sp-info">
             <h4>{{ auth()->user()->nama }}</h4>
             <span class="sp-badge">{{ auth()->user()->role }}</span>
@@ -91,7 +91,7 @@
 
         <div class="nav-section">
             <div class="nav-section-title">Akun</div>
-            <a href="#" class="nav-item" title="Kelola profil dan data diri Anda">
+            <a href="{{ route('pelanggan.profile') }}" class="nav-item {{ request()->routeIs('pelanggan.profile') ? 'active' : '' }}" title="Kelola profil dan data diri Anda">
                 <span class="nav-icon">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
