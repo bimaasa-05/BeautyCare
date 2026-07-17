@@ -68,9 +68,9 @@
             @include('layouts.header2')
 
             <!-- Dashboard Content -->
-            <div class="dashboard-content">
+            <div class="dashboard-content p-4 sm:p-6 lg:p-8 space-y-4 sm:space-y-6">
                 <!-- Stats Row -->
-                <div class="stats-row">
+                <div class="stats-row grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
                     <div class="stat-card">
                         <div class="stat-header">
                             <div class="stat-icon primary">
@@ -153,13 +153,13 @@
                 </div>
 
                 <!-- Dashboard Grid: Charts -->
-                <div class="dashboard-grid">
+                <div class="dashboard-grid grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
                     <!-- Pendapatan Chart -->
                     <div class="chart-card">
                         <div class="chart-header">
                             <h3>Grafik Pendapatan</h3>
-                            <div class="chart-actions">
-                                <select>
+                            <div class="chart-actions w-full sm:w-auto">
+                                <select class="w-full sm:w-auto">
                                     <option>Tahun Ini</option>
                                     <option>Bulan Ini</option>
                                     <option>Minggu Ini</option>
@@ -194,29 +194,29 @@
                                 <h3>Jadwal Hari Ini</h3>
                                 <span class="mc-total">12</span>
                             </div>
-                            <div style="display:grid;gap:10px;">
-                                <div style="display:flex;align-items:center;gap:10px;font-size:13px;">
+                            <div class="grid gap-2 sm:gap-2.5">
+                                <div class="flex flex-wrap sm:flex-nowrap items-center gap-x-2 gap-y-1 text-sm">
                                     <span style="color:var(--primary);font-weight:600;">09:00</span>
                                     <span style="color:var(--gray);">-</span>
-                                    <span style="flex:1;">Facial & Massage</span>
+                                    <span class="flex-1 min-w-0">Facial & Massage</span>
                                     <span class="badge badge-success">Confirmed</span>
                                 </div>
-                                <div style="display:flex;align-items:center;gap:10px;font-size:13px;">
+                                <div class="flex flex-wrap sm:flex-nowrap items-center gap-x-2 gap-y-1 text-sm">
                                     <span style="color:var(--primary);font-weight:600;">10:30</span>
                                     <span style="color:var(--gray);">-</span>
-                                    <span style="flex:1;">Haircut & Styling</span>
+                                    <span class="flex-1 min-w-0">Haircut & Styling</span>
                                     <span class="badge badge-warning">Pending</span>
                                 </div>
-                                <div style="display:flex;align-items:center;gap:10px;font-size:13px;">
+                                <div class="flex flex-wrap sm:flex-nowrap items-center gap-x-2 gap-y-1 text-sm">
                                     <span style="color:var(--primary);font-weight:600;">13:00</span>
                                     <span style="color:var(--gray);">-</span>
-                                    <span style="flex:1;">Manicure & Pedicure</span>
+                                    <span class="flex-1 min-w-0">Manicure & Pedicure</span>
                                     <span class="badge badge-success">Confirmed</span>
                                 </div>
-                                <div style="display:flex;align-items:center;gap:10px;font-size:13px;">
+                                <div class="flex flex-wrap sm:flex-nowrap items-center gap-x-2 gap-y-1 text-sm">
                                     <span style="color:var(--primary);font-weight:600;">14:30</span>
                                     <span style="color:var(--gray);">-</span>
-                                    <span style="flex:1;">Body Spa</span>
+                                    <span class="flex-1 min-w-0">Body Spa</span>
                                     <span class="badge badge-info">Completed</span>
                                 </div>
                             </div>
@@ -225,9 +225,9 @@
                 </div>
 
                 <!-- Dashboard Bottom Grid -->
-                <div class="dashboard-bottom-grid">
+                <div class="dashboard-bottom-grid grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
                     <!-- Layanan Terlaris -->
-                    <div class="table-widget">
+                    <div class="table-widget overflow-x-auto">
                         <div class="tw-header">
                             <h3>Layanan Terlaris</h3>
                             <a href="#">Lihat Semua</a>
@@ -287,7 +287,7 @@
                     </div>
 
                     <!-- Produk Terlaris -->
-                    <div class="table-widget">
+                    <div class="table-widget overflow-x-auto">
                         <div class="tw-header">
                             <h3>Produk Terlaris</h3>
                             <a href="#">Lihat Semua</a>
@@ -348,7 +348,7 @@
                 </div>
 
                 <!-- Dashboard Bottom Row -->
-                <div class="dashboard-bottom-row">
+                <div class="dashboard-bottom-row grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
                     <!-- Karyawan Aktif -->
                     <div class="list-widget">
                         <div class="lw-header">

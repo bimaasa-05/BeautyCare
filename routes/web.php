@@ -13,6 +13,7 @@ use App\Http\Controllers\AdminPelangganController;
 use App\Http\Controllers\AdminBeautycianController;
 use App\Http\Controllers\AdminLayananController;
 use App\Http\Controllers\AdminKategoriController;
+use App\Http\Controllers\AdminProdukController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -37,12 +38,14 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/users/{user}/edit', [AdminUserController::class, 'edit'])->name('admin.user.edit');
         Route::put('/admin/users/{user}', [AdminUserController::class, 'update'])->name('admin.user.update');
         Route::delete('/admin/users/{user}', [AdminUserController::class, 'destroy'])->name('admin.user.destroy');
+
         Route::get('/admin/pelanggan', [AdminPelangganController::class, 'index'])->name('admin.pelanggan.index');
         Route::get('/admin/pelanggan/create', [AdminPelangganController::class, 'create'])->name('admin.pelanggan.create');
         Route::post('/admin/pelanggan', [AdminPelangganController::class, 'store'])->name('admin.pelanggan.store');
         Route::get('/admin/pelanggan/{pelanggan}/edit', [AdminPelangganController::class, 'edit'])->name('admin.pelanggan.edit');
         Route::put('/admin/pelanggan/{pelanggan}', [AdminPelangganController::class, 'update'])->name('admin.pelanggan.update');
         Route::delete('/admin/pelanggan/{pelanggan}', [AdminPelangganController::class, 'destroy'])->name('admin.pelanggan.destroy');
+
         Route::get('/admin/beautician', [AdminBeautycianController::class, 'index'])->name('admin.beautician.index');
         Route::get('/admin/beautician/create', [AdminBeautycianController::class, 'create'])->name('admin.beautician.create');
         Route::post('/admin/beautician', [AdminBeautycianController::class, 'store'])->name('admin.beautician.store');
@@ -63,6 +66,13 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/kategori/{id}/edit', [AdminKategoriController::class, 'edit'])->name('admin.kategori.edit');
         Route::put('/admin/kategori/{id}', [AdminKategoriController::class, 'update'])->name('admin.kategori.update');
         Route::delete('/admin/kategori/{id}', [AdminKategoriController::class, 'destroy'])->name('admin.kategori.destroy');
+
+        Route::get('/admin/produk', [AdminProdukController::class, 'index'])->name('admin.produk.index');
+        Route::get('/admin/produk/create', [AdminProdukController::class, 'create'])->name('admin.produk.create');
+        Route::post('/admin/produk', [AdminProdukController::class, 'store'])->name('admin.produk.store');
+        Route::get('/admin/produk/{produk}/edit', [AdminProdukController::class, 'edit'])->name('admin.produk.edit');
+        Route::put('/admin/produk/{produk}', [AdminProdukController::class, 'update'])->name('admin.produk.update');
+        Route::delete('/admin/produk/{produk}', [AdminProdukController::class, 'destroy'])->name('admin.produk.destroy');
     });
 
 
