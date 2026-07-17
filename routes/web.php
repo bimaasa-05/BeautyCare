@@ -10,6 +10,7 @@ use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\AdminPelangganController;
 use App\Http\Controllers\AdminBeautycianController;
 use App\Http\Controllers\AdminLayananController;
+use App\Http\Controllers\AdminKategoriController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -53,6 +54,13 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/layanan/{layanan}/edit', [AdminLayananController::class, 'edit'])->name('admin.layanan.edit');
         Route::put('/admin/layanan/{layanan}', [AdminLayananController::class, 'update'])->name('admin.layanan.update');
         Route::delete('/admin/layanan/{layanan}', [AdminLayananController::class, 'destroy'])->name('admin.layanan.destroy');
+
+        Route::get('/admin/kategori', [AdminKategoriController::class, 'index'])->name('admin.kategori.index');
+        Route::get('/admin/kategori/create', [AdminKategoriController::class, 'create'])->name('admin.kategori.create');
+        Route::post('/admin/kategori', [AdminKategoriController::class, 'store'])->name('admin.kategori.store');
+        Route::get('/admin/kategori/{id}/edit', [AdminKategoriController::class, 'edit'])->name('admin.kategori.edit');
+        Route::put('/admin/kategori/{id}', [AdminKategoriController::class, 'update'])->name('admin.kategori.update');
+        Route::delete('/admin/kategori/{id}', [AdminKategoriController::class, 'destroy'])->name('admin.kategori.destroy');
     });
 
 
