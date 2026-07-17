@@ -7,6 +7,7 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'App\\Http\\Controllers\\AdminBeautycianController' => $baseDir . '/app/Http/Controllers/AdminBeautycianController.php',
+    'App\\Http\\Controllers\\AdminKategoriController' => $baseDir . '/app/Http/Controllers/AdminKategoriController.php',
     'App\\Http\\Controllers\\AdminLayananController' => $baseDir . '/app/Http/Controllers/AdminLayananController.php',
     'App\\Http\\Controllers\\AdminPelangganController' => $baseDir . '/app/Http/Controllers/AdminPelangganController.php',
     'App\\Http\\Controllers\\AdminUserController' => $baseDir . '/app/Http/Controllers/AdminUserController.php',
@@ -22,6 +23,7 @@ return array(
     'App\\Http\\Controllers\\BeauticianController' => $baseDir . '/app/Http/Controllers/BeauticianController.php',
     'App\\Http\\Controllers\\Controller' => $baseDir . '/app/Http/Controllers/Controller.php',
     'App\\Http\\Controllers\\KasirPelangganController' => $baseDir . '/app/Http/Controllers/KasirPelangganController.php',
+    'App\\Http\\Controllers\\KasirReservasiController' => $baseDir . '/app/Http/Controllers/KasirReservasiController.php',
     'App\\Http\\Controllers\\KasirTransaksiController' => $baseDir . '/app/Http/Controllers/KasirTransaksiController.php',
     'App\\Http\\Controllers\\PelangganController' => $baseDir . '/app/Http/Controllers/PelangganController.php',
     'App\\Http\\Controllers\\ProfileController' => $baseDir . '/app/Http/Controllers/ProfileController.php',
@@ -29,8 +31,12 @@ return array(
     'App\\Http\\Middleware\\CheckRole' => $baseDir . '/app/Http/Middleware/CheckRole.php',
     'App\\Http\\Requests\\Auth\\LoginRequest' => $baseDir . '/app/Http/Requests/Auth/LoginRequest.php',
     'App\\Http\\Requests\\ProfileUpdateRequest' => $baseDir . '/app/Http/Requests/ProfileUpdateRequest.php',
+    'App\\Models\\Booking' => $baseDir . '/app/Models/Booking.php',
+    'App\\Models\\DetailBooking' => $baseDir . '/app/Models/DetailBooking.php',
     'App\\Models\\DetailTransaksi' => $baseDir . '/app/Models/DetailTransaksi.php',
     'App\\Models\\Karyawan' => $baseDir . '/app/Models/Karyawan.php',
+    'App\\Models\\KategoriLayanan' => $baseDir . '/app/Models/KategoriLayanan.php',
+    'App\\Models\\KategoriProduk' => $baseDir . '/app/Models/KategoriProduk.php',
     'App\\Models\\Layanan' => $baseDir . '/app/Models/Layanan.php',
     'App\\Models\\Membership' => $baseDir . '/app/Models/Membership.php',
     'App\\Models\\Pelanggan' => $baseDir . '/app/Models/Pelanggan.php',
