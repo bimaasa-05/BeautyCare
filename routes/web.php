@@ -6,6 +6,8 @@ use App\Http\Controllers\PelangganController;
 use App\Http\Controllers\KasirPelangganController;
 use App\Http\Controllers\KasirTransaksiController;
 use App\Http\Controllers\KasirReservasiController;
+use App\Http\Controllers\KasirCheckinController;
+use App\Http\Controllers\KasirRiwayatTransaksiController;
 use App\Http\Controllers\BeauticianController;
 use App\Http\Controllers\BeautycianController;
 use App\Http\Controllers\AdminUserController;
@@ -109,18 +111,17 @@ Route::middleware('auth')->group(function () {
         Route::put('/kasir/reservasi/{id}', [KasirReservasiController::class, 'update'])->name('kasir.reservasi.update');
         Route::delete('/kasir/reservasi/{id}', [KasirReservasiController::class, 'destroy'])->name('kasir.reservasi.destroy');
 
-        Route::get('/kasir/checkin', function () {
-            return view('kasir.checkin.index');
-        })->name('kasir.checkin.index');
+        Route::get('/kasir/checkin', [KasirCheckinController::class, 'index'])->name('kasir.checkin.index');
+        Route::post('/kasir/checkin/{id}/process', [KasirCheckinController::class, 'checkIn'])->name('kasir.checkin.process');
+        Route::post('/kasir/checkin/{id}/undo', [KasirCheckinController::class, 'undoCheckIn'])->name('kasir.checkin.undo');
         Route::get('/kasir/pembayaran', function () {
             return view('kasir.pembayaran.index');
         })->name('kasir.pembayaran.index');
         Route::get('/kasir/invoice', function () {
             return view('kasir.invoice.index');
         })->name('kasir.invoice.index');
-        Route::get('/kasir/riwayat-transaksi', function () {
-            return view('kasir.riwayat-transaksi.index');
-        })->name('kasir.riwayat-transaksi.index');
+        Route::get('/kasir/riwayat-transaksi', [KasirRiwayatTransaksiController::class, 'index'])->name('kasir.riwayat-transaksi.index');
+        Route::get('/kasir/riwayat-transaksi/{id}', [KasirRiwayatTransaksiController::class, 'show'])->name('kasir.riwayat-transaksi.show');
     });
     //--------------------------------------------------
     //Route BeautyCian
