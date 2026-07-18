@@ -7,7 +7,6 @@ use App\Http\Controllers\KasirPelangganController;
 use App\Http\Controllers\KasirTransaksiController;
 use App\Http\Controllers\KasirReservasiController;
 use App\Http\Controllers\BeauticianController;
-use App\Http\Controllers\BeautycianController;
 use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\AdminPelangganController;
 use App\Http\Controllers\AdminBeautycianController;
@@ -15,6 +14,7 @@ use App\Http\Controllers\AdminLayananController;
 use App\Http\Controllers\AdminKategoriController;
 use App\Http\Controllers\AdminProdukController;
 use App\Http\Controllers\AdminMembershipController;
+use App\Http\Controllers\AdminPromoController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -81,6 +81,13 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/membership/{id}/edit', [AdminMembershipController::class, 'edit'])->name('admin.membership.edit');
         Route::put('/admin/membership/{id}', [AdminMembershipController::class, 'update'])->name('admin.membership.update');
         Route::delete('/admin/membership/{id}', [AdminMembershipController::class, 'destroy'])->name('admin.membership.destroy');
+
+        Route::get('/admin/promo', [AdminPromoController::class, 'index'])->name('admin.promo.index');
+        Route::get('/admin/promo/create', [AdminPromoController::class, 'create'])->name('admin.promo.create');
+        Route::post('/admin/promo', [AdminPromoController::class, 'store'])->name('admin.promo.store');
+        Route::get('/admin/promo/{id}/edit', [AdminPromoController::class, 'edit'])->name('admin.promo.edit');
+        Route::put('/admin/promo/{id}', [AdminPromoController::class, 'update'])->name('admin.promo.update');
+        Route::delete('/admin/promo/{id}', [AdminPromoController::class, 'destroy'])->name('admin.promo.destroy');
     });
 
 
