@@ -14,6 +14,7 @@ use App\Http\Controllers\AdminBeautycianController;
 use App\Http\Controllers\AdminLayananController;
 use App\Http\Controllers\AdminKategoriController;
 use App\Http\Controllers\AdminProdukController;
+use App\Http\Controllers\AdminMembershipController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -73,6 +74,13 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/produk/{produk}/edit', [AdminProdukController::class, 'edit'])->name('admin.produk.edit');
         Route::put('/admin/produk/{produk}', [AdminProdukController::class, 'update'])->name('admin.produk.update');
         Route::delete('/admin/produk/{produk}', [AdminProdukController::class, 'destroy'])->name('admin.produk.destroy');
+
+        Route::get('/admin/membership', [AdminMembershipController::class, 'index'])->name('admin.membership.index');
+        Route::get('/admin/membership/create', [AdminMembershipController::class, 'create'])->name('admin.membership.create');
+        Route::post('/admin/membership', [AdminMembershipController::class, 'store'])->name('admin.membership.store');
+        Route::get('/admin/membership/{id}/edit', [AdminMembershipController::class, 'edit'])->name('admin.membership.edit');
+        Route::put('/admin/membership/{id}', [AdminMembershipController::class, 'update'])->name('admin.membership.update');
+        Route::delete('/admin/membership/{id}', [AdminMembershipController::class, 'destroy'])->name('admin.membership.destroy');
     });
 
 
