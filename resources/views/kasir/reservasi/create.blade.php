@@ -96,7 +96,7 @@
                                 <select name="id_karyawan" class="form-input-custom @error('id_karyawan') border-red-400 @enderror">
                                     <option value="">-- Pilih Karyawan --</option>
                                     @foreach ($karyawan as $k)
-                                        <option value="{{ $k->id_karyawan }}" {{ old('id_karyawan') == $k->id_karyawan ? 'selected' : '' }}>
+                                        <option value="{{ $k->id }}" {{ old('id_karyawan') == $k->id ? 'selected' : '' }}>
                                             {{ $k->nama }}
                                         </option>
                                     @endforeach
