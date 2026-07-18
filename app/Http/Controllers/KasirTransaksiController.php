@@ -102,7 +102,7 @@ class KasirTransaksiController extends Controller
 
     public function show($id)
     {
-        $transaksi = Transaksi::with('pelanggan')->findOrFail($id);
+        $transaksi = Transaksi::with('pelanggan', 'detail')->findOrFail($id);
         return view('kasir.transaksi.show', compact('transaksi'));
     }
 
