@@ -6,7 +6,7 @@ use App\Models\Booking;
 use App\Models\DetailBooking;
 use App\Models\Pelanggan;
 use App\Models\Layanan;
-use App\Models\Karyawan;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class KasirReservasiController extends Controller
@@ -30,8 +30,8 @@ class KasirReservasiController extends Controller
     public function create()
     {
         $pelanggan = Pelanggan::all();
-        $karyawan = Karyawan::all();
-        $layanan = Layanan::where('status', 'aktif')->get();
+        $karyawan = User::where('role', 'beautycian')->get();
+        $layanan = Layanan::where('status', 'Tersedia')->get();
         return view('kasir.reservasi.create', compact('pelanggan', 'karyawan', 'layanan'));
     }
 
@@ -88,7 +88,7 @@ class KasirReservasiController extends Controller
     {
         $reservasi = Booking::with('detail')->findOrFail($id);
         $pelanggan = Pelanggan::all();
-        $karyawan = Karyawan::all();
+        $karyawan = User::where('role', 'beautycian')->get();
         $layanan = Layanan::where('status', 'aktif')->get();
         return view('kasir.reservasi.edit', compact('reservasi', 'pelanggan', 'karyawan', 'layanan'));
     }
