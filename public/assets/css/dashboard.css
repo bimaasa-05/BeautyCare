@@ -935,6 +935,208 @@
   to { transform: rotate(360deg); }
 }
 
+/* ---- Enhanced Card Styles ---- */
+.card-gradient-pink {
+  background: linear-gradient(135deg, #FFF8FA 0%, #FFFFFF 100%);
+  border: 1px solid #FFE5EF;
+}
+.card-gradient-green {
+  background: linear-gradient(135deg, #F0FDF4 0%, #FFFFFF 100%);
+  border: 1px solid #DCFCE7;
+}
+.card-gradient-blue {
+  background: linear-gradient(135deg, #EFF6FF 0%, #FFFFFF 100%);
+  border: 1px solid #DBEAFE;
+}
+.card-gradient-amber {
+  background: linear-gradient(135deg, #FFFBEB 0%, #FFFFFF 100%);
+  border: 1px solid #FEF3C7;
+}
+.card-gradient-purple {
+  background: linear-gradient(135deg, #FAF5FF 0%, #FFFFFF 100%);
+  border: 1px solid #F3E8FF;
+}
+
+.stat-card-enhanced {
+  border-radius: 16px;
+  padding: 20px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+.stat-card-enhanced::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
+  pointer-events: none;
+}
+.stat-card-enhanced:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 35px -8px rgba(0,0,0,0.1);
+}
+
+/* ---- Table Enhancements ---- */
+.table-container {
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid #f0f0f0;
+}
+.table-enhanced th {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 14px 16px;
+  background: linear-gradient(135deg, #FFF8FA 0%, #FFE5EF 100%);
+  color: #888;
+  border-bottom: 2px solid #FFE5EF;
+}
+.table-enhanced td {
+  padding: 12px 16px;
+  font-size: 13px;
+  border-bottom: 1px solid #f5f5f5;
+  vertical-align: middle;
+}
+.table-enhanced tbody tr {
+  transition: all 0.25s ease;
+}
+.table-enhanced tbody tr:hover {
+  background: #FFF8FA !important;
+}
+.table-enhanced tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* ---- Empty State ---- */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+}
+.empty-state .empty-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: #FFF8FA;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+  font-size: 32px;
+  color: #FFB3C8;
+}
+.empty-state h4 {
+  font-size: 15px;
+  font-weight: 600;
+  color: #999;
+  margin-bottom: 4px;
+}
+.empty-state p {
+  font-size: 12px;
+  color: #bbb;
+}
+
+/* ---- Action Buttons Enhanced ---- */
+.action-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  font-size: 13px;
+  border: none;
+  cursor: pointer;
+}
+.action-btn:hover {
+  transform: scale(1.1);
+}
+.action-btn-view { background: #EFF6FF; color: #3B82F6; }
+.action-btn-view:hover { background: #DBEAFE; }
+.action-btn-edit { background: #FFFBEB; color: #F59E0B; }
+.action-btn-edit:hover { background: #FEF3C7; }
+.action-btn-delete { background: #FEF2F2; color: #EF4444; }
+.action-btn-delete:hover { background: #FDE8E8; }
+.action-btn-print { background: #FAF5FF; color: #A855F7; }
+.action-btn-print:hover { background: #F3E8FF; }
+
+/* ---- Search Bar Enhanced ---- */
+.search-enhanced {
+  background: #F9FAFB;
+  border: 1.5px solid #ECECEC;
+  border-radius: 100px;
+  padding: 8px 16px 8px 40px;
+  font-size: 13px;
+  width: 100%;
+  transition: all 0.3s ease;
+  font-family: 'Inter', sans-serif;
+}
+.search-enhanced:focus {
+  border-color: #FF4F87;
+  box-shadow: 0 0 0 3px rgba(255,79,135,0.1);
+  background: #fff;
+}
+.search-enhanced::placeholder {
+  color: #bbb;
+}
+.search-wrapper {
+  position: relative;
+}
+.search-wrapper .search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #bbb;
+  font-size: 13px;
+  pointer-events: none;
+}
+
+/* ---- Badge Enhanced ---- */
+.badge-enhanced {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 14px;
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+.badge-enhanced i { font-size: 10px; }
+
+/* ---- Page Header Enhanced ---- */
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.page-header h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+.page-header h3 i {
+  color: #FF4F87;
+  margin-right: 8px;
+}
+.page-header .page-subtitle {
+  font-size: 12px;
+  color: #999;
+  margin-top: 2px;
+}
+
 /* ---- Toast Notifications ---- */
 .toast-container {
   position: fixed;
