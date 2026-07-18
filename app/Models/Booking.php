@@ -19,18 +19,18 @@ class Booking extends Model
         'catatan',
     ];
 
-    public function detail()
+    public function pelanggan()
     {
-        return $this->hasOne(DetailBooking::class, 'id_booking', 'id_booking');
+        return $this->belongsTo(Pelanggan::class, 'id_pelanggan', 'id_pelanggan');
     }
 
     public function karyawan()
     {
-        return $this->belongsTo(Karyawan::class, 'id_karyawan', 'id_karyawan');
+        return $this->belongsTo(User::class, 'id_karyawan', 'id');
     }
 
-    public function pelanggan()
+    public function detail()
     {
-        return $this->belongsTo(User::class, 'id_pelanggan', 'id');
+        return $this->hasMany(DetailBooking::class, 'id_booking', 'id_booking');
     }
 }
