@@ -65,23 +65,73 @@
                     <div class="float-decoration" style="top:-10px;right:-10px;">📅</div>
                     <div class="float-decoration" style="bottom:-10px;left:-10px;font-size:40px;">✨</div>
 
-                    <div class="flex justify-between items-center mb-6">
+                    @php
+                        $totalMenunggu = $reservasi->count(fn($r) => $r->status === 'menunggu');
+                        $totalSelesai = $reservasi->count(fn($r) => $r->status === 'selesai');
+                        $totalDiproses = $reservasi->count(fn($r) => $r->status === 'diproses');
+                    @endphp
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-3 mb-6">
+                        <div class="stat-card-enhanced card-gradient-pink">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Total</p>
+                                    <p class="text-[24px] font-bold text-gray-800 mt-1">{{ $TotalReservasi }}</p>
+                                </div>
+                                <div class="w-10 h-10 rounded-full bg-pink-100 flex items-center justify-center">
+                                    <i class="fa-regular fa-calendar-check text-pink-500"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stat-card-enhanced card-gradient-amber">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Menunggu</p>
+                                    <p class="text-[24px] font-bold text-amber-600 mt-1">{{ $totalMenunggu }}</p>
+                                </div>
+                                <div class="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center">
+                                    <i class="fa-regular fa-clock text-amber-500"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stat-card-enhanced card-gradient-purple">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Diproses</p>
+                                    <p class="text-[24px] font-bold text-purple-600 mt-1">{{ $totalDiproses }}</p>
+                                </div>
+                                <div class="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
+                                    <i class="fa-solid fa-spinner text-purple-500"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stat-card-enhanced card-gradient-green">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Selesai</p>
+                                    <p class="text-[24px] font-bold text-green-600 mt-1">{{ $totalSelesai }}</p>
+                                </div>
+                                <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
+                                    <i class="fa-regular fa-circle-check text-green-500"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="page-header">
                         <div>
-                            <h3 class="text-[16px] font-bold text-gray-800">
-                                <i class="fa-solid fa-calendar-check text-pink-500 mr-2"></i>Data Reservasi
-                            </h3>
-                            <p class="text-[12px] text-gray-400 mt-0.5">
-                                <i class="fa-regular fa-circle-check text-pink-300 mr-1"></i>
+                            <h3><i class="fa-solid fa-calendar-check"></i>Data Reservasi</h3>
+                            <p class="page-subtitle">
+                                <i class="fa-regular fa-circle-check mr-1"></i>
                                 Total {{ $TotalReservasi }} reservasi tercatat
                             </p>
                         </div>
                         <div class="flex items-center gap-3">
-                            <div class="relative">
-                                <i class="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
-                                <form action="" class="input-group">
+                            <div class="search-wrapper">
+                                <i class="fa-solid fa-search search-icon"></i>
+                                <form action="">
                                     <input type="text" placeholder="Cari reservasi..." name="keyword"
-                                        class="bg-gray-50 border border-gray-100 text-[12px] rounded-full pl-9 pr-4 py-2 w-[200px] focus:outline-none focus:border-pink-300 transition-all placeholder-gray-400"
-                                        value={{ Request()->keyword }}>
+                                        class="search-enhanced" style="width:200px;"
+                                        value="{{ Request()->keyword }}">
                                 </form>
                             </div>
                             <a href="{{ route('kasir.reservasi.create') }}"
@@ -91,35 +141,38 @@
                         </div>
                     </div>
 
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse">
+                    <div class="overflow-x-auto table-container">
+                        <table class="w-full text-left border-collapse table-enhanced">
                             <thead>
-                                <tr class="text-[11px] font-bold text-gray-400 uppercase border-b border-gray-100 bg-pink-50/30">
-                                    <th class="py-3 px-4 w-10">#</th>
-                                    <th class="py-3 px-4">Pelanggan</th>
-                                    <th class="py-3 px-4">Karyawan</th>
-                                    <th class="py-3 px-4">Tanggal</th>
-                                    <th class="py-3 px-4">Jam</th>
-                                    <th class="py-3 px-4">Status</th>
-                                    <th class="py-3 px-4 text-center">Aksi</th>
+                                <tr>
+                                    <th class="w-10 text-center">#</th>
+                                    <th>Pelanggan</th>
+                                    <th>Karyawan</th>
+                                    <th>Tanggal</th>
+                                    <th>Jam</th>
+                                    <th>Status</th>
+                                    <th class="text-center">Aksi</th>
                                 </tr>
                             </thead>
-                            <tbody class="text-[13px] text-gray-700 divide-y divide-gray-50">
+                            <tbody class="text-[13px] text-gray-700">
                                 @forelse($reservasi as $r)
-                                    <tr class="table-row-hover">
-                                        <td class="py-3.5 px-4 text-gray-400 font-medium text-center text-[12px]">{{ $loop->iteration }}</td>
-                                        <td class="py-3.5 px-4">
-                                            <div class="flex items-center gap-2">
-                                                <div class="w-7 h-7 rounded-full bg-pink-200 text-pink-600 flex items-center justify-center font-bold text-[10px]">
+                                    <tr>
+                                        <td class="text-center text-gray-400 font-medium">{{ $loop->iteration }}</td>
+                                        <td>
+                                            <div class="flex items-center gap-2.5">
+                                                <div class="w-8 h-8 rounded-full bg-pink-200 text-pink-600 flex items-center justify-center font-bold text-[11px]">
                                                     {{ $r->pelanggan ? strtoupper(substr($r->pelanggan->nm_pelanggan, 0, 2)) : '??' }}
                                                 </div>
-                                                <span class="font-medium text-gray-700">{{ $r->pelanggan->nm_pelanggan ?? '-' }}</span>
+                                                <div>
+                                                    <span class="font-semibold text-gray-700 block leading-tight">{{ $r->pelanggan->nm_pelanggan ?? '-' }}</span>
+                                                    <span class="text-[11px] text-gray-400">{{ $r->pelanggan->no_hp ?? '' }}</span>
+                                                </div>
                                             </div>
                                         </td>
-                                        <td class="py-3.5 px-4 text-gray-500">{{ $r->karyawan->nama ?? '-' }}</td>
-                                        <td class="py-3.5 px-4 text-gray-500">{{ \Carbon\Carbon::parse($r->tanggal)->format('d/m/Y') }}</td>
-                                        <td class="py-3.5 px-4 text-gray-500">{{ $r->jam }}</td>
-                                        <td class="py-3.5 px-4">
+                                        <td class="text-gray-500">{{ $r->karyawan->nama ?? '-' }}</td>
+                                        <td class="text-gray-500">{{ \Carbon\Carbon::parse($r->tanggal)->format('d/m/Y') }}</td>
+                                        <td class="text-gray-500 font-mono">{{ $r->jam }}</td>
+                                        <td>
                                             @php
                                                 $statusClass = match($r->status) {
                                                     'menunggu' => 'badge-menunggu',
@@ -142,37 +195,40 @@
                                                 <i class="{{ $statusIcon }}"></i> {{ ucfirst($r->status) }}
                                             </span>
                                         </td>
-                                        <td class="py-3.5 px-4 text-center">
-                                            <div class="flex items-center justify-center gap-2">
+                                        <td class="text-center">
+                                            <div class="flex items-center justify-center gap-1.5">
                                                 <a href="{{ route('kasir.reservasi.show', $r->id_booking) }}"
-                                                    class="w-7 h-7 text-blue-500 bg-blue-50 hover:bg-blue-100 rounded-md transition-colors flex items-center justify-center"
-                                                    title="Detail"><i class="fa-regular fa-eye text-xs"></i></a>
+                                                    class="action-btn action-btn-view" title="Detail">
+                                                    <i class="fa-regular fa-eye"></i>
+                                                </a>
                                                 <a href="{{ route('kasir.reservasi.edit', $r->id_booking) }}"
-                                                    class="w-7 h-7 text-amber-500 bg-amber-50 hover:bg-amber-100 rounded-md transition-colors flex items-center justify-center"
-                                                    title="Edit"><i class="fa-regular fa-pen-to-square text-xs"></i></a>
+                                                    class="action-btn action-btn-edit" title="Edit">
+                                                    <i class="fa-regular fa-pen-to-square"></i>
+                                                </a>
                                                 <form action="{{ route('kasir.reservasi.destroy', $r->id_booking) }}"
                                                     method="POST" class="inline"
                                                     onsubmit="return confirm('Yakin ingin menghapus reservasi ini?')">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit"
-                                                        class="w-7 h-7 text-red-500 bg-red-50 hover:bg-red-100 rounded-md transition-colors flex items-center justify-center"
-                                                        title="Hapus"><i class="fa-regular fa-trash-can text-xs"></i></button>
+                                                        class="action-btn action-btn-delete" title="Hapus">
+                                                        <i class="fa-regular fa-trash-can"></i>
+                                                    </button>
                                                 </form>
                                             </div>
                                         </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="7" class="py-14 text-center">
-                                            <div class="flex flex-col items-center gap-3">
-                                                <div class="w-20 h-20 rounded-full bg-pink-50 flex items-center justify-center">
-                                                    <i class="fa-solid fa-calendar-check text-3xl text-pink-200"></i>
+                                        <td colspan="7">
+                                            <div class="empty-state">
+                                                <div class="empty-icon">
+                                                    <i class="fa-solid fa-calendar-check"></i>
                                                 </div>
-                                                <p class="text-gray-400 font-medium text-[14px]">Belum ada data reservasi</p>
-                                                <p class="text-gray-300 text-[12px] -mt-2">Buat reservasi baru untuk pelanggan</p>
+                                                <h4>Belum ada data reservasi</h4>
+                                                <p>Buat reservasi baru untuk pelanggan</p>
                                                 <a href="{{ route('kasir.reservasi.create') }}"
-                                                    class="text-[#FF4F87] text-[12px] font-semibold hover:underline inline-flex items-center gap-1 mt-1">
+                                                    class="text-[#FF4F87] text-[12px] font-semibold hover:underline inline-flex items-center gap-1 mt-3">
                                                     <i class="fa-solid fa-plus-circle"></i> Buat reservasi sekarang
                                                 </a>
                                             </div>
