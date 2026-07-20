@@ -183,7 +183,6 @@
                                             @php
                                                 $metodeIcon = match($t->metode_byr) {
                                                     'Tunai' => 'fa-solid fa-money-bill-wave text-emerald-500',
-                                                    'Qris' => 'fa-solid fa-qrcode text-blue-500',
                                                     'Transfer' => 'fa-solid fa-building-columns text-purple-500',
                                                     'Debit' => 'fa-regular fa-credit-card text-amber-500',
                                                     'E-Wallet' => 'fa-solid fa-wallet text-pink-500',
@@ -196,9 +195,9 @@
                                         </td>
                                         <td class="py-3.5 px-4 text-gray-500">{{ $t->user->nama ?? '-' }}</td>
                                         <td class="py-3.5 px-4">
-                                            @if ($t->status == 1)
-                                                <span class="badge-status status-selesai"><i class="fa-regular fa-circle-check"></i> Selesai</span>
-                                            @elseif ($t->status == 0)
+                                            @if ($t->status == 'Lunas')
+                                                <span class="badge-status status-selesai"><i class="fa-regular fa-circle-check"></i> Lunas</span>
+                                            @elseif ($t->status == 'Pending')
                                                 <span class="badge-status status-proses"><i class="fa-regular fa-clock"></i> Pending</span>
                                             @else
                                                 <span class="badge-status status-batal"><i class="fa-regular fa-circle-xmark"></i> Batal</span>
