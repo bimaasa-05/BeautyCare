@@ -7,6 +7,7 @@ use App\Http\Controllers\KasirPelangganController;
 use App\Http\Controllers\KasirTransaksiController;
 use App\Http\Controllers\KasirReservasiController;
 use App\Http\Controllers\KasirCheckinController;
+use App\Http\Controllers\KasirPembayaranController;
 use App\Http\Controllers\KasirRiwayatTransaksiController;
 use App\Http\Controllers\BeauticianController;
 use App\Http\Controllers\AdminUserController;
@@ -17,6 +18,7 @@ use App\Http\Controllers\AdminKategoriController;
 use App\Http\Controllers\AdminProdukController;
 use App\Http\Controllers\AdminMembershipController;
 use App\Http\Controllers\AdminPromoController;
+use App\Http\Controllers\NotifikasiController;
 use App\Http\Controllers\AdminSupplierController;
 use Illuminate\Support\Facades\Route;
 
@@ -29,6 +31,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    //Notifikasi
+    Route::get('/notif/get', [NotifikasiController::class, 'getNotif'])->name('notif.get');
+    Route::get('/notif/{id}/read', [NotifikasiController::class, 'markRead'])->name('notif.read');
+    Route::post('/notif/mark-all-read', [NotifikasiController::class, 'markAllRead'])->name('notif.mark-all-read');
+    Route::get('/notifikasi', [NotifikasiController::class, 'index'])->name('notif.index');
 
     //Akses Login -- Rolee --- Admin
     Route::middleware(['role:admin'])->group(function () {
@@ -98,6 +106,26 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/supplier/{id}/edit', [AdminSupplierController::class, 'edit'])->name('admin.supplier.edit');
         Route::put('/admin/supplier/{id}', [AdminSupplierController::class, 'update'])->name('admin.supplier.update');
         Route::delete('/admin/supplier/{id}', [AdminSupplierController::class, 'destroy'])->name('admin.supplier.destroy');
+
+        //Profile Admin
+        Route::get('/admin/profile', function () {
+            return view('admin.profile.index');
+        })->name('admin.profile');
+        Route::post('/admin/profile/update-foto', function (\Illuminate\Http\Request $req) {
+            $req->validate(['foto' => 'required|image|mimes:jpeg,png,jpg|max:2048']);
+            auth()->user()->update(['foto' => $req->file('foto')->store('profile-admin', 'public')]);
+            return back()->with('success', 'Foto profil berhasil diperbarui!');
+        })->name('admin.profile.update-foto');
+        Route::post('/admin/profile/update', function (\Illuminate\Http\Request $req) {
+            $req->validate(['nama' => 'required|string|max:255', 'email' => 'required|email|max:255|unique:users,email,' . auth()->id(), 'no_hp' => 'required|string|max:20']);
+            auth()->user()->update($req->only(['nama', 'email', 'no_hp']));
+            return back()->with('success', 'Profil berhasil diperbarui!');
+        })->name('admin.profile.update');
+        Route::post('/admin/profile/update-password', function (\Illuminate\Http\Request $req) {
+            $req->validate(['current_password' => 'required|current_password', 'new_password' => 'required|string|min:8|confirmed']);
+            auth()->user()->update(['password' => bcrypt($req->new_password)]);
+            return back()->with('success', 'Password berhasil diperbarui!');
+        })->name('admin.profile.update-password');
     });
 
 
@@ -136,15 +164,34 @@ Route::middleware('auth')->group(function () {
         Route::get('/kasir/checkin', [KasirCheckinController::class, 'index'])->name('kasir.checkin.index');
         Route::post('/kasir/checkin/{id}/process', [KasirCheckinController::class, 'checkIn'])->name('kasir.checkin.process');
         Route::post('/kasir/checkin/{id}/undo', [KasirCheckinController::class, 'undoCheckIn'])->name('kasir.checkin.undo');
-        Route::get('/kasir/pembayaran', function () {
-            return view('kasir.pembayaran.index');
-        })->name('kasir.pembayaran.index');
-        Route::get('/kasir/invoice', function () {
-            return view('kasir.invoice.index');
-        })->name('kasir.invoice.index');
+        Route::get('/kasir/pembayaran', [KasirPembayaranController::class, 'index'])->name('kasir.pembayaran.index');
+        Route::get('/kasir/pembayaran/bayar/{id}', [KasirPembayaranController::class, 'create'])->name('kasir.pembayaran.create');
+        Route::post('/kasir/pembayaran', [KasirPembayaranController::class, 'store'])->name('kasir.pembayaran.store');
+        Route::get('/kasir/pembayaran/{id}', [KasirPembayaranController::class, 'show'])->name('kasir.pembayaran.show');
+        Route::get('/kasir/invoice', [KasirTransaksiController::class, 'invoiceIndex'])->name('kasir.invoice.index');
         Route::get('/kasir/invoice/{id}', [KasirTransaksiController::class, 'invoice'])->name('kasir.invoice.show');
         Route::get('/kasir/riwayat-transaksi', [KasirRiwayatTransaksiController::class, 'index'])->name('kasir.riwayat-transaksi.index');
         Route::get('/kasir/riwayat-transaksi/{id}', [KasirRiwayatTransaksiController::class, 'show'])->name('kasir.riwayat-transaksi.show');
+
+        //Profile Kasir
+        Route::get('/kasir/profile', function () {
+            return view('kasir.profile.index');
+        })->name('kasir.profile');
+        Route::post('/kasir/profile/update-foto', function (\Illuminate\Http\Request $req) {
+            $req->validate(['foto' => 'required|image|mimes:jpeg,png,jpg|max:2048']);
+            auth()->user()->update(['foto' => $req->file('foto')->store('profile-kasir', 'public')]);
+            return back()->with('success', 'Foto profil berhasil diperbarui!');
+        })->name('kasir.profile.update-foto');
+        Route::post('/kasir/profile/update', function (\Illuminate\Http\Request $req) {
+            $req->validate(['nama' => 'required|string|max:255', 'email' => 'required|email|max:255|unique:users,email,' . auth()->id(), 'no_hp' => 'required|string|max:20']);
+            auth()->user()->update($req->only(['nama', 'email', 'no_hp']));
+            return back()->with('success', 'Profil berhasil diperbarui!');
+        })->name('kasir.profile.update');
+        Route::post('/kasir/profile/update-password', function (\Illuminate\Http\Request $req) {
+            $req->validate(['current_password' => 'required|current_password', 'new_password' => 'required|string|min:8|confirmed']);
+            auth()->user()->update(['password' => bcrypt($req->new_password)]);
+            return back()->with('success', 'Password berhasil diperbarui!');
+        })->name('kasir.profile.update-password');
     });
     //--------------------------------------------------
     //Route BeautyCian
@@ -152,6 +199,26 @@ Route::middleware('auth')->group(function () {
         Route::get('/beautycian/dashboard', function () {
             return view('beautycian.dashboard');
         })->name('beautycian.dashboard');
+
+        //Profile Beautycian
+        Route::get('/beautycian/profile', function () {
+            return view('beautycian.profile.index');
+        })->name('beautycian.profile');
+        Route::post('/beautycian/profile/update-foto', function (\Illuminate\Http\Request $req) {
+            $req->validate(['foto' => 'required|image|mimes:jpeg,png,jpg|max:2048']);
+            auth()->user()->update(['foto' => $req->file('foto')->store('profile-beautycian', 'public')]);
+            return back()->with('success', 'Foto profil berhasil diperbarui!');
+        })->name('beautycian.profile.update-foto');
+        Route::post('/beautycian/profile/update', function (\Illuminate\Http\Request $req) {
+            $req->validate(['nama' => 'required|string|max:255', 'email' => 'required|email|max:255|unique:users,email,' . auth()->id(), 'no_hp' => 'required|string|max:20']);
+            auth()->user()->update($req->only(['nama', 'email', 'no_hp']));
+            return back()->with('success', 'Profil berhasil diperbarui!');
+        })->name('beautycian.profile.update');
+        Route::post('/beautycian/profile/update-password', function (\Illuminate\Http\Request $req) {
+            $req->validate(['current_password' => 'required|current_password', 'new_password' => 'required|string|min:8|confirmed']);
+            auth()->user()->update(['password' => bcrypt($req->new_password)]);
+            return back()->with('success', 'Password berhasil diperbarui!');
+        })->name('beautycian.profile.update-password');
     });
     //--------------------------------------------------
     //Route Pelangggan
