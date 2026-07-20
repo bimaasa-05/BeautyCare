@@ -84,6 +84,19 @@
                 </span>
                 Data Beautician
             </a>
+            <a href="{{ route('admin.supplier.index') }}" class="nav-item {{ request()->routeIs('admin.supplier.index') ? 'active' : '' }}" class="nav-item"
+                title="Kelola data supplier">
+                <span class="nav-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M5 18H19M5 18C3.89543 18 3 17.1046 3 16V8C3 6.89543 3.89543 6 5 6H19C20.1046 6 21 6.89543 21 8V16C21 17.1046 20.1046 18 19 18M5 18L5 20M19 18L19 20" />
+                        <circle cx="7" cy="14" r="1.5" fill="currentColor" />
+                        <circle cx="17" cy="14" r="1.5" fill="currentColor" />
+                        <path d="M5 9H9V12H5V9Z" />
+                    </svg>
+                </span>
+                Data Supplier
+            </a>
         </div>
 
         <div class="nav-section">
