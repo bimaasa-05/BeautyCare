@@ -9,7 +9,6 @@ use App\Http\Controllers\KasirReservasiController;
 use App\Http\Controllers\KasirCheckinController;
 use App\Http\Controllers\KasirRiwayatTransaksiController;
 use App\Http\Controllers\BeauticianController;
-use App\Http\Controllers\BeautycianController;
 use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\AdminPelangganController;
 use App\Http\Controllers\AdminBeautycianController;
@@ -54,7 +53,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/beautician/{beautician}/edit', [AdminBeautycianController::class, 'edit'])->name('admin.beautician.edit');
         Route::put('/admin/beautician/{beautician}', [AdminBeautycianController::class, 'update'])->name('admin.beautician.update');
         Route::delete('/admin/beautician/{beautician}', [AdminBeautycianController::class, 'destroy'])->name('admin.beautician.destroy');
-        
+
         Route::get('/admin/layanan', [AdminLayananController::class, 'index'])->name('admin.layanan.index');
         Route::get('/admin/layanan/create', [AdminLayananController::class, 'create'])->name('admin.layanan.create');
         Route::post('/admin/layanan', [AdminLayananController::class, 'store'])->name('admin.layanan.store');
@@ -100,7 +99,6 @@ Route::middleware('auth')->group(function () {
         Route::get('/kasir/transaksi/{id}/edit', [KasirTransaksiController::class, 'edit'])->name('kasir.transaksi.edit');
         Route::put('/kasir/transaksi/{id}', [KasirTransaksiController::class, 'update'])->name('kasir.transaksi.update');
         Route::delete('/kasir/transaksi/{id}', [KasirTransaksiController::class, 'destroy'])->name('kasir.transaksi.destroy');
-        Route::get('/kasir/transaksi/qris-code', [KasirTransaksiController::class, 'qrisCode'])->name('kasir.transaksi.qris-code');
 
         Route::get('/kasir/reservasi', [KasirReservasiController::class, 'index'])->name('kasir.reservasi.index');
         Route::get('/kasir/reservasi/create', [KasirReservasiController::class, 'create'])->name('kasir.reservasi.create');
@@ -120,6 +118,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/kasir/invoice', function () {
             return view('kasir.invoice.index');
         })->name('kasir.invoice.index');
+        Route::get('/kasir/invoice/{id}', [KasirTransaksiController::class, 'invoice'])->name('kasir.invoice.show');
         Route::get('/kasir/riwayat-transaksi', [KasirRiwayatTransaksiController::class, 'index'])->name('kasir.riwayat-transaksi.index');
         Route::get('/kasir/riwayat-transaksi/{id}', [KasirRiwayatTransaksiController::class, 'show'])->name('kasir.riwayat-transaksi.show');
     });
@@ -136,7 +135,7 @@ Route::middleware('auth')->group(function () {
         return view('pelanggan.dashboard');
     })->middleware(['auth', 'verified'])->name('dashboard');
     Route::middleware(['role:pelanggan'])->group(function () {
-        
+
         //Route Booking
         Route::get('/pelanggan/booking', [PelangganController::class, 'index'])->name('pelanggan.booking');
         Route::get('/pelanggan/booking/create', [PelangganController::class, 'create'])->name('pelanggan.booking.create');
