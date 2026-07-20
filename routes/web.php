@@ -18,6 +18,7 @@ use App\Http\Controllers\AdminProdukController;
 use App\Http\Controllers\AdminMembershipController;
 use App\Http\Controllers\AdminPromoController;
 use App\Http\Controllers\AdminSupplierController;
+use App\Http\Controllers\AdminReservasiController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -82,6 +83,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/membership/create', [AdminMembershipController::class, 'create'])->name('admin.membership.create');
         Route::post('/admin/membership', [AdminMembershipController::class, 'store'])->name('admin.membership.store');
         Route::get('/admin/membership/{id}/edit', [AdminMembershipController::class, 'edit'])->name('admin.membership.edit');
+        Route::put('/admin/membership/{id}/status', [AdminMembershipController::class, 'updateStatus'])->name('admin.membership.status');
         Route::put('/admin/membership/{id}', [AdminMembershipController::class, 'update'])->name('admin.membership.update');
         Route::delete('/admin/membership/{id}', [AdminMembershipController::class, 'destroy'])->name('admin.membership.destroy');
 
@@ -98,6 +100,16 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/supplier/{id}/edit', [AdminSupplierController::class, 'edit'])->name('admin.supplier.edit');
         Route::put('/admin/supplier/{id}', [AdminSupplierController::class, 'update'])->name('admin.supplier.update');
         Route::delete('/admin/supplier/{id}', [AdminSupplierController::class, 'destroy'])->name('admin.supplier.destroy');
+
+        Route::get('/admin/reservasi', [AdminReservasiController::class, 'index'])->name('admin.reservasi.index');
+        Route::get('/admin/reservasi/create', [AdminReservasiController::class, 'create'])->name('admin.reservasi.create');
+        Route::post('/admin/reservasi', [AdminReservasiController::class, 'store'])->name('admin.reservasi.store');
+        Route::get('/admin/reservasi/get-layanan', [AdminReservasiController::class, 'getLayanan'])->name('admin.reservasi.get-layanan');
+        Route::put('/admin/reservasi/{id}/status', [AdminReservasiController::class, 'updateStatus'])->name('admin.reservasi.status');
+        Route::get('/admin/reservasi/{id}', [AdminReservasiController::class, 'show'])->name('admin.reservasi.show');
+        Route::get('/admin/reservasi/{id}/edit', [AdminReservasiController::class, 'edit'])->name('admin.reservasi.edit');
+        Route::put('/admin/reservasi/{id}', [AdminReservasiController::class, 'update'])->name('admin.reservasi.update');
+        Route::delete('/admin/reservasi/{id}', [AdminReservasiController::class, 'destroy'])->name('admin.reservasi.destroy');
     });
 
 

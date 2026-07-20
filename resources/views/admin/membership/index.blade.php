@@ -405,16 +405,24 @@
                             </div>
                         @endif
 
-                        <div class="flex justify-between items-center mb-4">
+                        <div class="flex flex-wrap justify-between items-center gap-3 mb-4">
                             <div>
                                 <h3 class="text-[16px] font-bold text-gray-800">Data Membership</h3>
                                 <p class="text-[12px] text-gray-400 mt-0.5">Total <span
                                         id="totalCount">{{ $memberships->count() }}</span> member</p>
                             </div>
-                            <a href="{{ route('admin.membership.create') }}"
-                                class="flex items-center gap-2 bg-[#de3b7c] text-white text-[12px] font-semibold px-4 py-2 rounded-full hover:bg-[#c62f6b] transition-colors shadow-sm">
-                                <i class="fa-solid fa-plus"></i> Tambah
-                            </a>
+                            <div class="flex items-center gap-2">
+                                <div class="relative">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+                                    <input id="searchMember"
+                                        class="pl-8 pr-3 py-2 bg-[#FFF7FA] border border-pink-100 rounded-xl text-xs focus:outline-none focus:border-pink-300 w-full sm:w-[200px] lg:w-44"
+                                        placeholder="Cari member...">
+                                </div>
+                                <a href="{{ route('admin.membership.create') }}"
+                                    class="flex items-center gap-2 bg-[#de3b7c] text-white text-[12px] font-semibold px-4 py-2 rounded-full hover:bg-[#c62f6b] transition-colors shadow-sm">
+                                    <i class="fa-solid fa-plus"></i> Tambah
+                                </a>
+                            </div>
                         </div>
 
                         <div class="flex items-center gap-2 mb-4" id="filterButtons">
@@ -473,25 +481,25 @@
                                             <td class="py-3 px-3">{{ $item->diskon }}%</td>
                                             <td class="py-3 px-3">{{ number_format($item->masa_berlaku) }} hari</td>
                                             <td class="py-3 px-3">
-                                                @if ($item->status === 'aktif')
-                                                    <span
-                                                        class="inline-flex items-center gap-1 text-[11px] font-semibold bg-emerald-50 text-emerald-600 px-2.5 py-1 rounded-full border border-emerald-200">
-                                                        <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>
-                                                        Aktif
-                                                    </span>
-                                                @elseif ($item->status === 'suspend')
-                                                    <span
-                                                        class="inline-flex items-center gap-1 text-[11px] font-semibold bg-amber-50 text-amber-600 px-2.5 py-1 rounded-full border border-amber-200">
-                                                        <span class="w-1.5 h-1.5 bg-amber-500 rounded-full"></span>
-                                                        Suspend
-                                                    </span>
-                                                @else
-                                                    <span
-                                                        class="inline-flex items-center gap-1 text-[11px] font-semibold bg-rose-50 text-rose-600 px-2.5 py-1 rounded-full border border-rose-200">
-                                                        <span class="w-1.5 h-1.5 bg-rose-500 rounded-full"></span>
-                                                        Non Aktif
-                                                    </span>
-                                                @endif
+                                                @php
+                                                    $statusBg = [
+                                                        'aktif' => '#ecfdf5',
+                                                        'suspend' => '#fffbeb',
+                                                        'non_aktif' => '#fff1f2',
+                                                    ];
+                                                    $statusText = [
+                                                        'aktif' => '#059669',
+                                                        'suspend' => '#d97706',
+                                                        'non_aktif' => '#e11d48',
+                                                    ];
+                                                @endphp
+                                                <select onchange="ubahStatusMember(this, {{ $item->id_member }})"
+                                                    class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold border cursor-pointer focus:outline-none focus:ring-2 focus:ring-pink-300"
+                                                    style="background-color: {{ $statusBg[$item->status] ?? '#f9fafb' }}; color: {{ $statusText[$item->status] ?? '#6b7280' }}; border-color: transparent;">
+                                                    <option value="aktif" {{ $item->status == 'aktif' ? 'selected' : '' }} style="background:#ecfdf5;color:#059669;">Aktif</option>
+                                                    <option value="suspend" {{ $item->status == 'suspend' ? 'selected' : '' }} style="background:#fffbeb;color:#d97706;">Suspend</option>
+                                                    <option value="non_aktif" {{ $item->status == 'non_aktif' ? 'selected' : '' }} style="background:#fff1f2;color:#e11d48;">Non Aktif</option>
+                                                </select>
                                             </td>
                                             <td class="py-3 px-3">
                                                 <div class="flex items-center justify-center gap-2">
@@ -529,6 +537,37 @@
             </main>
         </main>
 
+        <script>
+            function ubahStatusMember(el, id) {
+                const status = el.value;
+                fetch('/admin/membership/' + id + '/status', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify({ status: status })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        const colors = {
+                            aktif: { bg: '#ecfdf5', text: '#059669' },
+                            suspend: { bg: '#fffbeb', text: '#d97706' },
+                            non_aktif: { bg: '#fff1f2', text: '#e11d48' },
+                        };
+                        const c = colors[status] || { bg: '#f9fafb', text: '#6b7280' };
+                        el.style.backgroundColor = c.bg;
+                        el.style.color = c.text;
+                    } else {
+                        alert('Gagal mengubah status');
+                        location.reload();
+                    }
+                })
+                .catch(() => { alert('Terjadi kesalahan'); location.reload(); });
+            }
+        </script>
         <script src="{{ asset('assets/js/dashboard.js') }}"></script>
         <script>
             document.addEventListener('DOMContentLoaded', function () {
@@ -599,6 +638,21 @@
                     btn.addEventListener('click', function () {
                         filterTable(this.dataset.filter);
                     });
+                });
+
+                document.getElementById('searchMember').addEventListener('input', function() {
+                    const q = this.value.toLowerCase();
+                    let visible = 0;
+                    rows.forEach(function(row) {
+                        const nm = row.querySelector('td:nth-child(2)')?.textContent?.toLowerCase() || '';
+                        if (nm.includes(q)) {
+                            row.style.display = '';
+                            visible++;
+                        } else {
+                            row.style.display = 'none';
+                        }
+                    });
+                    totalSpan.textContent = visible;
                 });
             });
         </script>
