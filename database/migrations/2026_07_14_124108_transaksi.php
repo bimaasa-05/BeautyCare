@@ -14,21 +14,21 @@ return new class extends Migration
         //
         Schema::create('transaksi', function (Blueprint $table) {
             $table->id('id_transaksi');
-            $table->integer('id_booking')->unique();
-            $table->integer('id_pelanggan')->unique();
-            $table->integer('id_user')->unique(); //Untuk Id Role Kasir Jangan Mengguankan Yang Lainnya;
+            $table->string('id_booking');
+            $table->string('id_pelanggan');
+            $table->string('id_user');
+            $table->string('id_produk')->nullable();
             $table->string('no_invoice', 30);
             $table->date('tanggal');
             $table->decimal('subtotal', 12);
             $table->decimal('diskon', 12);
             $table->decimal('pajak', 12)->default(0);
             $table->decimal('total', 12)->default(0);
-            $table->enum('metode_byr', ['Tunai', 'Qris', 'Transfer', 'Debit', 'Kredit']);
+            $table->enum('metode_byr', ['Tunai', 'Transfer', 'Debit', 'E-Wallet']);
             $table->decimal('dibayar', 12);
             $table->decimal('kembali', 12);
             $table->text('catatan');
-
-            $table->tinyInteger('status');
+            $table->enum('status', ['Pending', 'Lunas', 'Batal'])->default('Pending');
         });
     }
 
