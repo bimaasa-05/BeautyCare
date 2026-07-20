@@ -104,6 +104,13 @@ class KasirTransaksiController extends Controller
             }
         }
 
+        buatNotif(auth()->user()->id, 'Transaksi Baru', 'Transaksi ' . $no_invoice . ' berhasil dicatat', 'Transaksi', route('kasir.transaksi.show', $transaksi->id_transaksi));
+
+        $admins = \App\Models\User::where('role', 'admin')->get();
+        foreach ($admins as $admin) {
+            buatNotif($admin->id, 'Transaksi Baru', 'Transaksi ' . $no_invoice . ' oleh ' . auth()->user()->nama, 'Transaksi', url('/admin/dashboard'));
+        }
+
         $msg = in_array($request->metode_byr, ['Tunai', 'E-Wallet'])
             ? 'Pembayaran berhasil! Transaksi selesai.'
             : 'Pembayaran berhasil dicatat! Menunggu konfirmasi.';
