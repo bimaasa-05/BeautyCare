@@ -51,10 +51,6 @@
 </head>
 
 <body>
-    <div class="page-loader">
-        <div class="loader-spinner"></div>
-    </div>
-
     <div class="dashboard-layout">
         @include('layouts.sidebar')
 
@@ -66,19 +62,17 @@
                     <div class="float-decoration" style="top:-10px;right:-10px;">📋</div>
                     <div class="float-decoration" style="bottom:-10px;left:-10px;font-size:40px;">🧾</div>
 
-                    <div class="flex justify-between items-center mb-6">
-                        <div>
-                            <h3 class="text-[16px] font-bold text-gray-800">
-                                <i class="fa-solid fa-clock-rotate-left text-pink-500 mr-2"></i>Riwayat Transaksi
-                            </h3>
-                            <p class="text-[12px] text-gray-400 mt-0.5">
-                                <i class="fa-regular fa-circle-check text-pink-300 mr-1"></i>
-                                {{ $totalTransaksi }} transaksi — Total pendapatan <span class="font-semibold text-emerald-600">Rp {{ number_format($totalPendapatan, 0, ',', '.') }}</span>
-                            </p>
-                        </div>
+                    <div class="mb-6">
+                        <h3 class="text-[16px] font-bold text-gray-800">
+                            <i class="fa-solid fa-clock-rotate-left text-pink-500 mr-2"></i>Riwayat Transaksi
+                        </h3>
+                        <p class="text-[12px] text-gray-400 mt-0.5">
+                            <i class="fa-regular fa-circle-check text-pink-300 mr-1"></i>
+                            {{ $totalTransaksi }} transaksi — Total pendapatan <span class="font-semibold text-emerald-600">Rp {{ number_format($totalPendapatan, 0, ',', '.') }}</span>
+                        </p>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                         <div class="stat-card bg-gradient-to-br from-sky-50 to-white rounded-xl p-4 border border-sky-100">
                             <div class="flex items-center justify-between">
                                 <div>
@@ -116,36 +110,29 @@
                         </div>
                     </div>
 
-                    <div class="flex flex-wrap items-center gap-3 mb-4">
-                        <div class="relative flex-1 min-w-[200px] max-w-[300px]">
-                            <i class="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
-                            <form action="" method="GET" id="searchForm">
-                                <input type="text" placeholder="Cari invoice atau pelanggan..."
-                                    name="keyword"
-                                    class="w-full bg-gray-50 border border-gray-100 text-[12px] rounded-full pl-9 pr-4 py-2 focus:outline-none focus:border-pink-300 transition-all placeholder-gray-400"
-                                    value="{{ request()->keyword }}">
-                            </form>
+                    <form method="GET" action="{{ route('kasir.riwayat-transaksi.index') }}" class="flex flex-wrap items-center justify-end gap-2 mb-4">
+                        <div class="relative">
+                            <i class="fa-solid fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-[12px]"></i>
+                            <input type="text" placeholder="Cari invoice atau pelanggan..." name="keyword"
+                                class="bg-gray-50 border border-gray-100 text-[12px] rounded-full pl-9 pr-4 py-2 w-[180px] focus:outline-none focus:border-pink-300 transition-all placeholder-gray-400"
+                                value="{{ request()->keyword }}">
                         </div>
-                        <div class="flex items-center gap-2">
-                            <input type="date" name="dari" form="searchForm"
-                                class="bg-gray-50 border border-gray-100 text-[12px] rounded-full px-4 py-2 focus:outline-none focus:border-pink-300 transition-all"
-                                value="{{ request()->dari }}">
-                            <span class="text-gray-400 text-[12px]">s/d</span>
-                            <input type="date" name="sampai" form="searchForm"
-                                class="bg-gray-50 border border-gray-100 text-[12px] rounded-full px-4 py-2 focus:outline-none focus:border-pink-300 transition-all"
-                                value="{{ request()->sampai }}">
-                            <button type="submit" form="searchForm"
-                                class="bg-pink-50 text-pink-500 text-[12px] font-semibold px-4 py-2 rounded-full hover:bg-pink-100 transition-colors border border-pink-200">
-                                <i class="fa-solid fa-filter mr-1"></i> Filter
-                            </button>
-                            @if (request()->keyword || request()->dari || request()->sampai)
-                                <a href="{{ route('kasir.riwayat-transaksi.index') }}"
-                                    class="text-gray-400 hover:text-gray-600 text-[12px]">
-                                    <i class="fa-solid fa-rotate-right"></i> Reset
-                                </a>
-                            @endif
-                        </div>
-                    </div>
+                        <input type="date" name="dari" value="{{ request()->dari }}"
+                            class="bg-gray-50 border border-gray-100 text-[12px] rounded-full px-3 py-2 w-[140px] focus:outline-none focus:border-pink-300 transition-all">
+                        <span class="text-gray-400 text-[12px]">—</span>
+                        <input type="date" name="sampai" value="{{ request()->sampai }}"
+                            class="bg-gray-50 border border-gray-100 text-[12px] rounded-full px-3 py-2 w-[140px] focus:outline-none focus:border-pink-300 transition-all">
+                        <button type="submit"
+                            class="bg-pink-50 text-pink-600 text-[12px] font-semibold px-4 py-2 rounded-full hover:bg-pink-100 transition-colors border border-pink-200">
+                            <i class="fa-solid fa-filter mr-1"></i> Filter
+                        </button>
+                        @if (request()->keyword || request()->dari || request()->sampai)
+                            <a href="{{ route('kasir.riwayat-transaksi.index') }}"
+                                class="text-gray-400 hover:text-gray-600 text-[12px] px-1">
+                                <i class="fa-solid fa-rotate-right"></i>
+                            </a>
+                        @endif
+                    </form>
 
                     <div class="overflow-x-auto">
                         <table class="w-full text-left border-collapse">
