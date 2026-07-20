@@ -71,6 +71,23 @@ class AdminMembershipController extends Controller
             ->with('success', 'Membership berhasil diperbarui.');
     }
     
+    public function updateStatus(Request $request, $id)
+    {
+        $request->validate([
+            'status' => 'required|in:aktif,suspend,non_aktif',
+        ]);
+
+        Membership::where('id_member', $id)->update([
+            'status' => $request->status,
+        ]);
+
+        if ($request->wantsJson()) {
+            return response()->json(['success' => true]);
+        }
+
+        return redirect()->back()->with('success', 'Status berhasil diperbarui');
+    }
+
     public function destroy($id)
     {
         $membership = Membership::findOrFail($id);

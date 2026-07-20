@@ -14,8 +14,8 @@ return new class extends Migration
         //
         Schema::create('booking', function (Blueprint $table) {
             $table->id('id_booking');
-            $table->integer('id_pelanggan')->unique();
-            $table->integer('id_karyawan')->unique();
+            $table->integer('id_pelanggan');
+            $table->integer('id_karyawan');
             $table->date('tanggal');
             $table->time('jam');
             $table->enum('status', ['menunggu', 'dikonfirmasi', 'diproses', 'selesai', 'dibatalkan']);
