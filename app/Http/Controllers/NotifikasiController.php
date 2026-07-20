@@ -11,7 +11,8 @@ class NotifikasiController extends Controller
     public function getNotif()
     {
         $user = Auth::user();
-        $notif = Notifikasi::forUser($user->id)
+        $notif = Notifikasi::with(['user', 'aktor'])
+            ->forUser($user->id)
             ->latest()
             ->take(10)
             ->get();
@@ -29,6 +30,8 @@ class NotifikasiController extends Controller
                     'url' => $n->url,
                     'waktu' => $n->created_at ? $n->created_at->diffForHumans() : '',
                     'status' => $n->status,
+                    'aktor_foto' => $n->aktor?->foto,
+                    'aktor_nama' => $n->aktor?->nama,
                 ];
             }),
         ]);
