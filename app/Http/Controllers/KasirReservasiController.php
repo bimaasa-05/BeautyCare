@@ -16,6 +16,9 @@ class KasirReservasiController extends Controller
         $search = $request->keyword;
 
         $TotalReservasi = Booking::count();
+        $totalMenunggu = Booking::where('status', 'menunggu')->count();
+        $totalSelesai = Booking::where('status', 'selesai')->count();
+        $totalDiproses = Booking::where('status', 'diproses')->count();
         $reservasi = Booking::with('pelanggan', 'karyawan')
             ->when($search, function ($query, $search) {
                 return $query->where('tanggal', 'like', "%{$search}%")
@@ -24,7 +27,7 @@ class KasirReservasiController extends Controller
                     });
             })->orderBy('id_booking', 'desc')->paginate(10);
 
-        return view('kasir.reservasi.index', compact('reservasi', 'TotalReservasi'));
+        return view('kasir.reservasi.index', compact('reservasi', 'TotalReservasi', 'totalMenunggu', 'totalSelesai', 'totalDiproses'));
     }
 
     public function create()
@@ -89,7 +92,7 @@ class KasirReservasiController extends Controller
         $reservasi = Booking::with('detail')->findOrFail($id);
         $pelanggan = Pelanggan::all();
         $karyawan = User::where('role', 'beautycian')->get();
-        $layanan = Layanan::where('status', 'aktif')->get();
+        $layanan = Layanan::where('status', 'Tersedia')->get();
         return view('kasir.reservasi.edit', compact('reservasi', 'pelanggan', 'karyawan', 'layanan'));
     }
 
