@@ -159,6 +159,16 @@ Route::middleware('auth')->group(function () {
             return view('pelanggan.promo.index');
         })->name('pelanggan.promo');
 
+        //Route Membership
+        Route::get('/pelanggan/membership', function () {
+            return view('pelanggan.membership.index');
+        })->name('pelanggan.membership');
+
+        //Route Produk
+        Route::get('/pelanggan/produk', function () {
+            return view('pelanggan.produk.index');
+        })->name('pelanggan.produk');
+
         //Route Profile
         Route::get('/pelanggan/profile', function () {
             return view('pelanggan.profile.index');
