@@ -14,7 +14,7 @@ return new class extends Migration
         //
         Schema::create('detail_transaksi', function (Blueprint $table) {
             $table->id('id_detail_transaksi');
-            $table->integer('id_transaksi')->unique();
+            $table->integer('id_transaksi')->index();
             $table->enum('jenis', ['Layanan', 'Produk']);
             $table->integer('id_item');
             $table->string('nm_item', 150);
