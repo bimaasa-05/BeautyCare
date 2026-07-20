@@ -14,8 +14,8 @@ return new class extends Migration
         //
         Schema::create('detail_booking', function (Blueprint $table) {
             $table->id('id_detail_booking');
-            $table->integer('id_booking')->unique();
-            $table->integer('id_layanan')->unique();
+            $table->integer('id_booking');
+            $table->integer('id_layanan');
             $table->decimal('harga', 12);
             $table->decimal('diskon', 12)->default(0);
             $table->decimal('subtotal', 12);
