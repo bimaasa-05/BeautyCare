@@ -991,21 +991,21 @@
   text-transform: uppercase;
   letter-spacing: 0.5px;
   padding: 14px 16px;
-  background: linear-gradient(135deg, #FFF8FA 0%, #FFE5EF 100%);
-  color: #888;
-  border-bottom: 2px solid #FFE5EF;
+  background: #F9FAFB;
+  color: #6B7280;
+  border-bottom: 1px solid #E5E7EB;
 }
 .table-enhanced td {
   padding: 12px 16px;
   font-size: 13px;
-  border-bottom: 1px solid #f5f5f5;
   vertical-align: middle;
+  color: #374151;
 }
 .table-enhanced tbody tr {
-  transition: all 0.25s ease;
+  transition: all 0.2s ease;
 }
 .table-enhanced tbody tr:hover {
-  background: #FFF8FA !important;
+  background: #F9FAFB;
 }
 .table-enhanced tbody tr:last-child td {
   border-bottom: none;
