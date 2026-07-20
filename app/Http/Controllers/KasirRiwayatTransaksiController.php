@@ -14,7 +14,7 @@ class KasirRiwayatTransaksiController extends Controller
         $sampai = $request->sampai;
 
         $totalTransaksi = Transaksi::count();
-        $totalPendapatan = Transaksi::where('status', 1)->sum('total');
+        $totalPendapatan = Transaksi::where('status', 'Lunas')->sum('total');
 
         $transaksi = Transaksi::with('pelanggan', 'user')
             ->when($search, function ($query, $search) {
