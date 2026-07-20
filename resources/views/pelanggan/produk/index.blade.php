@@ -439,6 +439,43 @@
         color: var(--gray);
     }
 
+    .cart-notif {
+        position: fixed;
+        top: 24px;
+        right: 24px;
+        z-index: 9999;
+        background: #166534;
+        color: #fff;
+        padding: 14px 24px;
+        border-radius: 14px;
+        font-size: 13px;
+        font-weight: 600;
+        font-family: 'Inter', sans-serif;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        transform: translateX(120%);
+        transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        max-width: 380px;
+    }
+
+    .cart-notif.show {
+        transform: translateX(0);
+    }
+
+    .cart-notif .cn-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.15);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        flex-shrink: 0;
+    }
+
     .beli-modal {
         display: none;
         position: fixed;
@@ -910,15 +947,21 @@
                         <button onclick="qtyPlus()"><i class="fa-solid fa-plus"></i></button>
                     </div>
                 </div>
-                <button class="bm-btn-beli" onclick="closeBeliModal()">
+                <button class="bm-btn-beli" onclick="tambahKeranjang()">
                     <i class="fa-solid fa-cart-shopping"></i> Tambah ke Keranjang
                 </button>
             </div>
         </div>
     </div>
 
+    <div class="cart-notif" id="cartNotif">
+        <div class="cn-icon"><i class="fa-solid fa-check"></i></div>
+        <span id="cartNotifMsg">Berhasil ditambahkan ke keranjang!</span>
+    </div>
+
     <script>
     var hargaNumeric = 0;
+    var currentProdukSlug = '';
 
     var kategoriIcons = {
         'Skincare': '<i class="fa-solid fa-spa"></i>',
@@ -941,6 +984,7 @@
         var nama = btn.getAttribute('data-nama');
         var kategori = btn.getAttribute('data-kategori');
         hargaNumeric = parseInt(btn.getAttribute('data-harga-numeric')) || 0;
+        currentProdukSlug = btn.getAttribute('data-produk') || '';
 
         document.getElementById('modalBanner').className = 'bm-banner ' + kategori.toLowerCase();
         document.getElementById('modalIcon').innerHTML = kategoriIcons[kategori] || '<i class="fa-solid fa-cube"></i>';
@@ -960,6 +1004,49 @@
     document.getElementById('beliModal').addEventListener('click', function(e) {
         if (e.target === this) closeBeliModal();
     });
+
+    function showNotif(msg) {
+        var el = document.getElementById('cartNotif');
+        document.getElementById('cartNotifMsg').textContent = msg;
+        el.classList.add('show');
+        setTimeout(function() { el.classList.remove('show'); }, 3000);
+    }
+
+    function tambahKeranjang() {
+        var nama = document.getElementById('modalNama').textContent;
+        var kategori = document.getElementById('modalKategori').textContent;
+        var qty = parseInt(document.getElementById('qtyInput').value) || 1;
+
+        var csrf = document.querySelector('meta[name="csrf-token"]').content;
+
+        fetch('{{ route("pelanggan.keranjang.store") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrf
+            },
+            body: JSON.stringify({
+                nm_produk: nama,
+                produk_slug: currentProdukSlug,
+                kategori: kategori,
+                harga_satuan: hargaNumeric,
+                qty: qty
+            })
+        })
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+            if (data.success) {
+                closeBeliModal();
+                showNotif(data.message);
+                localStorage.removeItem('cart_seen');
+                var badge = document.getElementById('cartBadgeSidebar');
+                if (badge) {
+                    badge.textContent = data.count;
+                    badge.style.display = data.count > 0 ? '' : 'none';
+                }
+            }
+        });
+    }
 
     function qtyPlus() {
         var input = document.getElementById('qtyInput');
