@@ -66,7 +66,7 @@
                     @php
                         $totalTunai = $transaksi->count(fn($t) => $t->metode_byr === 'Tunai');
                         $totalNonTunai = $transaksi->count(fn($t) => $t->metode_byr !== 'Tunai');
-                        $totalSelesai = $transaksi->count(fn($t) => $t->status == 1);
+                        $totalSelesai = $transaksi->count(fn($t) => $t->status == 'Lunas');
                     @endphp
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
                         <div class="stat-card-enhanced card-gradient-pink">
@@ -164,15 +164,13 @@
                                          <td class="font-semibold text-gray-800">Rp {{ number_format($t->total, 0, ',', '.') }}</td>
                                          <td>
                                              <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-medium 
-                                                 @if($t->metode_byr == 'Tunai') bg-blue-50 text-blue-600
-                                                 @elseif($t->metode_byr == 'Qris') bg-green-50 text-green-600
-                                                 @elseif($t->metode_byr == 'E-Wallet') bg-teal-50 text-teal-600
+                                                  @if($t->metode_byr == 'Tunai') bg-blue-50 text-blue-600
+                                                  @elseif($t->metode_byr == 'E-Wallet') bg-teal-50 text-teal-600
                                                  @elseif($t->metode_byr == 'Transfer') bg-purple-50 text-purple-600
                                                  @elseif($t->metode_byr == 'Debit') bg-amber-50 text-amber-600
                                                  @else bg-red-50 text-red-600 @endif">
-                                                 @if($t->metode_byr == 'Tunai') <i class="fa-solid fa-money-bill-wave text-[10px]"></i>
-                                                 @elseif($t->metode_byr == 'Qris') <i class="fa-solid fa-qrcode text-[10px]"></i>
-                                                 @elseif($t->metode_byr == 'E-Wallet') <i class="fa-solid fa-wallet text-[10px]"></i>
+                                                  @if($t->metode_byr == 'Tunai') <i class="fa-solid fa-money-bill-wave text-[10px]"></i>
+                                                  @elseif($t->metode_byr == 'E-Wallet') <i class="fa-solid fa-wallet text-[10px]"></i>
                                                  @elseif($t->metode_byr == 'Transfer') <i class="fa-solid fa-building-columns text-[10px]"></i>
                                                  @elseif($t->metode_byr == 'Debit') <i class="fa-solid fa-credit-card text-[10px]"></i>
                                                  @else <i class="fa-solid fa-credit-card text-[10px]"></i> @endif
@@ -180,10 +178,10 @@
                                              </span>
                                          </td>
                                          <td>
-                                             @php
-                                                 $statusMap = [0 => ['label' => 'Proses', 'class' => 'status-proses', 'icon' => 'fa-regular fa-clock'], 1 => ['label' => 'Selesai', 'class' => 'status-selesai', 'icon' => 'fa-regular fa-circle-check'], 2 => ['label' => 'Batal', 'class' => 'status-batal', 'icon' => 'fa-regular fa-circle-xmark']];
-                                                 $s = $statusMap[$t->status] ?? $statusMap[0];
-                                             @endphp
+                                              @php
+                                                  $statusMap = ['Pending' => ['label' => 'Pending', 'class' => 'status-proses', 'icon' => 'fa-regular fa-clock'], 'Lunas' => ['label' => 'Lunas', 'class' => 'status-selesai', 'icon' => 'fa-regular fa-circle-check'], 'Batal' => ['label' => 'Batal', 'class' => 'status-batal', 'icon' => 'fa-regular fa-circle-xmark']];
+                                                  $s = $statusMap[$t->status] ?? $statusMap['Pending'];
+                                              @endphp
                                              <span class="badge-status {{ $s['class'] }}">
                                                  <i class="{{ $s['icon'] }}"></i> {{ $s['label'] }}
                                              </span>
