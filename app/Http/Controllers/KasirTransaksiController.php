@@ -4,9 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Transaksi;
 use App\Models\Pelanggan;
+use App\Models\DetailTransaksi;
+use App\Models\Layanan;
+use App\Models\Produk;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
-use SimpleSoftwareIO\QrCode\Generator;
 
 class KasirTransaksiController extends Controller
 {
@@ -27,9 +28,9 @@ class KasirTransaksiController extends Controller
     public function create()
     {
         $pelanggan = Pelanggan::all();
-        $qrisGenerator = new Generator();
-        $qrisCode = $qrisGenerator->size(170)->color(51, 51, 51)->margin(5)->generate('BeautyCare - Pembayaran QRIS');
-        return view('kasir.transaksi.create', compact('pelanggan', 'qrisCode'));
+        $layanan = Layanan::where('status', 1)->get();
+        $produk = Produk::where('status', 1)->get();
+        return view('kasir.transaksi.create', compact('pelanggan', 'layanan', 'produk'));
     }
 
     public function store(Request $request)
@@ -41,7 +42,7 @@ class KasirTransaksiController extends Controller
             'diskon' => 'nullable|numeric|min:0',
             'pajak' => 'nullable|numeric|min:0',
             'total' => 'required|numeric|min:0',
-            'metode_byr' => 'required|in:Tunai,Qris,Transfer,Debit,Kredit,E-Wallet',
+            'metode_byr' => 'required|in:Tunai,Transfer,Debit,E-Wallet',
             'dibayar' => 'required|numeric|min:0',
             'kembali' => 'required|numeric|min:0',
             'catatan' => 'nullable|string',
@@ -57,9 +58,6 @@ class KasirTransaksiController extends Controller
         $lastId = Transaksi::max('id_transaksi') + 1;
         $no_invoice = 'INV-' . date('Ymd') . '-' . str_pad($lastId, 4, '0', STR_PAD_LEFT);
 
-        $dibayar = $request->metode_byr === 'Qris' ? $request->total : $request->dibayar;
-        $kembali = $request->metode_byr === 'Qris' ? 0 : $request->kembali;
-
         $data = [
             'id_booking' => $lastId,
             'id_pelanggan' => $request->id_pelanggan,
@@ -71,10 +69,10 @@ class KasirTransaksiController extends Controller
             'pajak' => $request->pajak ?? 0,
             'total' => $request->total,
             'metode_byr' => $request->metode_byr,
-            'dibayar' => $dibayar,
-            'kembali' => $kembali,
+            'dibayar' => $request->dibayar,
+            'kembali' => $request->kembali,
             'catatan' => $request->catatan ?? '',
-            'status' => in_array($request->metode_byr, ['Tunai', 'Qris', 'E-Wallet']) ? 1 : 0,
+            'status' => in_array($request->metode_byr, ['Tunai', 'E-Wallet']) ? 'Lunas' : 'Pending',
             'atas_nama' => $request->atas_nama,
             'dari_rekening' => $request->dari_rekening,
             'ke_rekening' => $request->ke_rekening,
@@ -87,15 +85,28 @@ class KasirTransaksiController extends Controller
             $data['bukti_bayar'] = $request->file('bukti_bayar')->store('uploads/bukti_bayar', 'public');
         }
 
-        Transaksi::create($data);
+        $transaksi = Transaksi::create($data);
 
-        $msg = $request->metode_byr === 'Tunai'
-            ? 'Pembayaran tunai berhasil! Transaksi selesai.'
-            : ($request->metode_byr === 'Qris'
-                ? 'Pembayaran QRIS berhasil! Transaksi selesai.'
-                : ($request->metode_byr === 'E-Wallet'
-                    ? 'Pembayaran E-Wallet berhasil! Transaksi selesai.'
-                    : 'Pembayaran berhasil dicatat! Menunggu konfirmasi.'));
+        if ($request->has('items') && is_array($request->items)) {
+            foreach ($request->items as $item) {
+                if (!empty($item['id_item'])) {
+                    DetailTransaksi::create([
+                        'id_transaksi' => $transaksi->id_transaksi,
+                        'jenis' => $item['jenis'] ?? 'Layanan',
+                        'id_item' => $item['id_item'],
+                        'nm_item' => $item['nm_item'] ?? '',
+                        'qty' => $item['qty'] ?? 1,
+                        'harga' => $item['harga'] ?? 0,
+                        'diskon' => 0,
+                        'subtotal' => $item['subtotal'] ?? 0,
+                    ]);
+                }
+            }
+        }
+
+        $msg = in_array($request->metode_byr, ['Tunai', 'E-Wallet'])
+            ? 'Pembayaran berhasil! Transaksi selesai.'
+            : 'Pembayaran berhasil dicatat! Menunggu konfirmasi.';
 
         return redirect('kasir/transaksi')->with('message', $msg);
     }
@@ -106,13 +117,19 @@ class KasirTransaksiController extends Controller
         return view('kasir.transaksi.show', compact('transaksi'));
     }
 
+    public function invoice($id)
+    {
+        $transaksi = Transaksi::with('pelanggan', 'detail', 'user')->findOrFail($id);
+        return view('kasir.invoice.show', compact('transaksi'));
+    }
+
     public function edit($id)
     {
-        $transaksi = Transaksi::findOrFail($id);
+        $transaksi = Transaksi::with('detail')->findOrFail($id);
         $pelanggan = Pelanggan::all();
-        $qrisGenerator = new Generator();
-        $qrisCode = $qrisGenerator->size(170)->color(51, 51, 51)->margin(1)->generate('BeautyCare - Pembayaran QRIS');
-        return view('kasir.transaksi.edit', compact('transaksi', 'pelanggan', 'qrisCode'));
+        $layanan = Layanan::where('status', 1)->get();
+        $produk = Produk::where('status', 1)->get();
+        return view('kasir.transaksi.edit', compact('transaksi', 'pelanggan', 'layanan', 'produk'));
     }
 
     public function update(Request $request, $id)
@@ -124,7 +141,7 @@ class KasirTransaksiController extends Controller
             'diskon' => 'nullable|numeric|min:0',
             'pajak' => 'nullable|numeric|min:0',
             'total' => 'required|numeric|min:0',
-            'metode_byr' => 'required|in:Tunai,Qris,Transfer,Debit,Kredit,E-Wallet',
+            'metode_byr' => 'required|in:Tunai,Transfer,Debit,E-Wallet',
             'dibayar' => 'required|numeric|min:0',
             'kembali' => 'required|numeric|min:0',
             'catatan' => 'nullable|string',
@@ -137,9 +154,6 @@ class KasirTransaksiController extends Controller
             'no_referensi' => 'nullable|string|max:50',
         ]);
 
-        $dibayar = $request->metode_byr === 'Qris' ? $request->total : $request->dibayar;
-        $kembali = $request->metode_byr === 'Qris' ? 0 : $request->kembali;
-
         $data = [
             'id_pelanggan' => $request->id_pelanggan,
             'tanggal' => $request->tanggal,
@@ -148,8 +162,8 @@ class KasirTransaksiController extends Controller
             'pajak' => $request->pajak ?? 0,
             'total' => $request->total,
             'metode_byr' => $request->metode_byr,
-            'dibayar' => $dibayar,
-            'kembali' => $kembali,
+            'dibayar' => $request->dibayar,
+            'kembali' => $request->kembali,
             'catatan' => $request->catatan ?? '',
             'atas_nama' => $request->atas_nama,
             'dari_rekening' => $request->dari_rekening,
@@ -159,8 +173,8 @@ class KasirTransaksiController extends Controller
             'no_referensi' => $request->no_referensi,
         ];
 
-        if (in_array($request->metode_byr, ['Tunai', 'Qris', 'E-Wallet'])) {
-            $data['status'] = 1;
+        if (in_array($request->metode_byr, ['Tunai', 'E-Wallet'])) {
+            $data['status'] = 'Lunas';
         }
 
         if ($request->hasFile('bukti_bayar')) {
@@ -173,15 +187,25 @@ class KasirTransaksiController extends Controller
 
         Transaksi::where('id_transaksi', $id)->update($data);
 
-        return redirect('kasir/transaksi')->with('message', 'Transaksi berhasil diperbarui');
-    }
+        if ($request->has('items') && is_array($request->items)) {
+            DetailTransaksi::where('id_transaksi', $id)->delete();
+            foreach ($request->items as $item) {
+                if (!empty($item['id_item'])) {
+                    DetailTransaksi::create([
+                        'id_transaksi' => $id,
+                        'jenis' => $item['jenis'] ?? 'Layanan',
+                        'id_item' => $item['id_item'],
+                        'nm_item' => $item['nm_item'] ?? '',
+                        'qty' => $item['qty'] ?? 1,
+                        'harga' => $item['harga'] ?? 0,
+                        'diskon' => 0,
+                        'subtotal' => $item['subtotal'] ?? 0,
+                    ]);
+                }
+            }
+        }
 
-    public function qrisCode()
-    {
-        $qrisGenerator = new Generator();
-        $random = Str::random(8);
-        $qrisCode = $qrisGenerator->size(170)->color(51, 51, 51)->margin(5)->generate('BC|' . $random . '|' . date('YmdHis'));
-        return response()->json(['html' => $qrisCode]);
+        return redirect('kasir/transaksi')->with('message', 'Transaksi berhasil diperbarui');
     }
 
     public function destroy($id)
