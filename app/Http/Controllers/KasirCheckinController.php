@@ -26,7 +26,7 @@ class KasirCheckinController extends Controller
                     })->orWhere('id_booking', 'like', "%{$search}%");
                 });
             })
-            ->orderBy('jam', 'asc')
+            ->orderBy('id_booking', 'desc')
             ->paginate(10);
 
         $jamSekarang = date('H:i');
