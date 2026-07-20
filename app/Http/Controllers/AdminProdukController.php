@@ -44,6 +44,8 @@ class AdminProdukController extends Controller
 
         Produk::create($data);
 
+        buatNotif(auth()->id(), 'Produk Ditambahkan', 'Produk ' . $request->nm_produk . ' berhasil ditambahkan', 'Lainnya', route('admin.produk.index'));
+
         return redirect()->route('admin.produk.index')
             ->with('success', 'Produk berhasil ditambahkan.');
     }
@@ -77,13 +79,19 @@ class AdminProdukController extends Controller
 
         $produk->update($data);
 
+        buatNotif(auth()->id(), 'Produk Diperbarui', 'Produk ' . $produk->nm_produk . ' berhasil diperbarui', 'Lainnya', route('admin.produk.edit', $produk->id_produk));
+
         return redirect()->route('admin.produk.index')
             ->with('success', 'Produk berhasil diperbarui.');
     }
 
     public function destroy(Produk $produk)
     {
+        $nm = $produk->nm_produk;
         $produk->delete();
+
+        buatNotif(auth()->id(), 'Produk Dihapus', 'Produk ' . $nm . ' berhasil dihapus dari sistem', 'Lainnya', route('admin.produk.index'));
+
         return redirect()->route('admin.produk.index')
             ->with('success', 'Produk berhasil dihapus.');
     }
