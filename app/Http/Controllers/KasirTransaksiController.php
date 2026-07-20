@@ -117,6 +117,31 @@ class KasirTransaksiController extends Controller
         return view('kasir.transaksi.show', compact('transaksi'));
     }
 
+    public function invoiceIndex(Request $request)
+    {
+        $search = $request->keyword;
+        $dari = $request->dari;
+        $sampai = $request->sampai;
+
+        $totalInvoice = Transaksi::count();
+        $totalLunas = Transaksi::where('status', 'Lunas')->count();
+        $totalPending = Transaksi::where('status', 'Pending')->count();
+
+        $invoices = Transaksi::with('pelanggan')
+            ->when($search, function ($query, $search) {
+                return $query->where('no_invoice', 'like', "%{$search}%")
+                    ->orWhereHas('pelanggan', function ($q) use ($search) {
+                        $q->where('nm_pelanggan', 'like', "%{$search}%");
+                    });
+            })
+            ->when($dari, fn($q, $d) => $q->whereDate('tanggal', '>=', $d))
+            ->when($sampai, fn($q, $s) => $q->whereDate('tanggal', '<=', $s))
+            ->orderBy('id_transaksi', 'desc')
+            ->paginate(10);
+
+        return view('kasir.invoice.index', compact('invoices', 'totalInvoice', 'totalLunas', 'totalPending'));
+    }
+
     public function invoice($id)
     {
         $transaksi = Transaksi::with('pelanggan', 'detail', 'user')->findOrFail($id);
