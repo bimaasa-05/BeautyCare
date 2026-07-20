@@ -78,6 +78,8 @@ class KasirReservasiController extends Controller
             ]);
         }
 
+        buatNotif(auth()->user()->id, 'Reservasi Baru', 'Reservasi untuk ' . ($booking->pelanggan->nm_pelanggan ?? 'Pelanggan') . ' berhasil dibuat', 'Booking', route('kasir.reservasi.show', $booking->id_booking));
+
         return redirect('kasir/reservasi')->with('message', 'Reservasi berhasil dibuat');
     }
 
