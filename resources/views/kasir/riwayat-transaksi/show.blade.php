@@ -87,9 +87,9 @@
                                 <tr>
                                     <td class="py-1.5 text-gray-400">Status</td>
                                     <td class="py-1.5">
-                                        @if ($transaksi->status == 1)
-                                            <span class="badge-status status-selesai"><i class="fa-regular fa-circle-check"></i> Selesai</span>
-                                        @elseif ($transaksi->status == 0)
+                                        @if ($transaksi->status == 'Lunas')
+                                            <span class="badge-status status-selesai"><i class="fa-regular fa-circle-check"></i> Lunas</span>
+                                        @elseif ($transaksi->status == 'Pending')
                                             <span class="badge-status status-proses"><i class="fa-regular fa-clock"></i> Pending</span>
                                         @else
                                             <span class="badge-status bg-red-100 text-red-600"><i class="fa-regular fa-circle-xmark"></i> Batal</span>
@@ -160,7 +160,7 @@
                         </table>
                     </div>
 
-                    @if ($transaksi->metode_byr == 'Transfer' || $transaksi->metode_byr == 'Qris')
+                    @if ($transaksi->metode_byr == 'Transfer')
                     <div class="p-4 bg-gradient-to-br from-blue-50 to-white rounded-xl border border-blue-100">
                         <h4 class="text-[12px] font-semibold text-gray-500 uppercase tracking-wider mb-3">
                             <i class="fa-regular fa-building-columns text-blue-400 mr-1"></i>Detail Pembayaran {{ $transaksi->metode_byr }}
