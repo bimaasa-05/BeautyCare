@@ -127,7 +127,7 @@
 
         <div class="nav-section">
             <div class="nav-section-title">Marketing</div>
-            <a href="#" class="nav-item" title="Kelola membership dan loyalitas pelanggan">
+            <a href="{{ route('admin.membership.index') }}" class="nav-item {{ request()->routeIs('admin.membership.index') ? 'active' : '' }}" title="Kelola membership dan loyalitas pelanggan">
                 <span class="nav-icon">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -137,7 +137,7 @@
                 </span>
                 Data Membership
             </a>
-            <a href="#" class="nav-item" title="Kelola promo dan diskon">
+            <a href="{{ route('admin.promo.index') }}" class="nav-item {{ request()->routeIs('admin.promo.index') ? 'active' : '' }}" title="Kelola promo dan diskon">
                 <span class="nav-icon">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

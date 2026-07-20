@@ -36,7 +36,7 @@
             <span class="text-[10px] text-gray-400 font-medium">Tanggal Lahir</span>
         </div>
         <div class="bg-[#fdf2f8] rounded-2xl py-2.5 flex flex-col items-center justify-center">
-            <span class="text-[#de3b7c] font-bold text-[15px] mb-0.5">Rp.{{ number_format($b->gaji, 0, ',', '.') }}</span>
+            <span class="text-[#de3b7c] font-bold text-[15px] mb-0.5">Rp. {{ number_format($b->gaji, 0, ',', '.') }}-,</span>
             <span class="text-[10px] text-gray-400 font-medium">Gaji</span>
         </div>
         <div class="bg-[#fdf2f8] rounded-2xl py-2.5 flex flex-col items-center justify-center">
