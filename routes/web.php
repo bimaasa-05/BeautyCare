@@ -19,6 +19,7 @@ use App\Http\Controllers\AdminMembershipController;
 use App\Http\Controllers\AdminPromoController;
 use App\Http\Controllers\AdminSupplierController;
 use App\Http\Controllers\AdminReservasiController;
+use App\Http\Controllers\AdminTransaksiController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -110,6 +111,16 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/reservasi/{id}/edit', [AdminReservasiController::class, 'edit'])->name('admin.reservasi.edit');
         Route::put('/admin/reservasi/{id}', [AdminReservasiController::class, 'update'])->name('admin.reservasi.update');
         Route::delete('/admin/reservasi/{id}', [AdminReservasiController::class, 'destroy'])->name('admin.reservasi.destroy');
+
+        Route::get('/admin/transaksi', [AdminTransaksiController::class, 'index'])->name('admin.transaksi.index');
+        Route::get('/admin/transaksi/export', [AdminTransaksiController::class, 'export'])->name('admin.transaksi.export');
+        Route::get('/admin/transaksi/create', [AdminTransaksiController::class, 'create'])->name('admin.transaksi.create');
+        Route::post('/admin/transaksi', [AdminTransaksiController::class, 'store'])->name('admin.transaksi.store');
+        Route::get('/admin/transaksi/{id}', [AdminTransaksiController::class, 'show'])->name('admin.transaksi.show');
+        Route::get('/admin/transaksi/{id}/invoice', [AdminTransaksiController::class, 'invoice'])->name('admin.transaksi.invoice');
+        Route::get('/admin/transaksi/{id}/edit', [AdminTransaksiController::class, 'edit'])->name('admin.transaksi.edit');
+        Route::put('/admin/transaksi/{id}', [AdminTransaksiController::class, 'update'])->name('admin.transaksi.update');
+        Route::delete('/admin/transaksi/{id}', [AdminTransaksiController::class, 'destroy'])->name('admin.transaksi.destroy');
     });
 
 
