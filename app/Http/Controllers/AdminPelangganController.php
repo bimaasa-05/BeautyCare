@@ -62,7 +62,9 @@ class AdminPelangganController extends Controller
             $data['foto'] = $request->file('foto')->store('pelanggan', 'public');
         }
 
-        Pelanggan::create($data);
+        $pelanggan = Pelanggan::create($data);
+
+        buatNotif(auth()->id(), 'Pelanggan Ditambahkan', 'Pelanggan ' . $request->nm_pelanggan . ' berhasil ditambahkan', 'Lainnya', route('admin.pelanggan.index'));
 
         return redirect()->route('admin.pelanggan.index')
             ->with('success', 'Pelanggan berhasil ditambahkan.');
@@ -96,6 +98,8 @@ class AdminPelangganController extends Controller
 
         $pelanggan->update($data);
 
+        buatNotif(auth()->id(), 'Pelanggan Diperbarui', 'Data pelanggan ' . $pelanggan->nm_pelanggan . ' berhasil diperbarui', 'Lainnya', route('admin.pelanggan.edit', $pelanggan->id_pelanggan));
+
         return redirect()->route('admin.pelanggan.index')
             ->with('success', 'Pelanggan berhasil diperbarui.');
     }
@@ -106,7 +110,10 @@ class AdminPelangganController extends Controller
             Storage::disk('public')->delete($pelanggan->foto);
         }
 
+        $nm = $pelanggan->nm_pelanggan;
         $pelanggan->delete();
+
+        buatNotif(auth()->id(), 'Pelanggan Dihapus', 'Pelanggan ' . $nm . ' berhasil dihapus dari sistem', 'Lainnya', route('admin.pelanggan.index'));
 
         return redirect()->route('admin.pelanggan.index')
             ->with('success', 'Pelanggan berhasil dihapus.');
