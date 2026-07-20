@@ -50,10 +50,6 @@
 </head>
 
 <body>
-    <div class="page-loader">
-        <div class="loader-spinner"></div>
-    </div>
-
     <div class="dashboard-layout">
         @include('layouts.sidebar')
 
@@ -62,15 +58,17 @@
 
             <div class="flex-1 overflow-y-auto p-8">
                 <div class="bg-white rounded-2xl p-6 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] relative overflow-hidden">
-                    <div class="float-decoration" style="top:-10px;right:-10px;">📅</div>
-                    <div class="float-decoration" style="bottom:-10px;left:-10px;font-size:40px;">✨</div>
+                    <div class="mb-6">
+                        <h3 class="text-[16px] font-bold text-gray-800">
+                            <i class="fa-solid fa-calendar-check text-pink-500 mr-2"></i>Data Reservasi
+                        </h3>
+                        <p class="text-[12px] text-gray-400 mt-0.5">
+                            <i class="fa-regular fa-circle-check text-pink-300 mr-1"></i>
+                            Total {{ $TotalReservasi }} reservasi tercatat
+                        </p>
+                    </div>
 
-                    @php
-                        $totalMenunggu = $reservasi->count(fn($r) => $r->status === 'menunggu');
-                        $totalSelesai = $reservasi->count(fn($r) => $r->status === 'selesai');
-                        $totalDiproses = $reservasi->count(fn($r) => $r->status === 'diproses');
-                    @endphp
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-3 mb-6">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-3 mb-4">
                         <div class="stat-card-enhanced card-gradient-pink">
                             <div class="flex items-center justify-between">
                                 <div>
@@ -117,29 +115,18 @@
                         </div>
                     </div>
 
-                    <div class="page-header">
-                        <div>
-                            <h3><i class="fa-solid fa-calendar-check"></i>Data Reservasi</h3>
-                            <p class="page-subtitle">
-                                <i class="fa-regular fa-circle-check mr-1"></i>
-                                Total {{ $TotalReservasi }} reservasi tercatat
-                            </p>
+                    <form method="GET" action="" class="flex flex-wrap items-center justify-end gap-2 mb-4">
+                        <div class="relative">
+                            <i class="fa-solid fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-[12px]"></i>
+                            <input type="text" placeholder="Cari reservasi..." name="keyword"
+                                class="bg-gray-50 border border-gray-100 text-[12px] rounded-full pl-9 pr-4 py-2 w-[200px] focus:outline-none focus:border-pink-300 transition-all placeholder-gray-400"
+                                value="{{ Request()->keyword }}">
                         </div>
-                        <div class="flex items-center gap-3">
-                            <div class="search-wrapper">
-                                <i class="fa-solid fa-search search-icon"></i>
-                                <form action="">
-                                    <input type="text" placeholder="Cari reservasi..." name="keyword"
-                                        class="search-enhanced" style="width:200px;"
-                                        value="{{ Request()->keyword }}">
-                                </form>
-                            </div>
-                            <a href="{{ route('kasir.reservasi.create') }}"
-                                class="flex items-center gap-2 bg-[#FF4F87] text-white text-[12px] font-semibold px-4 py-2 rounded-full hover:bg-[#ff3a78] transition-all shadow-sm hover:shadow-md hover:shadow-pink-200">
-                                <i class="fa-solid fa-plus"></i> Reservasi Baru
-                            </a>
-                        </div>
-                    </div>
+                        <a href="{{ route('kasir.reservasi.create') }}"
+                            class="flex items-center gap-2 bg-[#FF4F87] text-white text-[12px] font-semibold px-4 py-2 rounded-full hover:bg-[#ff3a78] transition-all shadow-sm hover:shadow-md hover:shadow-pink-200">
+                            <i class="fa-solid fa-plus"></i> Reservasi Baru
+                        </a>
+                    </form>
 
                     <div class="overflow-x-auto table-container">
                         <table class="w-full text-left border-collapse table-enhanced">
