@@ -17,6 +17,7 @@ use App\Http\Controllers\AdminKategoriController;
 use App\Http\Controllers\AdminProdukController;
 use App\Http\Controllers\AdminMembershipController;
 use App\Http\Controllers\AdminPromoController;
+use App\Http\Controllers\AdminSupplierController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -90,6 +91,13 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/promo/{id}/edit', [AdminPromoController::class, 'edit'])->name('admin.promo.edit');
         Route::put('/admin/promo/{id}', [AdminPromoController::class, 'update'])->name('admin.promo.update');
         Route::delete('/admin/promo/{id}', [AdminPromoController::class, 'destroy'])->name('admin.promo.destroy');
+
+        Route::get('/admin/supplier', [AdminSupplierController::class, 'index'])->name('admin.supplier.index');
+        Route::get('/admin/supplier/create', [AdminSupplierController::class, 'create'])->name('admin.supplier.create');
+        Route::post('/admin/supplier', [AdminSupplierController::class, 'store'])->name('admin.supplier.store');
+        Route::get('/admin/supplier/{id}/edit', [AdminSupplierController::class, 'edit'])->name('admin.supplier.edit');
+        Route::put('/admin/supplier/{id}', [AdminSupplierController::class, 'update'])->name('admin.supplier.update');
+        Route::delete('/admin/supplier/{id}', [AdminSupplierController::class, 'destroy'])->name('admin.supplier.destroy');
     });
 
 
