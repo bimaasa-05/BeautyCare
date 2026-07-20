@@ -51,17 +51,6 @@ if (!isset($pageTitle)) {
     </div>
 
     <div class="right-section">
-        <div class="search-box">
-            <span class="search-icon">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="11" cy="11" r="8" />
-                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
-                </svg>
-            </span>
-            <input type="text" placeholder="Cari sesuatu..." aria-label="Search">
-        </div>
-
         <span class="date-display">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                 stroke-linecap="round" stroke-linejoin="round">
@@ -73,14 +62,26 @@ if (!isset($pageTitle)) {
             <span id="currentDate"></span>
         </span>
 
-        <button class="navbar-icon-btn notif-btn" aria-label="Notifications">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round">
-                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-                <path d="M13.73 21a2 2 0 0 1-3.46 0" />
-            </svg>
-            <span class="notif-dot"></span>
-        </button>
+        <div class="notif-wrapper" style="position:relative;">
+            <button class="navbar-icon-btn notif-btn" id="notifBell" aria-label="Notifications">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+                </svg>
+                <span class="notif-dot" id="notifBadge"></span>
+            </button>
+            <div class="notif-dropdown" id="notifDropdown"
+                style="display:none;position:absolute;top:calc(100% + 8px);right:0;width:380px;max-height:480px;background:#fff;border-radius:16px;box-shadow:0 10px 40px rgba(0,0,0,0.12);z-index:999;overflow:hidden;border:1px solid rgba(0,0,0,0.04);">
+                <div style="padding:16px 20px;border-bottom:1px solid #f1f1f1;display:flex;align-items:center;justify-content:space-between;">
+                    <span style="font-size:14px;font-weight:700;color:#1e293b;">Notifikasi</span>
+                    <button id="markAllRead" style="font-size:11px;color:#FF4F87;background:none;border:none;cursor:pointer;font-weight:600;">Tandai Dibaca</button>
+                </div>
+                <div id="notifList" style="overflow-y:auto;max-height:380px;">
+                    <div style="padding:30px 20px;text-align:center;color:#94a3b8;font-size:13px;">Memuat...</div>
+                </div>
+            </div>
+        </div>
 
         <div class="user-profile">
             <img src="{{ auth()->user()->foto ? asset('storage/' . auth()->user()->foto) : asset('assets/img/default-avatar.png') }}"
@@ -95,3 +96,77 @@ if (!isset($pageTitle)) {
     </div>
     @include('partials.toast')
 </header>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const bell = document.getElementById('notifBell');
+    const dropdown = document.getElementById('notifDropdown');
+    const badge = document.getElementById('notifBadge');
+    const list = document.getElementById('notifList');
+    const markAllBtn = document.getElementById('markAllRead');
+
+    if (!bell) return;
+
+    function loadNotif() {
+        fetch('/notif/get')
+            .then(r => r.json())
+            .then(d => {
+                if (d.unread_count > 0) {
+                    badge.textContent = '+' + d.unread_count;
+                    badge.style.display = 'flex';
+                } else {
+                    badge.style.display = 'none';
+                }
+
+                if (!dropdown.style.display || dropdown.style.display === 'none') return;
+
+                if (d.notifications.length === 0) {
+                    list.innerHTML = '<div style="padding:40px 20px;text-align:center;color:#94a3b8;"><i class="fa-regular fa-bell-slash" style="font-size:24px;display:block;margin-bottom:8px;"></i><span style="font-size:13px;">Tidak ada notifikasi</span></div>';
+                    return;
+                }
+
+                let html = '';
+                d.notifications.forEach(function(n) {
+                    const icons = { Booking: 'fa-regular fa-calendar-check', Promo: 'fa-solid fa-tags', Stok: 'fa-solid fa-boxes', Transaksi: 'fa-regular fa-credit-card', Lainnya: 'fa-regular fa-bell' };
+                    const icon = icons[n.type] || icons.Lainnya;
+                    const colors = { Booking: '#3B82F6', Promo: '#F59E0B', Stok: '#10B981', Transaksi: '#FF4F87', Lainnya: '#8B5CF6' };
+                    const color = colors[n.type] || colors.Lainnya;
+                    const bg = n.status === 0 ? '#FFF5F8' : 'transparent';
+                    html += '<a href="/notif/' + n.id + '/read" class="notif-item" style="display:flex;gap:12px;padding:14px 20px;text-decoration:none;background:' + bg + ';border-bottom:1px solid #f8f8f8;transition:background 0.2s;" onmouseover="this.style.background=\'#FFF5F8\'" onmouseout="this.style.background=\'' + bg + '\'">';
+                    html += '<div style="width:36px;height:36px;border-radius:10px;background:' + color + '15;color:' + color + ';display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px;"><i class="' + icon + '"></i></div>';
+                    html += '<div style="flex:1;min-width:0;">';
+                    html += '<div style="font-size:13px;font-weight:600;color:#1e293b;margin-bottom:2px;">' + n.judul + '</div>';
+                    html += '<div style="font-size:12px;color:#64748b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + n.isi + '</div>';
+                    html += '<div style="font-size:11px;color:#94a3b8;margin-top:3px;">' + n.waktu + '</div>';
+                    html += '</div></a>';
+                });
+                list.innerHTML = html;
+            })
+            .catch(function() {});
+    }
+
+    bell.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const isOpen = dropdown.style.display !== 'none';
+        dropdown.style.display = isOpen ? 'none' : 'block';
+        if (!isOpen) loadNotif();
+    });
+
+    document.addEventListener('click', function(e) {
+        if (!dropdown.contains(e.target) && e.target !== bell) {
+            dropdown.style.display = 'none';
+        }
+    });
+
+    if (markAllBtn) {
+        markAllBtn.addEventListener('click', function() {
+            fetch('/notif/mark-all-read', { method: 'POST', headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content, 'Accept': 'application/json' } })
+                .then(r => r.json())
+                .then(function() { loadNotif(); });
+        });
+    }
+
+    setInterval(loadNotif, 30000);
+    loadNotif();
+});
+</script>
