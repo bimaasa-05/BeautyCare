@@ -698,19 +698,19 @@
 
                 <div class="produk-tools">
                     <div class="pt-left">
-                        <a href="{{ route('pelanggan.produk') }}" class="filter-tab active">
+                        <a href="javascript:void(0)" class="filter-tab active" data-kategori="semua" onclick="filterProduk('semua')">
                             <i class="fa-solid fa-th-large"></i> Semua
                         </a>
-                        <a href="#" class="filter-tab">
+                        <a href="javascript:void(0)" class="filter-tab" data-kategori="Skincare" onclick="filterProduk('Skincare')">
                             <i class="fa-solid fa-spa"></i> Skincare
                         </a>
-                        <a href="#" class="filter-tab">
+                        <a href="javascript:void(0)" class="filter-tab" data-kategori="Haircare" onclick="filterProduk('Haircare')">
                             <i class="fa-solid fa-scissors"></i> Haircare
                         </a>
-                        <a href="#" class="filter-tab">
+                        <a href="javascript:void(0)" class="filter-tab" data-kategori="Bodycare" onclick="filterProduk('Bodycare')">
                             <i class="fa-solid fa-hand-sparkles"></i> Bodycare
                         </a>
-                        <a href="#" class="filter-tab">
+                        <a href="javascript:void(0)" class="filter-tab" data-kategori="Makeup" onclick="filterProduk('Makeup')">
                             <i class="fa-solid fa-palette"></i> Makeup
                         </a>
                     </div>
@@ -736,7 +736,7 @@
                             <div class="pc-divider"></div>
                             <div class="pc-footer">
                                 <div class="pc-price">Rp 125.000 <span>/pcs</span></div>
-                                <a href="#" class="pc-btn-beli" data-produk="serum-vitamin-c" data-nama="Serum Vitamin C Brightening" data-kategori="Skincare" data-harga="Rp 125.000" onclick="showBeliModal(this)">
+                                <a href="#" class="pc-btn-beli" data-produk="serum-vitamin-c" data-nama="Serum Vitamin C Brightening" data-kategori="Skincare" data-harga="Rp 125.000" data-harga-numeric="125000" onclick="showBeliModal(this)">
                                     <i class="fa-solid fa-cart-plus"></i> Beli
                                 </a>
                             </div>
@@ -756,7 +756,7 @@
                             <div class="pc-divider"></div>
                             <div class="pc-footer">
                                 <div class="pc-price">Rp 85.000 <span>/pcs</span></div>
-                                <a href="#" class="pc-btn-beli" data-produk="moisturizer-cream" data-nama="Moisturizer Cream Collagen" data-kategori="Skincare" data-harga="Rp 85.000" onclick="showBeliModal(this)">
+                                <a href="#" class="pc-btn-beli" data-produk="moisturizer-cream" data-nama="Moisturizer Cream Collagen" data-kategori="Skincare" data-harga="Rp 85.000" data-harga-numeric="85000" onclick="showBeliModal(this)">
                                     <i class="fa-solid fa-cart-plus"></i> Beli
                                 </a>
                             </div>
@@ -776,7 +776,7 @@
                             <div class="pc-divider"></div>
                             <div class="pc-footer">
                                 <div class="pc-price">Rp 65.000 <span>/pcs</span></div>
-                                <a href="#" class="pc-btn-beli" data-produk="shampoo-premium" data-nama="Shampoo Premium Keratin" data-kategori="Haircare" data-harga="Rp 65.000" onclick="showBeliModal(this)">
+                                <a href="#" class="pc-btn-beli" data-produk="shampoo-premium" data-nama="Shampoo Premium Keratin" data-kategori="Haircare" data-harga="Rp 65.000" data-harga-numeric="65000" onclick="showBeliModal(this)">
                                     <i class="fa-solid fa-cart-plus"></i> Beli
                                 </a>
                             </div>
@@ -796,7 +796,7 @@
                             <div class="pc-divider"></div>
                             <div class="pc-footer">
                                 <div class="pc-price">Rp 95.000 <span>/pcs</span></div>
-                                <a href="#" class="pc-btn-beli" data-produk="hair-mask" data-nama="Hair Mask Argan Oil" data-kategori="Haircare" data-harga="Rp 95.000" onclick="showBeliModal(this)">
+                                <a href="#" class="pc-btn-beli" data-produk="hair-mask" data-nama="Hair Mask Argan Oil" data-kategori="Haircare" data-harga="Rp 95.000" data-harga-numeric="95000" onclick="showBeliModal(this)">
                                     <i class="fa-solid fa-cart-plus"></i> Beli
                                 </a>
                             </div>
@@ -816,7 +816,7 @@
                             <div class="pc-divider"></div>
                             <div class="pc-footer">
                                 <div class="pc-price">Rp 75.000 <span>/pcs</span></div>
-                                <a href="#" class="pc-btn-beli" data-produk="body-lotion" data-nama="Body Lotion Sakura Glow" data-kategori="Bodycare" data-harga="Rp 75.000" onclick="showBeliModal(this)">
+                                <a href="#" class="pc-btn-beli" data-produk="body-lotion" data-nama="Body Lotion Sakura Glow" data-kategori="Bodycare" data-harga="Rp 75.000" data-harga-numeric="75000" onclick="showBeliModal(this)">
                                     <i class="fa-solid fa-cart-plus"></i> Beli
                                 </a>
                             </div>
@@ -836,7 +836,7 @@
                             <div class="pc-divider"></div>
                             <div class="pc-footer">
                                 <div class="pc-price">Rp 89.000 <span>/pcs</span></div>
-                                <a href="#" class="pc-btn-beli" data-produk="body-scrub" data-nama="Body Scrub Coffee Sugar" data-kategori="Bodycare" data-harga="Rp 89.000" onclick="showBeliModal(this)">
+                                <a href="#" class="pc-btn-beli" data-produk="body-scrub" data-nama="Body Scrub Coffee Sugar" data-kategori="Bodycare" data-harga="Rp 89.000" data-harga-numeric="89000" onclick="showBeliModal(this)">
                                     <i class="fa-solid fa-cart-plus"></i> Beli
                                 </a>
                             </div>
@@ -856,7 +856,7 @@
                             <div class="pc-divider"></div>
                             <div class="pc-footer">
                                 <div class="pc-price">Rp 55.000 <span>/pcs</span></div>
-                                <a href="#" class="pc-btn-beli" data-produk="lipstik-matte" data-nama="Lipstik Matte Velvet" data-kategori="Makeup" data-harga="Rp 55.000" onclick="showBeliModal(this)">
+                                <a href="#" class="pc-btn-beli" data-produk="lipstik-matte" data-nama="Lipstik Matte Velvet" data-kategori="Makeup" data-harga="Rp 55.000" data-harga-numeric="55000" onclick="showBeliModal(this)">
                                     <i class="fa-solid fa-cart-plus"></i> Beli
                                 </a>
                             </div>
@@ -876,7 +876,7 @@
                             <div class="pc-divider"></div>
                             <div class="pc-footer">
                                 <div class="pc-price">Rp 68.000 <span>/pcs</span></div>
-                                <a href="#" class="pc-btn-beli" data-produk="setting-spray" data-nama="Setting Spray Matte Finish" data-kategori="Makeup" data-harga="Rp 68.000" onclick="showBeliModal(this)">
+                                <a href="#" class="pc-btn-beli" data-produk="setting-spray" data-nama="Setting Spray Matte Finish" data-kategori="Makeup" data-harga="Rp 68.000" data-harga-numeric="68000" onclick="showBeliModal(this)">
                                     <i class="fa-solid fa-cart-plus"></i> Beli
                                 </a>
                             </div>
@@ -918,6 +918,8 @@
     </div>
 
     <script>
+    var hargaNumeric = 0;
+
     var kategoriIcons = {
         'Skincare': '<i class="fa-solid fa-spa"></i>',
         'Haircare': '<i class="fa-solid fa-scissors"></i>',
@@ -925,18 +927,28 @@
         'Makeup': '<i class="fa-solid fa-palette"></i>'
     };
 
+    function formatRupiah(angka) {
+        return 'Rp ' + angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    }
+
+    function updateTotalHarga() {
+        var qty = parseInt(document.getElementById('qtyInput').value) || 1;
+        var total = hargaNumeric * qty;
+        document.getElementById('modalHarga').textContent = formatRupiah(total);
+    }
+
     function showBeliModal(btn) {
         var nama = btn.getAttribute('data-nama');
         var kategori = btn.getAttribute('data-kategori');
-        var harga = btn.getAttribute('data-harga');
+        hargaNumeric = parseInt(btn.getAttribute('data-harga-numeric')) || 0;
 
         document.getElementById('modalBanner').className = 'bm-banner ' + kategori.toLowerCase();
         document.getElementById('modalIcon').innerHTML = kategoriIcons[kategori] || '<i class="fa-solid fa-cube"></i>';
         document.getElementById('modalCategoryBadge').textContent = kategori;
         document.getElementById('modalNama').textContent = nama;
         document.getElementById('modalKategori').textContent = kategori;
-        document.getElementById('modalHarga').textContent = harga;
         document.getElementById('qtyInput').value = '1';
+        updateTotalHarga();
 
         document.getElementById('beliModal').classList.add('show');
     }
@@ -952,13 +964,45 @@
     function qtyPlus() {
         var input = document.getElementById('qtyInput');
         input.value = parseInt(input.value) + 1;
+        updateTotalHarga();
     }
 
     function qtyMinus() {
         var input = document.getElementById('qtyInput');
         var val = parseInt(input.value);
         if (val > 1) input.value = val - 1;
+        updateTotalHarga();
     }
+
+    document.getElementById('qtyInput').addEventListener('input', updateTotalHarga);
+
+    var currentKategori = 'semua';
+
+    function filterProduk(kategori) {
+        currentKategori = kategori;
+        document.querySelectorAll('.filter-tab').forEach(function(tab) {
+            tab.classList.remove('active');
+            if (tab.getAttribute('data-kategori') === kategori) {
+                tab.classList.add('active');
+            }
+        });
+        applyFilters();
+    }
+
+    function applyFilters() {
+        var searchTerm = document.querySelector('.search-input-wrap input').value.toLowerCase();
+        document.querySelectorAll('.produk-card').forEach(function(card) {
+            var cardKategori = card.querySelector('.pc-category').textContent.trim();
+            var nama = card.querySelector('.pc-name').textContent.toLowerCase();
+
+            var matchKategori = (currentKategori === 'semua' || cardKategori === currentKategori);
+            var matchSearch = nama.includes(searchTerm);
+
+            card.style.display = (matchKategori && matchSearch) ? '' : 'none';
+        });
+    }
+
+    document.querySelector('.search-input-wrap input').addEventListener('input', applyFilters);
 
     const now = new Date();
     const options = {
