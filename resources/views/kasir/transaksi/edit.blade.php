@@ -36,16 +36,6 @@
         select.form-input-custom { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 40px; }
         .payment-section { display: none; }
         .payment-section.active { display: block; }
-
-        .qris-scanner { position: relative; width: 200px; height: 200px; margin: 0 auto; overflow: hidden; border-radius: 16px; }
-        .qris-scanner img { width: 100%; height: 100%; object-fit: contain; }
-        .scan-line { position: absolute; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, transparent, #FF4F87, transparent); top: 0; animation: scanMove 2s ease-in-out infinite; box-shadow: 0 0 12px rgba(255,79,135,0.5); }
-        @keyframes scanMove { 0% { top: 0; } 50% { top: calc(100% - 3px); } 100% { top: 0; } }
-        .qris-corner { position: absolute; width: 20px; height: 20px; border-color: #FF4F87; border-style: solid; }
-        .qris-corner.tl { top: 6px; left: 6px; border-width: 3px 0 0 3px; border-radius: 6px 0 0 0; }
-        .qris-corner.tr { top: 6px; right: 6px; border-width: 3px 3px 0 0; border-radius: 0 6px 0 0; }
-        .qris-corner.bl { bottom: 6px; left: 6px; border-width: 0 0 3px 3px; border-radius: 0 0 0 6px; }
-        .qris-corner.br { bottom: 6px; right: 6px; border-width: 0 3px 3px 0; border-radius: 0 0 6px 0; }
     </style>
 </head>
 
@@ -165,11 +155,55 @@
 
                         <div class="mt-6 pt-4 border-t border-gray-100">
                             <h4 class="text-[14px] font-bold text-gray-700 mb-1">
+                                <i class="fa-regular fa-cart-shopping text-pink-500 mr-2"></i>Daftar Item
+                            </h4>
+                            <p class="text-[12px] text-gray-400 mb-4">Pilih layanan atau produk yang dibeli pelanggan</p>
+
+                            <div id="item-container">
+                                @foreach ($transaksi->detail ?? [] as $dt)
+                                <div class="item-row flex items-center gap-3 mb-3 p-3 bg-gray-50 rounded-xl border border-gray-100" data-index="{{ $loop->index }}">
+                                    <input type="hidden" name="items[{{ $loop->index }}][jenis]" class="item-jenis-hidden" value="{{ $dt->jenis }}">
+                                    <input type="hidden" name="items[{{ $loop->index }}][id_item]" class="item-id-hidden" value="{{ $dt->id_item }}">
+                                    <input type="hidden" name="items[{{ $loop->index }}][nm_item]" class="item-nama-hidden" value="{{ $dt->nm_item }}">
+                                    <input type="hidden" name="items[{{ $loop->index }}][qty]" class="item-qty-hidden" value="{{ $dt->qty }}">
+                                    <input type="hidden" name="items[{{ $loop->index }}][harga]" class="item-harga-hidden" value="{{ $dt->harga }}">
+                                    <input type="hidden" name="items[{{ $loop->index }}][subtotal]" class="item-subtotal-hidden" value="{{ $dt->subtotal }}">
+
+                                    <select class="form-input-custom item-jenis-select !w-[120px] !py-2 !text-[12px] flex-shrink-0"
+                                        onchange="onJenisChange(this)">
+                                        <option value="Layanan" {{ $dt->jenis == 'Layanan' ? 'selected' : '' }}>Layanan</option>
+                                        <option value="Produk" {{ $dt->jenis == 'Produk' ? 'selected' : '' }}>Produk</option>
+                                    </select>
+                                    <select class="form-input-custom item-select !w-full !py-2 !text-[12px]"
+                                        onchange="onItemChange(this)">
+                                        <option value="">-- Pilih --</option>
+                                    </select>
+                                    <input type="number" value="{{ $dt->qty }}" min="1"
+                                        class="form-input-custom item-qty !w-16 !py-2 !text-[12px] text-center flex-shrink-0"
+                                        oninput="onQtyChange(this)">
+                                    <span class="item-harga-display text-[12px] text-gray-600 font-medium w-28 text-right flex-shrink-0">Rp {{ number_format($dt->harga, 0, ',', '.') }}</span>
+                                    <span class="item-subtotal-display text-[13px] text-pink-600 font-bold w-32 text-right flex-shrink-0">Rp {{ number_format($dt->subtotal, 0, ',', '.') }}</span>
+                                    <button type="button" onclick="removeItemRow(this)"
+                                        class="w-7 h-7 flex items-center justify-center text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors flex-shrink-0">
+                                        <i class="fa-regular fa-trash-can text-xs"></i>
+                                    </button>
+                                </div>
+                                @endforeach
+                            </div>
+
+                            <button type="button" onclick="addItemRow()"
+                                class="flex items-center gap-2 text-pink-500 text-[12px] font-semibold px-4 py-2 rounded-full hover:bg-pink-50 transition-colors border border-dashed border-pink-200 mt-3">
+                                <i class="fa-solid fa-plus"></i> Tambah Item
+                            </button>
+                        </div>
+
+                        <div class="mt-6 pt-4 border-t border-gray-100">
+                            <h4 class="text-[14px] font-bold text-gray-700 mb-1">
                                 <i class="fa-regular fa-credit-card text-pink-500 mr-2"></i>Metode Pembayaran
                             </h4>
                             <p class="text-[12px] text-gray-400 mb-4">Pilih metode pembayaran</p>
 
-                            <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-5">
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
                                 <label class="payment-option cursor-pointer">
                                     <input type="radio" name="metode_byr" value="Tunai" class="hidden peer"
                                         {{ old('metode_byr', $transaksi->metode_byr) == 'Tunai' ? 'checked' : '' }}
@@ -177,15 +211,6 @@
                                     <div class="p-4 rounded-xl border-2 border-gray-100 peer-checked:border-pink-400 peer-checked:bg-pink-50/50 hover:border-pink-200 transition-all text-center">
                                         <div class="text-2xl mb-1">💵</div>
                                         <div class="text-[12px] font-semibold text-gray-600 peer-checked:text-pink-500">Tunai</div>
-                                    </div>
-                                </label>
-                                <label class="payment-option cursor-pointer">
-                                    <input type="radio" name="metode_byr" value="Qris" class="hidden peer"
-                                        {{ old('metode_byr', $transaksi->metode_byr) == 'Qris' ? 'checked' : '' }}
-                                        onchange="togglePaymentMethod('Qris')">
-                                    <div class="p-4 rounded-xl border-2 border-gray-100 peer-checked:border-pink-400 peer-checked:bg-pink-50/50 hover:border-pink-200 transition-all text-center">
-                                        <div class="text-2xl mb-1"><i class="fa-solid fa-qrcode"></i></div>
-                                        <div class="text-[12px] font-semibold text-gray-600 peer-checked:text-pink-500">QRIS</div>
                                     </div>
                                 </label>
                                 <label class="payment-option cursor-pointer">
@@ -255,85 +280,6 @@
                                             @error('kembali')
                                                 <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
                                             @enderror
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div id="payment-section-qris" class="payment-section">
-                                <div class="bg-gradient-to-br from-purple-50/80 to-pink-50/80 rounded-2xl p-5 border border-purple-100/50">
-                                    <div class="flex items-center gap-2 mb-4">
-                                        <div class="w-8 h-8 rounded-full bg-purple-100 text-purple-500 flex items-center justify-center">
-                                            <i class="fa-solid fa-qrcode text-xs"></i>
-                                        </div>
-                                        <div>
-                                            <h5 class="text-[13px] font-bold text-purple-700">QRIS</h5>
-                                            <p class="text-[11px] text-purple-500">Scan QR Code untuk melakukan pembayaran</p>
-                                        </div>
-                                        <div class="ml-auto">
-                                            <div id="timer-qris" class="text-[13px] font-mono font-bold text-gray-500 hidden">
-                                                ⏱️ 01:00
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="flex flex-col md:flex-row gap-6 items-center">
-                                        <div class="qris-scanner bg-white p-3 rounded-2xl shadow-md border-2 border-purple-100">
-                                            {!! $qrisCode !!}
-                                            <div class="scan-line"></div>
-                                            <div class="qris-corner tl"></div>
-                                            <div class="qris-corner tr"></div>
-                                            <div class="qris-corner bl"></div>
-                                            <div class="qris-corner br"></div>
-                                        </div>
-
-                                        <div class="flex-1 w-full">
-                                            <div class="bg-purple-50/70 border border-purple-200/50 rounded-xl p-4 mb-4">
-                                                <p class="text-[12px] text-purple-700 leading-relaxed">
-                                                    <i class="fa-solid fa-mobile-screen-button text-purple-400 mr-1"></i>
-                                                    <strong>Scan QR ini</strong> dengan aplikasi pembayaran kesukaan pelanggan 
-                                                    (<strong>Dana, GoPay, OVO, Mobile Banking, dll</strong>).
-                                                </p>
-                                                <p class="text-[12px] text-purple-600 mt-2">
-                                                    <i class="fa-regular fa-pen-to-square text-purple-400 mr-1"></i>
-                                                    Pelanggan isi nominal sendiri di aplikasi mereka — jadi kasir <strong>cuma upload bukti</strong> doang.
-                                                </p>
-                                            </div>
-
-                                            <input type="hidden" name="dibayar" id="dibayar_qris" value="0">
-                                            <input type="hidden" name="kembali" id="kembali_qris" value="0">
-
-                                            <div class="space-y-3">
-                                                <div class="form-group">
-                                                    <label class="form-label">
-                                                        <i class="fa-regular fa-user text-pink-400 mr-1"></i>Atas Nama
-                                                    </label>
-                                                    <input type="text" name="atas_nama"
-                                                        class="form-input-custom @error('atas_nama') border-red-400 @enderror"
-                                                        placeholder="Nama pengirim" value="{{ old('atas_nama', $transaksi->atas_nama) }}">
-                                                    @error('atas_nama')
-                                                        <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
-                                                    @enderror
-                                                </div>
-                                                <div class="form-group">
-                                                    <label class="form-label">
-                                                        <i class="fa-regular fa-image text-pink-400 mr-1"></i>Bukti Bayar
-                                                    </label>
-                                                    @if($transaksi->bukti_bayar)
-                                                        <div class="mb-2">
-                                                            <img src="{{ asset('storage/' . $transaksi->bukti_bayar) }}" alt="bukti"
-                                                                class="w-20 h-20 rounded-xl object-cover border border-gray-200">
-                                                        </div>
-                                                    @endif
-                                                    <input type="file" name="bukti_bayar"
-                                                        class="form-input-custom @error('bukti_bayar') border-red-400 @enderror"
-                                                        accept="image/*">
-                                                    @error('bukti_bayar')
-                                                        <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
-                                                    @enderror
-                                                    <p class="text-[11px] text-gray-400 mt-1">Screenshot bukti pembayaran QRIS</p>
-                                                </div>
-                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -467,7 +413,7 @@
                                             <label class="form-label">
                                                 <i class="fa-regular fa-image text-pink-400 mr-1"></i>Bukti Pembayaran
                                             </label>
-                                            @if($transaksi->bukti_bayar && $transaksi->metode_byr !== 'Qris')
+                                            @if($transaksi->bukti_bayar)
                                                 <div class="mb-2">
                                                     <img src="{{ asset('storage/' . $transaksi->bukti_bayar) }}" alt="bukti"
                                                         class="w-20 h-20 rounded-xl object-cover border border-gray-200">
@@ -595,15 +541,6 @@
             if (document.getElementById('dibayar')) hitungKembali();
             if (document.getElementById('dibayar4')) hitungKembali4();
             if (document.getElementById('dibayar_ewallet')) hitungKembaliEwallet();
-            updateQrisHiddenInputs();
-        }
-
-        function updateQrisHiddenInputs() {
-            const total = parseFloat(document.getElementById('total').value) || 0;
-            const qrisDibayar = document.getElementById('dibayar_qris');
-            const qrisKembali = document.getElementById('kembali_qris');
-            if (qrisDibayar) qrisDibayar.value = total;
-            if (qrisKembali) qrisKembali.value = 0;
         }
 
         function hitungPecahan(nominal) {
@@ -657,19 +594,6 @@
         let paymentTimer = null;
         let timerSeconds = 60;
 
-        function refreshQrisCode() {
-            const qrisContainer = document.querySelector('#payment-section-qris .qris-scanner');
-            if (!qrisContainer) return;
-            fetch('{{ route('kasir.transaksi.qris-code') }}')
-                .then(function(res) { return res.json(); })
-                .then(function(data) {
-                    const oldSvg = qrisContainer.querySelector('svg');
-                    if (oldSvg) oldSvg.remove();
-                    qrisContainer.insertAdjacentHTML('afterbegin', data.html);
-                })
-                .catch(function() {});
-        }
-
         function startPaymentTimer(displayId) {
             stopPaymentTimer();
             timerSeconds = 60;
@@ -685,7 +609,6 @@
                     clearInterval(paymentTimer);
                     paymentTimer = null;
                     showToast('Waktu pembayaran habis! Silakan ulangi.', 'warning');
-                    if (displayId === 'timer-qris') refreshQrisCode();
                     timerSeconds = 60;
                     updateTimerDisplay(el);
                     startPaymentTimer(displayId);
@@ -719,11 +642,6 @@
             if (method === 'Tunai') {
                 document.getElementById('payment-section-tunai').classList.add('active');
                 if (btn) btn.innerHTML = '<i class="fa-regular fa-pen-to-square"></i> Perbarui Transaksi';
-            } else if (method === 'Qris') {
-                document.getElementById('payment-section-qris').classList.add('active');
-                updateQrisHiddenInputs();
-                if (btn) btn.innerHTML = '<i class="fa-regular fa-circle-check"></i> Konfirmasi QRIS';
-                startPaymentTimer('timer-qris');
             } else if (method === 'E-Wallet') {
                 document.getElementById('payment-section-ewallet').classList.add('active');
                 if (btn) btn.innerHTML = '<i class="fa-regular fa-pen-to-square"></i> Perbarui Transaksi';
@@ -734,9 +652,143 @@
             }
         }
 
+        const layananData = @json($layanan);
+        const produkData = @json($produk);
+        let itemRowIndex = {{ count($transaksi->detail ?? []) }};
+
+        function getItemTemplate(index) {
+            return `
+            <div class="item-row flex items-center gap-3 mb-3 p-3 bg-gray-50 rounded-xl border border-gray-100" data-index="${index}">
+                <input type="hidden" name="items[${index}][jenis]" class="item-jenis-hidden" value="Layanan">
+                <input type="hidden" name="items[${index}][id_item]" class="item-id-hidden" value="">
+                <input type="hidden" name="items[${index}][nm_item]" class="item-nama-hidden" value="">
+                <input type="hidden" name="items[${index}][qty]" class="item-qty-hidden" value="1">
+                <input type="hidden" name="items[${index}][harga]" class="item-harga-hidden" value="0">
+                <input type="hidden" name="items[${index}][subtotal]" class="item-subtotal-hidden" value="0">
+
+                <select class="form-input-custom item-jenis-select !w-[120px] !py-2 !text-[12px] flex-shrink-0"
+                    onchange="onJenisChange(this)">
+                    <option value="Layanan">Layanan</option>
+                    <option value="Produk">Produk</option>
+                </select>
+                <select class="form-input-custom item-select !w-full !py-2 !text-[12px]"
+                    onchange="onItemChange(this)">
+                    <option value="">-- Pilih --</option>
+                </select>
+                <input type="number" value="1" min="1"
+                    class="form-input-custom item-qty !w-16 !py-2 !text-[12px] text-center flex-shrink-0"
+                    oninput="onQtyChange(this)">
+                <span class="item-harga-display text-[12px] text-gray-600 font-medium w-28 text-right flex-shrink-0">Rp 0</span>
+                <span class="item-subtotal-display text-[13px] text-pink-600 font-bold w-32 text-right flex-shrink-0">Rp 0</span>
+                <button type="button" onclick="removeItemRow(this)"
+                    class="w-7 h-7 flex items-center justify-center text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors flex-shrink-0">
+                    <i class="fa-regular fa-trash-can text-xs"></i>
+                </button>
+            </div>`;
+        }
+
+        function loadItemOptions(jenis) {
+            const data = jenis === 'Layanan' ? layananData : produkData;
+            const idField = jenis === 'Layanan' ? 'id_layanan' : 'id_produk';
+            const nmField = jenis === 'Layanan' ? 'nm_layanan' : 'nm_produk';
+            const priceField = jenis === 'Layanan' ? 'harga' : 'harga_jual';
+            return data.map(item =>
+                `<option value="${item[idField]}" data-nama="${item[nmField]}" data-harga="${item[priceField] || 0}">${item[nmField]} — Rp ${Number(item[priceField] || 0).toLocaleString('id-ID')}</option>`
+            ).join('');
+        }
+
+        function addItemRow() {
+            const container = document.getElementById('item-container');
+            const idx = itemRowIndex++;
+            container.insertAdjacentHTML('beforeend', getItemTemplate(idx));
+            const row = container.lastElementChild;
+            const jenisSelect = row.querySelector('.item-jenis-select');
+            const itemSelect = row.querySelector('.item-select');
+            itemSelect.innerHTML = '<option value="">-- Pilih --</option>' + loadItemOptions(jenisSelect.value);
+            recalculateSubtotal();
+        }
+
+        function removeItemRow(btn) {
+            const row = btn.closest('.item-row');
+            row.remove();
+            recalculateSubtotal();
+        }
+
+        function onJenisChange(select) {
+            const row = select.closest('.item-row');
+            const itemSelect = row.querySelector('.item-select');
+            const jenis = select.value;
+            row.querySelector('.item-jenis-hidden').value = jenis;
+            itemSelect.innerHTML = '<option value="">-- Pilih --</option>' + loadItemOptions(jenis);
+            row.querySelector('.item-id-hidden').value = '';
+            row.querySelector('.item-nama-hidden').value = '';
+            row.querySelector('.item-harga-hidden').value = 0;
+            row.querySelector('.item-harga-display').textContent = 'Rp 0';
+            row.querySelector('.item-subtotal-hidden').value = 0;
+            row.querySelector('.item-subtotal-display').textContent = 'Rp 0';
+            recalculateSubtotal();
+        }
+
+        function onItemChange(select) {
+            const row = select.closest('.item-row');
+            const option = select.options[select.selectedIndex];
+            if (option && option.value) {
+                const harga = parseFloat(option.dataset.harga) || 0;
+                row.querySelector('.item-id-hidden').value = option.value;
+                row.querySelector('.item-nama-hidden').value = option.dataset.nama;
+                row.querySelector('.item-harga-hidden').value = harga;
+                row.querySelector('.item-harga-display').textContent = 'Rp ' + harga.toLocaleString('id-ID');
+            } else {
+                row.querySelector('.item-id-hidden').value = '';
+                row.querySelector('.item-nama-hidden').value = '';
+                row.querySelector('.item-harga-hidden').value = 0;
+                row.querySelector('.item-harga-display').textContent = 'Rp 0';
+            }
+            onQtyChange(row.querySelector('.item-qty'));
+        }
+
+        function onQtyChange(input) {
+            const row = input.closest('.item-row');
+            const qty = parseInt(input.value) || 1;
+            if (qty < 1) input.value = 1;
+            const harga = parseFloat(row.querySelector('.item-harga-hidden').value) || 0;
+            const subtotal = qty * harga;
+            row.querySelector('.item-qty-hidden').value = qty;
+            row.querySelector('.item-subtotal-hidden').value = subtotal;
+            row.querySelector('.item-subtotal-display').textContent = 'Rp ' + subtotal.toLocaleString('id-ID');
+            recalculateSubtotal();
+        }
+
+        function recalculateSubtotal() {
+            let totalItem = 0;
+            document.querySelectorAll('.item-subtotal-hidden').forEach(el => {
+                totalItem += parseFloat(el.value) || 0;
+            });
+            document.getElementById('subtotal').value = totalItem;
+            hitungTotal();
+        }
+
+        function initExistingRows() {
+            document.querySelectorAll('.item-row').forEach(function(row) {
+                const jenisSelect = row.querySelector('.item-jenis-select');
+                const itemSelect = row.querySelector('.item-select');
+                const idItem = row.querySelector('.item-id-hidden').value;
+                itemSelect.innerHTML = '<option value="">-- Pilih --</option>' + loadItemOptions(jenisSelect.value);
+                if (idItem) {
+                    Array.from(itemSelect.options).forEach(function(opt) {
+                        if (opt.value === idItem) {
+                            opt.selected = true;
+                            onItemChange(itemSelect);
+                        }
+                    });
+                }
+            });
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             const selected = document.querySelector('input[name="metode_byr"]:checked');
             if (selected) togglePaymentMethod(selected.value);
+            initExistingRows();
         });
     </script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
