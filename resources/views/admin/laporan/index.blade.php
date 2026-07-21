@@ -60,12 +60,14 @@
                                 @endforeach
                             </div>
                             <div class="flex gap-2">
-                                <button class="flex items-center gap-1.5 px-3 py-2 border border-pink-100 bg-white rounded-xl text-xs text-gray-600 hover:border-pink-300 font-bold">
+                                <a href="{{ route('admin.laporan.export-pdf', ['periode' => $periode]) }}"
+                                    class="flex items-center gap-1.5 px-3 py-2 border border-pink-100 bg-white rounded-xl text-xs text-gray-600 hover:border-pink-300 font-bold">
                                     <i data-lucide="download" class="w-3 h-3"></i> Export PDF
-                                </button>
-                                <button class="flex items-center gap-1.5 px-3 py-2 border border-pink-100 bg-white rounded-xl text-xs text-gray-600 hover:border-pink-300 font-bold">
+                                </a>
+                                <a href="{{ route('admin.laporan.export-excel', ['periode' => $periode]) }}"
+                                    class="flex items-center gap-1.5 px-3 py-2 border border-pink-100 bg-white rounded-xl text-xs text-gray-600 hover:border-pink-300 font-bold">
                                     <i data-lucide="download" class="w-3 h-3"></i> Export Excel
-                                </button>
+                                </a>
                             </div>
                         </div>
 
@@ -115,22 +117,22 @@
                             <div class="bg-white rounded-2xl p-5 shadow-[0_2px_16px_rgba(236,72,153,0.08)] border border-pink-50 hover:shadow-[0_4px_24px_rgba(236,72,153,0.14)] transition-all duration-300">
                                 <div class="flex items-start justify-between mb-4">
                                     <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-sm">
-                                        <i data-lucide="star" class="text-white w-5 h-5"></i>
+                                        <i data-lucide="trending-up" class="text-white w-5 h-5"></i>
                                     </div>
                                     <span class="flex items-center gap-1 text-[10px] font-semibold px-2 py-1 rounded-full text-emerald-600 bg-emerald-50">
-                                        <i data-lucide="trending-up" class="w-3 h-3"></i>+2%
+                                        <i data-lucide="calendar" class="w-3 h-3"></i>{{ $jumlahHari }} hari
                                     </span>
                                 </div>
-                                <p class="text-sm text-gray-400 font-medium mb-1">Rating Rata-rata</p>
-                                <p class="text-2xl font-bold text-gray-800">{{ number_format(min(5, max(0, $totalReservasi > 0 ? round(4.5 + (($totalReservasi % 10) / 100), 2) : 0)), 2) }}</p>
-                                <p class="text-xs text-gray-400 mt-1">Dari {{ number_format(max(1, $totalReservasi + $pelangganBaru), 0, ',', '.') }} ulasan</p>
+                                <p class="text-sm text-gray-400 font-medium mb-1">Rata-rata Pendapatan / Hari</p>
+                                <p class="text-2xl font-bold text-gray-800">{{ $fmt($rataPendapatan) }}</p>
+                                <p class="text-xs text-gray-400 mt-1">{{ date('d M Y', strtotime($startDate)) }} – {{ date('d M Y', strtotime($endDate)) }}</p>
                             </div>
                         </div>
 
                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
                             <div class="bg-white rounded-2xl p-5 border border-pink-50 shadow-[0_2px_16px_rgba(236,72,153,0.07)]">
-                                <h3 class="font-bold text-gray-800 mb-1">Pendapatan Bulanan</h3>
-                                <p class="text-xs text-gray-400 mb-4">Jan – {{ $chartLabels[count($chartLabels) - 1] ?? '' }} {{ date('Y') }}</p>
+                                <h3 class="font-bold text-gray-800 mb-1">Pendapatan {{ in_array($periode, ['7hari', '30hari']) ? 'Harian' : 'Bulanan' }}</h3>
+                                <p class="text-xs text-gray-400 mb-4">{{ date('d M', strtotime($startDate)) }} – {{ date('d M Y', strtotime($endDate)) }}</p>
                                 <div style="width: 100%; height: 200px;">
                                     <canvas id="barChart"></canvas>
                                 </div>
@@ -138,7 +140,7 @@
 
                             <div class="bg-white rounded-2xl p-5 border border-pink-50 shadow-[0_2px_16px_rgba(236,72,153,0.07)]">
                                 <h3 class="font-bold text-gray-800 mb-1">Tren Reservasi</h3>
-                                <p class="text-xs text-gray-400 mb-4">Jan – {{ $chartLabels[count($chartLabels) - 1] ?? '' }} {{ date('Y') }}</p>
+                                <p class="text-xs text-gray-400 mb-4">{{ date('d M', strtotime($startDate)) }} – {{ date('d M Y', strtotime($endDate)) }}</p>
                                 <div style="width: 100%; height: 200px;">
                                     <canvas id="lineChart"></canvas>
                                 </div>
