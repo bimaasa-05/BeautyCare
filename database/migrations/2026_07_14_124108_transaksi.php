@@ -11,7 +11,6 @@ return new class extends Migration
      */
     public function up(): void
     {
-        //
         Schema::create('transaksi', function (Blueprint $table) {
             $table->id('id_transaksi');
             $table->string('id_booking');
@@ -27,8 +26,15 @@ return new class extends Migration
             $table->enum('metode_byr', ['Tunai', 'Transfer', 'Debit', 'E-Wallet']);
             $table->decimal('dibayar', 12);
             $table->decimal('kembali', 12);
+            $table->string('bukti_bayar')->nullable();
+            $table->string('atas_nama', 100)->nullable();
+            $table->string('dari_rekening', 50)->nullable();
+            $table->string('ke_rekening', 50)->nullable();
+            $table->string('bank_asal', 50)->nullable();
+            $table->string('bank_tujuan', 50)->nullable();
+            $table->string('no_referensi', 50)->nullable();
             $table->text('catatan');
-            $table->enum('status', ['Pending', 'Lunas', 'Batal'])->default('Pending');
+            $table->string('status', 20)->default('Pending');
         });
     }
 
