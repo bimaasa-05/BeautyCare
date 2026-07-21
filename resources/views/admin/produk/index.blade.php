@@ -79,6 +79,33 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #94a3b8;
         }
+
+        @media (max-width: 768px) {
+            .admin-table thead { display: none; }
+            .admin-table tbody tr {
+                display: block;
+                padding: 16px;
+                border-bottom: 1px solid #f0f0f0;
+            }
+            .admin-table tbody td {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 8px 0;
+                border: none;
+                font-size: 13px;
+                text-align: right;
+            }
+            .admin-table tbody td::before {
+                content: attr(data-label);
+                font-weight: 600;
+                color: #9ca3af;
+                font-size: 11px;
+                text-transform: uppercase;
+            }
+            .admin-table tbody td:first-child { padding-left: 0; }
+            .admin-table tbody td:last-child { padding-right: 0; }
+        }
     </style>
 </head>
 
@@ -189,7 +216,7 @@
                             </div>
                         </div>
                         <div class="overflow-x-auto">
-                            <table class="w-full">
+                            <table class="w-full admin-table">
                                 <thead>
                                     <tr class="bg-[#FFF7FA]">
                                         <th class="text-left px-5 py-3 text-xs font-bold text-gray-400 uppercase">#</th>
@@ -210,7 +237,7 @@
                                     @forelse ($produk as $p)
                                     <tr class="border-t border-pink-50 hover:bg-pink-50/30 transition-colors produk-row">
                                         <td class="px-5 py-4 text-sm text-gray-600">{{ $loop->iteration }}</td>
-                                        <td class="px-5 py-4">
+                                        <td class="px-5 py-4" data-label="Nama Produk">
                                             <div class="flex items-center gap-2.5">
                                                 <div class="w-8 h-8 rounded-xl bg-pink-50 flex items-center justify-center">
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-[#EC4899]">
@@ -223,25 +250,25 @@
                                                 <p class="text-sm font-semibold text-gray-800 nm_produk">{{ $p->nm_produk }}</p>
                                             </div>
                                         </td>
-                                        <td class="px-5 py-4">
+                                        <td class="px-5 py-4" data-label="Kategori">
                                             <span class="text-xs font-semibold text-gray-500 bg-gray-50 px-2.5 py-1 rounded-full border border-gray-100">
                                                 {{ $p->kategori->nm_produk ?? '-' }}
                                             </span>
                                         </td>
-                                        <td class="px-5 py-4 text-sm text-gray-600">{{ $p->supplier->nm_supplier ?? '-' }}</td>
-                                        <td class="px-5 py-4">
+                                        <td class="px-5 py-4 text-sm text-gray-600" data-label="Supplier">{{ $p->supplier->nm_supplier ?? '-' }}</td>
+                                        <td class="px-5 py-4" data-label="Barcode">
                                             <p class="text-sm font-semibold text-gray-800">{{ $p->barcode }}</p>
                                         </td>
-                                        <td class="px-5 py-4 text-sm text-gray-600">{{ $p->satuan }}</td>
-                                        <td class="px-5 py-4 text-sm text-gray-600">Rp. {{ number_format($p->harga_beli, 0, ',', '.') }}</td>
-                                        <td class="px-5 py-4 text-sm text-gray-600">Rp. {{ number_format($p->harga_jual, 0, ',', '.') }}</td>
-                                        <td class="px-5 py-4">
+                                        <td class="px-5 py-4 text-sm text-gray-600" data-label="Satuan">{{ $p->satuan }}</td>
+                                        <td class="px-5 py-4 text-sm text-gray-600" data-label="Harga Beli">Rp. {{ number_format($p->harga_beli, 0, ',', '.') }}</td>
+                                        <td class="px-5 py-4 text-sm text-gray-600" data-label="Harga Jual">Rp. {{ number_format($p->harga_jual, 0, ',', '.') }}</td>
+                                        <td class="px-5 py-4" data-label="Stok">
                                             @php
                                                 $stokClass = $p->stok == 0 ? 'text-red-500' : ($p->stok < 10 ? 'text-amber-500' : 'text-gray-800');
                                             @endphp
                                             <p class="text-sm font-semibold {{ $stokClass }}">{{ $p->stok }}</p>
                                         </td>
-                                        <td class="px-5 py-4 text-sm text-gray-600">
+                                        <td class="px-5 py-4 text-sm text-gray-600" data-label="Foto">
                                             @if ($p->foto)
                                                 <img src="{{ asset('storage/' . $p->foto) }}" class="w-10 h-10 rounded-lg object-cover">
                                             @else
@@ -249,13 +276,14 @@
                                             @endif
                                         </td>
                                         <td class="px-5 py-4">
+                                        <td class="px-5 py-4" data-label="Status">
                                             @if ($p->status == 1)
                                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border bg-emerald-50 text-emerald-600 border-emerald-100">Aktif</span>
                                             @else
                                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border bg-red-50 text-red-500 border-red-100">Nonaktif</span>
                                             @endif
                                         </td>
-                                        <td class="px-5 py-4">
+                                        <td class="px-5 py-4" data-label="Aksi">
                                             <div class="flex gap-1.5">
                                                 <a href="{{ route('admin.produk.edit', $p->id_produk) }}"
                                                     class="w-7 h-7 rounded-lg bg-amber-50 text-amber-500 hover:bg-amber-100 flex items-center justify-center">

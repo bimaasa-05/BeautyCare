@@ -79,6 +79,33 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #94a3b8;
         }
+
+        @media (max-width: 768px) {
+            .admin-table thead { display: none; }
+            .admin-table tbody tr {
+                display: block;
+                padding: 16px;
+                border-bottom: 1px solid #f0f0f0;
+            }
+            .admin-table tbody td {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 8px 0;
+                border: none;
+                font-size: 13px;
+                text-align: right;
+            }
+            .admin-table tbody td::before {
+                content: attr(data-label);
+                font-weight: 600;
+                color: #9ca3af;
+                font-size: 11px;
+                text-transform: uppercase;
+            }
+            .admin-table tbody td:first-child { padding-left: 0; }
+            .admin-table tbody td:last-child { padding-right: 0; }
+        }
     </style>
 </head>
 
@@ -445,7 +472,7 @@
                         </div>
 
                         <div class="overflow-x-auto">
-                            <table class="w-full text-left border-collapse">
+                            <table class="w-full text-left border-collapse admin-table">
                                 <thead>
                                     <tr
                                         class="text-[11px] font-bold text-gray-400 uppercase border-b border-gray-100 bg-gray-50/50">
@@ -463,8 +490,8 @@
                                         <tr class="hover:bg-gray-50/50 transition-colors"
                                             data-tingkat="{{ $item->tingkat }}">
                                             <td class="py-3 px-3 text-gray-400">{{ $loop->iteration }}</td>
-                                            <td class="py-3 px-3 font-medium">{{ $item->nm_member }}</td>
-                                            <td class="py-3 px-3">
+                                            <td class="py-3 px-3 font-medium" data-label="Nama Member">{{ $item->nm_member }}</td>
+                                            <td class="py-3 px-3" data-label="Tingkat">
                                                 @php
                                                     $tierColors = [
                                                         'Silver' => ['bg' => 'bg-gray-50', 'text' => 'text-gray-500', 'border' => 'border-gray-200'],
@@ -478,9 +505,9 @@
                                                     {{ $item->tingkat }}
                                                 </span>
                                             </td>
-                                            <td class="py-3 px-3">{{ $item->diskon }}%</td>
-                                            <td class="py-3 px-3">{{ number_format($item->masa_berlaku) }} hari</td>
-                                            <td class="py-3 px-3">
+                                            <td class="py-3 px-3" data-label="Diskon">{{ $item->diskon }}%</td>
+                                            <td class="py-3 px-3" data-label="Masa Berlaku">{{ number_format($item->masa_berlaku) }} hari</td>
+                                            <td class="py-3 px-3" data-label="Status">
                                                 @php
                                                     $statusBg = [
                                                         'aktif' => '#ecfdf5',
@@ -501,7 +528,7 @@
                                                     <option value="non_aktif" {{ $item->status == 'non_aktif' ? 'selected' : '' }} style="background:#fff1f2;color:#e11d48;">Non Aktif</option>
                                                 </select>
                                             </td>
-                                            <td class="py-3 px-3">
+                                            <td class="py-3 px-3" data-label="Aksi">
                                                 <div class="flex items-center justify-center gap-2">
                                                     <a href="{{ route('admin.membership.edit', $item->id_member) }}"
                                                         class="w-7 h-7 inline-flex items-center justify-center text-amber-500 bg-amber-50 hover:bg-amber-100 rounded-md transition-colors"><i
