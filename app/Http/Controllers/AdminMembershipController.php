@@ -44,6 +44,8 @@ class AdminMembershipController extends Controller
 
         Membership::create($request->only(['nm_member', 'tingkat', 'diskon', 'masa_berlaku', 'status']));
 
+        buatNotif(auth()->id(), 'Membership Ditambahkan', 'Membership ' . $request->nm_member . ' (' . $request->tingkat . ') berhasil ditambahkan', 'Lainnya', route('admin.membership.index'));
+
         return redirect()->route('admin.membership.index')
             ->with('success', 'Membership berhasil ditambahkan.');
     }
@@ -67,14 +69,36 @@ class AdminMembershipController extends Controller
         $membership = Membership::findOrFail($id);
         $membership->update($request->only(['nm_member', 'tingkat', 'diskon', 'masa_berlaku', 'status']));
 
+        buatNotif(auth()->id(), 'Membership Diperbarui', 'Membership ' . $membership->nm_member . ' berhasil diperbarui', 'Lainnya', route('admin.membership.edit', $membership->id_member));
+
         return redirect()->route('admin.membership.index')
             ->with('success', 'Membership berhasil diperbarui.');
     }
     
+    public function updateStatus(Request $request, $id)
+    {
+        $request->validate([
+            'status' => 'required|in:aktif,suspend,non_aktif',
+        ]);
+
+        Membership::where('id_member', $id)->update([
+            'status' => $request->status,
+        ]);
+
+        if ($request->wantsJson()) {
+            return response()->json(['success' => true]);
+        }
+
+        return redirect()->back()->with('success', 'Status berhasil diperbarui');
+    }
+
     public function destroy($id)
     {
         $membership = Membership::findOrFail($id);
+        $nm = $membership->nm_member;
         $membership->delete();
+
+        buatNotif(auth()->id(), 'Membership Dihapus', 'Membership ' . $nm . ' berhasil dihapus dari sistem', 'Lainnya', route('admin.membership.index'));
 
         return redirect()->route('admin.membership.index')
             ->with('success', 'Membership berhasil dihapus.');

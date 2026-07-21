@@ -14,11 +14,11 @@ return new class extends Migration
         //
         Schema::create('layanan', function (Blueprint $table) {
             $table->id('id_layanan');
-            $table->integer('id_kategori')->unique();
+            $table->integer('id_kategori');
             $table->string('nm_layanan', 150);
             $table->integer('durasi');
             $table->decimal('harga', 12);
-            $table->string('foto');
+            $table->string('foto')->nullable();
             $table->enum('status', ['Tersedia', 'Tidak Tersedia']);
         });
     }

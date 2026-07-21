@@ -14,8 +14,8 @@ return new class extends Migration
         //
         Schema::create('promo_produk', function (Blueprint $table) {
             $table->id('id_promo_produk');
-            $table->integer('id_promo')->unique();
-            $table->integer('id_produk')->unique();
+            $table->integer('id_promo');
+            $table->integer('id_produk');
         });
     }
 

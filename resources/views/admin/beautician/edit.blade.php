@@ -84,10 +84,6 @@
 
 <body>
     <!-- Page Loader -->
-    <div class="page-loader">
-        <div class="loader-spinner"></div>
-    </div>
-
     <div class="dashboard-layout">
         @include('layouts.sidebar')
 
@@ -194,9 +190,9 @@
                                 <select name="status"
                                     class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all @error('status') border-red-300 @enderror">
                                     <option value="" disabled>Pilih status</option>
-                                    <option value="1" {{ old('status', $beautician->status) == '1' ? 'selected' : '' }}>Tersedia</option>
-                                    <option value="2" {{ old('status', $beautician->status) == '2' ? 'selected' : '' }}>Sibuk</option>
-                                    <option value="0" {{ old('status', $beautician->status) == '0' ? 'selected' : '' }}>Libur</option>
+                                    <option value="Tersedia" {{ old('status', $beautician->status) == 'Tersedia' ? 'selected' : '' }}>Tersedia</option>
+                                    <option value="Sibuk" {{ old('status', $beautician->status) == 'Sibuk' ? 'selected' : '' }}>Sibuk</option>
+                                    <option value="Libur" {{ old('status', $beautician->status) == 'Libur' ? 'selected' : '' }}>Libur</option>
                                 </select>
                                 @error('status')
                                     <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>

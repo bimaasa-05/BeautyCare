@@ -8,7 +8,8 @@
         </svg>
         <span>BeautyCare</span>
         <button class="sidebar-close" onclick="closeSidebar()" aria-label="Tutup menu">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
                 <line x1="18" y1="6" x2="6" y2="18" />
                 <line x1="6" y1="6" x2="18" y2="18" />
             </svg>
@@ -16,7 +17,8 @@
     </div>
 
     <div class="sidebar-profile">
-        <img src="{{ auth()->user()->foto ? asset('storage/' . auth()->user()->foto) : asset('assets/img/default-avatar.png') }}" alt="Profile">
+        <img src="{{ auth()->user()->foto ? asset('storage/' . auth()->user()->foto) : asset('assets/img/default-avatar.png') }}"
+            alt="Profile">
         <div class="sp-info">
             <h4>{{ auth()->user()->nama }}</h4>
             <span class="sp-badge">{{ auth()->user()->role }}</span>
@@ -84,12 +86,14 @@
                 </span>
                 Data Beautician
             </a>
-            <a href="{{ route('admin.supplier.index') }}" class="nav-item {{ request()->routeIs('admin.supplier.index') ? 'active' : '' }}" class="nav-item"
+            <a href="{{ route('admin.supplier.index') }}"
+                class="nav-item {{ request()->routeIs('admin.supplier.index') ? 'active' : '' }}" class="nav-item"
                 title="Kelola data supplier">
                 <span class="nav-icon">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M5 18H19M5 18C3.89543 18 3 17.1046 3 16V8C3 6.89543 3.89543 6 5 6H19C20.1046 6 21 6.89543 21 8V16C21 17.1046 20.1046 18 19 18M5 18L5 20M19 18L19 20" />
+                        <path
+                            d="M5 18H19M5 18C3.89543 18 3 17.1046 3 16V8C3 6.89543 3.89543 6 5 6H19C20.1046 6 21 6.89543 21 8V16C21 17.1046 20.1046 18 19 18M5 18L5 20M19 18L19 20" />
                         <circle cx="7" cy="14" r="1.5" fill="currentColor" />
                         <circle cx="17" cy="14" r="1.5" fill="currentColor" />
                         <path d="M5 9H9V12H5V9Z" />
@@ -101,7 +105,9 @@
 
         <div class="nav-section">
             <div class="nav-section-title">Layanan & Produk</div>
-            <a href="{{ route('admin.layanan.index') }}" class="nav-item {{ request()->routeIs('admin.layanan.index') ? 'active' : '' }}" class="nav-item" title="Kelola daftar layanan yang tersedia">
+            <a href="{{ route('admin.layanan.index') }}"
+                class="nav-item {{ request()->routeIs('admin.layanan.index') ? 'active' : '' }}" class="nav-item"
+                title="Kelola daftar layanan yang tersedia">
                 <span class="nav-icon">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -111,7 +117,9 @@
                 </span>
                 Data Layanan
             </a>
-            <a href="{{ route('admin.kategori.index') }}" class="nav-item {{ request()->routeIs('admin.kategori.index') ? 'active' : '' }}" title="Kelola kategori layanan dan produk">
+            <a href="{{ route('admin.kategori.index') }}"
+                class="nav-item {{ request()->routeIs('admin.kategori.index') ? 'active' : '' }}"
+                title="Kelola kategori layanan dan produk">
                 <span class="nav-icon">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -125,7 +133,9 @@
                 </span>
                 Data Kategori
             </a>
-            <a href="{{ route('admin.produk.index') }}" class="nav-item {{ request()->routeIs('admin.produk.index') ? 'active' : '' }}" class="nav-item" title="Kelola stok dan data produk">
+            <a href="{{ route('admin.produk.index') }}"
+                class="nav-item {{ request()->routeIs('admin.produk.index') ? 'active' : '' }}" class="nav-item"
+                title="Kelola stok dan data produk">
                 <span class="nav-icon">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -140,7 +150,9 @@
 
         <div class="nav-section">
             <div class="nav-section-title">Marketing</div>
-            <a href="{{ route('admin.membership.index') }}" class="nav-item {{ request()->routeIs('admin.membership.index') ? 'active' : '' }}" title="Kelola membership dan loyalitas pelanggan">
+            <a href="{{ route('admin.membership.index') }}"
+                class="nav-item {{ request()->routeIs('admin.membership.index') ? 'active' : '' }}"
+                title="Kelola membership dan loyalitas pelanggan">
                 <span class="nav-icon">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -150,7 +162,9 @@
                 </span>
                 Data Membership
             </a>
-            <a href="{{ route('admin.promo.index') }}" class="nav-item {{ request()->routeIs('admin.promo.index') ? 'active' : '' }}" title="Kelola promo dan diskon">
+            <a href="{{ route('admin.promo.index') }}"
+                class="nav-item {{ request()->routeIs('admin.promo.index') ? 'active' : '' }}"
+                title="Kelola promo dan diskon">
                 <span class="nav-icon">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -167,7 +181,7 @@
 
         <div class="nav-section">
             <div class="nav-section-title">Operasional</div>
-            <a href="#" class="nav-item" title="Kelola semua reservasi / booking">
+            <a href="{{ route('admin.reservasi.index') }}" class="nav-item {{ request()->routeIs('admin.reservasi.index') ? 'active' : '' }}" title="Kelola semua reservasi / booking">
                 <span class="nav-icon">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -179,7 +193,7 @@
                 </span>
                 Data Reservasi
             </a>
-            <a href="#" class="nav-item" title="Kelola semua data transaksi">
+            <a href="{{ route('admin.transaksi.index') }}" class="nav-item {{ request()->routeIs('admin.transaksi.index') ? 'active' : '' }}" title="Kelola semua data transaksi">
                 <span class="nav-icon">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -201,21 +215,6 @@
                     </svg>
                 </span>
                 Laporan
-            </a>
-        </div>
-
-        <div class="nav-section">
-            <div class="nav-section-title">Pengaturan</div>
-            <a href="#" class="nav-item" title="Pengaturan tampilan dan konfigurasi website">
-                <span class="nav-icon">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="3" />
-                        <path
-                            d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
-                    </svg>
-                </span>
-                Pengaturan Website
             </a>
         </div>
     </nav>
@@ -243,27 +242,27 @@
 <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 
 <script>
-function closeSidebar() {
-    var s = document.getElementById('sidebar');
-    var o = document.getElementById('sidebarOverlay');
-    if (s) s.classList.remove('open');
-    if (o) o.classList.remove('active');
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-    var overlay = document.getElementById('sidebarOverlay');
-    if (overlay) {
-        overlay.addEventListener('click', function() {
-            closeSidebar();
-        });
+    function closeSidebar() {
+        var s = document.getElementById('sidebar');
+        var o = document.getElementById('sidebarOverlay');
+        if (s) s.classList.remove('open');
+        if (o) o.classList.remove('active');
     }
 
-    document.querySelectorAll('#sidebar .nav-item').forEach(function(item) {
-        item.addEventListener('click', function() {
-            if (window.innerWidth <= 768) {
+    document.addEventListener('DOMContentLoaded', function() {
+        var overlay = document.getElementById('sidebarOverlay');
+        if (overlay) {
+            overlay.addEventListener('click', function() {
                 closeSidebar();
-            }
+            });
+        }
+
+        document.querySelectorAll('#sidebar .nav-item').forEach(function(item) {
+            item.addEventListener('click', function() {
+                if (window.innerWidth <= 768) {
+                    closeSidebar();
+                }
+            });
         });
     });
-});
 </script>

@@ -32,6 +32,8 @@ class AdminPromoController extends Controller
 
         Promo::create($request->only(['nm_promo', 'jenis_promo', 'nilai', 'mulai', 'selesai', 'status']));
 
+        buatNotif(auth()->id(), 'Promo Ditambahkan', 'Promo ' . $request->nm_promo . ' berhasil ditambahkan', 'Promo', route('admin.promo.index'));
+
         return redirect()->route('admin.promo.index')
             ->with('success', 'Promo berhasil ditambahkan.');
     }
@@ -56,6 +58,8 @@ class AdminPromoController extends Controller
         $promo = Promo::findOrFail($id);
         $promo->update($request->only(['nm_promo', 'jenis_promo', 'nilai', 'mulai', 'selesai', 'status']));
 
+        buatNotif(auth()->id(), 'Promo Diperbarui', 'Promo ' . $promo->nm_promo . ' berhasil diperbarui', 'Promo', route('admin.promo.edit', $promo->id_promo));
+
         return redirect()->route('admin.promo.index')
             ->with('success', 'Promo berhasil diperbarui.');
     }
@@ -63,7 +67,10 @@ class AdminPromoController extends Controller
     public function destroy($id)
     {
         $promo = Promo::findOrFail($id);
+        $nm = $promo->nm_promo;
         $promo->delete();
+
+        buatNotif(auth()->id(), 'Promo Dihapus', 'Promo ' . $nm . ' berhasil dihapus dari sistem', 'Promo', route('admin.promo.index'));
 
         return redirect()->route('admin.promo.index')
             ->with('success', 'Promo berhasil dihapus.');

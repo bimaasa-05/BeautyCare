@@ -83,10 +83,6 @@
 </head>
 
 <body>
-    <div class="page-loader">
-        <div class="loader-spinner"></div>
-    </div>
-
     <div class="dashboard-layout">
         @include('layouts.sidebar')
 
@@ -180,20 +176,6 @@
                                 </div>
                             </div>
 
-                            <div class="flex items-center gap-3 mt-6 pt-4 border-t border-gray-100">
-                                <a href="{{ route('kasir.pelanggan.edit', $pelanggan->id_pelanggan) }}"
-                                    class="flex items-center gap-2 bg-[#FF4F87] text-white text-[13px] font-semibold px-6 py-2.5 rounded-full hover:bg-[#ff3a78] transition-all shadow-sm hover:shadow-md hover:shadow-pink-200">
-                                    <i class="fa-regular fa-pen-to-square"></i> Edit Pelanggan
-                                </a>
-                                <form action="{{ route('kasir.pelanggan.destroy', $pelanggan->id_pelanggan) }}" method="POST" class="inline" onsubmit="return confirm('Yakin ingin menghapus pelanggan {{ $pelanggan->nm_pelanggan }}?')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit"
-                                        class="flex items-center gap-2 bg-red-50 text-red-500 text-[13px] font-semibold px-6 py-2.5 rounded-full hover:bg-red-100 transition-colors">
-                                        <i class="fa-regular fa-trash-can"></i> Hapus
-                                    </button>
-                                </form>
-                            </div>
                         </div>
                     </div>
                 </div>

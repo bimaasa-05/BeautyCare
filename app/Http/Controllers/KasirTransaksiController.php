@@ -27,10 +27,19 @@ class KasirTransaksiController extends Controller
 
     public function create()
     {
-        $pelanggan = Pelanggan::all();
+        $pelanggan = Pelanggan::with('membership')->get();
         $layanan = Layanan::where('status', 1)->get();
         $produk = Produk::where('status', 1)->get();
-        return view('kasir.transaksi.create', compact('pelanggan', 'layanan', 'produk'));
+
+        $bankTujuan = [
+            'BRI' => '10101010',
+            'BCA' => '20202020',
+            'Mandiri' => '30303030',
+            'BNI' => '40404040',
+            'BSI' => '50505050',
+        ];
+
+        return view('kasir.transaksi.create', compact('pelanggan', 'layanan', 'produk', 'bankTujuan'));
     }
 
     public function store(Request $request)
@@ -53,6 +62,7 @@ class KasirTransaksiController extends Controller
             'bank_asal' => 'nullable|string|max:50',
             'bank_tujuan' => 'nullable|string|max:50',
             'no_referensi' => 'nullable|string|max:50',
+            'ewallet_type' => 'nullable|string|max:50',
         ]);
 
         $lastId = Transaksi::max('id_transaksi') + 1;
@@ -76,7 +86,7 @@ class KasirTransaksiController extends Controller
             'atas_nama' => $request->atas_nama,
             'dari_rekening' => $request->dari_rekening,
             'ke_rekening' => $request->ke_rekening,
-            'bank_asal' => $request->bank_asal,
+            'bank_asal' => $request->bank_asal ?? $request->ewallet_type,
             'bank_tujuan' => $request->bank_tujuan,
             'no_referensi' => $request->no_referensi,
         ];
@@ -104,6 +114,13 @@ class KasirTransaksiController extends Controller
             }
         }
 
+        buatNotif(auth()->user()->id, 'Transaksi Baru', 'Transaksi ' . $no_invoice . ' berhasil dicatat', 'Transaksi', route('kasir.transaksi.show', $transaksi->id_transaksi));
+
+        $admins = \App\Models\User::where('role', 'admin')->get();
+        foreach ($admins as $admin) {
+            buatNotif($admin->id, 'Transaksi Baru', 'Transaksi ' . $no_invoice . ' oleh ' . auth()->user()->nama, 'Transaksi', url('/admin/dashboard'));
+        }
+
         $msg = in_array($request->metode_byr, ['Tunai', 'E-Wallet'])
             ? 'Pembayaran berhasil! Transaksi selesai.'
             : 'Pembayaran berhasil dicatat! Menunggu konfirmasi.';
@@ -117,6 +134,31 @@ class KasirTransaksiController extends Controller
         return view('kasir.transaksi.show', compact('transaksi'));
     }
 
+    public function invoiceIndex(Request $request)
+    {
+        $search = $request->keyword;
+        $dari = $request->dari;
+        $sampai = $request->sampai;
+
+        $totalInvoice = Transaksi::count();
+        $totalLunas = Transaksi::where('status', 'Lunas')->count();
+        $totalPending = Transaksi::where('status', 'Pending')->count();
+
+        $invoices = Transaksi::with('pelanggan')
+            ->when($search, function ($query, $search) {
+                return $query->where('no_invoice', 'like', "%{$search}%")
+                    ->orWhereHas('pelanggan', function ($q) use ($search) {
+                        $q->where('nm_pelanggan', 'like', "%{$search}%");
+                    });
+            })
+            ->when($dari, fn($q, $d) => $q->whereDate('tanggal', '>=', $d))
+            ->when($sampai, fn($q, $s) => $q->whereDate('tanggal', '<=', $s))
+            ->orderBy('id_transaksi', 'desc')
+            ->paginate(10);
+
+        return view('kasir.invoice.index', compact('invoices', 'totalInvoice', 'totalLunas', 'totalPending'));
+    }
+
     public function invoice($id)
     {
         $transaksi = Transaksi::with('pelanggan', 'detail', 'user')->findOrFail($id);
@@ -126,10 +168,19 @@ class KasirTransaksiController extends Controller
     public function edit($id)
     {
         $transaksi = Transaksi::with('detail')->findOrFail($id);
-        $pelanggan = Pelanggan::all();
+        $pelanggan = Pelanggan::with('membership')->get();
         $layanan = Layanan::where('status', 1)->get();
         $produk = Produk::where('status', 1)->get();
-        return view('kasir.transaksi.edit', compact('transaksi', 'pelanggan', 'layanan', 'produk'));
+
+        $bankTujuan = [
+            'BRI' => '10101010',
+            'BCA' => '20202020',
+            'Mandiri' => '30303030',
+            'BNI' => '40404040',
+            'BSI' => '50505050',
+        ];
+
+        return view('kasir.transaksi.edit', compact('transaksi', 'pelanggan', 'layanan', 'produk', 'bankTujuan'));
     }
 
     public function update(Request $request, $id)
@@ -152,6 +203,7 @@ class KasirTransaksiController extends Controller
             'bank_asal' => 'nullable|string|max:50',
             'bank_tujuan' => 'nullable|string|max:50',
             'no_referensi' => 'nullable|string|max:50',
+            'ewallet_type' => 'nullable|string|max:50',
         ]);
 
         $data = [
@@ -168,7 +220,7 @@ class KasirTransaksiController extends Controller
             'atas_nama' => $request->atas_nama,
             'dari_rekening' => $request->dari_rekening,
             'ke_rekening' => $request->ke_rekening,
-            'bank_asal' => $request->bank_asal,
+            'bank_asal' => $request->bank_asal ?? $request->ewallet_type,
             'bank_tujuan' => $request->bank_tujuan,
             'no_referensi' => $request->no_referensi,
         ];

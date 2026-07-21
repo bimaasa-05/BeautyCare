@@ -14,8 +14,8 @@ return new class extends Migration
         //
         Schema::create('paket_detail', function (Blueprint $table) {
             $table->id('id_paket_detail');
-            $table->integer('id_paket')->unique();
-            $table->integer('id_layanan')->unique();
+            $table->integer('id_paket');
+            $table->integer('id_layanan');
             $table->integer('urutan');
         });
     }

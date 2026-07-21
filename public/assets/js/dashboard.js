@@ -276,14 +276,6 @@ function drawMiniCharts() {
 }
 
 /* ---- Notification Dropdown ---- */
-function initNotifications() {
-  const notifBtn = document.querySelector('.notif-btn');
-  if (notifBtn) {
-    notifBtn.addEventListener('click', function() {
-      alert('Notifikasi akan segera hadir!');
-    });
-  }
-}
 
 /* ---- Toast Notifications ---- */
 function showToast(message, type) {
