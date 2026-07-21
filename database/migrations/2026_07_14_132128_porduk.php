@@ -14,8 +14,8 @@ return new class extends Migration
         //
         Schema::create('produk', function (Blueprint $table) {
             $table->id('id_produk');
-            $table->integer('id_kategori_produk')->unique();
-            $table->integer('id_supplier')->unique();
+            $table->integer('id_kategori_produk');
+            $table->integer('id_supplier');
             $table->string('barcode', 50);
             $table->string('nm_produk', 50);
             $table->string('satuan', 50);
