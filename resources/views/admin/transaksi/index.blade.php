@@ -53,6 +53,33 @@
                 align-items: center;
             }
         }
+
+        @media (max-width: 768px) {
+            .admin-table thead { display: none; }
+            .admin-table tbody tr {
+                display: block;
+                padding: 16px;
+                border-bottom: 1px solid #f0f0f0;
+            }
+            .admin-table tbody td {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 8px 0;
+                border: none;
+                font-size: 13px;
+                text-align: right;
+            }
+            .admin-table tbody td::before {
+                content: attr(data-label);
+                font-weight: 600;
+                color: #9ca3af;
+                font-size: 11px;
+                text-transform: uppercase;
+            }
+            .admin-table tbody td:first-child { padding-left: 0; }
+            .admin-table tbody td:last-child { padding-right: 0; }
+        }
     </style>
 </head>
 
@@ -150,7 +177,7 @@
                                 </div>
                             </div>
                             <div class="overflow-x-auto">
-                                <table class="w-full">
+                                <table class="w-full admin-table">
                                     <thead>
                                         <tr class="bg-[#FFF7FA]">
                                             <th class="text-left px-4 py-3 text-[10px] font-bold text-gray-400 uppercase">ID</th>
@@ -167,21 +194,21 @@
                                         @forelse ($transaksi as $t)
                                         <tr class="border-t border-pink-50 hover:bg-pink-50/30 transition-colors">
                                             <td class="px-4 py-3.5 text-[10px] font-mono text-gray-400">{{ $t->no_invoice }}</td>
-                                            <td class="px-4 py-3.5">
-                                                <div class="flex items-center gap-2">
-                                                    <div class="w-8 h-8 text-xs rounded-full bg-gradient-to-br from-purple-400 to-pink-500 flex items-center justify-center text-white font-bold flex-shrink-0 shadow-sm">
-                                                        {{ $t->pelanggan ? strtoupper(substr($t->pelanggan->nm_pelanggan, 0, 2)) : '?' }}
-                                                    </div>
-                                                    <span class="text-xs font-bold text-gray-700">{{ $t->pelanggan->nm_pelanggan ?? 'N/A' }}</span>
+                                        <td class="px-4 py-3.5" data-label="Pelanggan">
+                                            <div class="flex items-center gap-2">
+                                                <div class="w-8 h-8 text-xs rounded-full bg-gradient-to-br from-purple-400 to-pink-500 flex items-center justify-center text-white font-bold flex-shrink-0 shadow-sm">
+                                                    {{ $t->pelanggan ? strtoupper(substr($t->pelanggan->nm_pelanggan, 0, 2)) : '?' }}
                                                 </div>
-                                            </td>
-                                            <td class="px-4 py-3.5 text-xs text-gray-500 max-w-[120px] truncate">
+                                                <span class="text-xs font-bold text-gray-700">{{ $t->pelanggan->nm_pelanggan ?? 'N/A' }}</span>
+                                            </div>
+                                        </td>
+                                        <td class="px-4 py-3.5 text-xs text-gray-500 max-w-[120px] truncate" data-label="Layanan">
                                                 {{ $t->detail->pluck('nm_item')->implode(', ') ?: '-' }}
                                             </td>
-                                            <td class="px-4 py-3.5 text-xs font-bold text-gray-800">Rp {{ number_format($t->total, 0, ',', '.') }}</td>
-                                            <td class="px-4 py-3.5 text-xs text-gray-500">{{ $t->metode_byr }}</td>
-                                            <td class="px-4 py-3.5 text-[10px] text-gray-400">{{ \Carbon\Carbon::parse($t->tanggal)->format('d M Y') }}</td>
-                                            <td class="px-4 py-3.5">
+                                            <td class="px-4 py-3.5 text-xs font-bold text-gray-800" data-label="Total">Rp {{ number_format($t->total, 0, ',', '.') }}</td>
+                                            <td class="px-4 py-3.5 text-xs text-gray-500" data-label="Pembayaran">{{ $t->metode_byr }}</td>
+                                            <td class="px-4 py-3.5 text-[10px] text-gray-400" data-label="Tanggal">{{ \Carbon\Carbon::parse($t->tanggal)->format('d M Y') }}</td>
+                                            <td class="px-4 py-3.5" data-label="Status">
                                                 @php
                                                 $statusClass = $t->status === 'Lunas' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-amber-50 text-amber-600 border-amber-100';
                                                 @endphp
@@ -189,7 +216,7 @@
                                                     {{ $t->status }}
                                                 </span>
                                             </td>
-                                            <td class="px-4 py-3.5">
+                                            <td class="px-4 py-3.5" data-label="Aksi">
                                                 <div class="flex items-center gap-1.5">
                                                     <a href="{{ route('admin.transaksi.show', $t->id_transaksi) }}"
                                                         class="w-6 h-6 rounded-lg bg-blue-50 text-blue-500 flex items-center justify-center hover:bg-blue-100" title="Detail">
