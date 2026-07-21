@@ -55,7 +55,7 @@ class AdminBeautycianController extends Controller
             'gaji'      => 'required|numeric',
             'komisi'    => 'required|numeric',
             'tgl_masuk' => 'required|date',
-            'status'    => 'required|integer',
+            'status'    => 'required|string|in:Tersedia,Libur,Sibuk',
         ]);
 
         Karyawan::create($request->all());
@@ -84,7 +84,7 @@ class AdminBeautycianController extends Controller
             'gaji'      => 'required|numeric',
             'komisi'    => 'required|numeric',
             'tgl_masuk' => 'required|date',
-            'status'    => 'required|integer',
+            'status'    => 'required|string|in:Tersedia,Libur,Sibuk',
         ]);
 
         $beautician->update($request->all());
