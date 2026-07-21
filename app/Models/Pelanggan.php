@@ -8,7 +8,7 @@ class Pelanggan extends Model
 {
     protected $table = 'pelanggan';
     protected $primaryKey = 'id_pelanggan';
-    public $timestamps = false;
+    public $timestamps = true;
 
     protected $fillable = [
         'nm_pelanggan',

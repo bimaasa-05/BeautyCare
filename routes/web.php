@@ -151,6 +151,8 @@ Route::middleware('auth')->group(function () {
         Route::delete('/admin/transaksi/{id}', [AdminTransaksiController::class, 'destroy'])->name('admin.transaksi.destroy');
 
         Route::get('/admin/laporan', [AdminLaporanController::class, 'index'])->name('admin.laporan.index');
+        Route::get('/admin/laporan/export-pdf', [AdminLaporanController::class, 'exportPDF'])->name('admin.laporan.export-pdf');
+        Route::get('/admin/laporan/export-excel', [AdminLaporanController::class, 'exportExcel'])->name('admin.laporan.export-excel');
     });
 
 
