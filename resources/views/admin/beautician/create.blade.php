@@ -197,9 +197,9 @@
                                 <select name="status"
                                     class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all @error('status') border-red-300 @enderror">
                                     <option value="" disabled selected>Pilih status</option>
-                                    <option value="1" {{ old('status') == '1' ? 'selected' : '' }}>Tersedia</option>
-                                    <option value="2" {{ old('status') == '2' ? 'selected' : '' }}>Sibuk</option>
-                                    <option value="0" {{ old('status') == '0' ? 'selected' : '' }}>Libur</option>
+                                    <option value="Tersedia" {{ old('status') == 'Tersedia' ? 'selected' : '' }}>Tersedia</option>
+                                    <option value="Sibuk" {{ old('status') == 'Sibuk' ? 'selected' : '' }}>Sibuk</option>
+                                    <option value="Libur" {{ old('status') == 'Libur' ? 'selected' : '' }}>Libur</option>
                                 </select>
                                 @error('status')
                                     <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>

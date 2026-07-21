@@ -120,19 +120,19 @@
                                             Semua
                                         </label>
                                         <label class="flex items-center gap-2 text-[12px] text-gray-700 cursor-pointer">
-                                            <input type="radio" name="filter_status" value="1"
-                                                onchange="applyFilterBeautician()">
-                                            Tersedia
-                                        </label>
-                                        <label class="flex items-center gap-2 text-[12px] text-gray-700 cursor-pointer">
-                                            <input type="radio" name="filter_status" value="2"
-                                                onchange="applyFilterBeautician()">
-                                            Sibuk
-                                        </label>
-                                        <label class="flex items-center gap-2 text-[12px] text-gray-700 cursor-pointer">
-                                            <input type="radio" name="filter_status" value="0"
-                                                onchange="applyFilterBeautician()">
-                                            Libur
+                                             <input type="radio" name="filter_status" value="Tersedia"
+                                                 onchange="applyFilterBeautician()">
+                                             Tersedia
+                                         </label>
+                                         <label class="flex items-center gap-2 text-[12px] text-gray-700 cursor-pointer">
+                                             <input type="radio" name="filter_status" value="Sibuk"
+                                                 onchange="applyFilterBeautician()">
+                                             Sibuk
+                                         </label>
+                                         <label class="flex items-center gap-2 text-[12px] text-gray-700 cursor-pointer">
+                                             <input type="radio" name="filter_status" value="Libur"
+                                                 onchange="applyFilterBeautician()">
+                                             Libur
                                         </label>
                                     </div>
                                 </div>
