@@ -207,7 +207,7 @@
 
         <div class="nav-section">
             <div class="nav-section-title">Laporan</div>
-            <a href="#" class="nav-item" title="Lihat berbagai laporan bisnis">
+            <a href="{{ route('admin.laporan.index') }}" class="nav-item {{ request()->routeIs('admin.laporan.index') ? 'active' : '' }}" title="Lihat berbagai laporan bisnis">
                 <span class="nav-icon">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
