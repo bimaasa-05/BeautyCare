@@ -30,6 +30,6 @@ class Produk extends Model
 
     public function supplier()
     {
-        return $this->belongsTo(Supplier::class, 'id_supplier', 'id_produk');
+        return $this->belongsTo(Supplier::class, 'id_supplier', 'id_supplier');
     }
 }

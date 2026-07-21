@@ -26,14 +26,13 @@ class AdminProdukController extends Controller
     {
         $request->validate([
             'id_kategori_produk' => 'required|integer|exists:kategori_produk,id_kategori_produk',
-            'id_supplier'        => 'required|integer|exists:supplier,id_produk',
-            'barcode'            => 'required|string|max:50',
+            'id_supplier'        => 'required|integer|exists:supplier,id_supplier',
             'nm_produk'          => 'required|string|max:50',
             'satuan'             => 'required|string|max:50',
             'harga_beli'         => 'required|numeric',
             'harga_jual'         => 'required|numeric',
             'stok'               => 'required|integer',
-            'status'             => 'required|integer',
+            'status'             => 'required|string|in:Tersedia,Habis,Belum Restok',
         ]);
 
         $data = $request->all();
@@ -61,14 +60,13 @@ class AdminProdukController extends Controller
     {
         $request->validate([
             'id_kategori_produk' => 'required|integer|exists:kategori_produk,id_kategori_produk',
-            'id_supplier'        => 'required|integer|exists:supplier,id_produk',
-            'barcode'            => 'required|string|max:50',
+            'id_supplier'        => 'required|integer|exists:supplier,id_supplier',
             'nm_produk'          => 'required|string|max:50',
             'satuan'             => 'required|string|max:50',
             'harga_beli'         => 'required|numeric',
             'harga_jual'         => 'required|numeric',
             'stok'               => 'required|integer',
-            'status'             => 'required|integer',
+            'status'             => 'required|string|in:Tersedia,Habis,Belum Restok',
         ]);
 
         $data = $request->all();
