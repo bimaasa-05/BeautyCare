@@ -14,7 +14,7 @@ return new class extends Migration
         //
         Schema::create('stok', function (Blueprint $table) {
             $table->id('id_stok');
-            $table->integer('id_produk')->unique();
+            $table->integer('id_produk');
             $table->date('tanggal');
             $table->enum('type', ['Masuk', 'Keluar', 'Penyesuaian']);
             $table->integer('jumlah');
