@@ -282,6 +282,13 @@ Route::middleware('auth')->group(function () {
             return view('pelanggan.produk.index');
         })->name('pelanggan.produk');
 
+        //Route Keranjang
+        Route::get('/pelanggan/keranjang', [App\Http\Controllers\KeranjangController::class, 'index'])->name('pelanggan.keranjang');
+        Route::post('/pelanggan/keranjang', [App\Http\Controllers\KeranjangController::class, 'store'])->name('pelanggan.keranjang.store');
+        Route::put('/pelanggan/keranjang/{id}', [App\Http\Controllers\KeranjangController::class, 'update'])->name('pelanggan.keranjang.update');
+        Route::delete('/pelanggan/keranjang/batch', [App\Http\Controllers\KeranjangController::class, 'batchDestroy'])->name('pelanggan.keranjang.batch');
+        Route::delete('/pelanggan/keranjang/{id}', [App\Http\Controllers\KeranjangController::class, 'destroy'])->name('pelanggan.keranjang.destroy')->whereNumber('id');
+
         //Route Profile
         Route::get('/pelanggan/profile', function () {
             return view('pelanggan.profile.index');
