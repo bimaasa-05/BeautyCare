@@ -41,6 +41,8 @@ class KasirCheckinController extends Controller
         $booking = Booking::findOrFail($id);
         $booking->update(['status' => 'diproses']);
 
+        buatNotif(auth()->id(), 'Check In Berhasil', 'Pelanggan ' . ($booking->pelanggan->nm_pelanggan ?? '-') . ' telah check in', 'Booking', route('kasir.checkin.index'));
+
         return redirect()->route('kasir.checkin.index')
             ->with('success', 'Pelanggan berhasil check in');
     }
@@ -49,6 +51,8 @@ class KasirCheckinController extends Controller
     {
         $booking = Booking::findOrFail($id);
         $booking->update(['status' => 'dikonfirmasi']);
+
+        buatNotif(auth()->id(), 'Check In Dibatalkan', 'Check in untuk ' . ($booking->pelanggan->nm_pelanggan ?? '-') . ' dibatalkan', 'Booking', route('kasir.checkin.index'));
 
         return redirect()->route('kasir.checkin.index')
             ->with('success', 'Check in berhasil dibatalkan');

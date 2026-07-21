@@ -11,6 +11,7 @@ class Notifikasi extends Model
 
     protected $fillable = [
         'id_user',
+        'aktor_id',
         'judul',
         'isi',
         'type',
@@ -27,6 +28,11 @@ class Notifikasi extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'id_user');
+    }
+
+    public function aktor()
+    {
+        return $this->belongsTo(User::class, 'aktor_id');
     }
 
     public function scopeUnread($query)

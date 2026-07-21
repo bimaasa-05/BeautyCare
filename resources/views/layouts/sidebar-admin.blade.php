@@ -181,7 +181,7 @@
 
         <div class="nav-section">
             <div class="nav-section-title">Operasional</div>
-            <a href="#" class="nav-item" title="Kelola semua reservasi / booking">
+            <a href="{{ route('admin.reservasi.index') }}" class="nav-item {{ request()->routeIs('admin.reservasi.index') ? 'active' : '' }}" title="Kelola semua reservasi / booking">
                 <span class="nav-icon">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -193,7 +193,7 @@
                 </span>
                 Data Reservasi
             </a>
-            <a href="#" class="nav-item" title="Kelola semua data transaksi">
+            <a href="{{ route('admin.transaksi.index') }}" class="nav-item {{ request()->routeIs('admin.transaksi.index') ? 'active' : '' }}" title="Kelola semua data transaksi">
                 <span class="nav-icon">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

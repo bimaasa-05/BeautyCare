@@ -137,6 +137,11 @@ class KasirPembayaranController extends Controller
 
         buatNotif(auth()->user()->id, 'Pembayaran Berhasil', 'Pembayaran ' . $no_invoice . ' berhasil diproses (' . $request->metode_byr . ')', 'Transaksi', route('kasir.pembayaran.show', $transaksi->id_transaksi));
 
+        $admins = \App\Models\User::where('role', 'admin')->get();
+        foreach ($admins as $admin) {
+            buatNotif($admin->id, 'Pembayaran Masuk', 'Pembayaran ' . $no_invoice . ' oleh ' . auth()->user()->nama . ' (' . $request->metode_byr . ')', 'Transaksi', url('/admin/dashboard'));
+        }
+
         return redirect()->route('kasir.pembayaran.show', $transaksi->id_transaksi)
             ->with('message', 'Pembayaran berhasil diproses');
     }

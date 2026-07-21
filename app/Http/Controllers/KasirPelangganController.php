@@ -52,7 +52,10 @@ class KasirPelangganController extends Controller
             $data['foto'] = $request->file('foto')->store('uploads/pelanggan', 'public');
         }
         Pelanggan::create($data);
-        return \redirect('kasir/pelanggan')->with('message', 'Data BERhasil di buat');
+
+        buatNotif(auth()->id(), 'Pelanggan Ditambahkan', 'Pelanggan ' . $request->nm_pelanggan . ' berhasil ditambahkan', 'Lainnya', route('kasir.pelanggan.index'));
+
+        return redirect('kasir/pelanggan')->with('message', 'Data BERhasil di buat');
     }
 
     public function show($id)
@@ -91,13 +94,20 @@ class KasirPelangganController extends Controller
             'catatan_alergi' => $request->catatan_alergi,
             'foto' => $request->nullable,
         ]);
+        buatNotif(auth()->id(), 'Pelanggan Diperbarui', 'Data pelanggan berhasil diperbarui', 'Lainnya', route('kasir.pelanggan.index'));
+
         return redirect('kasir/pelanggan')->with('message', 'data berhasil di Diupdate');
     }
 
     public function destroy($id)
     {
         //
-        Pelanggan::findOrFail($id)->delete();
+        $pelanggan = Pelanggan::findOrFail($id);
+        $nm = $pelanggan->nm_pelanggan;
+        $pelanggan->delete();
+
+        buatNotif(auth()->id(), 'Pelanggan Dihapus', 'Pelanggan ' . $nm . ' berhasil dihapus', 'Lainnya', route('kasir.pelanggan.index'));
+
         return redirect('/kasir/pelanggan')->with('message', 'data berhasil di hapus');
     }
 }

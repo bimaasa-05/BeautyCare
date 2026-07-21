@@ -83,14 +83,41 @@ if (!isset($pageTitle)) {
             </div>
         </div>
 
-        <div class="user-profile">
-            <img src="{{ auth()->user()->foto ? asset('storage/' . auth()->user()->foto) : asset('assets/img/default-avatar.png') }}"
-                alt="Profile">
-            <div class="up-info">
-                <h4>{{ auth()->user()->nama }}</h4>
-
-                <span class="sp-badge">{{ ucfirst(auth()->user()->role) }}
-                </span>
+        <div class="profile-dropdown-wrapper">
+            <div class="user-profile" id="profileTrigger">
+                <img src="{{ auth()->user()->foto ? asset('storage/' . auth()->user()->foto) : asset('assets/img/default-avatar.png') }}"
+                    alt="Profile">
+                <div class="up-info">
+                    <h4>{{ auth()->user()->nama }}</h4>
+                    <span class="sp-badge">{{ ucfirst(auth()->user()->role) }}</span>
+                </div>
+                <svg class="dropdown-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+            </div>
+            <div class="profile-dropdown" id="profileDropdown">
+                @php
+                    $roleRoute = auth()->user()->role;
+                @endphp
+                <a href="{{ route($roleRoute . '.profile') }}" class="dropdown-item">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                        <circle cx="12" cy="7" r="4" />
+                    </svg>
+                    Profile
+                </a>
+                <div class="dropdown-divider"></div>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="dropdown-item dropdown-item-danger">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                            <polyline points="16 17 21 12 16 7" />
+                            <line x1="21" y1="12" x2="9" y2="12" />
+                        </svg>
+                        Keluar
+                    </button>
+                </form>
             </div>
         </div>
     </div>
@@ -127,17 +154,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 let html = '';
                 d.notifications.forEach(function(n) {
-                    const icons = { Booking: 'fa-regular fa-calendar-check', Promo: 'fa-solid fa-tags', Stok: 'fa-solid fa-boxes', Transaksi: 'fa-regular fa-credit-card', Lainnya: 'fa-regular fa-bell' };
-                    const icon = icons[n.type] || icons.Lainnya;
-                    const colors = { Booking: '#3B82F6', Promo: '#F59E0B', Stok: '#10B981', Transaksi: '#FF4F87', Lainnya: '#8B5CF6' };
-                    const color = colors[n.type] || colors.Lainnya;
+                    const actorFoto = n.aktor_foto ? '/storage/' + n.aktor_foto : null;
+                    const actorInitial = n.aktor_nama ? n.aktor_nama.charAt(0).toUpperCase() : '?';
                     const bg = n.status === 0 ? '#FFF5F8' : 'transparent';
                     html += '<a href="/notif/' + n.id + '/read" class="notif-item" style="display:flex;gap:12px;padding:14px 20px;text-decoration:none;background:' + bg + ';border-bottom:1px solid #f8f8f8;transition:background 0.2s;" onmouseover="this.style.background=\'#FFF5F8\'" onmouseout="this.style.background=\'' + bg + '\'">';
-                    html += '<div style="width:36px;height:36px;border-radius:10px;background:' + color + '15;color:' + color + ';display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px;"><i class="' + icon + '"></i></div>';
+                    if (actorFoto) {
+                        html += '<div style="width:36px;height:36px;border-radius:50%;flex-shrink:0;overflow:hidden;"><img src="' + actorFoto + '" alt="" style="width:100%;height:100%;object-fit:cover;"></div>';
+                    } else {
+                        html += '<div style="width:36px;height:36px;border-radius:50%;flex-shrink:0;background:#FF4F87;color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;">' + actorInitial + '</div>';
+                    }
                     html += '<div style="flex:1;min-width:0;">';
                     html += '<div style="font-size:13px;font-weight:600;color:#1e293b;margin-bottom:2px;">' + n.judul + '</div>';
                     html += '<div style="font-size:12px;color:#64748b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + n.isi + '</div>';
-                    html += '<div style="font-size:11px;color:#94a3b8;margin-top:3px;">' + n.waktu + '</div>';
+                    html += '<div style="font-size:11px;color:#94a3b8;margin-top:3px;">' + (n.aktor_nama ? n.aktor_nama + ' · ' : '') + n.waktu + '</div>';
                     html += '</div></a>';
                 });
                 list.innerHTML = html;
@@ -168,5 +197,25 @@ document.addEventListener('DOMContentLoaded', function() {
 
     setInterval(loadNotif, 30000);
     loadNotif();
+
+    // Profile Dropdown
+    const profileTrigger = document.getElementById('profileTrigger');
+    const profileDropdown = document.getElementById('profileDropdown');
+
+    if (profileTrigger) {
+        profileTrigger.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const isOpen = profileDropdown.classList.contains('show');
+            profileDropdown.classList.toggle('show');
+            profileTrigger.classList.toggle('active', !isOpen);
+        });
+
+        document.addEventListener('click', function(e) {
+            if (!profileDropdown.contains(e.target) && e.target !== profileTrigger && !profileTrigger.contains(e.target)) {
+                profileDropdown.classList.remove('show');
+                profileTrigger.classList.remove('active');
+            }
+        });
+    }
 });
 </script>
