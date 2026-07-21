@@ -83,10 +83,6 @@
 </head>
 
 <body>
-    <div class="page-loader">
-        <div class="loader-spinner"></div>
-    </div>
-
     <div class="dashboard-layout">
         @include('layouts.sidebar')
 
@@ -99,33 +95,28 @@
                     <div style="position:absolute;pointer-events:none;opacity:0.08;font-size:70px;top:-5px;right:-5px;">👥</div>
                     <div style="position:absolute;pointer-events:none;opacity:0.08;font-size:45px;bottom:-5px;left:-5px;">🌸</div>
                     <div>
-                        <div class="flex justify-between items-center mb-6">
-                            <div>
-                                <h3 class="text-[16px] font-bold text-gray-800">
-                                    <i class="fa-solid fa-users text-pink-500 mr-2"></i>Data Pelanggan
-                                </h3>
-                                <p class="text-[12px] text-gray-400 mt-0.5">
-                                    <i class="fa-regular fa-circle-check text-pink-300 mr-1"></i>
-                                    Total {{ $TotalPelanggan->total() }} pelanggan terdaftar
-                                </p>
-                            </div>
-
-                            <div class="flex items-center gap-3">
-                                <div class="relative">
-                                    <i
-                                        class="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
-                                    <form action="" class="input-group">
-                                        <input type="text" placeholder="Cari pelanggan..." name="keyword"
-                                            class="bg-gray-50 border border-gray-100 text-[12px] rounded-full pl-9 pr-4 py-2 w-[220px] focus:outline-none focus:border-pink-300 transition-all placeholder-gray-400"
-                                            value={{ Request()->keyword }}>
-                                    </form>
-                                </div>
-                                <a href="{{ route('kasir.pelanggan.create') }}"
-                                    class="flex items-center gap-2 bg-[#FF4F87] text-white text-[12px] font-semibold px-4 py-2 rounded-full hover:bg-[#ff3a78] transition-all shadow-sm hover:shadow-md hover:shadow-pink-200">
-                                    <i class="fa-solid fa-plus"></i> Tambah
-                                </a>
-                            </div>
+                        <div class="mb-6">
+                            <h3 class="text-[16px] font-bold text-gray-800">
+                                <i class="fa-solid fa-users text-pink-500 mr-2"></i>Data Pelanggan
+                            </h3>
+                            <p class="text-[12px] text-gray-400 mt-0.5">
+                                <i class="fa-regular fa-circle-check text-pink-300 mr-1"></i>
+                                Total {{ $TotalPelanggan->total() }} pelanggan terdaftar
+                            </p>
                         </div>
+
+                        <form action="" method="GET" class="flex flex-wrap items-center justify-end gap-2 mb-4">
+                            <div class="relative">
+                                <i class="fa-solid fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-[12px]"></i>
+                                <input type="text" placeholder="Cari pelanggan..." name="keyword"
+                                    class="bg-gray-50 border border-gray-100 text-[12px] rounded-full pl-9 pr-4 py-2 w-[220px] focus:outline-none focus:border-pink-300 transition-all placeholder-gray-400"
+                                    value={{ Request()->keyword }}>
+                            </div>
+                            <a href="{{ route('kasir.pelanggan.create') }}"
+                                class="flex items-center gap-2 bg-[#FF4F87] text-white text-[12px] font-semibold px-4 py-2 rounded-full hover:bg-[#ff3a78] transition-all shadow-sm hover:shadow-md hover:shadow-pink-200">
+                                <i class="fa-solid fa-plus"></i> Tambah
+                            </a>
+                        </form>
 
                         <div class="overflow-x-auto">
                             <table class="w-full text-left border-collapse">

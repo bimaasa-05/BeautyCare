@@ -48,4 +48,9 @@ class Transaksi extends Model
     {
         return $this->hasMany(DetailTransaksi::class, 'id_transaksi', 'id_transaksi');
     }
+
+    public function booking()
+    {
+        return $this->belongsTo(Booking::class, 'id_booking', 'id_booking');
+    }
 }

@@ -34,6 +34,8 @@ class AdminKategoriController extends Controller
 
             KategoriLayanan::create($request->only(['nm_layanan', 'status']));
 
+            buatNotif(auth()->id(), 'Kategori Ditambahkan', 'Kategori layanan ' . $request->nm_layanan . ' berhasil ditambahkan', 'Lainnya', route('admin.kategori.index'));
+
             return redirect()->route('admin.kategori.index')
                 ->with('success', 'Kategori layanan berhasil ditambahkan.');
         } else {
@@ -43,6 +45,8 @@ class AdminKategoriController extends Controller
             ]);
 
             KategoriProduk::create($request->only(['nm_produk', 'status']));
+
+            buatNotif(auth()->id(), 'Kategori Ditambahkan', 'Kategori produk ' . $request->nm_produk . ' berhasil ditambahkan', 'Lainnya', route('admin.kategori.index'));
 
             return redirect()->route('admin.kategori.index')
                 ->with('success', 'Kategori produk berhasil ditambahkan.');
@@ -75,6 +79,8 @@ class AdminKategoriController extends Controller
             $kategori = KategoriLayanan::findOrFail($id);
             $kategori->update($request->only(['nm_layanan', 'status']));
 
+            buatNotif(auth()->id(), 'Kategori Diperbarui', 'Kategori layanan ' . $request->nm_layanan . ' berhasil diperbarui', 'Lainnya', route('admin.kategori.index'));
+
             return redirect()->route('admin.kategori.index')
                 ->with('success', 'Kategori layanan berhasil diperbarui.');
         } else {
@@ -85,6 +91,8 @@ class AdminKategoriController extends Controller
 
             $kategori = KategoriProduk::findOrFail($id);
             $kategori->update($request->only(['nm_produk', 'status']));
+
+            buatNotif(auth()->id(), 'Kategori Diperbarui', 'Kategori produk ' . $request->nm_produk . ' berhasil diperbarui', 'Lainnya', route('admin.kategori.index'));
 
             return redirect()->route('admin.kategori.index')
                 ->with('success', 'Kategori produk berhasil diperbarui.');
@@ -97,13 +105,19 @@ class AdminKategoriController extends Controller
 
         if ($type === 'layanan') {
             $kategori = KategoriLayanan::findOrFail($id);
+            $nm = $kategori->nm_layanan;
             $kategori->delete();
+
+            buatNotif(auth()->id(), 'Kategori Dihapus', 'Kategori layanan ' . $nm . ' berhasil dihapus', 'Lainnya', route('admin.kategori.index'));
 
             return redirect()->route('admin.kategori.index')
                 ->with('success', 'Kategori layanan berhasil dihapus.');
         } else {
             $kategori = KategoriProduk::findOrFail($id);
+            $nm = $kategori->nm_produk;
             $kategori->delete();
+
+            buatNotif(auth()->id(), 'Kategori Dihapus', 'Kategori produk ' . $nm . ' berhasil dihapus', 'Lainnya', route('admin.kategori.index'));
 
             return redirect()->route('admin.kategori.index')
                 ->with('success', 'Kategori produk berhasil dihapus.');

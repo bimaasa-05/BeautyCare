@@ -62,6 +62,8 @@ class AdminLayananController extends Controller
 
         Layanan::create($data);
 
+        buatNotif(auth()->id(), 'Layanan Ditambahkan', 'Layanan ' . $request->nm_layanan . ' berhasil ditambahkan', 'Lainnya', route('admin.layanan.index'));
+
         return redirect()->route('admin.layanan.index')
             ->with('success', 'Layanan berhasil ditambahkan.');
     }
@@ -94,6 +96,8 @@ class AdminLayananController extends Controller
 
         $layanan->update($data);
 
+        buatNotif(auth()->id(), 'Layanan Diperbarui', 'Layanan ' . $layanan->nm_layanan . ' berhasil diperbarui', 'Lainnya', route('admin.layanan.edit', $layanan->id_layanan));
+
         return redirect()->route('admin.layanan.index')
             ->with('success', 'Layanan berhasil diperbarui.');
     }
@@ -104,7 +108,10 @@ class AdminLayananController extends Controller
             Storage::disk('public')->delete($layanan->foto);
         }
 
+        $nm = $layanan->nm_layanan;
         $layanan->delete();
+
+        buatNotif(auth()->id(), 'Layanan Dihapus', 'Layanan ' . $nm . ' berhasil dihapus dari sistem', 'Lainnya', route('admin.layanan.index'));
 
         return redirect()->route('admin.layanan.index')
             ->with('success', 'Layanan berhasil dihapus.');

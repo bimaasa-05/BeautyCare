@@ -83,10 +83,6 @@
 </head>
 
 <body>
-    <div class="page-loader">
-        <div class="loader-spinner"></div>
-    </div>
-
     <div class="dashboard-layout">
         @include('layouts.sidebar')
 
@@ -211,10 +207,6 @@
                                 class="flex items-center gap-2 bg-[#FF4F87] text-white text-[13px] font-semibold px-6 py-2.5 rounded-full hover:bg-[#ff3a78] transition-all shadow-sm hover:shadow-md hover:shadow-pink-200">
                                 <i class="fa-solid fa-floppy-disk"></i> Perbarui
                             </button>
-                            <a href="{{ route('kasir.pelanggan.index') }}"
-                                class="flex items-center gap-2 border border-gray-200 text-gray-600 text-[13px] font-medium px-6 py-2.5 rounded-full hover:bg-gray-50 transition-colors">
-                                Batal
-                            </a>
                         </div>
                     </form>
                 </div>

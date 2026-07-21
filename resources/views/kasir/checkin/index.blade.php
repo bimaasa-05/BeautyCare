@@ -56,10 +56,6 @@
 </head>
 
 <body>
-    <div class="page-loader">
-        <div class="loader-spinner"></div>
-    </div>
-
     <div class="dashboard-layout">
         @include('layouts.sidebar')
 
@@ -71,28 +67,17 @@
                     <div class="float-decoration" style="top:-10px;right:-10px;">🚪</div>
                     <div class="float-decoration" style="bottom:-10px;left:-10px;font-size:40px;">✅</div>
 
-                    <div class="flex justify-between items-center mb-6">
-                        <div>
-                            <h3 class="text-[16px] font-bold text-gray-800">
-                                <i class="fa-solid fa-door-open text-pink-500 mr-2"></i>Check In Pelanggan
-                            </h3>
-                            <p class="text-[12px] text-gray-400 mt-0.5">
-                                <i class="fa-regular fa-calendar text-pink-300 mr-1"></i>
-                                <span id="currentDate"></span> — <span class="text-pink-400 font-medium">{{ $TotalHariIni }} reservasi</span>
-                            </p>
-                        </div>
-                        <div class="relative">
-                            <i class="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
-                            <form action="" method="GET">
-                                <input type="text" placeholder="Cari nama, no. HP, atau ID booking..."
-                                    name="keyword"
-                                    class="bg-gray-50 border border-gray-100 text-[12px] rounded-full pl-9 pr-4 py-2 w-[260px] focus:outline-none focus:border-pink-300 transition-all placeholder-gray-400"
-                                    value="{{ request()->keyword }}">
-                            </form>
-                        </div>
+                    <div class="mb-6">
+                        <h3 class="text-[16px] font-bold text-gray-800">
+                            <i class="fa-solid fa-door-open text-pink-500 mr-2"></i>Check In Pelanggan
+                        </h3>
+                        <p class="text-[12px] text-gray-400 mt-0.5">
+                            <i class="fa-regular fa-calendar text-pink-300 mr-1"></i>
+                            <span id="currentDate"></span> — <span class="text-pink-400 font-medium">{{ $TotalHariIni }} reservasi</span>
+                        </p>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                         <div class="stat-card bg-gradient-to-br from-pink-50 to-white rounded-xl p-4 border border-pink-100">
                             <div class="flex items-center justify-between">
                                 <div>
@@ -127,6 +112,16 @@
                             </div>
                         </div>
                     </div>
+
+                    <form action="" method="GET" class="flex justify-end mb-4">
+                        <div class="relative">
+                            <i class="fa-solid fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-[12px]"></i>
+                            <input type="text" placeholder="Cari nama, no. HP, atau ID booking..."
+                                name="keyword"
+                                class="bg-gray-50 border border-gray-100 text-[12px] rounded-full pl-9 pr-4 py-2 w-[260px] focus:outline-none focus:border-pink-300 transition-all placeholder-gray-400"
+                                value="{{ request()->keyword }}">
+                        </div>
+                    </form>
 
                     @if (session('success'))
                         <div class="mb-4 p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-700 text-[13px] font-medium flex items-center gap-2">

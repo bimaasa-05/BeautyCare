@@ -79,14 +79,37 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #94a3b8;
         }
+
+        @media (max-width: 768px) {
+            .admin-table thead { display: none; }
+            .admin-table tbody tr {
+                display: block;
+                padding: 16px;
+                border-bottom: 1px solid #f0f0f0;
+            }
+            .admin-table tbody td {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 8px 0;
+                border: none;
+                font-size: 13px;
+                text-align: right;
+            }
+            .admin-table tbody td::before {
+                content: attr(data-label);
+                font-weight: 600;
+                color: #9ca3af;
+                font-size: 11px;
+                text-transform: uppercase;
+            }
+            .admin-table tbody td:first-child { padding-left: 0; }
+            .admin-table tbody td:last-child { padding-right: 0; }
+        }
     </style>
 </head>
 
 <body>
-    <div class="page-loader">
-        <div class="loader-spinner"></div>
-    </div>
-
     <div class="dashboard-layout">
         @include('layouts.sidebar')
 
@@ -115,7 +138,7 @@
                         </div>
 
                         <div class="overflow-x-auto flex-1">
-                            <table class="w-full text-left border-collapse">
+                            <table class="w-full text-left border-collapse admin-table">
                                 <thead>
                                     <tr class="text-[11px] font-bold text-gray-400 uppercase border-b border-gray-100 bg-gray-50/50">
                                         <th class="py-3 px-3 w-10">#</th>
@@ -128,8 +151,8 @@
                                     @forelse ($kategoriLayanan as $item)
                                         <tr class="hover:bg-gray-50/50 transition-colors">
                                             <td class="py-3 px-3 text-gray-400">{{ $loop->iteration }}</td>
-                                            <td class="py-3 px-3 font-medium">{{ $item->nm_layanan }}</td>
-                                            <td class="py-3 px-3">
+                                            <td class="py-3 px-3 font-medium" data-label="Nama">{{ $item->nm_layanan }}</td>
+                                            <td class="py-3 px-3" data-label="Status">
                                                 @if ($item->status === 'tersedia')
                                                     <span class="inline-flex items-center gap-1 text-[11px] font-semibold bg-emerald-50 text-emerald-600 px-2.5 py-1 rounded-full border border-emerald-200">
                                                         <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>
@@ -142,7 +165,7 @@
                                                     </span>
                                                 @endif
                                             </td>
-                                            <td class="py-3 px-3">
+                                            <td class="py-3 px-3" data-label="Aksi">
                                                 <div class="flex items-center justify-center gap-2">
                                                     <a href="{{ route('admin.kategori.edit', ['id' => $item->id_kategori_layanan, 'type' => 'layanan']) }}"
                                                         class="w-7 h-7 flex items-center justify-center rounded-lg bg-sky-50 text-sky-500 border border-sky-200 hover:bg-sky-100 transition-colors"
@@ -188,7 +211,7 @@
                         </div>
 
                         <div class="overflow-x-auto flex-1">
-                            <table class="w-full text-left border-collapse">
+                            <table class="w-full text-left border-collapse admin-table">
                                 <thead>
                                     <tr class="text-[11px] font-bold text-gray-400 uppercase border-b border-gray-100 bg-gray-50/50">
                                         <th class="py-3 px-3 w-10">#</th>
@@ -201,8 +224,8 @@
                                     @forelse ($kategoriProduk as $item)
                                         <tr class="hover:bg-gray-50/50 transition-colors">
                                             <td class="py-3 px-3 text-gray-400">{{ $loop->iteration }}</td>
-                                            <td class="py-3 px-3 font-medium">{{ $item->nm_produk }}</td>
-                                            <td class="py-3 px-3">
+                                            <td class="py-3 px-3 font-medium" data-label="Nama">{{ $item->nm_produk }}</td>
+                                            <td class="py-3 px-3" data-label="Status">
                                                 @if ($item->status == 'tersedia')
                                                     <span class="inline-flex items-center gap-1 text-[11px] font-semibold bg-emerald-50 text-emerald-600 px-2.5 py-1 rounded-full border border-emerald-200">
                                                         <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>
@@ -215,7 +238,7 @@
                                                     </span>
                                                 @endif
                                             </td>
-                                            <td class="py-3 px-3">
+                                            <td class="py-3 px-3" data-label="Aksi">
                                                 <div class="flex items-center justify-center gap-2">
                                                     <a href="{{ route('admin.kategori.edit', ['id' => $item->id_kategori_produk, 'type' => 'produk']) }}"
                                                         class="w-7 h-7 flex items-center justify-center rounded-lg bg-sky-50 text-sky-500 border border-sky-200 hover:bg-sky-100 transition-colors"

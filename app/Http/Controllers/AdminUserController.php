@@ -64,7 +64,10 @@ class AdminUserController extends Controller
             $data['foto'] = $request->file('foto')->store('users', 'public');
         }
 
-        User::create($data);
+        $user = User::create($data);
+
+        buatNotif(auth()->id(), 'User Ditambahkan', 'User ' . $request->nama . ' (' . $request->role . ') berhasil ditambahkan', 'Lainnya', route('admin.user.index'));
+        buatNotif($user->id, 'Akun Dibuat', 'Akun Anda sebagai ' . $request->role . ' telah dibuat oleh ' . auth()->user()->nama, 'Lainnya', route('admin.user.index'));
 
         return redirect()->route('admin.user.index')
             ->with('success', 'User berhasil ditambahkan.');
@@ -102,6 +105,9 @@ class AdminUserController extends Controller
 
         $user->update($data);
 
+        buatNotif(auth()->id(), 'User Diperbarui', 'User ' . $user->nama . ' berhasil diperbarui', 'Lainnya', route('admin.user.index'));
+        buatNotif($user->id, 'Akun Diperbarui', 'Data akun Anda telah diperbarui oleh ' . auth()->user()->nama, 'Lainnya', route('admin.user.edit', $user->id));
+
         return redirect()->route('admin.user.index')
             ->with('success', 'User berhasil diperbarui.');
     }
@@ -112,7 +118,10 @@ class AdminUserController extends Controller
             Storage::disk('public')->delete($user->foto);
         }
 
+        $nama = $user->nama;
         $user->delete();
+
+        buatNotif(auth()->id(), 'User Dihapus', 'User ' . $nama . ' berhasil dihapus dari sistem', 'Lainnya', route('admin.user.index'));
 
         return redirect()->route('admin.user.index')
             ->with('success', 'User berhasil dihapus.');

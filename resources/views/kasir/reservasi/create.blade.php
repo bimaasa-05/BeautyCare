@@ -39,10 +39,6 @@
 </head>
 
 <body>
-    <div class="page-loader">
-        <div class="loader-spinner"></div>
-    </div>
-
     <div class="dashboard-layout">
         @include('layouts.sidebar')
 
@@ -166,7 +162,10 @@
                                     </div>
                                     <div class="md:col-span-3">
                                         <label class="text-[11px] font-medium text-gray-500 mb-1 block">Harga</label>
-                                        <input type="number" name="harga[]" class="form-input-custom harga-input" placeholder="0" min="0" readonly>
+                                        <div class="relative">
+                                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[13px] font-medium pointer-events-none">Rp</span>
+                                            <input type="number" name="harga[]" class="form-input-custom harga-input pl-10" placeholder="0" min="0" readonly>
+                                        </div>
                                     </div>
                                     <div class="md:col-span-3">
                                         <label class="text-[11px] font-medium text-gray-500 mb-1 block">Diskon</label>
@@ -213,10 +212,6 @@
                                 class="flex items-center gap-2 bg-[#FF4F87] text-white text-[13px] font-semibold px-6 py-2.5 rounded-full hover:bg-[#ff3a78] transition-all shadow-sm hover:shadow-md hover:shadow-pink-200">
                                 <i class="fa-regular fa-circle-check"></i> Simpan Reservasi
                             </button>
-                            <a href="{{ route('kasir.reservasi.index') }}"
-                                class="flex items-center gap-2 border border-gray-200 text-gray-600 text-[13px] font-medium px-6 py-2.5 rounded-full hover:bg-gray-50 transition-colors">
-                                Batal
-                            </a>
                         </div>
                     </form>
                 </div>

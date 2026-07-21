@@ -16,6 +16,9 @@ class KasirReservasiController extends Controller
         $search = $request->keyword;
 
         $TotalReservasi = Booking::count();
+        $totalMenunggu = Booking::where('status', 'menunggu')->count();
+        $totalSelesai = Booking::where('status', 'selesai')->count();
+        $totalDiproses = Booking::where('status', 'diproses')->count();
         $reservasi = Booking::with('pelanggan', 'karyawan')
             ->when($search, function ($query, $search) {
                 return $query->where('tanggal', 'like', "%{$search}%")
@@ -24,7 +27,7 @@ class KasirReservasiController extends Controller
                     });
             })->orderBy('id_booking', 'desc')->paginate(10);
 
-        return view('kasir.reservasi.index', compact('reservasi', 'TotalReservasi'));
+        return view('kasir.reservasi.index', compact('reservasi', 'TotalReservasi', 'totalMenunggu', 'totalSelesai', 'totalDiproses'));
     }
 
     public function create()
@@ -75,6 +78,13 @@ class KasirReservasiController extends Controller
             ]);
         }
 
+        buatNotif(auth()->user()->id, 'Reservasi Baru', 'Reservasi untuk ' . ($booking->pelanggan->nm_pelanggan ?? 'Pelanggan') . ' berhasil dibuat', 'Booking', route('kasir.reservasi.show', $booking->id_booking));
+
+        $admins = \App\Models\User::where('role', 'admin')->get();
+        foreach ($admins as $admin) {
+            buatNotif($admin->id, 'Reservasi Baru', 'Reservasi baru oleh ' . auth()->user()->nama . ' untuk ' . ($booking->pelanggan->nm_pelanggan ?? 'Pelanggan'), 'Booking', url('/admin/dashboard'));
+        }
+
         return redirect('kasir/reservasi')->with('message', 'Reservasi berhasil dibuat');
     }
 
@@ -89,7 +99,7 @@ class KasirReservasiController extends Controller
         $reservasi = Booking::with('detail')->findOrFail($id);
         $pelanggan = Pelanggan::all();
         $karyawan = User::where('role', 'beautycian')->get();
-        $layanan = Layanan::where('status', 'aktif')->get();
+        $layanan = Layanan::where('status', 'Tersedia')->get();
         return view('kasir.reservasi.edit', compact('reservasi', 'pelanggan', 'karyawan', 'layanan'));
     }
 
@@ -135,6 +145,8 @@ class KasirReservasiController extends Controller
             ]);
         }
 
+        buatNotif(auth()->user()->id, 'Reservasi Diperbarui', 'Reservasi #' . str_pad($id, 3, '0', STR_PAD_LEFT) . ' berhasil diperbarui', 'Booking', route('kasir.reservasi.index'));
+
         return redirect('kasir/reservasi')->with('message', 'Reservasi berhasil diperbarui');
     }
 
@@ -142,6 +154,9 @@ class KasirReservasiController extends Controller
     {
         DetailBooking::where('id_booking', $id)->delete();
         Booking::findOrFail($id)->delete();
+
+        buatNotif(auth()->user()->id, 'Reservasi Dihapus', 'Reservasi #' . str_pad($id, 3, '0', STR_PAD_LEFT) . ' berhasil dihapus', 'Booking', route('kasir.reservasi.index'));
+
         return redirect('/kasir/reservasi')->with('message', 'Reservasi berhasil dihapus');
     }
 

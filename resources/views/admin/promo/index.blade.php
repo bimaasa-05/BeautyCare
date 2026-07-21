@@ -84,10 +84,6 @@
 
 <body>
     <!-- Page Loader -->
-    <div class="page-loader">
-        <div class="loader-spinner"></div>
-    </div>
-
     <div class="dashboard-layout">
         @include('layouts.sidebar')
 
@@ -120,7 +116,7 @@
                     </div>
 
                     <!-- Cards Grid -->
-                    <div class="grid grid-cols-2 gap-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         @forelse($promos as $promo)
                         <div
                             class="bg-white rounded-2xl border overflow-hidden shadow-[0_2px_16px_rgba(236,72,153,0.06)] hover:shadow-lg transition-all {{ $promo->status == 'Tersedia' ? 'border-pink-50' : ($promo->status == 'Belum_tersedia' ? 'border-amber-100 opacity-80' : 'border-gray-100 opacity-60') }}">
@@ -182,7 +178,7 @@
                             </div>
                         </div>
                         @empty
-                        <div class="col-span-2 text-center py-16">
+                        <div class="col-span-full text-center py-16">
                             <div class="text-gray-300 text-5xl mb-4">
                                 <i class="fa-solid fa-tags"></i>
                             </div>
