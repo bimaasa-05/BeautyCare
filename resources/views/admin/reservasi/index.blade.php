@@ -79,6 +79,33 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #94a3b8;
         }
+
+        @media (max-width: 768px) {
+            .admin-table thead { display: none; }
+            .admin-table tbody tr {
+                display: block;
+                padding: 16px;
+                border-bottom: 1px solid #f0f0f0;
+            }
+            .admin-table tbody td {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 8px 0;
+                border: none;
+                font-size: 13px;
+                text-align: right;
+            }
+            .admin-table tbody td::before {
+                content: attr(data-label);
+                font-weight: 600;
+                color: #9ca3af;
+                font-size: 11px;
+                text-transform: uppercase;
+            }
+            .admin-table tbody td:first-child { padding-left: 0; }
+            .admin-table tbody td:last-child { padding-right: 0; }
+        }
     </style>
 </head>
 
@@ -162,8 +189,8 @@
                                 </div>
                             </div>
                             <div class="overflow-x-auto">
-                                <table class="w-full">
-                                    <thead>
+<table class="w-full admin-table">
+                                <thead>
                                         <tr class="bg-[#FFF7FA]">
                                             <th class="text-left px-5 py-3 text-xs font-bold text-gray-400 uppercase">#</th>
                                             <th class="text-left px-5 py-3 text-xs font-bold text-gray-400 uppercase">Pelanggan</th>
@@ -179,23 +206,23 @@
                                         @forelse ($reservasi as $r)
                                         <tr class="border-t border-pink-50 hover:bg-pink-50/30 transition-colors reservasi-row">
                                             <td class="px-5 py-4 text-sm text-gray-600 font-mono">RSV-{{ str_pad($r->id_booking, 3, '0', STR_PAD_LEFT) }}</td>
-                                            <td class="px-5 py-4">
-                                                <div class="flex items-center gap-2.5">
-                                                    <div class="w-8 h-8 text-xs rounded-full bg-gradient-to-br from-rose-300 to-pink-400 flex items-center justify-center text-white font-bold flex-shrink-0 shadow-sm">
-                                                        {{ strtoupper(substr($r->pelanggan->nm_pelanggan ?? '?', 0, 2)) }}
-                                                    </div>
-                                                    <p class="text-sm font-semibold text-gray-800 nm_pelanggan">{{ $r->pelanggan->nm_pelanggan ?? '-' }}</p>
+                                        <td class="px-5 py-4" data-label="Pelanggan">
+                                            <div class="flex items-center gap-2.5">
+                                                <div class="w-8 h-8 text-xs rounded-full bg-gradient-to-br from-rose-300 to-pink-400 flex items-center justify-center text-white font-bold flex-shrink-0 shadow-sm">
+                                                    {{ strtoupper(substr($r->pelanggan->nm_pelanggan ?? '?', 0, 2)) }}
                                                 </div>
-                                            </td>
-                                            <td class="px-5 py-4 text-sm text-gray-600">{{ $r->karyawan->nama ?? '-' }}</td>
-                                            <td class="px-5 py-4 text-sm text-gray-600">
+                                                <p class="text-sm font-semibold text-gray-800 nm_pelanggan">{{ $r->pelanggan->nm_pelanggan ?? '-' }}</p>
+                                            </div>
+                                        </td>
+                                        <td class="px-5 py-4 text-sm text-gray-600" data-label="Beautician">{{ $r->karyawan->nama ?? '-' }}</td>
+                                        <td class="px-5 py-4 text-sm text-gray-600" data-label="Layanan">
                                                 @foreach ($r->detail as $d)
                                                     <span class="inline-block bg-pink-50 text-pink-600 text-[10px] font-semibold px-2 py-0.5 rounded-full mr-1 mb-1">{{ $d->layanan->nm_layanan ?? '-' }}</span>
                                                 @endforeach
                                             </td>
-                                            <td class="px-5 py-4 text-sm text-gray-600">{{ \Carbon\Carbon::parse($r->tanggal)->isoFormat('D MMM Y') }}</td>
-                                            <td class="px-5 py-4 text-sm font-semibold text-gray-700">{{ $r->jam }}</td>
-                                            <td class="px-5 py-4">
+                                            <td class="px-5 py-4 text-sm text-gray-600" data-label="Tanggal">{{ \Carbon\Carbon::parse($r->tanggal)->isoFormat('D MMM Y') }}</td>
+                                            <td class="px-5 py-4 text-sm font-semibold text-gray-700" data-label="Jam">{{ $r->jam }}</td>
+                                            <td class="px-5 py-4" data-label="Status">
                                                 @php
                                                     $statusColors = [
                                                         'menunggu' => 'bg-amber-50 text-amber-600 border-amber-100',
@@ -229,7 +256,7 @@
                                                     <option value="dibatalkan" {{ $r->status == 'dibatalkan' ? 'selected' : '' }} style="background:#fef2f2;color:#dc2626;">Dibatalkan</option>
                                                 </select>
                                             </td>
-                                            <td class="px-5 py-4">
+                                            <td class="px-5 py-4" data-label="Aksi">
                                                 <div class="flex gap-1.5">
                                                     <a href="{{ route('admin.reservasi.show', $r->id_booking) }}"
                                                         class="w-7 h-7 rounded-lg bg-blue-50 text-blue-500 hover:bg-blue-100 flex items-center justify-center">

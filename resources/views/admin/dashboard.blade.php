@@ -52,6 +52,33 @@
             align-items: center;
         }
     }
+
+    @media (max-width: 768px) {
+        .data-table thead { display: none; }
+        .data-table tbody tr {
+            display: block;
+            padding: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+        .data-table tbody td {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border: none;
+            font-size: 13px;
+            text-align: right;
+        }
+        .data-table tbody td::before {
+            content: attr(data-label);
+            font-weight: 600;
+            color: var(--gray);
+            font-size: 11px;
+            text-transform: uppercase;
+        }
+        .data-table tbody td:first-child { padding-left: 0; }
+        .data-table tbody td:last-child { padding-right: 0; }
+    }
     </style>
 </head>
 
@@ -239,44 +266,44 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>
+                                    <td data-label="Layanan">
                                         <div class="td-flex">Facial Treatment</div>
                                     </td>
-                                    <td>Skincare</td>
-                                    <td>128</td>
-                                    <td>Rp 25,6 jt</td>
+                                    <td data-label="Kategori">Skincare</td>
+                                    <td data-label="Terjual">128</td>
+                                    <td data-label="Pendapatan">Rp 25,6 jt</td>
                                 </tr>
                                 <tr>
-                                    <td>
+                                    <td data-label="Layanan">
                                         <div class="td-flex">Haircut Premium</div>
                                     </td>
-                                    <td>Salon</td>
-                                    <td>96</td>
-                                    <td>Rp 14,4 jt</td>
+                                    <td data-label="Kategori">Salon</td>
+                                    <td data-label="Terjual">96</td>
+                                    <td data-label="Pendapatan">Rp 14,4 jt</td>
                                 </tr>
                                 <tr>
-                                    <td>
+                                    <td data-label="Layanan">
                                         <div class="td-flex">Body Massage</div>
                                     </td>
-                                    <td>Spa</td>
-                                    <td>84</td>
-                                    <td>Rp 16,8 jt</td>
+                                    <td data-label="Kategori">Spa</td>
+                                    <td data-label="Terjual">84</td>
+                                    <td data-label="Pendapatan">Rp 16,8 jt</td>
                                 </tr>
                                 <tr>
-                                    <td>
+                                    <td data-label="Layanan">
                                         <div class="td-flex">Nail Art Design</div>
                                     </td>
-                                    <td>Nail Art</td>
-                                    <td>72</td>
-                                    <td>Rp 10,8 jt</td>
+                                    <td data-label="Kategori">Nail Art</td>
+                                    <td data-label="Terjual">72</td>
+                                    <td data-label="Pendapatan">Rp 10,8 jt</td>
                                 </tr>
                                 <tr>
-                                    <td>
+                                    <td data-label="Layanan">
                                         <div class="td-flex">Hair Color</div>
                                     </td>
-                                    <td>Salon</td>
-                                    <td>65</td>
-                                    <td>Rp 13,0 jt</td>
+                                    <td data-label="Kategori">Salon</td>
+                                    <td data-label="Terjual">65</td>
+                                    <td data-label="Pendapatan">Rp 13,0 jt</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -299,44 +326,44 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>
+                                    <td data-label="Produk">
                                         <div class="td-flex">Serum Vitamin C</div>
                                     </td>
-                                    <td>Skincare</td>
-                                    <td>245</td>
-                                    <td><span class="badge badge-success">Tersedia</span></td>
+                                    <td data-label="Kategori">Skincare</td>
+                                    <td data-label="Terjual">245</td>
+                                    <td data-label="Stok"><span class="badge badge-success">Tersedia</span></td>
                                 </tr>
                                 <tr>
-                                    <td>
+                                    <td data-label="Produk">
                                         <div class="td-flex">Shampoo Premium</div>
                                     </td>
-                                    <td>Hair Care</td>
-                                    <td>198</td>
-                                    <td><span class="badge badge-warning">Limited</span></td>
+                                    <td data-label="Kategori">Hair Care</td>
+                                    <td data-label="Terjual">198</td>
+                                    <td data-label="Stok"><span class="badge badge-warning">Limited</span></td>
                                 </tr>
                                 <tr>
-                                    <td>
+                                    <td data-label="Produk">
                                         <div class="td-flex">Nail Polish Set</div>
                                     </td>
-                                    <td>Nail Art</td>
-                                    <td>167</td>
-                                    <td><span class="badge badge-success">Tersedia</span></td>
+                                    <td data-label="Kategori">Nail Art</td>
+                                    <td data-label="Terjual">167</td>
+                                    <td data-label="Stok"><span class="badge badge-success">Tersedia</span></td>
                                 </tr>
                                 <tr>
-                                    <td>
+                                    <td data-label="Produk">
                                         <div class="td-flex">Moisturizer Cream</div>
                                     </td>
-                                    <td>Skincare</td>
-                                    <td>145</td>
-                                    <td><span class="badge badge-danger">Habis</span></td>
+                                    <td data-label="Kategori">Skincare</td>
+                                    <td data-label="Terjual">145</td>
+                                    <td data-label="Stok"><span class="badge badge-danger">Habis</span></td>
                                 </tr>
                                 <tr>
-                                    <td>
+                                    <td data-label="Produk">
                                         <div class="td-flex">Hair Mask</div>
                                     </td>
-                                    <td>Hair Care</td>
-                                    <td>123</td>
-                                    <td><span class="badge badge-success">Tersedia</span></td>
+                                    <td data-label="Kategori">Hair Care</td>
+                                    <td data-label="Terjual">123</td>
+                                    <td data-label="Stok"><span class="badge badge-success">Tersedia</span></td>
                                 </tr>
                             </tbody>
                         </table>
