@@ -22,6 +22,7 @@ use App\Http\Controllers\NotifikasiController;
 use App\Http\Controllers\AdminSupplierController;
 use App\Http\Controllers\AdminReservasiController;
 use App\Http\Controllers\AdminTransaksiController;
+use App\Http\Controllers\AdminLaporanController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -148,6 +149,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/transaksi/{id}/edit', [AdminTransaksiController::class, 'edit'])->name('admin.transaksi.edit');
         Route::put('/admin/transaksi/{id}', [AdminTransaksiController::class, 'update'])->name('admin.transaksi.update');
         Route::delete('/admin/transaksi/{id}', [AdminTransaksiController::class, 'destroy'])->name('admin.transaksi.destroy');
+
+        Route::get('/admin/laporan', [AdminLaporanController::class, 'index'])->name('admin.laporan.index');
     });
 
 
