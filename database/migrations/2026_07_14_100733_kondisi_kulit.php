@@ -14,7 +14,7 @@ return new class extends Migration
         //
         Schema::create('kondisi_kulit', function (Blueprint $table) {
             $table->id('id_kondisi');
-            $table->integer('id_pelanggan')->unique();
+            $table->integer('id_pelanggan');
             $table->date('tanggal');
             $table->enum('jenis_kulit', ['Berminyak', 'Kering', 'Sensitif', 'Normal', 'Kombinasi']);
             $table->text('catatan');
