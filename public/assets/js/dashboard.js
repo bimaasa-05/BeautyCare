@@ -69,7 +69,10 @@ function initCharts() {
     drawBookingChart(bookingCanvas);
   }
 
-  drawMiniCharts();
+  const donutCanvas = document.getElementById('chartBookingDonut');
+  if (donutCanvas) {
+    drawDonutChart(donutCanvas);
+  }
 }
 
 function drawPendapatanChart(canvas) {
@@ -87,10 +90,14 @@ function drawPendapatanChart(canvas) {
   const chartW = width - padding.left - padding.right;
   const chartH = height - padding.top - padding.bottom;
 
-  // Data
-  const labels = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
-  const data = [12, 19, 15, 25, 22, 30, 28, 35, 32, 40, 38, 48];
-  const data2 = [8, 14, 11, 18, 16, 22, 20, 26, 24, 30, 28, 35];
+  // Data from data attributes
+  var labels = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+  var data = [0,0,0,0,0,0,0,0,0,0,0,0];
+  try {
+    labels = JSON.parse(canvas.getAttribute('data-labels')) || labels;
+    data = JSON.parse(canvas.getAttribute('data-revenue')) || data;
+  } catch(e) {}
+  const data2 = data.map(function(v) { return Math.round(v * 0.7); });
 
   const maxVal = Math.max(...data, ...data2) * 1.2;
   const stepY = maxVal / 5;
@@ -189,12 +196,12 @@ function drawPendapatanChart(canvas) {
   ctx.fillStyle = '#333';
   ctx.font = '11px Poppins, sans-serif';
   ctx.textAlign = 'left';
-  ctx.fillText('Pendapatan 2024', legendX + 18, legendY + 4);
+  ctx.fillText('Pendapatan ' + new Date().getFullYear(), legendX + 18, legendY + 4);
 
   ctx.fillStyle = '#FF7BA6';
   ctx.fillRect(legendX, legendY + 18, 12, 3);
   ctx.fillStyle = '#333';
-  ctx.fillText('Pendapatan 2023', legendX + 18, legendY + 22);
+  ctx.fillText('Pendapatan ' + (new Date().getFullYear() - 1), legendX + 18, legendY + 22);
 }
 
 function drawBookingChart(canvas) {
@@ -265,13 +272,148 @@ function drawBookingChart(canvas) {
   ctx.fillText('Total: ' + data.reduce(function(a, b) { return a + b; }), padding.left, 16);
 }
 
-function drawMiniCharts() {
-  document.querySelectorAll('.mc-body').forEach(function(body) {
-    const bars = body.querySelectorAll('.bar');
-    bars.forEach(function(bar) {
-      const h = bar.getAttribute('data-height') || (Math.random() * 40 + 10);
-      bar.style.height = h + 'px';
-    });
+function drawDonutChart(canvas) {
+  var values = [];
+  var labels = [];
+  try {
+    values = JSON.parse(canvas.getAttribute('data-values')) || [];
+    labels = JSON.parse(canvas.getAttribute('data-labels')) || [];
+  } catch(e) {}
+
+  var total = values.reduce(function(a,b) { return a+b; }, 0);
+  if (total === 0) {
+    var p = canvas.parentNode;
+    if (p) p.innerHTML = '<span style="font-size:12px;color:#999;">Tidak ada data</span>';
+    return;
+  }
+
+  var colorPalette = [
+    '#FF4F87','#FF7BA6','#FFB3CC','#E8A0BF','#C9A0DC',
+    '#7EC8E3','#82D4A8','#F4C770','#F09B7A','#A89CC8',
+    '#7BC8A4','#D494B0','#80B8D4','#E5A878','#B8A0C8'
+  ];
+
+  var dpr = window.devicePixelRatio || 1;
+  var rect = canvas.getBoundingClientRect();
+  var w = rect.width;
+  var h = rect.height;
+  canvas.width = w * dpr;
+  canvas.height = h * dpr;
+  var ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+
+  var cx = w / 2;
+  var cy = h / 2;
+  var outerR = Math.min(cx, cy) - 6;
+  var innerR = outerR * 0.55;
+
+  var segments = [];
+  var startAngle = -Math.PI / 2;
+
+  for (var i = 0; i < values.length; i++) {
+    if (values[i] === 0) { segments.push(null); continue; }
+    var sliceAngle = (values[i] / total) * Math.PI * 2;
+    var endAngle = startAngle + sliceAngle;
+    segments.push({ start: startAngle, end: endAngle, index: i });
+    startAngle = endAngle;
+  }
+
+  function draw(hoverIndex) {
+    ctx.clearRect(0, 0, w, h);
+    for (var i = 0; i < segments.length; i++) {
+      if (!segments[i]) continue;
+      var seg = segments[i];
+      var isHover = (hoverIndex === seg.index);
+      var r = isHover ? outerR + 4 : outerR;
+
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, seg.start, seg.end);
+      ctx.arc(cx, cy, innerR, seg.end, seg.start, true);
+      ctx.closePath();
+      ctx.fillStyle = colorPalette[seg.index % colorPalette.length];
+      ctx.fill();
+
+    }
+
+    ctx.fillStyle = '#333';
+    ctx.font = 'bold 16px Poppins, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(total, cx, cy - 6);
+    ctx.font = '9px Poppins, sans-serif';
+    ctx.fillStyle = '#999';
+    ctx.fillText('Booking', cx, cy + 10);
+  }
+
+  draw(-1);
+
+  var tooltip = document.getElementById('donutTooltip');
+  if (!tooltip) {
+    tooltip = document.createElement('div');
+    tooltip.id = 'donutTooltip';
+    tooltip.style.cssText = 'position:fixed;background:#333;color:#fff;padding:8px 12px;border-radius:8px;font-size:12px;font-family:Poppins,sans-serif;line-height:1.6;pointer-events:none;z-index:999;opacity:0;transition:opacity 0.15s;max-width:220px;';
+    document.body.appendChild(tooltip);
+  }
+
+  canvas.addEventListener('mousemove', function(e) {
+    var br = canvas.getBoundingClientRect();
+    var mx = e.clientX - br.left;
+    var my = e.clientY - br.top;
+
+    var dx = mx - cx;
+    var dy = my - cy;
+    var dist = Math.sqrt(dx*dx + dy*dy);
+
+    if (dist < innerR || dist > outerR + 4) {
+      tooltip.style.opacity = '0';
+      draw(-1);
+      canvas.style.cursor = 'default';
+      return;
+    }
+
+    var angle = Math.atan2(dy, dx);
+    if (angle < 0) angle += Math.PI * 2;
+
+    for (var i = 0; i < segments.length; i++) {
+      if (!segments[i]) continue;
+      var seg = segments[i];
+      var start = ((seg.start % (Math.PI * 2)) + (Math.PI * 2)) % (Math.PI * 2);
+      var end = ((seg.end % (Math.PI * 2)) + (Math.PI * 2)) % (Math.PI * 2);
+
+      var hit = false;
+      if (start > end) {
+        if (angle >= start || angle <= end) hit = true;
+      } else {
+        if (angle >= start && angle <= end) hit = true;
+      }
+
+      if (hit) {
+        draw(seg.index);
+        canvas.style.cursor = 'pointer';
+
+        var html = '<div style="font-weight:600;margin-bottom:4px;">' + labels[seg.index] + '</div>' +
+          '<div>' + values[seg.index] + ' booking (' + Math.round((values[seg.index] / total) * 100) + '%)</div>';
+        tooltip.innerHTML = html;
+        tooltip.style.opacity = '1';
+
+        var tx = e.clientX + 14;
+        var ty = e.clientY - 10;
+        if (tx + 230 > window.innerWidth) tx = e.clientX - 230;
+        if (ty < 4) ty = 4;
+        tooltip.style.left = tx + 'px';
+        tooltip.style.top = ty + 'px';
+        return;
+      }
+    }
+    tooltip.style.opacity = '0';
+    draw(-1);
+    canvas.style.cursor = 'default';
+  });
+
+  canvas.addEventListener('mouseleave', function() {
+    tooltip.style.opacity = '0';
+    draw(-1);
+    canvas.style.cursor = 'default';
   });
 }
 

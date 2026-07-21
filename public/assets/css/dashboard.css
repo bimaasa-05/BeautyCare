@@ -617,22 +617,14 @@
 
 .mini-chart-card .mc-body {
   display: flex;
-  align-items: flex-end;
-  gap: 4px;
-  height: 60px;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 0;
 }
 
-.mini-chart-card .mc-body .bar {
-  flex: 1;
-  border-radius: 4px 4px 0 0;
-  min-height: 4px;
-  transition: var(--transition-base);
+.mini-chart-card .mc-body canvas {
+  max-width: 100%;
 }
-
-.mini-chart-card .mc-body .bar.bar-primary { background: var(--primary); }
-.mini-chart-card .mc-body .bar.bar-secondary { background: var(--secondary); }
-.mini-chart-card .mc-body .bar.bar-success { background: var(--success); }
-.mini-chart-card .mc-body .bar.bar-warning { background: var(--warning); }
 
 /* ---- Dashboard Bottom Grid ---- */
 .dashboard-bottom-grid {

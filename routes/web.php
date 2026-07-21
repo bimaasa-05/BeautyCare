@@ -23,6 +23,7 @@ use App\Http\Controllers\AdminSupplierController;
 use App\Http\Controllers\AdminReservasiController;
 use App\Http\Controllers\AdminTransaksiController;
 use App\Http\Controllers\AdminLaporanController;
+use App\Http\Controllers\AdminDashboardController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -43,9 +44,7 @@ Route::middleware('auth')->group(function () {
 
     //Akses Login -- Rolee --- Admin
     Route::middleware(['role:admin'])->group(function () {
-        Route::get('/admin/dashboard', function () {
-            return view('admin.dashboard');
-        })->name('admin.dashboard');
+        Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
 
         Route::get('/admin/users', [AdminUserController::class, 'index'])->name('admin.user.index');
         Route::get('/admin/users/create', [AdminUserController::class, 'create'])->name('admin.user.create');
