@@ -17,9 +17,9 @@
                 <p class="text-[12px] text-gray-400 mt-0.5">{{ $b->user?->role ?? '-' }}</p>
             </div>
         </div>
-        @if ($b->status == 1)
+        @if ($b->status == 'Tersedia')
             <span class="px-2.5 py-1 bg-emerald-50 text-emerald-500 font-semibold text-[11px] rounded-lg border border-emerald-100">Tersedia</span>
-        @elseif ($b->status == 2)
+        @elseif ($b->status == 'Sibuk')
             <span class="px-2.5 py-1 bg-orange-50 text-orange-500 font-semibold text-[11px] rounded-lg border border-orange-100">Sibuk</span>
         @else
             <span class="px-2.5 py-1 bg-gray-100 text-gray-500 font-semibold text-[11px] rounded-lg border border-gray-200">Libur</span>
