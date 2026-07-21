@@ -9,17 +9,14 @@ use App\Models\Layanan;
 use App\Models\User;
 use Illuminate\Http\Request;
 
-class KasirReservasiController extends Controller
+class AdminReservasiController extends Controller
 {
     public function index(Request $request)
     {
         $search = $request->keyword;
 
         $TotalReservasi = Booking::count();
-        $totalMenunggu = Booking::where('status', 'menunggu')->count();
-        $totalSelesai = Booking::where('status', 'selesai')->count();
-        $totalDiproses = Booking::where('status', 'diproses')->count();
-        $reservasi = Booking::with('pelanggan', 'karyawan')
+        $reservasi = Booking::with('pelanggan', 'karyawan', 'detail.layanan')
             ->when($search, function ($query, $search) {
                 return $query->where('tanggal', 'like', "%{$search}%")
                     ->orWhereHas('pelanggan', function ($q) use ($search) {
@@ -27,7 +24,7 @@ class KasirReservasiController extends Controller
                     });
             })->orderBy('id_booking', 'desc')->paginate(10);
 
-        return view('kasir.reservasi.index', compact('reservasi', 'TotalReservasi', 'totalMenunggu', 'totalSelesai', 'totalDiproses'));
+        return view('admin.reservasi.index', compact('reservasi', 'TotalReservasi'));
     }
 
     public function create()
@@ -35,7 +32,7 @@ class KasirReservasiController extends Controller
         $pelanggan = Pelanggan::all();
         $karyawan = User::where('role', 'beautycian')->get();
         $layanan = Layanan::where('status', 'Tersedia')->get();
-        return view('kasir.reservasi.create', compact('pelanggan', 'karyawan', 'layanan'));
+        return view('admin.reservasi.create', compact('pelanggan', 'karyawan', 'layanan'));
     }
 
     public function store(Request $request)
@@ -78,20 +75,13 @@ class KasirReservasiController extends Controller
             ]);
         }
 
-        buatNotif(auth()->user()->id, 'Reservasi Baru', 'Reservasi untuk ' . ($booking->pelanggan->nm_pelanggan ?? 'Pelanggan') . ' berhasil dibuat', 'Booking', route('kasir.reservasi.show', $booking->id_booking));
-
-        $admins = \App\Models\User::where('role', 'admin')->get();
-        foreach ($admins as $admin) {
-            buatNotif($admin->id, 'Reservasi Baru', 'Reservasi baru oleh ' . auth()->user()->nama . ' untuk ' . ($booking->pelanggan->nm_pelanggan ?? 'Pelanggan'), 'Booking', url('/admin/dashboard'));
-        }
-
-        return redirect('kasir/reservasi')->with('message', 'Reservasi berhasil dibuat');
+        return redirect()->route('admin.reservasi.index')->with('success', 'Reservasi berhasil dibuat');
     }
 
     public function show($id)
     {
         $reservasi = Booking::with('pelanggan', 'karyawan', 'detail.layanan')->findOrFail($id);
-        return view('kasir.reservasi.show', compact('reservasi'));
+        return view('admin.reservasi.show', compact('reservasi'));
     }
 
     public function edit($id)
@@ -100,7 +90,7 @@ class KasirReservasiController extends Controller
         $pelanggan = Pelanggan::all();
         $karyawan = User::where('role', 'beautycian')->get();
         $layanan = Layanan::where('status', 'Tersedia')->get();
-        return view('kasir.reservasi.edit', compact('reservasi', 'pelanggan', 'karyawan', 'layanan'));
+        return view('admin.reservasi.edit', compact('reservasi', 'pelanggan', 'karyawan', 'layanan'));
     }
 
     public function update(Request $request, $id)
@@ -145,19 +135,31 @@ class KasirReservasiController extends Controller
             ]);
         }
 
-        buatNotif(auth()->user()->id, 'Reservasi Diperbarui', 'Reservasi #' . str_pad($id, 3, '0', STR_PAD_LEFT) . ' berhasil diperbarui', 'Booking', route('kasir.reservasi.index'));
+        return redirect()->route('admin.reservasi.index')->with('success', 'Reservasi berhasil diperbarui');
+    }
 
-        return redirect('kasir/reservasi')->with('message', 'Reservasi berhasil diperbarui');
+    public function updateStatus(Request $request, $id)
+    {
+        $request->validate([
+            'status' => 'required|in:menunggu,dikonfirmasi,diproses,selesai,dibatalkan',
+        ]);
+
+        Booking::where('id_booking', $id)->update([
+            'status' => $request->status,
+        ]);
+
+        if ($request->wantsJson()) {
+            return response()->json(['success' => true]);
+        }
+
+        return redirect()->back()->with('success', 'Status berhasil diperbarui');
     }
 
     public function destroy($id)
     {
         DetailBooking::where('id_booking', $id)->delete();
         Booking::findOrFail($id)->delete();
-
-        buatNotif(auth()->user()->id, 'Reservasi Dihapus', 'Reservasi #' . str_pad($id, 3, '0', STR_PAD_LEFT) . ' berhasil dihapus', 'Booking', route('kasir.reservasi.index'));
-
-        return redirect('/kasir/reservasi')->with('message', 'Reservasi berhasil dihapus');
+        return redirect()->route('admin.reservasi.index')->with('success', 'Reservasi berhasil dihapus');
     }
 
     public function getLayanan($id)

@@ -60,6 +60,8 @@ class AdminBeautycianController extends Controller
 
         Karyawan::create($request->all());
 
+        buatNotif(auth()->id(), 'Beautician Ditambahkan', 'Beautician NIP ' . $request->NIP . ' berhasil ditambahkan', 'Lainnya', route('admin.beautician.index'));
+
         return redirect()->route('admin.beautician.index')
             ->with('success', 'Beautician berhasil ditambahkan.');
     }
@@ -87,6 +89,8 @@ class AdminBeautycianController extends Controller
 
         $beautician->update($request->all());
 
+        buatNotif(auth()->id(), 'Beautician Diperbarui', 'Beautician ' . ($beautician->user->nama ?? '') . ' berhasil diperbarui', 'Lainnya', route('admin.beautician.edit', $beautician->id_karyawan));
+
         return redirect()->route('admin.beautician.index')
             ->with('success', 'Beautician berhasil diperbarui.');
     }
@@ -98,6 +102,8 @@ class AdminBeautycianController extends Controller
         if ($user) {
             $user->delete();
         }
+
+        buatNotif(auth()->id(), 'Beautician Dihapus', 'Beautician berhasil dihapus dari sistem', 'Lainnya', route('admin.beautician.index'));
 
         return redirect()->route('admin.beautician.index')
             ->with('success', 'Beautician berhasil dihapus.');

@@ -96,6 +96,13 @@ class PelangganController extends Controller
             'subtotal' => $subtotal,
         ]);
 
+        buatNotif(auth()->id(), 'Booking Baru', 'Booking treatment berhasil dibuat', 'Booking', route('pelanggan.booking'));
+
+        $admins = \App\Models\User::where('role', 'admin')->get();
+        foreach ($admins as $admin) {
+            buatNotif($admin->id, 'Booking Baru', 'Booking baru oleh ' . auth()->user()->nama, 'Booking', url('/admin/dashboard'));
+        }
+
         return redirect()->route('pelanggan.booking')->with('success', 'Booking berhasil dibuat!');
     }
 
@@ -150,6 +157,8 @@ class PelangganController extends Controller
             ]
         );
 
+        buatNotif(auth()->id(), 'Booking Diperbarui', 'Booking treatment berhasil diperbarui', 'Booking', route('pelanggan.booking'));
+
         return redirect()->route('pelanggan.booking')->with('success', 'Booking berhasil diperbarui!');
     }
 
@@ -161,6 +170,8 @@ class PelangganController extends Controller
 
         DetailBooking::where('id_booking', $booking->id_booking)->delete();
         $booking->delete();
+
+        buatNotif(auth()->id(), 'Booking Dihapus', 'Booking treatment berhasil dihapus', 'Booking', route('pelanggan.booking'));
 
         return redirect()->route('pelanggan.booking')->with('success', 'Booking berhasil dihapus!');
     }
