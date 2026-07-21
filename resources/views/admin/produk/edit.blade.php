@@ -139,22 +139,12 @@
                                     class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all @error('id_supplier') border-red-300 @enderror" required>
                                     <option value="" disabled>Pilih supplier</option>
                                     @foreach ($supplier as $s)
-                                        <option value="{{ $s->id_produk }}" {{ old('id_supplier', $produk->id_supplier) == $s->id_produk ? 'selected' : '' }}>
+                                        <option value="{{ $s->id_supplier }}" {{ old('id_supplier', $produk->id_supplier) == $s->id_supplier ? 'selected' : '' }}>
                                             {{ $s->nm_supplier }}
                                         </option>
                                     @endforeach
                                 </select>
                                 @error('id_supplier')
-                                    <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <div>
-                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Barcode <span class="text-red-400">*</span></label>
-                                <input type="text" name="barcode" value="{{ old('barcode', $produk->barcode) }}"
-                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('barcode') border-red-300 @enderror"
-                                    placeholder="Masukkan barcode">
-                                @error('barcode')
                                     <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
@@ -216,8 +206,9 @@
                                 <select name="status"
                                     class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all @error('status') border-red-300 @enderror">
                                     <option value="" disabled>Pilih status</option>
-                                    <option value="1" {{ old('status', $produk->status) == '1' ? 'selected' : '' }}>Aktif</option>
-                                    <option value="0" {{ old('status', $produk->status) == '0' ? 'selected' : '' }}>Nonaktif</option>
+                                    <option value="Tersedia" {{ old('status', $produk->status) == 'Tersedia' ? 'selected' : '' }}>Tersedia</option>
+                                    <option value="Habis" {{ old('status', $produk->status) == 'Habis' ? 'selected' : '' }}>Habis</option>
+                                    <option value="Belum Restok" {{ old('status', $produk->status) == 'Belum Restok' ? 'selected' : '' }}>Belum Restok</option>
                                 </select>
                                 @error('status')
                                     <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>

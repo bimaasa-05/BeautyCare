@@ -103,9 +103,9 @@
                                     <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
                                 </svg>
                             </div>
-                            <span class="stat-change up">+12%</span>
+                            <span class="stat-change {{ $pendapatanGrowth >= 0 ? 'up' : 'down' }}">{{ $pendapatanGrowth >= 0 ? '+' : '' }}{{ $pendapatanGrowth }}%</span>
                         </div>
-                        <div class="stat-value">Rp 128,5 jt</div>
+                        <div class="stat-value">{{ $fmt($totalPendapatan) }}</div>
                         <div class="stat-label">Total Pendapatan</div>
                     </div>
 
@@ -120,9 +120,9 @@
                                     <line x1="3" y1="10" x2="21" y2="10" />
                                 </svg>
                             </div>
-                            <span class="stat-change up">+8%</span>
+                            <span class="stat-change {{ $bookingGrowth >= 0 ? 'up' : 'down' }}">{{ $bookingGrowth >= 0 ? '+' : '' }}{{ $bookingGrowth }}%</span>
                         </div>
-                        <div class="stat-value">1.247</div>
+                        <div class="stat-value">{{ number_format($totalBooking) }}</div>
                         <div class="stat-label">Total Booking</div>
                     </div>
 
@@ -136,9 +136,9 @@
                                     <polyline points="17 11 19 13 23 9" />
                                 </svg>
                             </div>
-                            <span class="stat-change up">+15%</span>
+                            <span class="stat-change {{ $pelangganGrowth >= 0 ? 'up' : 'down' }}">{{ $pelangganGrowth >= 0 ? '+' : '' }}{{ $pelangganGrowth }}%</span>
                         </div>
-                        <div class="stat-value">856</div>
+                        <div class="stat-value">{{ number_format($totalPelanggan) }}</div>
                         <div class="stat-label">Total Pelanggan</div>
                     </div>
 
@@ -152,9 +152,9 @@
                                     <line x1="12" y1="17" x2="12" y2="21" />
                                 </svg>
                             </div>
-                            <span class="stat-change down">-2%</span>
+                            <span class="stat-change {{ $karyawanGrowth >= 0 ? 'up' : 'down' }}">{{ $karyawanGrowth >= 0 ? '+' : '' }}{{ $karyawanGrowth }}%</span>
                         </div>
-                        <div class="stat-value">24</div>
+                        <div class="stat-value">{{ number_format($totalKaryawan) }}</div>
                         <div class="stat-label">Total Karyawan</div>
                     </div>
 
@@ -168,10 +168,10 @@
                                     <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
                                 </svg>
                             </div>
-                            <span class="stat-change up">+5%</span>
+                            <span class="stat-change {{ $produkTerjualGrowth >= 0 ? 'up' : 'down' }}">{{ $produkTerjualGrowth >= 0 ? '+' : '' }}{{ $produkTerjualGrowth }}%</span>
                         </div>
-                        <div class="stat-value">1.420</div>
-                        <div class="stat-label">Produq Terjual</div>
+                        <div class="stat-value">{{ number_format($produkTerjual) }}</div>
+                        <div class="stat-label">Produk Terjual</div>
                     </div>
                 </div>
 
@@ -180,17 +180,16 @@
                     <!-- Pendapatan Chart -->
                     <div class="chart-card">
                         <div class="chart-header">
-                            <h3>Grafik Pendapatan</h3>
+                            <h3>Grafik Pendapatan {{ date('Y') }}</h3>
                             <div class="chart-actions w-full sm:w-auto">
-                                <select class="w-full sm:w-auto">
-                                    <option>Tahun Ini</option>
-                                    <option>Bulan Ini</option>
-                                    <option>Minggu Ini</option>
-                                </select>
+                                <span style="font-size:13px;color:var(--gray);">{{ date('Y') }}</span>
                             </div>
                         </div>
                         <div class="chart-body">
-                            <canvas id="chartPendapatan" height="280"></canvas>
+                            <canvas id="chartPendapatan" height="280"
+                                data-labels='@json($chartLabels)'
+                                data-revenue='@json($chartRevenueData)'
+                                data-max="{{ $maxRevenue }}"></canvas>
                         </div>
                     </div>
 
@@ -198,50 +197,41 @@
                     <div class="mini-charts">
                         <div class="mini-chart-card">
                             <div class="mc-header">
-                                <h3>Grafik Booking</h3>
-                                <span class="mc-total">196</span>
+                                <h3>Grafik Booking (Minggu Ini)</h3>
+                                <span class="mc-total">{{ $totalBookingMinggu }}</span>
                             </div>
                             <div class="mc-body" id="miniChartBooking">
-                                <span class="bar bar-primary" data-height="30"></span>
-                                <span class="bar bar-primary" data-height="50"></span>
-                                <span class="bar bar-primary" data-height="40"></span>
-                                <span class="bar bar-primary" data-height="65"></span>
-                                <span class="bar bar-primary" data-height="55"></span>
-                                <span class="bar bar-primary" data-height="80"></span>
-                                <span class="bar bar-primary" data-height="70"></span>
+                                <canvas id="chartBookingDonut" width="160" height="140"
+                                    data-values='@json(array_values($layananBookingMinggu))'
+                                    data-labels='@json(array_keys($layananBookingMinggu))'></canvas>
                             </div>
                         </div>
 
                         <div class="mini-chart-card">
                             <div class="mc-header">
                                 <h3>Jadwal Hari Ini</h3>
-                                <span class="mc-total">12</span>
+                                <span class="mc-total">{{ $jadwalHariIni->count() }}</span>
                             </div>
                             <div class="grid gap-2 sm:gap-2.5">
+                                @forelse($jadwalHariIni as $j)
                                 <div class="flex flex-wrap sm:flex-nowrap items-center gap-x-2 gap-y-1 text-sm">
-                                    <span style="color:var(--primary);font-weight:600;">09:00</span>
+                                    <span style="color:var(--primary);font-weight:600;">{{ substr($j->jam, 0, 5) }}</span>
                                     <span style="color:var(--gray);">-</span>
-                                    <span class="flex-1 min-w-0">Facial & Massage</span>
-                                    <span class="badge badge-success">Confirmed</span>
+                                    <span class="flex-1 min-w-0">{{ $j->pelanggan->nm_pelanggan ?? 'N/A' }} - {{ $j->detail->first()->layanan->nm_layanan ?? 'Booking' }}</span>
+                                    @php
+                                        $badge = match($j->status) {
+                                            'Confirmed', 'Dikonfirmasi' => 'badge-success',
+                                            'Pending', 'Menunggu' => 'badge-warning',
+                                            'Completed', 'Selesai' => 'badge-info',
+                                            'Dibatalkan' => 'badge-danger',
+                                            default => 'badge-secondary'
+                                        };
+                                    @endphp
+                                    <span class="badge {{ $badge }}">{{ $j->status }}</span>
                                 </div>
-                                <div class="flex flex-wrap sm:flex-nowrap items-center gap-x-2 gap-y-1 text-sm">
-                                    <span style="color:var(--primary);font-weight:600;">10:30</span>
-                                    <span style="color:var(--gray);">-</span>
-                                    <span class="flex-1 min-w-0">Haircut & Styling</span>
-                                    <span class="badge badge-warning">Pending</span>
-                                </div>
-                                <div class="flex flex-wrap sm:flex-nowrap items-center gap-x-2 gap-y-1 text-sm">
-                                    <span style="color:var(--primary);font-weight:600;">13:00</span>
-                                    <span style="color:var(--gray);">-</span>
-                                    <span class="flex-1 min-w-0">Manicure & Pedicure</span>
-                                    <span class="badge badge-success">Confirmed</span>
-                                </div>
-                                <div class="flex flex-wrap sm:flex-nowrap items-center gap-x-2 gap-y-1 text-sm">
-                                    <span style="color:var(--primary);font-weight:600;">14:30</span>
-                                    <span style="color:var(--gray);">-</span>
-                                    <span class="flex-1 min-w-0">Body Spa</span>
-                                    <span class="badge badge-info">Completed</span>
-                                </div>
+                                @empty
+                                <div style="text-align:center;padding:16px;color:var(--gray);font-size:13px;">Tidak ada jadwal untuk hari ini</div>
+                                @endforelse
                             </div>
                         </div>
                     </div>
@@ -253,58 +243,30 @@
                     <div class="table-widget overflow-x-auto">
                         <div class="tw-header">
                             <h3>Layanan Terlaris</h3>
-                            <a href="#">Lihat Semua</a>
+                            <a href="{{ route('admin.layanan.index') }}">Lihat Semua</a>
                         </div>
                         <table class="data-table">
                             <thead>
                                 <tr>
                                     <th>Layanan</th>
-                                    <th>Kategori</th>
                                     <th>Terjual</th>
                                     <th>Pendapatan</th>
                                 </tr>
                             </thead>
                             <tbody>
+                                @forelse($layananTerlaris as $lt)
                                 <tr>
                                     <td data-label="Layanan">
-                                        <div class="td-flex">Facial Treatment</div>
+                                        <div class="td-flex">{{ $lt->nm_item }}</div>
                                     </td>
-                                    <td data-label="Kategori">Skincare</td>
-                                    <td data-label="Terjual">128</td>
-                                    <td data-label="Pendapatan">Rp 25,6 jt</td>
+                                    <td data-label="Terjual">{{ $lt->total_qty }}</td>
+                                    <td data-label="Pendapatan">{{ $fmt($lt->total_subtotal) }}</td>
                                 </tr>
+                                @empty
                                 <tr>
-                                    <td data-label="Layanan">
-                                        <div class="td-flex">Haircut Premium</div>
-                                    </td>
-                                    <td data-label="Kategori">Salon</td>
-                                    <td data-label="Terjual">96</td>
-                                    <td data-label="Pendapatan">Rp 14,4 jt</td>
+                                    <td data-label="Layanan" colspan="3" style="text-align:center;color:var(--gray);">Belum ada data transaksi</td>
                                 </tr>
-                                <tr>
-                                    <td data-label="Layanan">
-                                        <div class="td-flex">Body Massage</div>
-                                    </td>
-                                    <td data-label="Kategori">Spa</td>
-                                    <td data-label="Terjual">84</td>
-                                    <td data-label="Pendapatan">Rp 16,8 jt</td>
-                                </tr>
-                                <tr>
-                                    <td data-label="Layanan">
-                                        <div class="td-flex">Nail Art Design</div>
-                                    </td>
-                                    <td data-label="Kategori">Nail Art</td>
-                                    <td data-label="Terjual">72</td>
-                                    <td data-label="Pendapatan">Rp 10,8 jt</td>
-                                </tr>
-                                <tr>
-                                    <td data-label="Layanan">
-                                        <div class="td-flex">Hair Color</div>
-                                    </td>
-                                    <td data-label="Kategori">Salon</td>
-                                    <td data-label="Terjual">65</td>
-                                    <td data-label="Pendapatan">Rp 13,0 jt</td>
-                                </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
@@ -313,58 +275,30 @@
                     <div class="table-widget overflow-x-auto">
                         <div class="tw-header">
                             <h3>Produk Terlaris</h3>
-                            <a href="#">Lihat Semua</a>
+                            <a href="{{ route('admin.produk.index') }}">Lihat Semua</a>
                         </div>
                         <table class="data-table">
                             <thead>
                                 <tr>
                                     <th>Produk</th>
-                                    <th>Kategori</th>
                                     <th>Terjual</th>
-                                    <th>Stok</th>
+                                    <th>Pendapatan</th>
                                 </tr>
                             </thead>
                             <tbody>
+                                @forelse($produkTerlaris as $pt)
                                 <tr>
                                     <td data-label="Produk">
-                                        <div class="td-flex">Serum Vitamin C</div>
+                                        <div class="td-flex">{{ $pt->nm_item }}</div>
                                     </td>
-                                    <td data-label="Kategori">Skincare</td>
-                                    <td data-label="Terjual">245</td>
-                                    <td data-label="Stok"><span class="badge badge-success">Tersedia</span></td>
+                                    <td data-label="Terjual">{{ $pt->total_qty }}</td>
+                                    <td data-label="Pendapatan">{{ $fmt($pt->total_subtotal) }}</td>
                                 </tr>
+                                @empty
                                 <tr>
-                                    <td data-label="Produk">
-                                        <div class="td-flex">Shampoo Premium</div>
-                                    </td>
-                                    <td data-label="Kategori">Hair Care</td>
-                                    <td data-label="Terjual">198</td>
-                                    <td data-label="Stok"><span class="badge badge-warning">Limited</span></td>
+                                    <td data-label="Produk" colspan="3" style="text-align:center;color:var(--gray);">Belum ada data transaksi</td>
                                 </tr>
-                                <tr>
-                                    <td data-label="Produk">
-                                        <div class="td-flex">Nail Polish Set</div>
-                                    </td>
-                                    <td data-label="Kategori">Nail Art</td>
-                                    <td data-label="Terjual">167</td>
-                                    <td data-label="Stok"><span class="badge badge-success">Tersedia</span></td>
-                                </tr>
-                                <tr>
-                                    <td data-label="Produk">
-                                        <div class="td-flex">Moisturizer Cream</div>
-                                    </td>
-                                    <td data-label="Kategori">Skincare</td>
-                                    <td data-label="Terjual">145</td>
-                                    <td data-label="Stok"><span class="badge badge-danger">Habis</span></td>
-                                </tr>
-                                <tr>
-                                    <td data-label="Produk">
-                                        <div class="td-flex">Hair Mask</div>
-                                    </td>
-                                    <td data-label="Kategori">Hair Care</td>
-                                    <td data-label="Terjual">123</td>
-                                    <td data-label="Stok"><span class="badge badge-success">Tersedia</span></td>
-                                </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
@@ -376,63 +310,22 @@
                     <div class="list-widget">
                         <div class="lw-header">
                             <h3>Karyawan Aktif</h3>
-                            <a href="#" style="font-size:13px;color:var(--primary);font-weight:500;">Lihat Semua</a>
+                            <a href="{{ route('admin.beautician.index') }}" style="font-size:13px;color:var(--primary);font-weight:500;">Lihat Semua</a>
                         </div>
                         <div class="employee-grid">
+                            @forelse($karyawanAktif as $k)
                             <div class="employee-card">
-                                <img src="https://ui-avatars.com/api/?name=Sari+Dewi&background=FFE5EF&color=FF4F87&size=36"
-                                    alt="Sari">
+                                <img src="https://ui-avatars.com/api/?name={{ urlencode($k->user->nama ?? 'Karyawan') }}&background=FFE5EF&color=FF4F87&size=36"
+                                    alt="{{ $k->user->nama ?? 'Karyawan' }}">
                                 <div class="ec-info">
-                                    <h4>Sari Dewi</h4>
-                                    <p>Stylist</p>
+                                    <h4>{{ $k->user->nama ?? 'Karyawan' }}</h4>
+                                    <p>{{ $k->jabatan }}</p>
                                 </div>
                                 <span class="ec-status online"></span>
                             </div>
-                            <div class="employee-card">
-                                <img src="https://ui-avatars.com/api/?name=Rina+Putri&background=FFE5EF&color=FF4F87&size=36"
-                                    alt="Rina">
-                                <div class="ec-info">
-                                    <h4>Rina Putri</h4>
-                                    <p>Terapis</p>
-                                </div>
-                                <span class="ec-status online"></span>
-                            </div>
-                            <div class="employee-card">
-                                <img src="https://ui-avatars.com/api/?name=Bagus+Adi&background=FFE5EF&color=FF4F87&size=36"
-                                    alt="Bagus">
-                                <div class="ec-info">
-                                    <h4>Bagus Adi</h4>
-                                    <p>Barberman</p>
-                                </div>
-                                <span class="ec-status break"></span>
-                            </div>
-                            <div class="employee-card">
-                                <img src="https://ui-avatars.com/api/?name=Maya+Sari&background=FFE5EF&color=FF4F87&size=36"
-                                    alt="Maya">
-                                <div class="ec-info">
-                                    <h4>Maya Sari</h4>
-                                    <p>Nail Artist</p>
-                                </div>
-                                <span class="ec-status online"></span>
-                            </div>
-                            <div class="employee-card">
-                                <img src="https://ui-avatars.com/api/?name=Dimas+Arif&background=FFE5EF&color=FF4F87&size=36"
-                                    alt="Dimas">
-                                <div class="ec-info">
-                                    <h4>Dimas Arif</h4>
-                                    <p>Stylist</p>
-                                </div>
-                                <span class="ec-status offline"></span>
-                            </div>
-                            <div class="employee-card">
-                                <img src="https://ui-avatars.com/api/?name=Dewi+Lestari&background=FFE5EF&color=FF4F87&size=36"
-                                    alt="Dewi">
-                                <div class="ec-info">
-                                    <h4>Dewi Lestari</h4>
-                                    <p>Makeup Artist</p>
-                                </div>
-                                <span class="ec-status online"></span>
-                            </div>
+                            @empty
+                            <div style="text-align:center;padding:16px;color:var(--gray);font-size:13px;grid-column:1/-1;">Tidak ada karyawan aktif</div>
+                            @endforelse
                         </div>
                     </div>
 
@@ -440,11 +333,20 @@
                     <div class="list-widget">
                         <div class="lw-header">
                             <h3>Ringkasan Stok</h3>
-                            <a href="#" style="font-size:13px;color:var(--primary);font-weight:500;">Kelola</a>
+                            <a href="{{ route('admin.produk.index') }}" style="font-size:13px;color:var(--primary);font-weight:500;">Kelola</a>
                         </div>
                         <div class="stock-grid">
+                            @forelse($ringkasanStok as $s)
+                            @php
+                                $maxStok = max(50, $s->stok);
+                                $pct = round(($s->stok / $maxStok) * 100);
+                                if ($s->stok <= 0) { $color = 'danger'; $pct = 0; }
+                                elseif ($s->stok <= 10) { $color = 'info'; }
+                                elseif ($s->stok <= 20) { $color = 'warning'; }
+                                else { $color = 'success'; }
+                            @endphp
                             <div class="stock-item">
-                                <div class="stock-icon primary">
+                                <div class="stock-icon {{ $color }}">
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                         <path
@@ -452,65 +354,17 @@
                                     </svg>
                                 </div>
                                 <div class="stock-info">
-                                    <h4>Serum Vitamin C</h4>
-                                    <p>Skincare</p>
+                                    <h4>{{ $s->nm_produk }}</h4>
+                                    <p>{{ $s->kategori->nm_produk ?? 'Tanpa Kategori' }}</p>
                                 </div>
                                 <div class="stock-bar">
-                                    <div class="fill primary" style="width:75%"></div>
+                                    <div class="fill {{ $color }}" style="width:{{ $pct }}%"></div>
                                 </div>
-                                <span class="stock-qty">48</span>
+                                <span class="stock-qty">{{ $s->stok }}</span>
                             </div>
-                            <div class="stock-item">
-                                <div class="stock-icon warning">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path
-                                            d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
-                                    </svg>
-                                </div>
-                                <div class="stock-info">
-                                    <h4>Shampoo Premium</h4>
-                                    <p>Hair Care</p>
-                                </div>
-                                <div class="stock-bar">
-                                    <div class="fill warning" style="width:30%"></div>
-                                </div>
-                                <span class="stock-qty">12</span>
-                            </div>
-                            <div class="stock-item">
-                                <div class="stock-icon success">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path
-                                            d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
-                                    </svg>
-                                </div>
-                                <div class="stock-info">
-                                    <h4>Nail Polish Set</h4>
-                                    <p>Nail Art</p>
-                                </div>
-                                <div class="stock-bar">
-                                    <div class="fill success" style="width:90%"></div>
-                                </div>
-                                <span class="stock-qty">86</span>
-                            </div>
-                            <div class="stock-item">
-                                <div class="stock-icon info">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path
-                                            d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
-                                    </svg>
-                                </div>
-                                <div class="stock-info">
-                                    <h4>Moisturizer Cream</h4>
-                                    <p>Skincare</p>
-                                </div>
-                                <div class="stock-bar">
-                                    <div class="fill info" style="width:10%"></div>
-                                </div>
-                                <span class="stock-qty">3</span>
-                            </div>
+                            @empty
+                            <div style="text-align:center;padding:16px;color:var(--gray);font-size:13px;grid-column:1/-1;">Tidak ada produk</div>
+                            @endforelse
                         </div>
                     </div>
 
@@ -518,54 +372,22 @@
                     <div class="list-widget">
                         <div class="lw-header">
                             <h3>Booking Terbaru</h3>
-                            <a href="#" style="font-size:13px;color:var(--primary);font-weight:500;">Lihat Semua</a>
+                            <a href="{{ route('admin.reservasi.index') }}" style="font-size:13px;color:var(--primary);font-weight:500;">Lihat Semua</a>
                         </div>
                         <div class="booking-list">
+                            @forelse($bookingTerbaru as $b)
                             <div class="booking-item">
-                                <img src="https://ui-avatars.com/api/?name=Ani+Wijaya&background=FFE5EF&color=FF4F87&size=40"
-                                    alt="Ani">
+                                <img src="https://ui-avatars.com/api/?name={{ urlencode($b->pelanggan->nm_pelanggan ?? 'Customer') }}&background=FFE5EF&color=FF4F87&size=40"
+                                    alt="{{ $b->pelanggan->nm_pelanggan ?? 'Customer' }}">
                                 <div class="booking-info">
-                                    <h4>Ani Wijaya</h4>
-                                    <p>Facial Treatment</p>
+                                    <h4>{{ $b->pelanggan->nm_pelanggan ?? 'N/A' }}</h4>
+                                    <p>{{ $b->detail->first()->layanan->nm_layanan ?? 'Booking' }}</p>
                                 </div>
-                                <span class="booking-time">09:00</span>
+                                <span class="booking-time">{{ \Carbon\Carbon::parse($b->tanggal)->format('d/m') }} {{ substr($b->jam, 0, 5) }}</span>
                             </div>
-                            <div class="booking-item">
-                                <img src="https://ui-avatars.com/api/?name=Rudi+Hartono&background=FFE5EF&color=FF4F87&size=40"
-                                    alt="Rudi">
-                                <div class="booking-info">
-                                    <h4>Rudi Hartono</h4>
-                                    <p>Haircut Premium</p>
-                                </div>
-                                <span class="booking-time">10:30</span>
-                            </div>
-                            <div class="booking-item">
-                                <img src="https://ui-avatars.com/api/?name=Sinta+Dewi&background=FFE5EF&color=FF4F87&size=40"
-                                    alt="Sinta">
-                                <div class="booking-info">
-                                    <h4>Sinta Dewi</h4>
-                                    <p>Manicure & Pedicure</p>
-                                </div>
-                                <span class="booking-time">13:00</span>
-                            </div>
-                            <div class="booking-item">
-                                <img src="https://ui-avatars.com/api/?name=Adi+Putra&background=FFE5EF&color=FF4F87&size=40"
-                                    alt="Adi">
-                                <div class="booking-info">
-                                    <h4>Adi Putra</h4>
-                                    <p>Body Spa</p>
-                                </div>
-                                <span class="booking-time">14:30</span>
-                            </div>
-                            <div class="booking-item">
-                                <img src="https://ui-avatars.com/api/?name=Maya+Anggraini&background=FFE5EF&color=FF4F87&size=40"
-                                    alt="Maya">
-                                <div class="booking-info">
-                                    <h4>Maya Anggraini</h4>
-                                    <p>Hair Color & Styling</p>
-                                </div>
-                                <span class="booking-time">16:00</span>
-                            </div>
+                            @empty
+                            <div style="text-align:center;padding:16px;color:var(--gray);font-size:13px;">Belum ada booking</div>
+                            @endforelse
                         </div>
                     </div>
                 </div>

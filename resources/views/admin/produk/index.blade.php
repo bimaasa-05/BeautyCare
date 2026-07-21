@@ -219,7 +219,6 @@
                                         <th class="text-left px-5 py-3 text-xs font-bold text-gray-400 uppercase">Nama Produk</th>
                                         <th class="text-left px-5 py-3 text-xs font-bold text-gray-400 uppercase">Kategori</th>
                                         <th class="text-left px-5 py-3 text-xs font-bold text-gray-400 uppercase">Supplier</th>
-                                        <th class="text-left px-5 py-3 text-xs font-bold text-gray-400 uppercase">Barcode</th>
                                         <th class="text-left px-5 py-3 text-xs font-bold text-gray-400 uppercase">Satuan</th>
                                         <th class="text-left px-5 py-3 text-xs font-bold text-gray-400 uppercase">Harga Beli</th>
                                         <th class="text-left px-5 py-3 text-xs font-bold text-gray-400 uppercase">Harga Jual</th>
@@ -252,9 +251,6 @@
                                             </span>
                                         </td>
                                         <td class="px-5 py-4 text-sm text-gray-600" data-label="Supplier">{{ $p->supplier->nm_supplier ?? '-' }}</td>
-                                        <td class="px-5 py-4" data-label="Barcode">
-                                            <p class="text-sm font-semibold text-gray-800">{{ $p->barcode }}</p>
-                                        </td>
                                         <td class="px-5 py-4 text-sm text-gray-600" data-label="Satuan">{{ $p->satuan }}</td>
                                         <td class="px-5 py-4 text-sm text-gray-600" data-label="Harga Beli">Rp. {{ number_format($p->harga_beli, 0, ',', '.') }}</td>
                                         <td class="px-5 py-4 text-sm text-gray-600" data-label="Harga Jual">Rp. {{ number_format($p->harga_jual, 0, ',', '.') }}</td>
@@ -271,13 +267,18 @@
                                                 <span class="text-xs text-gray-400">-</span>
                                             @endif
                                         </td>
-                                        <td class="px-5 py-4">
                                         <td class="px-5 py-4" data-label="Status">
-                                            @if ($p->status == 1)
-                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border bg-emerald-50 text-emerald-600 border-emerald-100">Aktif</span>
-                                            @else
-                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border bg-red-50 text-red-500 border-red-100">Nonaktif</span>
-                                            @endif
+                                            @php
+                                                $statusBadge = match($p->status) {
+                                                    'Tersedia' => 'bg-emerald-50 text-emerald-600 border-emerald-100',
+                                                    'Habis' => 'bg-red-50 text-red-500 border-red-100',
+                                                    'Belum Restok' => 'bg-amber-50 text-amber-600 border-amber-100',
+                                                    default => 'bg-gray-50 text-gray-500 border-gray-100'
+                                                };
+                                            @endphp
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border {{ $statusBadge }}">
+                                                {{ $p->status }}
+                                            </span>
                                         </td>
                                         <td class="px-5 py-4" data-label="Aksi">
                                             <div class="flex gap-1.5">
