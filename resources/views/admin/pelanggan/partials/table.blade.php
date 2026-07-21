@@ -1,18 +1,18 @@
 @forelse ($pelanggan as $p)
 <tr class="hover:bg-gray-50/50 transition-colors">
     <td class="py-3.5 px-4 font-medium text-gray-500">{{ $loop->iteration }}</td>
-    <td class="py-3.5 px-4 font-medium text-gray-500">{{ $p->nm_pelanggan }}
+    <td class="py-3.5 px-4 font-medium text-gray-500" data-label="Nama Lengkap">{{ $p->nm_pelanggan }}
     </td>
-    <td class="py-3.5 px-4 text-gray-500 font-medium">{{ $p->no_hp ?? '-' }}
+    <td class="py-3.5 px-4 text-gray-500 font-medium" data-label="Nomor Hp">{{ $p->no_hp ?? '-' }}
     </td>
-    <td class="py-3.5 px-4 font-medium text-gray-500">{{ $p->email }}</td>
-    <td class="py-3.5 px-4 font-medium text-gray-500">{{ $p->alamat }}</td>
-    <td class="py-3.5 px-4 font-medium text-gray-500">
+    <td class="py-3.5 px-4 font-medium text-gray-500" data-label="Email">{{ $p->email }}</td>
+    <td class="py-3.5 px-4 font-medium text-gray-500" data-label="Alamat">{{ $p->alamat }}</td>
+    <td class="py-3.5 px-4 font-medium text-gray-500" data-label="Member ID">
         {{ $p->id_member ?? '-' }}
     </td>
-    <td class="py-3.5 px-4 font-medium text-gray-500">{{ $p->catatan_alergi }}
+    <td class="py-3.5 px-4 font-medium text-gray-500" data-label="Catatan Alergi">{{ $p->catatan_alergi }}
     </td>
-    <td class="py-3.5 px-4">
+    <td class="py-3.5 px-4" data-label="Foto">
         @if ($p->foto)
             <img src="{{ asset('storage/' . $p->foto) }}" alt="foto"
                 class="w-8 h-8 rounded-full object-cover">
@@ -20,7 +20,7 @@
             <span class="text-gray-400">-</span>
         @endif
     </td>
-    <td class="py-3.5 px-4 text-center">
+    <td class="py-3.5 px-4 text-center" data-label="Aksi">
         <div class="flex items-center justify-center gap-2">
             <a href="{{ route('admin.pelanggan.edit', $p->id_pelanggan) }}"
                 class="w-7 h-7 inline-flex items-center justify-center text-amber-500 bg-amber-50 hover:bg-amber-100 rounded-md transition-colors"><i

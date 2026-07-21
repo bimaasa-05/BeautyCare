@@ -79,6 +79,33 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #94a3b8;
         }
+
+        @media (max-width: 768px) {
+            .admin-table thead { display: none; }
+            .admin-table tbody tr {
+                display: block;
+                padding: 16px;
+                border-bottom: 1px solid #f0f0f0;
+            }
+            .admin-table tbody td {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 8px 0;
+                border: none;
+                font-size: 13px;
+                text-align: right;
+            }
+            .admin-table tbody td::before {
+                content: attr(data-label);
+                font-weight: 600;
+                color: #9ca3af;
+                font-size: 11px;
+                text-transform: uppercase;
+            }
+            .admin-table tbody td:first-child { padding-left: 0; }
+            .admin-table tbody td:last-child { padding-right: 0; }
+        }
     </style>
 </head>
 
@@ -162,7 +189,7 @@
                         </div>
 
                         <div class="overflow-x-auto">
-                            <table class="w-full text-left border-collapse">
+                            <table class="w-full text-left border-collapse admin-table">
                                 <thead>
                                     <tr
                                         class="text-[11px] font-bold text-gray-400 uppercase border-b border-gray-100 bg-gray-50/50">

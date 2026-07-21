@@ -147,7 +147,7 @@
                                 @enderror
                             </div>
 
-                            <div class="grid grid-cols-2 gap-4">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
                                     <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Mulai</label>
                                     <input type="date" name="mulai" value="{{ old('mulai', $promo->mulai) }}"
