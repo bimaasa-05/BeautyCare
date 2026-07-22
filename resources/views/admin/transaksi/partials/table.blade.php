@@ -1,65 +1,72 @@
 @forelse ($transaksi as $t)
-<tr class="border-t border-pink-50 hover:bg-pink-50/30 transition-colors transaksi-row">
-    <td class="px-4 py-3.5 text-[10px] font-mono text-gray-400 no-invoice">{{ $t->no_invoice }}</td>
-    <td class="px-4 py-3.5">
+<tr class="table-row-hover">
+    <td class="py-3.5 px-4 text-gray-400 font-medium text-center text-[12px]">{{ $loop->iteration }}</td>
+    <td class="py-3.5 px-4">
+        <span class="font-mono font-semibold text-gray-700 text-[12px]">{{ $t->no_invoice }}</span>
+    </td>
+    <td class="py-3.5 px-4">
         <div class="flex items-center gap-2">
-            <div class="w-8 h-8 text-xs rounded-full bg-gradient-to-br from-purple-400 to-pink-500 flex items-center justify-center text-white font-bold flex-shrink-0 shadow-sm">
-                {{ $t->pelanggan ? strtoupper(substr($t->pelanggan->nm_pelanggan, 0, 2)) : '?' }}
+            <div class="w-7 h-7 rounded-full bg-pink-200 text-pink-600 flex items-center justify-center font-bold text-[10px]">
+                {{ $t->pelanggan ? strtoupper(substr($t->pelanggan->nm_pelanggan, 0, 2)) : '??' }}
             </div>
-            <span class="text-xs font-bold text-gray-700 nm_pelanggan">{{ $t->pelanggan->nm_pelanggan ?? 'N/A' }}</span>
+            <span class="font-medium text-gray-700">{{ $t->pelanggan->nm_pelanggan ?? 'Umum' }}</span>
         </div>
     </td>
-    <td class="px-4 py-3.5 text-xs text-gray-500 max-w-[120px] truncate">
-        {{ $t->detail->pluck('nm_item')->implode(', ') ?: '-' }}
-    </td>
-    <td class="px-4 py-3.5 text-xs font-bold text-gray-800">Rp {{ number_format($t->total, 0, ',', '.') }}</td>
-    <td class="px-4 py-3.5 text-xs text-gray-500">{{ $t->metode_byr }}</td>
-    <td class="px-4 py-3.5 text-[10px] text-gray-400">{{ \Carbon\Carbon::parse($t->tanggal)->format('d M Y') }}</td>
-    <td class="px-4 py-3.5">
+    <td class="py-3.5 px-4 text-gray-500">{{ \Carbon\Carbon::parse($t->tanggal)->format('d/m/Y') }}</td>
+    <td class="py-3.5 px-4 font-semibold text-gray-800">Rp {{ number_format($t->total, 0, ',', '.') }}</td>
+    <td class="py-3.5 px-4">
         @php
-        $statusClass = $t->status === 'Lunas' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-amber-50 text-amber-600 border-amber-100';
+            $metodeIcon = match($t->metode_byr) {
+                'Tunai' => 'fa-solid fa-money-bill-wave text-emerald-500',
+                'Transfer' => 'fa-solid fa-building-columns text-purple-500',
+                'Debit' => 'fa-regular fa-credit-card text-amber-500',
+                'E-Wallet' => 'fa-solid fa-wallet text-pink-500',
+                default => 'fa-regular fa-circle text-gray-400',
+            };
         @endphp
-        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border {{ $statusClass }}">
-            {{ $t->status }}
+        <span class="inline-flex items-center gap-1.5 text-[12px] font-medium text-gray-600">
+            <i class="{{ $metodeIcon }}"></i> {{ $t->metode_byr }}
         </span>
     </td>
-    <td class="px-4 py-3.5">
-        <div class="flex items-center gap-1.5">
+    <td class="py-3.5 px-4 text-gray-500">{{ $t->user->nama ?? '-' }}</td>
+    <td class="py-3.5 px-4">
+        @if ($t->status == 'Lunas')
+            <span class="badge-status status-selesai"><i class="fa-regular fa-circle-check"></i> Lunas</span>
+        @elseif ($t->status == 'Pending')
+            <span class="badge-status status-proses"><i class="fa-regular fa-clock"></i> Pending</span>
+        @else
+            <span class="badge-status status-batal"><i class="fa-regular fa-circle-xmark"></i> Batal</span>
+        @endif
+    </td>
+    <td class="py-3.5 px-4 text-center">
+        <div class="flex items-center justify-center gap-2">
             <a href="{{ route('admin.transaksi.show', $t->id_transaksi) }}"
-                class="w-6 h-6 rounded-lg bg-blue-50 text-blue-500 flex items-center justify-center hover:bg-blue-100" title="Detail">
-                <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eye">
-                    <path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"></path>
-                    <circle cx="12" cy="12" r="3"></circle>
-                </svg>
-            </a>
+                class="w-7 h-7 text-blue-500 bg-blue-50 hover:bg-blue-100 rounded-md transition-colors flex items-center justify-center"
+                title="Detail"><i class="fa-regular fa-eye text-xs"></i></a>
             <a href="{{ route('admin.transaksi.edit', $t->id_transaksi) }}"
-                class="w-6 h-6 rounded-lg bg-amber-50 text-amber-500 flex items-center justify-center hover:bg-amber-100" title="Edit">
-                <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pencil">
-                    <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"></path>
-                    <path d="m15 5 4 4"></path>
-                </svg>
-            </a>
+                class="w-7 h-7 text-amber-500 bg-amber-50 hover:bg-amber-100 rounded-md transition-colors flex items-center justify-center"
+                title="Edit"><i class="fa-regular fa-pen-to-square text-xs"></i></a>
             <form action="{{ route('admin.transaksi.destroy', $t->id_transaksi) }}"
                 method="POST" class="inline"
                 onsubmit="return confirm('Yakin ingin menghapus transaksi {{ $t->no_invoice }}?')">
                 @csrf
                 @method('DELETE')
                 <button type="submit"
-                    class="w-6 h-6 rounded-lg bg-red-50 text-red-500 flex items-center justify-center hover:bg-red-100" title="Hapus">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash-2">
-                        <path d="M3 6h18"></path>
-                        <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
-                        <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
-                        <line x1="10" x2="10" y1="11" y2="17"></line>
-                        <line x1="14" x2="14" y1="11" y2="17"></line>
-                    </svg>
-                </button>
+                    class="w-7 h-7 text-red-500 bg-red-50 hover:bg-red-100 rounded-md transition-colors flex items-center justify-center"
+                    title="Hapus"><i class="fa-regular fa-trash-can text-xs"></i></button>
             </form>
         </div>
     </td>
 </tr>
 @empty
-<tr class="border-t border-pink-50">
-    <td colspan="8" class="px-4 py-10 text-center text-gray-400 text-xs">Belum ada transaksi</td>
+<tr>
+    <td colspan="9" class="py-14 text-center">
+        <div class="flex flex-col items-center gap-3">
+            <div class="w-20 h-20 rounded-full bg-pink-50 flex items-center justify-center">
+                <i class="fa-solid fa-receipt text-3xl text-pink-200"></i>
+            </div>
+            <p class="text-gray-400 font-medium text-[14px]">Belum ada data transaksi</p>
+        </div>
+    </td>
 </tr>
 @endforelse
