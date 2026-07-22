@@ -63,7 +63,7 @@ if (!isset($pageTitle)) {
         </span>
 
         <div class="notif-wrapper" style="position:relative;">
-            <button class="navbar-icon-btn notif-btn" id="notifBell" aria-label="Notifications">
+            <button class="navbar-icon-btn notif-btn" id="notifBell" aria-label="Notifications" data-role="{{ auth()->user()->role }}">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                     stroke-linecap="round" stroke-linejoin="round">
                     <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
@@ -142,6 +142,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const markAllBtn = document.getElementById('markAllRead');
 
     if (!bell) return;
+    const role = bell.dataset.role;
 
     function loadNotif() {
         fetch('/notif/get')
@@ -166,7 +167,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     const actorFoto = n.aktor_foto ? '/storage/' + n.aktor_foto : null;
                     const actorInitial = n.aktor_nama ? n.aktor_nama.charAt(0).toUpperCase() : '?';
                     const bg = n.status === 0 ? '#FFF5F8' : 'transparent';
-                    html += '<a href="/notif/' + n.id + '/read" class="notif-item" style="display:flex;gap:12px;padding:14px 20px;text-decoration:none;background:' + bg + ';border-bottom:1px solid #f8f8f8;transition:background 0.2s;" onmouseover="this.style.background=\'#FFF5F8\'" onmouseout="this.style.background=\'' + bg + '\'">';
+                    html += '<a href="/' + role + '/notifikasi/' + n.id + '/read" class="notif-item" style="display:flex;gap:12px;padding:14px 20px;text-decoration:none;background:' + bg + ';border-bottom:1px solid #f8f8f8;transition:background 0.2s;" onmouseover="this.style.background=\'#FFF5F8\'" onmouseout="this.style.background=\'' + bg + '\'">';
                     if (actorFoto) {
                         html += '<div style="width:36px;height:36px;border-radius:50%;flex-shrink:0;overflow:hidden;"><img src="' + actorFoto + '" alt="" style="width:100%;height:100%;object-fit:cover;"></div>';
                     } else {
@@ -198,7 +199,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (markAllBtn) {
         markAllBtn.addEventListener('click', function() {
-            fetch('/notif/mark-all-read', { method: 'POST', headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content, 'Accept': 'application/json' } })
+            fetch('/' + role + '/notifikasi/mark-all-read', { method: 'POST', headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content, 'Accept': 'application/json' } })
                 .then(r => r.json())
                 .then(function() { loadNotif(); });
         });
