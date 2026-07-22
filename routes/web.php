@@ -42,9 +42,9 @@ Route::middleware('auth')->group(function () {
 
     //Notifikasi
     Route::get('/notif/get', [NotifikasiController::class, 'getNotif'])->name('notif.get');
-    Route::get('/notif/{id}/read', [NotifikasiController::class, 'markRead'])->name('notif.read');
-    Route::post('/notif/mark-all-read', [NotifikasiController::class, 'markAllRead'])->name('notif.mark-all-read');
-    Route::get('/notifikasi', [NotifikasiController::class, 'index'])->name('notif.index');
+    Route::get('/{role}/notifikasi/index', [NotifikasiController::class, 'index'])->whereIn('role', ['admin', 'kasir', 'beautycian', 'pelanggan'])->name('notif.index');
+    Route::get('/{role}/notifikasi/{id}/read', [NotifikasiController::class, 'markRead'])->whereIn('role', ['admin', 'kasir', 'beautycian', 'pelanggan'])->name('notif.read');
+    Route::post('/{role}/notifikasi/mark-all-read', [NotifikasiController::class, 'markAllRead'])->whereIn('role', ['admin', 'kasir', 'beautycian', 'pelanggan'])->name('notif.mark-all-read');
 
     //Akses Login -- Rolee --- Admin
     Route::middleware(['role:admin'])->group(function () {

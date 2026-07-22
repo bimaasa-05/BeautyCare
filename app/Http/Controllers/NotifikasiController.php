@@ -37,8 +37,12 @@ class NotifikasiController extends Controller
         ]);
     }
 
-    public function markRead($id)
+    public function markRead($role, $id)
     {
+        if ($role !== Auth::user()->role) {
+            abort(403);
+        }
+
         $notif = Notifikasi::where('id_notif', $id)
             ->where('id_user', Auth::id())
             ->firstOrFail();
@@ -52,11 +56,15 @@ class NotifikasiController extends Controller
             return response()->json(['success' => true]);
         }
 
-        return redirect($notif->url ?? '/');
+        return redirect(route('notif.index', ['role' => $role]));
     }
 
-    public function markAllRead()
+    public function markAllRead($role)
     {
+        if ($role !== Auth::user()->role) {
+            abort(403);
+        }
+
         Notifikasi::forUser(Auth::id())->unread()->update([
             'status' => 1,
             'read_at' => now(),
