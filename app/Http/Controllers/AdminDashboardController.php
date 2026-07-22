@@ -16,6 +16,8 @@ class AdminDashboardController extends Controller
     {
         $tahun = date('Y');
         $bulan = date('m');
+        $bulanLalu = $bulan == 1 ? 12 : $bulan - 1;
+        $tahunLalu = $bulan == 1 ? $tahun - 1 : $tahun;
 
         $totalPendapatan = Transaksi::where('status', '!=', 'Dibatalkan')->sum('total');
 
@@ -33,8 +35,8 @@ class AdminDashboardController extends Controller
             ->sum('total');
 
         $pendapatanBulanLalu = Transaksi::where('status', '!=', 'Dibatalkan')
-            ->whereYear('tanggal', $tahun)
-            ->whereMonth('tanggal', $bulan - 1)
+            ->whereYear('tanggal', $tahunLalu)
+            ->whereMonth('tanggal', $bulanLalu)
             ->sum('total');
 
         $pendapatanGrowth = $pendapatanBulanLalu > 0
@@ -45,8 +47,8 @@ class AdminDashboardController extends Controller
             ->whereMonth('tanggal', $bulan)
             ->count();
 
-        $bookingBulanLalu = Booking::whereYear('tanggal', $tahun)
-            ->whereMonth('tanggal', $bulan - 1)
+        $bookingBulanLalu = Booking::whereYear('tanggal', $tahunLalu)
+            ->whereMonth('tanggal', $bulanLalu)
             ->count();
 
         $bookingGrowth = $bookingBulanLalu > 0
@@ -57,8 +59,8 @@ class AdminDashboardController extends Controller
             ->whereMonth('created_at', $bulan)
             ->count();
 
-        $pelangganBulanLalu = Pelanggan::whereYear('created_at', $tahun)
-            ->whereMonth('created_at', $bulan - 1)
+        $pelangganBulanLalu = Pelanggan::whereYear('created_at', $tahunLalu)
+            ->whereMonth('created_at', $bulanLalu)
             ->count();
 
         $pelangganGrowth = $pelangganBulanLalu > 0
@@ -73,15 +75,15 @@ class AdminDashboardController extends Controller
 
         $produkTerjualBulanLalu = DetailTransaksi::where('detail_transaksi.jenis', 'produk')
             ->join('transaksi', 'transaksi.id_transaksi', '=', 'detail_transaksi.id_transaksi')
-            ->whereYear('transaksi.tanggal', $tahun)
-            ->whereMonth('transaksi.tanggal', $bulan - 1)
+            ->whereYear('transaksi.tanggal', $tahunLalu)
+            ->whereMonth('transaksi.tanggal', $bulanLalu)
             ->sum('detail_transaksi.qty');
 
         $produkTerjualGrowth = $produkTerjualBulanLalu > 0
             ? round((($produkTerjualBulanIni - $produkTerjualBulanLalu) / $produkTerjualBulanLalu) * 100)
             : ($produkTerjualBulanIni > 0 ? 100 : 0);
 
-        $karyawanGrowth = $totalKaryawan > 0 ? 0 : 0;
+        $karyawanGrowth = 0;
 
         $chartRevenue = Transaksi::select(
                 DB::raw('MONTH(tanggal) as bulan'),
