@@ -90,7 +90,6 @@ function drawPendapatanChart(canvas) {
   const chartW = width - padding.left - padding.right;
   const chartH = height - padding.top - padding.bottom;
 
-  // Data from data attributes
   var labels = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
   var data = [0,0,0,0,0,0,0,0,0,0,0,0];
   try {
@@ -98,110 +97,169 @@ function drawPendapatanChart(canvas) {
     data = JSON.parse(canvas.getAttribute('data-revenue')) || data;
   } catch(e) {}
   const data2 = data.map(function(v) { return Math.round(v * 0.7); });
-
   const maxVal = Math.max(...data, ...data2) * 1.2;
-  const stepY = maxVal / 5;
-  const stepX = chartW / (labels.length - 1);
 
-  // Grid lines
-  ctx.strokeStyle = '#ECECEC';
-  ctx.lineWidth = 1;
-  ctx.setLineDash([]);
+  function getPoints(arr) {
+    return arr.map(function(val, i) {
+      return {
+        x: padding.left + (chartW / (arr.length - 1)) * i,
+        y: padding.top + chartH - (val / maxVal) * chartH,
+        value: val,
+        index: i
+      };
+    });
+  }
+  var points1 = getPoints(data);
+  var points2 = getPoints(data2);
 
-  for (let i = 0; i <= 5; i++) {
-    const y = padding.top + chartH - (chartH / 5) * i;
-    ctx.beginPath();
-    ctx.moveTo(padding.left, y);
-    ctx.lineTo(width - padding.right, y);
-    ctx.stroke();
+  var currentYear = new Date().getFullYear();
+  var prevYear = currentYear - 1;
 
-    // Y-axis labels
+  function fmtRp(amount) {
+    if (amount >= 1000000000) return 'Rp ' + (amount / 1000000000).toFixed(1) + ' M';
+    if (amount >= 1000000) return 'Rp ' + (amount / 1000000).toFixed(1) + ' jt';
+    return 'Rp ' + amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  }
+
+  function drawAll(hoverIdx) {
+    ctx.clearRect(0, 0, width, height);
+
+    ctx.strokeStyle = '#ECECEC';
+    ctx.lineWidth = 1;
+    for (let i = 0; i <= 5; i++) {
+      const y = padding.top + chartH - (chartH / 5) * i;
+      ctx.beginPath();
+      ctx.moveTo(padding.left, y);
+      ctx.lineTo(width - padding.right, y);
+      ctx.stroke();
+      ctx.fillStyle = '#999';
+      ctx.font = '11px Poppins, sans-serif';
+      ctx.textAlign = 'right';
+      ctx.fillText(Math.round(maxVal / 5 * i).toString(), padding.left - 10, y + 4);
+    }
+
     ctx.fillStyle = '#999';
     ctx.font = '11px Poppins, sans-serif';
-    ctx.textAlign = 'right';
-    ctx.fillText(Math.round(maxVal / 5 * i).toString(), padding.left - 10, y + 4);
+    ctx.textAlign = 'center';
+    labels.forEach(function(label, i) {
+      const x = padding.left + (chartW / (labels.length - 1)) * i;
+      ctx.fillText(label, x, height - padding.bottom + 18);
+    });
+
+    function drawLine(points, color, gradientColor, isPrimary) {
+      var values = points.map(function(p) { return p.value; });
+
+      var gradient = ctx.createLinearGradient(0, padding.top, 0, height - padding.bottom);
+      gradient.addColorStop(0, gradientColor);
+      gradient.addColorStop(1, 'rgba(255, 79, 135, 0)');
+
+      if (hoverIdx < 0 || !isPrimary) {
+        ctx.beginPath();
+        points.forEach(function(p, i) {
+          if (i === 0) ctx.moveTo(p.x, p.y);
+          else ctx.lineTo(p.x, p.y);
+        });
+        ctx.lineTo(points[points.length - 1].x, height - padding.bottom);
+        ctx.lineTo(points[0].x, height - padding.bottom);
+        ctx.closePath();
+        ctx.fillStyle = gradient;
+        ctx.fill();
+      }
+
+      ctx.beginPath();
+      points.forEach(function(p, i) {
+        if (i === 0) ctx.moveTo(p.x, p.y);
+        else ctx.lineTo(p.x, p.y);
+      });
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 2.5;
+      ctx.globalAlpha = hoverIdx >= 0 ? (isPrimary ? 1 : 0.3) : 1;
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+
+      points.forEach(function(p) {
+        var isHover = (hoverIdx === p.index);
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, isHover ? 7 : 3, 0, Math.PI * 2);
+        ctx.fillStyle = isHover ? '#fff' : color;
+        ctx.fill();
+        ctx.strokeStyle = isHover ? color : '#fff';
+        ctx.lineWidth = isHover ? 3 : 2;
+        ctx.stroke();
+      });
+    }
+
+    drawLine(points2, '#FF7BA6', 'rgba(255, 123, 166, 0.1)', false);
+    drawLine(points1, '#FF4F87', 'rgba(255, 79, 135, 0.15)', true);
+
+    var legendX = width - 140;
+    var legendY = 12;
+    ctx.fillStyle = '#FF4F87';
+    ctx.fillRect(legendX, legendY, 12, 3);
+    ctx.fillStyle = '#333';
+    ctx.font = '11px Poppins, sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText('Pendapatan ' + currentYear, legendX + 18, legendY + 4);
+
+    ctx.fillStyle = '#FF7BA6';
+    ctx.fillRect(legendX, legendY + 18, 12, 3);
+    ctx.fillStyle = '#333';
+    ctx.fillText('Pendapatan ' + prevYear, legendX + 18, legendY + 22);
   }
 
-  // X-axis labels
-  ctx.fillStyle = '#999';
-  ctx.font = '11px Poppins, sans-serif';
-  ctx.textAlign = 'center';
-  labels.forEach(function(label, i) {
-    const x = padding.left + (chartW / (labels.length - 1)) * i;
-    ctx.fillText(label, x, height - padding.bottom + 18);
+  drawAll(-1);
+
+  var tooltip = document.getElementById('pendapatanTooltip');
+  if (!tooltip) {
+    tooltip = document.createElement('div');
+    tooltip.id = 'pendapatanTooltip';
+    tooltip.style.cssText = 'position:fixed;background:#333;color:#fff;padding:8px 12px;border-radius:8px;font-size:12px;font-family:Poppins,sans-serif;line-height:1.6;pointer-events:none;z-index:999;opacity:0;transition:opacity 0.15s;max-width:220px;';
+    document.body.appendChild(tooltip);
+  }
+
+  canvas.addEventListener('mousemove', function(e) {
+    var br = canvas.getBoundingClientRect();
+    var mx = e.clientX - br.left;
+    var my = e.clientY - br.top;
+
+    var minDist = 18;
+    var nearest = -1;
+    points1.forEach(function(p, i) {
+      var dx = mx - p.x;
+      var dy = my - p.y;
+      var dist = Math.sqrt(dx*dx + dy*dy);
+      if (dist < minDist) {
+        minDist = dist;
+        nearest = i;
+      }
+    });
+
+    if (nearest >= 0) {
+      drawAll(nearest);
+      canvas.style.cursor = 'pointer';
+      tooltip.innerHTML =
+        '<div style="font-weight:600;margin-bottom:4px;">' + labels[nearest] + ' ' + currentYear + '</div>' +
+        '<div style="color:#FF4F87;">' + fmtRp(data[nearest]) + '</div>' +
+        '<div style="color:#FF7BA6;font-size:11px;margin-top:2px;">' + fmtRp(data2[nearest]) + ' (' + prevYear + ')</div>';
+      tooltip.style.opacity = '1';
+      var tx = e.clientX + 14;
+      var ty = e.clientY - 10;
+      if (tx + 230 > window.innerWidth) tx = e.clientX - 230;
+      if (ty < 4) ty = 4;
+      tooltip.style.left = tx + 'px';
+      tooltip.style.top = ty + 'px';
+    } else {
+      drawAll(-1);
+      tooltip.style.opacity = '0';
+      canvas.style.cursor = 'default';
+    }
   });
 
-  // Draw line function
-  function drawLine(dataArray, color, gradientColor) {
-    // Gradient fill
-    const gradient = ctx.createLinearGradient(0, padding.top, 0, height - padding.bottom);
-    gradient.addColorStop(0, gradientColor);
-    gradient.addColorStop(1, 'rgba(255, 79, 135, 0)');
-
-    // Fill area
-    ctx.beginPath();
-    dataArray.forEach(function(val, i) {
-      const x = padding.left + (chartW / (dataArray.length - 1)) * i;
-      const y = padding.top + chartH - (val / maxVal) * chartH;
-      if (i === 0) {
-        ctx.moveTo(x, y);
-      } else {
-        ctx.lineTo(x, y);
-      }
-    });
-    ctx.lineTo(padding.left + chartW, height - padding.bottom);
-    ctx.lineTo(padding.left, height - padding.bottom);
-    ctx.closePath();
-    ctx.fillStyle = gradient;
-    ctx.fill();
-
-    // Line
-    ctx.beginPath();
-    dataArray.forEach(function(val, i) {
-      const x = padding.left + (chartW / (dataArray.length - 1)) * i;
-      const y = padding.top + chartH - (val / maxVal) * chartH;
-      if (i === 0) {
-        ctx.moveTo(x, y);
-      } else {
-        ctx.lineTo(x, y);
-      }
-    });
-    ctx.strokeStyle = color;
-    ctx.lineWidth = 2.5;
-    ctx.stroke();
-
-    // Points
-    dataArray.forEach(function(val, i) {
-      const x = padding.left + (chartW / (dataArray.length - 1)) * i;
-      const y = padding.top + chartH - (val / maxVal) * chartH;
-      ctx.beginPath();
-      ctx.arc(x, y, 3, 0, Math.PI * 2);
-      ctx.fillStyle = color;
-      ctx.fill();
-      ctx.strokeStyle = '#fff';
-      ctx.lineWidth = 2;
-      ctx.stroke();
-    });
-  }
-
-  drawLine(data, '#FF4F87', 'rgba(255, 79, 135, 0.15)');
-  drawLine(data2, '#FF7BA6', 'rgba(255, 123, 166, 0.1)');
-
-  // Legend
-  const legendX = width - 140;
-  const legendY = 12;
-
-  ctx.fillStyle = '#FF4F87';
-  ctx.fillRect(legendX, legendY, 12, 3);
-  ctx.fillStyle = '#333';
-  ctx.font = '11px Poppins, sans-serif';
-  ctx.textAlign = 'left';
-  ctx.fillText('Pendapatan ' + new Date().getFullYear(), legendX + 18, legendY + 4);
-
-  ctx.fillStyle = '#FF7BA6';
-  ctx.fillRect(legendX, legendY + 18, 12, 3);
-  ctx.fillStyle = '#333';
-  ctx.fillText('Pendapatan ' + (new Date().getFullYear() - 1), legendX + 18, legendY + 22);
+  canvas.addEventListener('mouseleave', function() {
+    drawAll(-1);
+    tooltip.style.opacity = '0';
+    canvas.style.cursor = 'default';
+  });
 }
 
 function drawBookingChart(canvas) {
