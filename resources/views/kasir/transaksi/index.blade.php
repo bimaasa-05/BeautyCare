@@ -36,14 +36,12 @@
         .status-proses { background: #FEF3C7; color: #F59E0B; }
         .status-batal { background: #FDE8E8; color: #EF4444; }
 
-        .table-row-hover { transition: all 0.3s ease; }
-        .table-row-hover:hover { background: #FFF5F8 !important; transform: scale(1.002); }
-
         .pagination-custom nav svg { display: none; }
         .pagination-custom nav .flex a, .pagination-custom nav .flex span {
             font-size: 12px; padding: 6px 14px; border-radius: 100px !important; margin: 0 2px;
         }
         .pagination-custom nav .flex span:first-child, .pagination-custom nav .flex a:first-child { border-radius: 100px !important; }
+        .table-enhanced tbody tr:hover { background: #F3F4F6 !important; }
     </style>
 </head>
 
@@ -139,8 +137,8 @@
                             </thead>
                             <tbody class="text-[13px] text-gray-700">
                                  @forelse($transaksi as $t)
-                                     <tr>
-                                         <td class="text-center text-gray-400 font-medium">{{ $loop->iteration }}</td>
+                                      <tr class="hover:bg-gray-100 transition-colors duration-150">
+                                          <td class="text-center text-gray-400 font-medium">{{ $loop->iteration }}</td>
                                          <td>
                                              <span class="font-mono font-semibold text-gray-700">{{ $t->no_invoice }}</span>
                                          </td>
