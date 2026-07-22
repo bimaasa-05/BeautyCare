@@ -17,6 +17,9 @@
     <link rel="stylesheet" href="{{ asset('assets/css/responsive.css') }}">
 
     <style>
+    .chart-card:hover {
+        box-shadow: 0 4px 24px rgba(236, 72, 153, 0.14);
+    }
     .sidebar-toggle {
         display: none;
         background: none;
@@ -178,13 +181,11 @@
                 <!-- Dashboard Grid: Charts -->
                 <div class="dashboard-grid grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
                     <!-- Pendapatan Chart -->
-                    <div class="chart-card">
+                    <div class="chart-card" style="transition: all 0.3s ease;">
                         <div class="chart-header">
                             <h3>Grafik Pendapatan {{ date('Y') }}</h3>
-                            <div class="chart-actions w-full sm:w-auto">
-                                <span style="font-size:13px;color:var(--gray);">{{ date('Y') }}</span>
-                            </div>
                         </div>
+                        <p style="font-size: 12px; color: var(--gray); margin: -12px 0 16px 0;">Total pendapatan setiap bulan</p>
                         <div class="chart-body">
                             <canvas id="chartPendapatan" height="280"
                                 data-labels='@json($chartLabels)'
