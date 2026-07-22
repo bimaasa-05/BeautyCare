@@ -24,4 +24,9 @@ class Pelanggan extends Model
     {
         return $this->belongsTo(Membership::class, 'id_member', 'id_member');
     }
+
+    public function transaksi()
+    {
+        return $this->hasMany(Transaksi::class, 'id_pelanggan', 'id_pelanggan');
+    }
 }
