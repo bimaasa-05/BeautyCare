@@ -37,14 +37,20 @@ class AdminLaporanController extends Controller
         $prevPendapatan = Transaksi::whereBetween('tanggal', [$prevStart, $startDate])
             ->where('status', '!=', 'Dibatalkan')
             ->sum('total');
-        $pendapatanGrowth = $prevPendapatan > 0 ? round((($totalPendapatan - $prevPendapatan) / $prevPendapatan) * 100) : 0;
+        $pendapatanGrowth = $prevPendapatan > 0
+            ? round((($totalPendapatan - $prevPendapatan) / $prevPendapatan) * 100)
+            : ($totalPendapatan > 0 ? 100 : 0);
 
         $prevReservasi = Booking::whereBetween('tanggal', [$prevStart, $startDate])->count();
-        $reservasiGrowth = $prevReservasi > 0 ? round((($totalReservasi - $prevReservasi) / $prevReservasi) * 100) : 0;
+        $reservasiGrowth = $prevReservasi > 0
+            ? round((($totalReservasi - $prevReservasi) / $prevReservasi) * 100)
+            : ($totalReservasi > 0 ? 100 : 0);
 
         $prevPelanggan = Pelanggan::whereBetween('created_at', [$prevStart . ' 00:00:00', $startDate . ' 23:59:59'])
             ->count();
-        $pelangganGrowth = $prevPelanggan > 0 ? round((($pelangganBaru - $prevPelanggan) / $prevPelanggan) * 100) : 0;
+        $pelangganGrowth = $prevPelanggan > 0
+            ? round((($pelangganBaru - $prevPelanggan) / $prevPelanggan) * 100)
+            : ($pelangganBaru > 0 ? 100 : 0);
 
         $fmt = function ($amount) {
             if ($amount >= 1000000000) {
@@ -190,14 +196,20 @@ class AdminLaporanController extends Controller
         $prevPendapatan = Transaksi::whereBetween('tanggal', [$prevStart, $startDate])
             ->where('status', '!=', 'Dibatalkan')
             ->sum('total');
-        $pendapatanGrowth = $prevPendapatan > 0 ? round((($totalPendapatan - $prevPendapatan) / $prevPendapatan) * 100) : 0;
+        $pendapatanGrowth = $prevPendapatan > 0
+            ? round((($totalPendapatan - $prevPendapatan) / $prevPendapatan) * 100)
+            : ($totalPendapatan > 0 ? 100 : 0);
 
         $prevReservasi = Booking::whereBetween('tanggal', [$prevStart, $startDate])->count();
-        $reservasiGrowth = $prevReservasi > 0 ? round((($totalReservasi - $prevReservasi) / $prevReservasi) * 100) : 0;
+        $reservasiGrowth = $prevReservasi > 0
+            ? round((($totalReservasi - $prevReservasi) / $prevReservasi) * 100)
+            : ($totalReservasi > 0 ? 100 : 0);
 
         $prevPelanggan = Pelanggan::whereBetween('created_at', [$prevStart . ' 00:00:00', $startDate . ' 23:59:59'])
             ->count();
-        $pelangganGrowth = $prevPelanggan > 0 ? round((($pelangganBaru - $prevPelanggan) / $prevPelanggan) * 100) : 0;
+        $pelangganGrowth = $prevPelanggan > 0
+            ? round((($pelangganBaru - $prevPelanggan) / $prevPelanggan) * 100)
+            : ($pelangganBaru > 0 ? 100 : 0);
 
         $fmt = function ($amount) {
             if ($amount >= 1000000000) {
