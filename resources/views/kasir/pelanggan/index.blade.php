@@ -53,13 +53,18 @@
                 align-items: center;
             }
         }
+        .pagination-custom nav svg { display: none; }
+        .pagination-custom nav .flex a, .pagination-custom nav .flex span {
+            font-size: 12px; padding: 6px 14px; border-radius: 100px !important; margin: 0 2px;
+        }
+        .pagination-custom nav .flex span:first-child, .pagination-custom nav .flex a:first-child { border-radius: 100px !important; }
     </style>
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Poppins', sans-serif;
         }
 
         ::-webkit-scrollbar {
@@ -136,8 +141,8 @@
                                 </thead>
                                 <tbody class="text-[13px] text-gray-700 divide-y divide-gray-50">
                                     @forelse($pelanggan as $p)
-                                        <tr class="transition-all duration-300 hover:bg-pink-50/30 hover:scale-[1.002]">
-                                            <td class="py-3.5 px-4 text-gray-400 font-medium text-center text-[12px]">{{ $loop->iteration }}</td>
+<tr class="hover:bg-gray-100 transition-colors duration-150">
+                                             <td class="py-3.5 px-4 text-gray-400 font-medium text-center text-[12px]">{{ $loop->iteration }}</td>
                                             <td class="py-3.5 px-4">
                                                 <div class="flex items-center gap-3">
                                                     <div
@@ -216,7 +221,7 @@
                         </div>
 
                         @if ($pelanggan->hasPages())
-                            <div class="mt-4 px-4">
+                            <div class="mt-4 px-4 pagination-custom">
                                 {{ $pelanggan->links() }}
                             </div>
                         @endif
