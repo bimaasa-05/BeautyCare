@@ -738,6 +738,219 @@
         box-shadow: 0 6px 24px rgba(255, 79, 135, 0.35);
     }
 
+    .payment-modal {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.4);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    .payment-modal.show {
+        display: flex;
+    }
+
+    .payment-modal .pm-card {
+        background: var(--white);
+        border-radius: 24px;
+        max-width: 480px;
+        width: 100%;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+        animation: modalIn 0.3s ease;
+    }
+
+    .payment-modal .pm-header {
+        padding: 24px 28px 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .payment-modal .pm-header h3 {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--dark);
+        margin: 0;
+    }
+
+    .payment-modal .pm-close {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        border: none;
+        background: #f1f5f9;
+        color: var(--gray);
+        font-size: 16px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+    }
+
+    .payment-modal .pm-close:hover {
+        background: #e2e8f0;
+    }
+
+    .payment-modal .pm-info {
+        padding: 16px 28px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: #FFF5F8;
+        margin: 16px 28px;
+        border-radius: 12px;
+    }
+
+    .payment-modal .pm-info .pmi-label {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--gray);
+    }
+
+    .payment-modal .pm-info .pmi-nominal {
+        font-size: 20px;
+        font-weight: 800;
+        color: var(--primary);
+    }
+
+    .payment-modal .pm-divider {
+        height: 1px;
+        background: var(--border);
+        margin: 0 28px;
+    }
+
+    .payment-modal .pm-payment {
+        padding: 0 28px 24px;
+    }
+
+    .payment-modal .pm-payment .pmp-title {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--gray);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 12px;
+    }
+
+    .payment-modal .pmp-group {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+    }
+
+    .payment-modal .pmp-option {
+        position: relative;
+    }
+
+    .payment-modal .pmp-option input {
+        position: absolute;
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    .payment-modal .pmp-option label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 14px;
+        border-radius: 12px;
+        border: 1.5px solid var(--border);
+        background: #FAFAFA;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--dark);
+        font-family: 'Inter', sans-serif;
+    }
+
+    .payment-modal .pmp-option label:hover {
+        border-color: var(--primary);
+        background: var(--hover);
+    }
+
+    .payment-modal .pmp-option input:checked + label {
+        border-color: var(--primary);
+        background: linear-gradient(135deg, var(--primary), #FF7BA6);
+        color: #fff;
+        box-shadow: 0 4px 12px rgba(255, 79, 135, 0.2);
+    }
+
+    .payment-modal .pm-bayar {
+        margin: 0 28px 24px;
+        width: calc(100% - 56px);
+        padding: 14px;
+        border-radius: 12px;
+        border: none;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-family: 'Inter', sans-serif;
+        background: linear-gradient(135deg, var(--primary), #FF7BA6);
+        color: #fff;
+        box-shadow: 0 4px 16px rgba(255, 79, 135, 0.25);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .payment-modal .pm-bayar:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 24px rgba(255, 79, 135, 0.35);
+    }
+
+    .notif-toast {
+        position: fixed;
+        top: 24px;
+        right: 24px;
+        z-index: 9999;
+        color: #fff;
+        padding: 14px 24px;
+        border-radius: 14px;
+        font-size: 13px;
+        font-weight: 600;
+        font-family: 'Inter', sans-serif;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        transform: translateX(120%);
+        transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        max-width: 380px;
+    }
+
+    .notif-toast.show {
+        transform: translateX(0);
+    }
+
+    .notif-toast .nt-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.15);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        flex-shrink: 0;
+    }
+
+    .notif-toast.success {
+        background: #166534;
+    }
+
+    .notif-toast.error {
+        background: #991B1B;
+    }
+
     @media (max-width: 768px) {
         .member-tier-grid {
             grid-template-columns: 1fr;
@@ -750,6 +963,10 @@
         }
 
         .benefit-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .payment-modal .pmp-group {
             grid-template-columns: 1fr;
         }
     }
@@ -1013,7 +1230,56 @@
         </div>
     </div>
 
+    <div class="payment-modal" id="paymentModal">
+        <div class="pm-card">
+            <div class="pm-header">
+                <h3><i class="fa-solid fa-wallet"></i> Pembayaran Upgrade</h3>
+                <button class="pm-close" onclick="closePaymentModal()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="pm-info">
+                <div class="pmi-label">Total Pembayaran</div>
+                <div class="pmi-nominal" id="pmTotal">Rp 600.000</div>
+            </div>
+            <div class="pm-divider"></div>
+            <div class="pm-payment">
+                <div class="pmp-title"><i class="fa-solid fa-credit-card"></i> Metode Pembayaran</div>
+                <div class="pmp-group">
+                    <div class="pmp-option">
+                        <input type="radio" name="pm_metode" id="pm_transfer" value="Transfer" checked>
+                        <label for="pm_transfer"><i class="fa-solid fa-building-columns"></i> Transfer</label>
+                    </div>
+                    <div class="pmp-option">
+                        <input type="radio" name="pm_metode" id="pm_dana" value="Dana">
+                        <label for="pm_dana"><i class="fa-solid fa-qrcode"></i> Dana</label>
+                    </div>
+                    <div class="pmp-option">
+                        <input type="radio" name="pm_metode" id="pm_gopay" value="GoPay">
+                        <label for="pm_gopay"><i class="fa-solid fa-qrcode"></i> GoPay</label>
+                    </div>
+                    <div class="pmp-option">
+                        <input type="radio" name="pm_metode" id="pm_ovo" value="OVO">
+                        <label for="pm_ovo"><i class="fa-solid fa-qrcode"></i> OVO</label>
+                    </div>
+                    <div class="pmp-option">
+                        <input type="radio" name="pm_metode" id="pm_shopeepay" value="ShopeePay">
+                        <label for="pm_shopeepay"><i class="fa-solid fa-qrcode"></i> ShopeePay</label>
+                    </div>
+                </div>
+            </div>
+            <button class="pm-bayar" onclick="prosesBayarUpgrade()">
+                <i class="fa-solid fa-check-circle"></i> Bayar Sekarang
+            </button>
+        </div>
+    </div>
+
+    <div class="notif-toast success" id="notifToast">
+        <div class="nt-icon"><i class="fa-solid fa-check"></i></div>
+        <span id="notifToastMsg">Berhasil!</span>
+    </div>
+
     <script>
+    var currentUpgradeTier = '';
+
     const tierData = {
         gold: {
             name: 'Gold',
@@ -1022,11 +1288,13 @@
             title: 'Gold Member',
             desc: 'Tingkatkan pengalaman Anda dengan keuntungan eksklusif sebagai Gold Member.',
             price: 'Rp 600.000 <span>/tahun</span>',
+            priceNumeric: 600000,
             benefits: [
                 'Diskon 10% semua layanan',
                 'Gratis konsultasi 2x/bulan',
                 'Prioritas booking',
-            ]
+            ],
+            eligible: true
         },
         platinum: {
             name: 'Platinum',
@@ -1035,12 +1303,14 @@
             title: 'Platinum Member',
             desc: 'Nikmati layanan VIP dengan benefit paling lengkap sebagai Platinum Member.',
             price: 'Rp 900.000 <span>/tahun</span>',
+            priceNumeric: 900000,
             benefits: [
                 'Diskon 20% semua layanan',
                 'Gratis konsultasi 4x/bulan',
                 'Prioritas booking',
                 'Undangan event eksklusif',
-            ]
+            ],
+            eligible: false
         }
     };
 
@@ -1048,6 +1318,8 @@
         var tier = btn.getAttribute('data-tier');
         var data = tierData[tier];
         if (!data) return;
+
+        currentUpgradeTier = tier;
 
         document.getElementById('modalBanner').className = 'um-banner ' + data.bannerClass;
         document.getElementById('modalIcon').innerHTML = data.icon;
@@ -1075,6 +1347,44 @@
     document.getElementById('upgradeModal').addEventListener('click', function(e) {
         if (e.target === this) closeUpgradeModal();
     });
+
+    document.getElementById('modalBtn').addEventListener('click', function() {
+        var data = tierData[currentUpgradeTier];
+        if (!data) return;
+
+        if (data.eligible) {
+            closeUpgradeModal();
+            document.getElementById('pmTotal').textContent = data.price.replace(/<[^>]*>/g, '');
+            document.getElementById('paymentModal').classList.add('show');
+        } else {
+            closeUpgradeModal();
+            showNotif('Anda belum memenuhi syarat untuk upgrade ke Platinum.', 'error', 5000);
+        }
+    });
+
+    function closePaymentModal() {
+        document.getElementById('paymentModal').classList.remove('show');
+    }
+
+    document.getElementById('paymentModal').addEventListener('click', function(e) {
+        if (e.target === this) closePaymentModal();
+    });
+
+    function prosesBayarUpgrade() {
+        var metode = document.querySelector('input[name="pm_metode"]:checked');
+        if (metode) {
+            closePaymentModal();
+            showNotif('Pembayaran via ' + metode.value + ' sedang diproses!', 'success');
+        }
+    }
+
+    function showNotif(msg, type, duration) {
+        var el = document.getElementById('notifToast');
+        el.className = 'notif-toast ' + (type || 'success');
+        document.getElementById('notifToastMsg').textContent = msg;
+        el.classList.add('show');
+        setTimeout(function() { el.classList.remove('show'); }, duration || 3000);
+    }
 
     const now = new Date();
     const options = {

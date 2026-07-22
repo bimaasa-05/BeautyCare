@@ -136,7 +136,7 @@
                             </thead>
                             <tbody class="text-[13px] text-gray-700 divide-y divide-gray-50">
                                 @forelse ($invoices as $i)
-                                    <tr class="hover:bg-pink-50/30 transition-colors">
+                                    <tr class="hover:bg-gray-100 transition-colors duration-150">
                                         <td class="py-3 px-4 text-gray-400 font-medium">{{ $loop->iteration }}</td>
                                         <td class="py-3 px-4 font-semibold text-gray-700">{{ $i->no_invoice }}</td>
                                         <td class="py-3 px-4">
