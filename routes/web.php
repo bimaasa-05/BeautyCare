@@ -24,6 +24,7 @@ use App\Http\Controllers\AdminReservasiController;
 use App\Http\Controllers\AdminTransaksiController;
 use App\Http\Controllers\AdminLaporanController;
 use App\Http\Controllers\AdminDashboardController;
+use App\Http\Controllers\AdminPengaturanController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -152,6 +153,10 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/laporan', [AdminLaporanController::class, 'index'])->name('admin.laporan.index');
         Route::get('/admin/laporan/export-pdf', [AdminLaporanController::class, 'exportPDF'])->name('admin.laporan.export-pdf');
         Route::get('/admin/laporan/export-excel', [AdminLaporanController::class, 'exportExcel'])->name('admin.laporan.export-excel');
+
+        //Route Pengaturan
+        Route::get('/admin/pengaturan', [AdminPengaturanController::class, 'index'])->name('admin.pengaturan.index');
+        Route::post('/admin/pengaturan', [AdminPengaturanController::class, 'update'])->name('admin.pengaturan.update');
     });
 
 
