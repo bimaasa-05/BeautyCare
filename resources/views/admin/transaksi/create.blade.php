@@ -30,12 +30,15 @@
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
+        .float-icon { position: absolute; pointer-events: none; opacity: 0.1; font-size: 80px; }
         .form-input-custom { border: 1.5px solid #ECECEC; border-radius: 12px; padding: 10px 14px; font-size: 13px; width: 100%; transition: all 0.3s ease; font-family: 'Inter', sans-serif; }
         .form-input-custom:focus { border-color: #FF4F87; box-shadow: 0 0 0 3px rgba(255,79,135,0.12); outline: none; }
         .form-input-custom::placeholder { color: #aaa; }
+        .form-input-custom[readonly] { background-color: #f9f9f9; cursor: not-allowed; }
         select.form-input-custom { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 40px; }
         .payment-section { display: none; }
         .payment-section.active { display: block; }
+        .form-label { font-size: 12px; font-weight: 600; color: #555; margin-bottom: 6px; display: block; }
     </style>
 </head>
 
@@ -50,17 +53,21 @@
         <main class="main-content">
             @include('layouts.header2')
 
-            <div class="flex-1 overflow-y-auto p-5">
-                <div class="bg-white rounded-2xl p-6 shadow-[0_2px_16px_rgba(236,72,153,0.07)] border border-pink-50">
+            <div class="flex-1 overflow-y-auto p-8">
+                <div class="bg-white rounded-2xl p-6 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] relative overflow-hidden">
+                    <div class="float-icon" style="top:-15px;right:-10px;">🧾</div>
+
                     <div class="flex justify-between items-center mb-6">
                         <div>
-                            <h3 class="text-base font-bold text-gray-800">
+                            <h3 class="text-[16px] font-bold text-gray-800">
                                 <i class="fa-solid fa-plus-circle text-pink-500 mr-2"></i>Tambah Transaksi
                             </h3>
-                            <p class="text-xs text-gray-400 mt-0.5">Isi detail transaksi baru</p>
+                            <p class="text-[12px] text-gray-400 mt-0.5">
+                                <i class="fa-regular fa-pen-to-square text-pink-300 mr-1"></i>Isi detail transaksi baru
+                            </p>
                         </div>
                         <a href="{{ route('admin.transaksi.index') }}"
-                            class="flex items-center gap-2 border border-pink-100 text-gray-500 text-xs font-medium px-4 py-2 rounded-full hover:bg-gray-50 transition-colors">
+                            class="flex items-center gap-2 border border-gray-200 text-gray-600 text-[12px] font-medium px-4 py-2 rounded-full hover:bg-gray-50 transition-colors">
                             <i class="fa-solid fa-arrow-left"></i> Kembali
                         </a>
                     </div>
@@ -68,250 +75,427 @@
                     <form action="{{ route('admin.transaksi.store') }}" method="POST" enctype="multipart/form-data" onsubmit="stopPaymentTimer()">
                         @csrf
 
+                        <!-- SECTION 1: Pelanggan & Tanggal -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                            <div>
-                                <label class="text-xs font-semibold text-gray-600 mb-1.5 block">
+                            <div class="form-group">
+                                <label class="form-label">
                                     <i class="fa-regular fa-user text-pink-400 mr-1"></i>Pelanggan <span class="text-red-500">*</span>
                                 </label>
-                                <select name="id_pelanggan" class="form-input-custom @error('id_pelanggan') border-red-400 @enderror">
+                                <select name="id_pelanggan" id="id_pelanggan" class="form-input-custom @error('id_pelanggan') border-red-400 @enderror" onchange="onPelangganChange(this)">
                                     <option value="">-- Pilih Pelanggan --</option>
                                     @foreach ($pelanggan as $p)
-                                        <option value="{{ $p->id_pelanggan }}" {{ old('id_pelanggan') == $p->id_pelanggan ? 'selected' : '' }}>
+                                        <option value="{{ $p->id_pelanggan }}"
+                                            data-member="{{ $p->id_member ?? '' }}"
+                                            data-tingkat="{{ $p->membership->tingkat ?? '' }}"
+                                            data-diskon="{{ $p->membership->diskon ?? 0 }}"
+                                            {{ old('id_pelanggan') == $p->id_pelanggan ? 'selected' : '' }}>
                                             {{ $p->nm_pelanggan }} ({{ $p->no_hp ?? '-' }})
                                         </option>
                                     @endforeach
                                 </select>
-                                @error('id_pelanggan') <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p> @enderror
+                                @error('id_pelanggan')
+                                    <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
+                                @enderror
                             </div>
 
-                            <div>
-                                <label class="text-xs font-semibold text-gray-600 mb-1.5 block">
+                            <div class="form-group">
+                                <label class="form-label">
                                     <i class="fa-regular fa-calendar text-pink-400 mr-1"></i>Tanggal <span class="text-red-500">*</span>
                                 </label>
-                                <input type="date" name="tanggal" class="form-input-custom @error('tanggal') border-red-400 @enderror" value="{{ old('tanggal', date('Y-m-d')) }}">
-                                @error('tanggal') <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p> @enderror
-                            </div>
-
-                            <div>
-                                <label class="text-xs font-semibold text-gray-600 mb-1.5 block">
-                                    <i class="fa-regular fa-money-bill-1 text-pink-400 mr-1"></i>Subtotal <span class="text-red-500">*</span>
-                                </label>
-                                <input type="number" name="subtotal" id="subtotal" class="form-input-custom @error('subtotal') border-red-400 @enderror" placeholder="0" value="{{ old('subtotal', 0) }}" min="0" oninput="hitungTotal()">
-                                @error('subtotal') <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p> @enderror
-                            </div>
-
-                            <div>
-                                <label class="text-xs font-semibold text-gray-600 mb-1.5 block">
-                                    <i class="fa-regular fa-money-bill-wave text-pink-400 mr-1"></i>Diskon
-                                </label>
-                                <input type="number" name="diskon" id="diskon" class="form-input-custom @error('diskon') border-red-400 @enderror" placeholder="0" value="{{ old('diskon', 0) }}" min="0" oninput="hitungTotal()">
-                                @error('diskon') <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p> @enderror
-                            </div>
-
-                            <div>
-                                <label class="text-xs font-semibold text-gray-600 mb-1.5 block">
-                                    <i class="fa-regular fa-percent text-pink-400 mr-1"></i>Pajak
-                                </label>
-                                <input type="number" name="pajak" id="pajak" class="form-input-custom @error('pajak') border-red-400 @enderror" placeholder="0" value="{{ old('pajak', 0) }}" min="0" oninput="hitungTotal()">
-                                @error('pajak') <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p> @enderror
-                            </div>
-
-                            <div>
-                                <label class="text-xs font-semibold text-gray-600 mb-1.5 block">
-                                    <i class="fa-regular fa-coins text-pink-400 mr-1"></i>Total <span class="text-red-500">*</span>
-                                </label>
-                                <input type="number" name="total" id="total" class="form-input-custom @error('total') border-red-400 @enderror bg-pink-50/50 font-bold" placeholder="0" value="{{ old('total', 0) }}" min="0" readonly>
-                                @error('total') <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p> @enderror
-                            </div>
-
-                            <div class="md:col-span-2">
-                                <label class="text-xs font-semibold text-gray-600 mb-1.5 block">
-                                    <i class="fa-regular fa-note-sticky text-pink-400 mr-1"></i>Catatan
-                                </label>
-                                <textarea name="catatan" rows="2" class="form-input-custom @error('catatan') border-red-400 @enderror" placeholder="Catatan tambahan (opsional)">{{ old('catatan') }}</textarea>
-                                @error('catatan') <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p> @enderror
+                                <input type="date" name="tanggal"
+                                    class="form-input-custom @error('tanggal') border-red-400 @enderror"
+                                    value="{{ old('tanggal', date('Y-m-d')) }}">
+                                @error('tanggal')
+                                    <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
+                                @enderror
                             </div>
                         </div>
 
-                        <div class="mt-6 pt-4 border-t border-pink-50">
-                            <h4 class="text-sm font-bold text-gray-700 mb-1">
+                        <!-- SECTION 2: Daftar Item -->
+                        <div class="mt-6 pt-4 border-t border-gray-100">
+                            <h4 class="text-[14px] font-bold text-gray-700 mb-1">
                                 <i class="fa-regular fa-cart-shopping text-pink-500 mr-2"></i>Daftar Item
                             </h4>
-                            <p class="text-xs text-gray-400 mb-4">Pilih layanan atau produk yang dibeli pelanggan</p>
+                            <p class="text-[12px] text-gray-400 mb-4">Pilih layanan atau produk yang dibeli pelanggan</p>
 
                             <div id="item-container"></div>
 
                             <button type="button" onclick="addItemRow()"
-                                class="flex items-center gap-2 text-pink-500 text-xs font-semibold px-4 py-2 rounded-full hover:bg-pink-50 transition-colors border border-dashed border-pink-200 mt-3">
+                                class="flex items-center gap-2 text-pink-500 text-[12px] font-semibold px-4 py-2 rounded-full hover:bg-pink-50 transition-colors border border-dashed border-pink-200 mt-3">
                                 <i class="fa-solid fa-plus"></i> Tambah Item
                             </button>
+
+                            <!-- Info Membership -->
+                            <div id="member-info" class="mt-3 hidden">
+                                <div class="flex items-center gap-2 text-[12px] px-4 py-2 rounded-lg bg-purple-50 text-purple-700 border border-purple-100">
+                                    <i class="fa-solid fa-crown"></i>
+                                    <span id="member-info-text"></span>
+                                </div>
+                            </div>
                         </div>
 
-                        <div class="mt-6 pt-4 border-t border-pink-50">
-                            <h4 class="text-sm font-bold text-gray-700 mb-1">
+                        <!-- SECTION 3: Metode Pembayaran -->
+                        <div class="mt-6 pt-4 border-t border-gray-100">
+                            <h4 class="text-[14px] font-bold text-gray-700 mb-1">
                                 <i class="fa-regular fa-credit-card text-pink-500 mr-2"></i>Metode Pembayaran
                             </h4>
-                            <p class="text-xs text-gray-400 mb-4">Pilih metode pembayaran yang tersedia</p>
+                            <p class="text-[12px] text-gray-400 mb-4">Pilih metode pembayaran yang tersedia</p>
 
                             <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
-                                <label class="cursor-pointer">
+                                <label class="payment-option cursor-pointer">
                                     <input type="radio" name="metode_byr" value="Tunai" class="hidden peer"
                                         {{ old('metode_byr') == 'Tunai' ? 'checked' : '' }}
                                         onchange="togglePaymentMethod('Tunai')">
                                     <div class="p-4 rounded-xl border-2 border-gray-100 peer-checked:border-pink-400 peer-checked:bg-pink-50/50 hover:border-pink-200 transition-all text-center">
                                         <div class="text-2xl mb-1">💵</div>
-                                        <div class="text-xs font-semibold text-gray-600 peer-checked:text-pink-500">Tunai</div>
+                                        <div class="text-[12px] font-semibold text-gray-600 peer-checked:text-pink-500">Tunai</div>
                                     </div>
                                 </label>
-                                <label class="cursor-pointer">
+                                <label class="payment-option cursor-pointer">
                                     <input type="radio" name="metode_byr" value="Transfer" class="hidden peer"
                                         {{ old('metode_byr') == 'Transfer' ? 'checked' : '' }}
                                         onchange="togglePaymentMethod('Transfer')">
                                     <div class="p-4 rounded-xl border-2 border-gray-100 peer-checked:border-pink-400 peer-checked:bg-pink-50/50 hover:border-pink-200 transition-all text-center">
                                         <div class="text-2xl mb-1">🏦</div>
-                                        <div class="text-xs font-semibold text-gray-600 peer-checked:text-pink-500">Transfer</div>
+                                        <div class="text-[12px] font-semibold text-gray-600 peer-checked:text-pink-500">Transfer</div>
                                     </div>
                                 </label>
-                                <label class="cursor-pointer">
+                                <label class="payment-option cursor-pointer">
                                     <input type="radio" name="metode_byr" value="Debit" class="hidden peer"
                                         {{ old('metode_byr') == 'Debit' ? 'checked' : '' }}
                                         onchange="togglePaymentMethod('Debit')">
                                     <div class="p-4 rounded-xl border-2 border-gray-100 peer-checked:border-pink-400 peer-checked:bg-pink-50/50 hover:border-pink-200 transition-all text-center">
                                         <div class="text-2xl mb-1">💳</div>
-                                        <div class="text-xs font-semibold text-gray-600 peer-checked:text-pink-500">Debit</div>
+                                        <div class="text-[12px] font-semibold text-gray-600 peer-checked:text-pink-500">Debit</div>
                                     </div>
                                 </label>
-                                <label class="cursor-pointer">
+                                <label class="payment-option cursor-pointer">
                                     <input type="radio" name="metode_byr" value="E-Wallet" class="hidden peer"
                                         {{ old('metode_byr') == 'E-Wallet' ? 'checked' : '' }}
                                         onchange="togglePaymentMethod('E-Wallet')">
                                     <div class="p-4 rounded-xl border-2 border-gray-100 peer-checked:border-pink-400 peer-checked:bg-pink-50/50 hover:border-pink-200 transition-all text-center">
                                         <div class="text-2xl mb-1"><i class="fa-solid fa-wallet"></i></div>
-                                        <div class="text-xs font-semibold text-gray-600 peer-checked:text-pink-500">E-Wallet</div>
+                                        <div class="text-[12px] font-semibold text-gray-600 peer-checked:text-pink-500">E-Wallet</div>
                                     </div>
                                 </label>
                             </div>
 
-                            @error('metode_byr') <p class="text-red-500 text-[11px] mt-1 mb-3">{{ $message }}</p> @enderror
+                            @error('metode_byr')
+                                <p class="text-red-500 text-[11px] mt-1 mb-3">{{ $message }}</p>
+                            @enderror
 
+                            <!-- Payment: Tunai -->
                             <div id="payment-section-tunai" class="payment-section">
                                 <div class="bg-green-50/50 rounded-2xl p-5 border border-green-100/50">
                                     <div class="flex items-center gap-2 mb-4">
-                                        <div class="w-8 h-8 rounded-full bg-green-100 text-green-500 flex items-center justify-center"><i class="fa-solid fa-check text-xs"></i></div>
-                                        <div><h5 class="text-xs font-bold text-green-700">Pembayaran Tunai</h5><p class="text-[11px] text-green-500">Pembayaran akan langsung selesai</p></div>
-                                    </div>
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div>
-                                            <label class="text-xs font-semibold text-gray-600 mb-1.5 block">Jumlah Dibayar <span class="text-red-500">*</span></label>
-                                            <input type="number" name="dibayar" id="dibayar" class="form-input-custom" placeholder="0" value="{{ old('dibayar', 0) }}" min="0" oninput="hitungKembali()">
+                                        <div class="w-8 h-8 rounded-full bg-green-100 text-green-500 flex items-center justify-center">
+                                            <i class="fa-solid fa-check text-xs"></i>
                                         </div>
                                         <div>
-                                            <label class="text-xs font-semibold text-gray-600 mb-1.5 block">Kembali</label>
-                                            <input type="number" name="kembali" id="kembali" class="form-input-custom bg-green-50/50 font-bold text-green-700" placeholder="0" value="{{ old('kembali', 0) }}" min="0" readonly>
-                                            <div id="pecahan-tunai" class="mt-2 text-[11px] text-green-600 font-medium"></div>
+                                            <h5 class="text-[13px] font-bold text-green-700">Pembayaran Tunai</h5>
+                                            <p class="text-[11px] text-green-500">Pembayaran akan langsung selesai</p>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
+                            <!-- Payment: Transfer & Debit (shared fields) -->
+                            <div id="payment-section-bank" class="payment-section">
+                                <div class="bg-amber-50/50 rounded-2xl p-5 border border-amber-100/50">
+                                    <div class="flex items-center gap-2 mb-4">
+                                        <div class="w-8 h-8 rounded-full bg-amber-100 text-amber-500 flex items-center justify-center">
+                                            <i class="fa-solid fa-clock text-xs"></i>
+                                        </div>
+                                        <div>
+                                            <h5 class="text-[13px] font-bold text-amber-700">Transfer / Debit</h5>
+                                            <p class="text-[11px] text-amber-500">Lampirkan bukti pembayaran untuk verifikasi</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div class="form-group">
+                                            <label class="form-label">
+                                                <i class="fa-regular fa-building-columns text-pink-400 mr-1"></i>Bank Asal
+                                            </label>
+                                            <select name="bank_asal" id="bank_asal"
+                                                class="form-input-custom @error('bank_asal') border-red-400 @enderror">
+                                                <option value="">-- Pilih Bank Asal --</option>
+                                                <option value="BRI" {{ old('bank_asal') == 'BRI' ? 'selected' : '' }}>BRI</option>
+                                                <option value="BCA" {{ old('bank_asal') == 'BCA' ? 'selected' : '' }}>BCA</option>
+                                                <option value="Mandiri" {{ old('bank_asal') == 'Mandiri' ? 'selected' : '' }}>Mandiri</option>
+                                                <option value="BNI" {{ old('bank_asal') == 'BNI' ? 'selected' : '' }}>BNI</option>
+                                                <option value="BSI" {{ old('bank_asal') == 'BSI' ? 'selected' : '' }}>BSI</option>
+                                                <option value="Lainnya" {{ old('bank_asal') == 'Lainnya' ? 'selected' : '' }}>Lainnya</option>
+                                            </select>
+                                            @error('bank_asal')
+                                                <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="form-label">
+                                                <i class="fa-regular fa-arrow-right text-pink-400 mr-1"></i>Dari Rekening
+                                            </label>
+                                            <input type="text" name="dari_rekening"
+                                                class="form-input-custom @error('dari_rekening') border-red-400 @enderror"
+                                                placeholder="No. rekening pengirim" value="{{ old('dari_rekening') }}">
+                                            @error('dari_rekening')
+                                                <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="form-label">
+                                                <i class="fa-regular fa-building-columns text-pink-400 mr-1"></i>Bank Tujuan <span class="text-red-500">*</span>
+                                            </label>
+                                            <select name="bank_tujuan" id="bank_tujuan"
+                                                class="form-input-custom @error('bank_tujuan') border-red-400 @enderror"
+                                                onchange="onBankTujuanChange(this)">
+                                                <option value="">-- Pilih Bank Tujuan --</option>
+                                                @foreach ($bankTujuan as $bank => $rek)
+                                                    <option value="{{ $bank }}" data-rekening="{{ $rek }}"
+                                                        {{ old('bank_tujuan') == $bank ? 'selected' : '' }}>
+                                                        {{ $bank }}
+                                                    </option>
+                                                @endforeach
+                                                <option value="Lainnya" data-rekening="">Lainnya</option>
+                                            </select>
+                                            @error('bank_tujuan')
+                                                <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="form-label">
+                                                <i class="fa-regular fa-arrow-left text-pink-400 mr-1"></i>Ke Rekening <span class="text-red-500">*</span>
+                                            </label>
+                                            <input type="text" name="ke_rekening" id="ke_rekening"
+                                                class="form-input-custom @error('ke_rekening') border-red-400 @enderror"
+                                                placeholder="No. rekening tujuan" value="{{ old('ke_rekening') }}" readonly>
+                                            @error('ke_rekening')
+                                                <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="form-label">
+                                                <i class="fa-regular fa-user text-pink-400 mr-1"></i>Atas Nama
+                                            </label>
+                                            <input type="text" name="atas_nama"
+                                                class="form-input-custom @error('atas_nama') border-red-400 @enderror"
+                                                placeholder="Nama pemilik rekening" value="{{ old('atas_nama') }}">
+                                            @error('atas_nama')
+                                                <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="form-label">
+                                                <i class="fa-regular fa-hashtag text-pink-400 mr-1"></i>No. Referensi
+                                            </label>
+                                            <input type="text" name="no_referensi" id="no_referensi"
+                                                class="form-input-custom @error('no_referensi') border-red-400 @enderror"
+                                                placeholder="Otomatis" value="{{ old('no_referensi') }}" readonly>
+                                            @error('no_referensi')
+                                                <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="form-label">
+                                                <i class="fa-regular fa-image text-pink-400 mr-1"></i>Upload Bukti Pembayaran
+                                            </label>
+                                            <input type="file" name="bukti_bayar"
+                                                class="form-input-custom @error('bukti_bayar') border-red-400 @enderror"
+                                                accept="image/*">
+                                            @error('bukti_bayar')
+                                                <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
+                                            @enderror
+                                            <p class="text-[11px] text-gray-400 mt-1">Format: JPG, PNG. Maks: 2MB</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Payment: E-Wallet -->
                             <div id="payment-section-ewallet" class="payment-section">
                                 <div class="bg-gradient-to-br from-teal-50/80 to-emerald-50/80 rounded-2xl p-5 border border-teal-100/50">
                                     <div class="flex items-center gap-2 mb-4">
-                                        <div class="w-8 h-8 rounded-full bg-teal-100 text-teal-500 flex items-center justify-center"><i class="fa-solid fa-wallet text-xs"></i></div>
-                                        <div><h5 class="text-xs font-bold text-teal-700">E-Wallet</h5><p class="text-[11px] text-teal-500">Pembayaran akan langsung selesai</p></div>
-                                        <div class="ml-auto"><div id="timer-ewallet" class="text-xs font-mono font-bold text-gray-500 hidden">⏱️ 01:00</div></div>
+                                        <div class="w-8 h-8 rounded-full bg-teal-100 text-teal-500 flex items-center justify-center">
+                                            <i class="fa-solid fa-wallet text-xs"></i>
+                                        </div>
+                                        <div>
+                                            <h5 class="text-[13px] font-bold text-teal-700">E-Wallet</h5>
+                                            <p class="text-[11px] text-teal-500">Pembayaran akan langsung selesai</p>
+                                        </div>
+                                        <div class="ml-auto">
+                                            <div id="timer-ewallet" class="text-[13px] font-mono font-bold text-gray-500 hidden">
+                                                ⏱️ 01:00
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div>
-                                            <label class="text-xs font-semibold text-gray-600 mb-1.5 block">Pilih E-Wallet <span class="text-red-500">*</span></label>
-                                            <select name="bank_asal" class="form-input-custom">
+                                        <div class="form-group">
+                                            <label class="form-label">
+                                                <i class="fa-regular fa-wallet text-pink-400 mr-1"></i>Pilih E-Wallet <span class="text-red-500">*</span>
+                                            </label>
+                                            <select name="ewallet_type" id="ewallet_type"
+                                                class="form-input-custom @error('ewallet_type') border-red-400 @enderror">
                                                 <option value="">-- Pilih E-Wallet --</option>
-                                                <option value="Dana">Dana</option>
-                                                <option value="GoPay">GoPay</option>
-                                                <option value="OVO">OVO</option>
-                                                <option value="ShopeePay">ShopeePay</option>
+                                                <option value="Dana" {{ old('ewallet_type') == 'Dana' ? 'selected' : '' }}>Dana</option>
+                                                <option value="GoPay" {{ old('ewallet_type') == 'GoPay' ? 'selected' : '' }}>GoPay</option>
+                                                <option value="OVO" {{ old('ewallet_type') == 'OVO' ? 'selected' : '' }}>OVO</option>
+                                                <option value="ShopeePay" {{ old('ewallet_type') == 'ShopeePay' ? 'selected' : '' }}>ShopeePay</option>
                                             </select>
+                                            @error('ewallet_type')
+                                                <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
+                                            @enderror
                                         </div>
-                                        <div>
-                                            <label class="text-xs font-semibold text-gray-600 mb-1.5 block">Jumlah Dibayar <span class="text-red-500">*</span></label>
-                                            <input type="number" name="dibayar" id="dibayar_ewallet" class="form-input-custom" placeholder="0" value="{{ old('dibayar', 0) }}" min="0" oninput="hitungKembaliEwallet()">
+                                        <div class="form-group">
+                                            <label class="form-label">
+                                                <i class="fa-regular fa-user text-pink-400 mr-1"></i>Atas Nama
+                                            </label>
+                                            <input type="text" name="atas_nama"
+                                                class="form-input-custom @error('atas_nama') border-red-400 @enderror"
+                                                placeholder="Nama pengirim" value="{{ old('atas_nama') }}">
+                                            @error('atas_nama')
+                                                <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
+                                            @enderror
                                         </div>
-                                        <div>
-                                            <label class="text-xs font-semibold text-gray-600 mb-1.5 block">Kembali</label>
-                                            <input type="number" name="kembali" id="kembali_ewallet" class="form-input-custom bg-green-50/50 font-bold text-green-700" placeholder="0" value="{{ old('kembali', 0) }}" min="0" readonly>
-                                        </div>
-                                        <div>
-                                            <label class="text-xs font-semibold text-gray-600 mb-1.5 block">Atas Nama</label>
-                                            <input type="text" name="atas_nama" class="form-input-custom" placeholder="Nama pengirim" value="{{ old('atas_nama') }}">
-                                        </div>
-                                        <div>
-                                            <label class="text-xs font-semibold text-gray-600 mb-1.5 block">Upload Bukti Bayar</label>
-                                            <input type="file" name="bukti_bayar" class="form-input-custom" accept="image/*">
+                                        <div class="form-group">
+                                            <label class="form-label">
+                                                <i class="fa-regular fa-image text-pink-400 mr-1"></i>Upload Bukti Bayar
+                                            </label>
+                                            <input type="file" name="bukti_bayar"
+                                                class="form-input-custom @error('bukti_bayar') border-red-400 @enderror"
+                                                accept="image/*">
+                                            @error('bukti_bayar')
+                                                <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
+                                            @enderror
                                             <p class="text-[11px] text-gray-400 mt-1">Screenshot bukti pembayaran E-Wallet</p>
                                         </div>
                                     </div>
                                 </div>
                             </div>
+                        </div>
 
-                            <div id="payment-section-bank" class="payment-section">
-                                <div class="bg-amber-50/50 rounded-2xl p-5 border border-amber-100/50">
-                                    <div class="flex items-center gap-2 mb-4">
-                                        <div class="w-8 h-8 rounded-full bg-amber-100 text-amber-500 flex items-center justify-center"><i class="fa-solid fa-clock text-xs"></i></div>
-                                        <div><h5 class="text-xs font-bold text-amber-700">Transfer / Debit</h5><p class="text-[11px] text-amber-500">Lampirkan bukti pembayaran untuk verifikasi</p></div>
+                        <!-- SECTION 4: Ringkasan -->
+                        <div class="mt-6 pt-4 border-t border-gray-100">
+                            <h4 class="text-[14px] font-bold text-gray-700 mb-1">
+                                <i class="fa-regular fa-calculator text-pink-500 mr-2"></i>Ringkasan
+                            </h4>
+                            <p class="text-[12px] text-gray-400 mb-4">Total pembayaran dan perhitungan diskon</p>
+
+                            <div class="bg-gray-50/70 rounded-2xl p-5 border border-gray-100">
+                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                    <!-- Total -->
+                                    <div class="form-group">
+                                        <label class="form-label">
+                                            <i class="fa-regular fa-coins text-pink-400 mr-1"></i>Total <span class="text-red-500">*</span>
+                                        </label>
+                                        <div class="relative">
+                                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-[13px] font-semibold text-gray-500">Rp</span>
+                                            <input type="text" name="total_display" id="total_display"
+                                                class="form-input-custom !pl-8 bg-pink-50/50 font-bold @error('total') border-red-400 @enderror"
+                                                placeholder="0" readonly>
+                                            <input type="hidden" name="total" id="total" value="0">
+                                        </div>
+                                        @error('total')
+                                            <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
+                                        @enderror
                                     </div>
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div>
-                                            <label class="text-xs font-semibold text-gray-600 mb-1.5 block">Jumlah Dibayar <span class="text-red-500">*</span></label>
-                                            <input type="number" name="dibayar" id="dibayar4" class="form-input-custom" placeholder="0" value="{{ old('dibayar', 0) }}" min="0" oninput="hitungKembali4()">
+
+                                    <!-- Diskon Membership -->
+                                    <div class="form-group">
+                                        <label class="form-label">
+                                            <i class="fa-regular fa-money-bill-wave text-pink-400 mr-1"></i>Diskon Membership
+                                        </label>
+                                        <div class="relative">
+                                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-[13px] font-semibold text-gray-500">Rp</span>
+                                            <input type="text" name="diskon_display" id="diskon_display"
+                                                class="form-input-custom !pl-8"
+                                                placeholder="0" readonly>
+                                            <input type="hidden" name="diskon" id="diskon" value="0">
                                         </div>
-                                        <div>
-                                            <label class="text-xs font-semibold text-gray-600 mb-1.5 block">Kembali</label>
-                                            <input type="number" name="kembali" id="kembali4" class="form-input-custom bg-green-50/50 font-bold text-green-700" placeholder="0" value="{{ old('kembali', 0) }}" min="0" readonly>
+                                    </div>
+
+                                    <!-- Pajak -->
+                                    <div class="form-group">
+                                        <label class="form-label">
+                                            <i class="fa-regular fa-percent text-pink-400 mr-1"></i>Pajak
+                                        </label>
+                                        <div class="relative">
+                                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-[13px] font-semibold text-gray-500">Rp</span>
+                                            <input type="text" name="pajak_display" id="pajak_display"
+                                                class="form-input-custom !pl-8 @error('pajak') border-red-400 @enderror"
+                                                placeholder="0" value="{{ old('pajak', 0) }}" oninput="onPajakChange(this)">
+                                            <input type="hidden" name="pajak" id="pajak" value="{{ old('pajak', 0) }}">
                                         </div>
-                                        <div>
-                                            <label class="text-xs font-semibold text-gray-600 mb-1.5 block">Upload Bukti Pembayaran</label>
-                                            <input type="file" name="bukti_bayar" class="form-input-custom" accept="image/*">
-                                            <p class="text-[11px] text-gray-400 mt-1">Format: JPG, PNG. Maks: 2MB</p>
+                                        @error('pajak')
+                                            <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+
+                                    <!-- Dibayar -->
+                                    <div class="form-group">
+                                        <label class="form-label">
+                                            <i class="fa-regular fa-money-bill-1 text-pink-400 mr-1"></i>Dibayar <span class="text-red-500">*</span>
+                                        </label>
+                                        <div class="relative">
+                                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-[13px] font-semibold text-gray-500">Rp</span>
+                                            <input type="text" name="dibayar_display" id="dibayar_display"
+                                                class="form-input-custom !pl-8 @error('dibayar') border-red-400 @enderror"
+                                                placeholder="0" value="{{ old('dibayar', 0) }}" oninput="onDibayarChange(this)">
+                                            <input type="hidden" name="dibayar" id="dibayar" value="{{ old('dibayar', 0) }}">
                                         </div>
-                                        <div>
-                                            <label class="text-xs font-semibold text-gray-600 mb-1.5 block">Atas Nama</label>
-                                            <input type="text" name="atas_nama" class="form-input-custom" placeholder="Nama pemilik rekening" value="{{ old('atas_nama') }}">
-                                        </div>
-                                        <div>
-                                            <label class="text-xs font-semibold text-gray-600 mb-1.5 block">Bank Asal</label>
-                                            <input type="text" name="bank_asal" class="form-input-custom" placeholder="Bank pengirim" value="{{ old('bank_asal') }}">
-                                        </div>
-                                        <div>
-                                            <label class="text-xs font-semibold text-gray-600 mb-1.5 block">Dari Rekening</label>
-                                            <input type="text" name="dari_rekening" class="form-input-custom" placeholder="No. rekening pengirim" value="{{ old('dari_rekening') }}">
-                                        </div>
-                                        <div>
-                                            <label class="text-xs font-semibold text-gray-600 mb-1.5 block">Bank Tujuan</label>
-                                            <input type="text" name="bank_tujuan" class="form-input-custom" placeholder="Bank tujuan" value="{{ old('bank_tujuan') }}">
-                                        </div>
-                                        <div>
-                                            <label class="text-xs font-semibold text-gray-600 mb-1.5 block">Ke Rekening</label>
-                                            <input type="text" name="ke_rekening" class="form-input-custom" placeholder="No. rekening tujuan" value="{{ old('ke_rekening') }}">
-                                        </div>
-                                        <div>
-                                            <label class="text-xs font-semibold text-gray-600 mb-1.5 block">No. Referensi</label>
-                                            <input type="text" name="no_referensi" class="form-input-custom" placeholder="Kode referensi pembayaran" value="{{ old('no_referensi') }}">
+                                        @error('dibayar')
+                                            <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+
+                                    <!-- Kembali -->
+                                    <div class="form-group">
+                                        <label class="form-label">
+                                            <i class="fa-regular fa-coins text-pink-400 mr-1"></i>Kembali
+                                        </label>
+                                        <div class="relative">
+                                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-[13px] font-semibold text-gray-500">Rp</span>
+                                            <input type="text" name="kembali_display" id="kembali_display"
+                                                class="form-input-custom !pl-8 bg-green-50/50 font-bold text-green-700"
+                                                placeholder="0" readonly>
+                                            <input type="hidden" name="kembali" id="kembali" value="0">
                                         </div>
                                     </div>
                                 </div>
+
+                                <!-- Subtotal info (hidden, just for calculation) -->
+                                <input type="hidden" name="subtotal" id="subtotal" value="0">
                             </div>
                         </div>
 
-                        <div class="flex items-center gap-3 mt-6 pt-4 border-t border-pink-50">
-                            <button type="submit" id="btn-simpan-transaksi"
-                                class="flex items-center gap-2 bg-gradient-to-r from-[#EC4899] to-[#BE185D] text-white text-xs font-semibold px-6 py-2.5 rounded-full hover:shadow-md transition-all shadow-sm">
-                                <i class="fa-regular fa-circle-check"></i> Bayar & Simpan
-                            </button>
-                            <a href="{{ route('admin.transaksi.index') }}"
-                                class="flex items-center gap-2 border border-pink-100 text-gray-500 text-xs font-medium px-6 py-2.5 rounded-full hover:bg-gray-50 transition-colors">
-                                Batal
-                            </a>
+                        <!-- SECTION 5: Catatan & Submit -->
+                        <div class="mt-6 pt-4 border-t border-gray-100">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                <div class="form-group">
+                                    <label class="form-label">
+                                        <i class="fa-regular fa-note-sticky text-pink-400 mr-1"></i>Catatan
+                                    </label>
+                                    <textarea name="catatan" rows="3" class="form-input-custom @error('catatan') border-red-400 @enderror"
+                                        placeholder="Catatan tambahan (opsional)">{{ old('catatan') }}</textarea>
+                                    @error('catatan')
+                                        <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="flex items-center gap-3 mt-4">
+                                <button type="submit" id="btn-simpan-transaksi"
+                                    class="flex items-center gap-2 bg-gradient-to-r from-[#EC4899] to-[#BE185D] text-white text-[13px] font-semibold px-6 py-2.5 rounded-full hover:shadow-md transition-all shadow-sm">
+                                    <i class="fa-regular fa-circle-check"></i> Bayar & Simpan
+                                </button>
+                            </div>
                         </div>
+
                     </form>
                 </div>
             </div>
@@ -319,121 +503,70 @@
     </div>
 
     <script>
-        function hitungTotal() {
-            const subtotal = parseFloat(document.getElementById('subtotal').value) || 0;
-            const diskon = parseFloat(document.getElementById('diskon').value) || 0;
-            const pajak = parseFloat(document.getElementById('pajak').value) || 0;
-            const total = subtotal - diskon + pajak;
-            document.getElementById('total').value = total < 0 ? 0 : total;
-            if (document.getElementById('dibayar')) hitungKembali();
-            if (document.getElementById('dibayar4')) hitungKembali4();
-            if (document.getElementById('dibayar_ewallet')) hitungKembaliEwallet();
-        }
-
-        function hitungPecahan(nominal) {
-            const pecahan = [100000, 50000, 20000, 10000, 5000, 2000, 1000, 500];
-            let sisa = nominal;
-            const hasil = [];
-            pecahan.forEach(p => { const j = Math.floor(sisa / p); if (j > 0) { hasil.push(j + 'xRp ' + p.toLocaleString('id-ID')); sisa -= j * p; } });
-            return hasil;
-        }
-
-        function tampilkanPecahan(nominal, targetId) {
-            const el = document.getElementById(targetId);
-            if (!el) return;
-            if (nominal <= 0) { el.innerHTML = ''; return; }
-            el.innerHTML = '<span class="text-gray-400">Pecahan: </span>' + hitungPecahan(nominal).join(' + ');
-        }
-
-        function hitungKembali() {
-            const total = parseFloat(document.getElementById('total').value) || 0;
-            const dibayar = parseFloat(document.getElementById('dibayar').value) || 0;
-            const kembali = Math.max(0, dibayar - total);
-            document.getElementById('kembali').value = kembali;
-            tampilkanPecahan(kembali, 'pecahan-tunai');
-        }
-
-        function hitungKembaliEwallet() {
-            const total = parseFloat(document.getElementById('total').value) || 0;
-            const dibayar = parseFloat(document.getElementById('dibayar_ewallet').value) || 0;
-            const kembali = Math.max(0, dibayar - total);
-            document.getElementById('kembali_ewallet').value = kembali;
-            document.getElementById('kembali').value = kembali;
-        }
-
-        function hitungKembali4() {
-            const total = parseFloat(document.getElementById('total').value) || 0;
-            const dibayar = parseFloat(document.getElementById('dibayar4').value) || 0;
-            const kembali = Math.max(0, dibayar - total);
-            document.getElementById('kembali4').value = kembali;
-            document.getElementById('kembali').value = kembali;
-        }
-
-        let paymentTimer = null;
-        let timerSeconds = 60;
-
-        function startPaymentTimer(displayId) {
-            stopPaymentTimer();
-            timerSeconds = 60;
-            const el = document.getElementById(displayId);
-            if (!el) return;
-            el.classList.remove('hidden');
-            el.textContent = '⏱️ 01:00';
-            paymentTimer = setInterval(() => {
-                timerSeconds--;
-                const m = Math.floor(timerSeconds / 60);
-                const d = timerSeconds % 60;
-                el.textContent = '⏱️ ' + String(m).padStart(2,'0') + ':' + String(d).padStart(2,'0');
-                el.style.color = timerSeconds <= 10 ? '#EF4444' : '#666666';
-                if (timerSeconds <= 0) { clearInterval(paymentTimer); paymentTimer = null; timerSeconds = 60; startPaymentTimer(displayId); }
-            }, 1000);
-        }
-
-        function stopPaymentTimer() {
-            if (paymentTimer) { clearInterval(paymentTimer); paymentTimer = null; }
-            document.querySelectorAll('[id^="timer-"]').forEach(el => { el.classList.add('hidden'); el.textContent = '⏱️ 01:00'; el.style.color = '#666666'; });
-        }
-
-        function togglePaymentMethod(method) {
-            stopPaymentTimer();
-            document.querySelectorAll('.payment-section').forEach(el => el.classList.remove('active'));
-            const btn = document.getElementById('btn-simpan-transaksi');
-            if (method === 'Tunai') {
-                document.getElementById('payment-section-tunai').classList.add('active');
-                if (btn) btn.innerHTML = '<i class="fa-regular fa-circle-check"></i> Bayar & Simpan';
-            } else if (method === 'E-Wallet') {
-                document.getElementById('payment-section-ewallet').classList.add('active');
-                if (btn) btn.innerHTML = '<i class="fa-regular fa-circle-check"></i> Bayar & Simpan';
-                startPaymentTimer('timer-ewallet');
-            } else {
-                document.getElementById('payment-section-bank').classList.add('active');
-                if (btn) btn.innerHTML = '<i class="fa-regular fa-circle-check"></i> Bayar & Simpan';
-            }
-        }
-
         const layananData = @json($layanan);
         const produkData = @json($produk);
+        const bankTujuanData = @json($bankTujuan);
         let itemRowIndex = 0;
 
+        // ========== Format Rupiah ==========
+        function formatRp(value) {
+            return new Intl.NumberFormat('id-ID').format(Math.round(value));
+        }
+
+        function parseRp(str) {
+            return parseFloat(str.replace(/[^0-9,-]/g, '').replace(',', '.')) || 0;
+        }
+
+        // ========== Pelanggan & Membership ==========
+        function onPelangganChange(select) {
+            const opt = select.options[select.selectedIndex];
+            const tingkat = opt ? opt.dataset.tingkat : '';
+            const diskonPct = opt ? parseFloat(opt.dataset.diskon) || 0 : 0;
+            const member = opt ? opt.dataset.member : '';
+
+            const infoEl = document.getElementById('member-info');
+            const infoText = document.getElementById('member-info-text');
+
+            if (member && tingkat) {
+                infoEl.classList.remove('hidden');
+                infoText.textContent = 'Member ' + tingkat + ' — Diskon ' + diskonPct + '%';
+            } else {
+                infoEl.classList.add('hidden');
+                infoText.textContent = '';
+            }
+
+            recalculateSubtotal();
+        }
+
+        // ========== Item Functions ==========
         function getItemTemplate(index) {
-            return `<div class="item-row flex items-center gap-3 mb-3 p-3 bg-gray-50 rounded-xl border border-gray-100" data-index="${index}">
+            return `
+            <div class="item-row flex items-center gap-3 mb-3 p-3 bg-gray-50 rounded-xl border border-gray-100" data-index="${index}">
                 <input type="hidden" name="items[${index}][jenis]" class="item-jenis-hidden" value="Layanan">
                 <input type="hidden" name="items[${index}][id_item]" class="item-id-hidden" value="">
                 <input type="hidden" name="items[${index}][nm_item]" class="item-nama-hidden" value="">
                 <input type="hidden" name="items[${index}][qty]" class="item-qty-hidden" value="1">
                 <input type="hidden" name="items[${index}][harga]" class="item-harga-hidden" value="0">
                 <input type="hidden" name="items[${index}][subtotal]" class="item-subtotal-hidden" value="0">
-                <select class="form-input-custom item-jenis-select !w-[120px] !py-2 !text-xs flex-shrink-0" onchange="onJenisChange(this)">
+
+                <select class="form-input-custom item-jenis-select !w-[120px] !py-2 !text-[12px] flex-shrink-0"
+                    onchange="onJenisChange(this)">
                     <option value="Layanan">Layanan</option>
                     <option value="Produk">Produk</option>
                 </select>
-                <select class="form-input-custom item-select !w-full !py-2 !text-xs" onchange="onItemChange(this)">
+                <select class="form-input-custom item-select !w-full !py-2 !text-[12px]"
+                    onchange="onItemChange(this)">
                     <option value="">-- Pilih --</option>
                 </select>
-                <input type="number" value="1" min="1" class="form-input-custom item-qty !w-16 !py-2 !text-xs text-center flex-shrink-0" oninput="onQtyChange(this)">
-                <span class="item-harga-display text-xs text-gray-600 font-medium w-28 text-right flex-shrink-0">Rp 0</span>
-                <span class="item-subtotal-display text-xs text-pink-600 font-bold w-32 text-right flex-shrink-0">Rp 0</span>
-                <button type="button" onclick="removeItemRow(this)" class="w-7 h-7 flex items-center justify-center text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors flex-shrink-0"><i class="fa-regular fa-trash-can text-xs"></i></button>
+                <span class="item-harga-display text-[12px] text-gray-600 font-medium w-24 text-right flex-shrink-0">Rp 0</span>
+                <input type="number" value="1" min="1"
+                    class="form-input-custom item-qty !w-16 !py-2 !text-[12px] text-center flex-shrink-0"
+                    oninput="onQtyChange(this)">
+                <span class="item-subtotal-display text-[13px] text-pink-600 font-bold w-32 text-right flex-shrink-0">Rp 0</span>
+                <button type="button" onclick="removeItemRow(this)"
+                    class="w-7 h-7 flex items-center justify-center text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors flex-shrink-0">
+                    <i class="fa-regular fa-trash-can text-xs"></i>
+                </button>
             </div>`;
         }
 
@@ -442,7 +575,9 @@
             const idField = jenis === 'Layanan' ? 'id_layanan' : 'id_produk';
             const nmField = jenis === 'Layanan' ? 'nm_layanan' : 'nm_produk';
             const priceField = jenis === 'Layanan' ? 'harga' : 'harga_jual';
-            return data.map(item => `<option value="${item[idField]}" data-nama="${item[nmField]}" data-harga="${item[priceField] || 0}">${item[nmField]} — Rp ${Number(item[priceField] || 0).toLocaleString('id-ID')}</option>`).join('');
+            return data.map(item =>
+                `<option value="${item[idField]}" data-nama="${item[nmField]}" data-harga="${item[priceField] || 0}">${item[nmField]} — Rp ${Number(item[priceField] || 0).toLocaleString('id-ID')}</option>`
+            ).join('');
         }
 
         function addItemRow() {
@@ -450,13 +585,15 @@
             const idx = itemRowIndex++;
             container.insertAdjacentHTML('beforeend', getItemTemplate(idx));
             const row = container.lastElementChild;
+            const jenisSelect = row.querySelector('.item-jenis-select');
             const itemSelect = row.querySelector('.item-select');
-            itemSelect.innerHTML = '<option value="">-- Pilih --</option>' + loadItemOptions('Layanan');
+            itemSelect.innerHTML = '<option value="">-- Pilih --</option>' + loadItemOptions(jenisSelect.value);
             recalculateSubtotal();
         }
 
         function removeItemRow(btn) {
-            btn.closest('.item-row').remove();
+            const row = btn.closest('.item-row');
+            row.remove();
             recalculateSubtotal();
         }
 
@@ -483,7 +620,7 @@
                 row.querySelector('.item-id-hidden').value = option.value;
                 row.querySelector('.item-nama-hidden').value = option.dataset.nama;
                 row.querySelector('.item-harga-hidden').value = harga;
-                row.querySelector('.item-harga-display').textContent = 'Rp ' + harga.toLocaleString('id-ID');
+                row.querySelector('.item-harga-display').textContent = 'Rp ' + formatRp(harga);
             } else {
                 row.querySelector('.item-id-hidden').value = '';
                 row.querySelector('.item-nama-hidden').value = '';
@@ -501,20 +638,179 @@
             const subtotal = qty * harga;
             row.querySelector('.item-qty-hidden').value = qty;
             row.querySelector('.item-subtotal-hidden').value = subtotal;
-            row.querySelector('.item-subtotal-display').textContent = 'Rp ' + subtotal.toLocaleString('id-ID');
+            row.querySelector('.item-subtotal-display').textContent = 'Rp ' + formatRp(subtotal);
             recalculateSubtotal();
         }
 
         function recalculateSubtotal() {
             let totalItem = 0;
-            document.querySelectorAll('.item-subtotal-hidden').forEach(el => { totalItem += parseFloat(el.value) || 0; });
+            document.querySelectorAll('.item-subtotal-hidden').forEach(el => {
+                totalItem += parseFloat(el.value) || 0;
+            });
             document.getElementById('subtotal').value = totalItem;
+
+            // Calculate membership discount
+            const pelangganSelect = document.getElementById('id_pelanggan');
+            const opt = pelangganSelect.options[pelangganSelect.selectedIndex];
+            const diskonPct = opt ? parseFloat(opt.dataset.diskon) || 0 : 0;
+            const diskonRp = totalItem * (diskonPct / 100);
+
+            document.getElementById('diskon').value = diskonRp;
+            document.getElementById('diskon_display').value = formatRp(diskonRp) + (diskonPct > 0 ? ' (' + diskonPct + '%)' : '');
+
             hitungTotal();
         }
 
+        // ========== Perhitungan Total ==========
+        function hitungTotal() {
+            const subtotal = parseFloat(document.getElementById('subtotal').value) || 0;
+            const diskon = parseFloat(document.getElementById('diskon').value) || 0;
+            const pajak = parseFloat(document.getElementById('pajak').value) || 0;
+            const total = Math.max(0, subtotal - diskon + pajak);
+
+            document.getElementById('total').value = total;
+            document.getElementById('total_display').value = formatRp(total);
+
+            hitungKembali();
+        }
+
+        function hitungKembali() {
+            const total = parseFloat(document.getElementById('total').value) || 0;
+            const dibayar = parseFloat(document.getElementById('dibayar').value) || 0;
+            const kembali = Math.max(0, dibayar - total);
+
+            document.getElementById('kembali').value = kembali;
+            document.getElementById('kembali_display').value = formatRp(kembali);
+        }
+
+        // ========== Ringkasan Input Handlers ==========
+        function onPajakChange(input) {
+            const val = parseRp(input.value);
+            document.getElementById('pajak').value = val;
+            input.value = val > 0 ? formatRp(val) : '0';
+            hitungTotal();
+        }
+
+        function onDibayarChange(input) {
+            const val = parseRp(input.value);
+            document.getElementById('dibayar').value = val;
+            input.value = val > 0 ? formatRp(val) : '0';
+            hitungKembali();
+        }
+
+        // ========== Bank Tujuan ==========
+        function onBankTujuanChange(select) {
+            const opt = select.options[select.selectedIndex];
+            const rekening = opt ? opt.dataset.rekening : '';
+            document.getElementById('ke_rekening').value = rekening || '';
+        }
+
+        // ========== Payment Timer ==========
+        let paymentTimer = null;
+        let timerSeconds = 60;
+
+        function startPaymentTimer(displayId) {
+            stopPaymentTimer();
+            timerSeconds = 60;
+            const el = document.getElementById(displayId);
+            if (!el) return;
+            el.classList.remove('hidden');
+            updateTimerDisplay(el);
+
+            paymentTimer = setInterval(function() {
+                timerSeconds--;
+                updateTimerDisplay(el);
+                if (timerSeconds <= 0) {
+                    clearInterval(paymentTimer);
+                    paymentTimer = null;
+                    showToast('Waktu pembayaran habis! Silakan ulangi.', 'warning');
+                    timerSeconds = 60;
+                    updateTimerDisplay(el);
+                    startPaymentTimer(displayId);
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay(el) {
+            const menit = Math.floor(timerSeconds / 60);
+            const detik = timerSeconds % 60;
+            el.textContent = '⏱️ ' + String(menit).padStart(2, '0') + ':' + String(detik).padStart(2, '0');
+            el.style.color = timerSeconds <= 10 ? '#EF4444' : '#666666';
+        }
+
+        function stopPaymentTimer() {
+            if (paymentTimer) {
+                clearInterval(paymentTimer);
+                paymentTimer = null;
+            }
+            document.querySelectorAll('[id^="timer-"]').forEach(function(el) {
+                el.classList.add('hidden');
+                el.textContent = '⏱️ 01:00';
+                el.style.color = '#666666';
+            });
+        }
+
+        // ========== Payment Method ==========
+        function togglePaymentMethod(method) {
+            stopPaymentTimer();
+            document.querySelectorAll('.payment-section').forEach(el => el.classList.remove('active'));
+            const btn = document.getElementById('btn-simpan-transaksi');
+
+            if (method === 'Tunai') {
+                document.getElementById('payment-section-tunai').classList.add('active');
+                if (btn) btn.innerHTML = '<i class="fa-regular fa-circle-check"></i> Bayar & Simpan';
+            } else if (method === 'E-Wallet') {
+                document.getElementById('payment-section-ewallet').classList.add('active');
+                if (btn) btn.innerHTML = '<i class="fa-regular fa-circle-check"></i> Bayar & Simpan';
+                startPaymentTimer('timer-ewallet');
+            } else {
+                document.getElementById('payment-section-bank').classList.add('active');
+                if (btn) btn.innerHTML = '<i class="fa-regular fa-circle-check"></i> Bayar & Simpan';
+            }
+        }
+
+        // ========== Auto-fill No Referensi ==========
+        function generateNoReferensi() {
+            const now = new Date();
+            const y = now.getFullYear();
+            const m = String(now.getMonth() + 1).padStart(2, '0');
+            const d = String(now.getDate()).padStart(2, '0');
+            const rand = String(Math.floor(Math.random() * 9000) + 1000);
+            return 'REF-' + y + m + d + '-' + rand;
+        }
+
+        // ========== Init ==========
         document.addEventListener('DOMContentLoaded', function() {
             const selected = document.querySelector('input[name="metode_byr"]:checked');
             if (selected) togglePaymentMethod(selected.value);
+
+            document.getElementById('no_referensi').value = generateNoReferensi();
+
+            // Initialize format Rp for existing values
+            const pajakDisplay = document.getElementById('pajak_display');
+            if (pajakDisplay && parseFloat(pajakDisplay.value) > 0) {
+                pajakDisplay.value = formatRp(parseFloat(pajakDisplay.value));
+            } else {
+                pajakDisplay.value = '0';
+            }
+            const dibayarDisplay = document.getElementById('dibayar_display');
+            if (dibayarDisplay && parseFloat(dibayarDisplay.value) > 0) {
+                dibayarDisplay.value = formatRp(parseFloat(dibayarDisplay.value));
+            } else {
+                dibayarDisplay.value = '0';
+            }
+
+            // Initialize if old pelanggan selected
+            const pelangganSelect = document.getElementById('id_pelanggan');
+            if (pelangganSelect.value) {
+                onPelangganChange(pelangganSelect);
+            }
+
+            // Initialize bank tujuan if old value
+            const bankTujuanSelect = document.getElementById('bank_tujuan');
+            if (bankTujuanSelect && bankTujuanSelect.value) {
+                onBankTujuanChange(bankTujuanSelect);
+            }
         });
     </script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>

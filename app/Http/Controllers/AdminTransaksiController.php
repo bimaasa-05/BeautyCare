@@ -14,44 +14,49 @@ class AdminTransaksiController extends Controller
     public function index(Request $request)
     {
         $keyword = $request->keyword;
+        $dari    = $request->dari;
+        $sampai  = $request->sampai;
 
-        $transaksi = Transaksi::with('pelanggan', 'detail')
+        $transaksi = Transaksi::with('pelanggan', 'detail', 'user')
             ->when($keyword, function ($q, $keyword) {
-                return $q->where('no_invoice', 'like', "%{$keyword}%")
-                    ->orWhereHas('pelanggan', function ($q) use ($keyword) {
-                        $q->where('nm_pelanggan', 'like', "%{$keyword}%");
-                    });
+                return $q->where(function ($q) use ($keyword) {
+                    $q->where('no_invoice', 'like', "%{$keyword}%")
+                        ->orWhereHas('pelanggan', function ($q) use ($keyword) {
+                            $q->where('nm_pelanggan', 'like', "%{$keyword}%")
+                                ->orWhere('no_hp', 'like', "%{$keyword}%");
+                        });
+                });
             })
+            ->when($dari, fn($q, $d) => $q->whereDate('tanggal', '>=', $d))
+            ->when($sampai, fn($q, $s) => $q->whereDate('tanggal', '<=', $s))
             ->orderBy('id_transaksi', 'desc')
-            ->get();
+            ->paginate(15);
 
-        if ($request->ajax()) {
-            return view('admin.transaksi.partials.table', compact('transaksi'));
-        }
-
-        $today = now()->toDateString();
-
-        $transaksiToday = Transaksi::whereDate('tanggal', $today)->count();
-        $totalToday    = Transaksi::whereDate('tanggal', $today)->sum('total');
-        $lunasCount    = Transaksi::where('status', 'Lunas')->count();
-        $menungguCount = Transaksi::where('status', 'Pending')->count();
+        $totalTransaksi  = Transaksi::count();
+        $totalPendapatan = Transaksi::where('status', 'Lunas')->sum('total');
 
         return view('admin.transaksi.index', compact(
             'transaksi',
-            'transaksiToday',
-            'totalToday',
-            'lunasCount',
-            'menungguCount'
+            'totalTransaksi',
+            'totalPendapatan'
         ));
     }
 
     public function create()
     {
-        $pelanggan = Pelanggan::all();
+        $pelanggan = Pelanggan::with('membership')->get();
         $layanan   = Layanan::where('status', 1)->get();
         $produk    = Produk::where('status', 1)->get();
 
-        return view('admin.transaksi.create', compact('pelanggan', 'layanan', 'produk'));
+        $bankTujuan = [
+            'BRI' => '10101010',
+            'BCA' => '20202020',
+            'Mandiri' => '30303030',
+            'BNI' => '40404040',
+            'BSI' => '50505050',
+        ];
+
+        return view('admin.transaksi.create', compact('pelanggan', 'layanan', 'produk', 'bankTujuan'));
     }
 
     public function store(Request $request)
@@ -74,6 +79,7 @@ class AdminTransaksiController extends Controller
             'bank_asal'    => 'nullable|string|max:50',
             'bank_tujuan'  => 'nullable|string|max:50',
             'no_referensi' => 'nullable|string|max:50',
+            'ewallet_type' => 'nullable|string|max:50',
         ]);
 
         $lastId   = Transaksi::max('id_transaksi') + 1;
@@ -97,7 +103,7 @@ class AdminTransaksiController extends Controller
             'atas_nama'    => $request->atas_nama,
             'dari_rekening'=> $request->dari_rekening,
             'ke_rekening'  => $request->ke_rekening,
-            'bank_asal'    => $request->bank_asal,
+            'bank_asal'    => $request->bank_asal ?? $request->ewallet_type,
             'bank_tujuan'  => $request->bank_tujuan,
             'no_referensi' => $request->no_referensi,
         ];
@@ -141,11 +147,19 @@ class AdminTransaksiController extends Controller
     public function edit($id)
     {
         $transaksi = Transaksi::with('detail')->findOrFail($id);
-        $pelanggan = Pelanggan::all();
+        $pelanggan = Pelanggan::with('membership')->get();
         $layanan   = Layanan::where('status', 1)->get();
         $produk    = Produk::where('status', 1)->get();
 
-        return view('admin.transaksi.edit', compact('transaksi', 'pelanggan', 'layanan', 'produk'));
+        $bankTujuan = [
+            'BRI' => '10101010',
+            'BCA' => '20202020',
+            'Mandiri' => '30303030',
+            'BNI' => '40404040',
+            'BSI' => '50505050',
+        ];
+
+        return view('admin.transaksi.edit', compact('transaksi', 'pelanggan', 'layanan', 'produk', 'bankTujuan'));
     }
 
     public function update(Request $request, $id)
@@ -168,6 +182,7 @@ class AdminTransaksiController extends Controller
             'bank_asal'    => 'nullable|string|max:50',
             'bank_tujuan'  => 'nullable|string|max:50',
             'no_referensi' => 'nullable|string|max:50',
+            'ewallet_type' => 'nullable|string|max:50',
             'status'       => 'nullable|in:Lunas,Pending,Batal',
         ]);
 
@@ -185,7 +200,7 @@ class AdminTransaksiController extends Controller
             'atas_nama'    => $request->atas_nama,
             'dari_rekening'=> $request->dari_rekening,
             'ke_rekening'  => $request->ke_rekening,
-            'bank_asal'    => $request->bank_asal,
+            'bank_asal'    => $request->bank_asal ?? $request->ewallet_type,
             'bank_tujuan'  => $request->bank_tujuan,
             'no_referensi' => $request->no_referensi,
         ];
@@ -243,14 +258,21 @@ class AdminTransaksiController extends Controller
     public function export(Request $request)
     {
         $keyword = $request->keyword;
+        $dari    = $request->dari;
+        $sampai  = $request->sampai;
 
-        $transaksi = Transaksi::with('pelanggan', 'detail')
+        $transaksi = Transaksi::with('pelanggan', 'detail', 'user')
             ->when($keyword, function ($q, $keyword) {
-                return $q->where('no_invoice', 'like', "%{$keyword}%")
-                    ->orWhereHas('pelanggan', function ($q) use ($keyword) {
-                        $q->where('nm_pelanggan', 'like', "%{$keyword}%");
-                    });
+                return $q->where(function ($q) use ($keyword) {
+                    $q->where('no_invoice', 'like', "%{$keyword}%")
+                        ->orWhereHas('pelanggan', function ($q) use ($keyword) {
+                            $q->where('nm_pelanggan', 'like', "%{$keyword}%")
+                                ->orWhere('no_hp', 'like', "%{$keyword}%");
+                        });
+                });
             })
+            ->when($dari, fn($q, $d) => $q->whereDate('tanggal', '>=', $d))
+            ->when($sampai, fn($q, $s) => $q->whereDate('tanggal', '<=', $s))
             ->orderBy('id_transaksi', 'desc')
             ->get();
 
@@ -261,7 +283,7 @@ class AdminTransaksiController extends Controller
             'Content-Disposition' => "attachment; filename=\"$filename\"",
         ];
 
-        $columns = ['No. Invoice', 'Pelanggan', 'Tanggal', 'Subtotal', 'Diskon', 'Pajak', 'Total', 'Metode', 'Dibayar', 'Kembali', 'Status', 'Catatan'];
+        $columns = ['No. Invoice', 'Pelanggan', 'Tanggal', 'Subtotal', 'Diskon', 'Pajak', 'Total', 'Metode', 'Dibayar', 'Kembali', 'Status', 'Admin', 'Catatan'];
 
         $callback = function () use ($transaksi, $columns) {
             $file = fopen('php://output', 'w');
@@ -281,6 +303,7 @@ class AdminTransaksiController extends Controller
                     $t->dibayar,
                     $t->kembali,
                     $t->status,
+                    $t->user->nama ?? '-',
                     $t->catatan,
                 ]);
             }
