@@ -16,7 +16,6 @@ return new class extends Migration
             $table->id('id_produk');
             $table->integer('id_kategori_produk');
             $table->integer('id_supplier');
-            $table->string('barcode', 50);
             $table->string('nm_produk', 50);
             $table->string('satuan', 50);
             $table->decimal('harga_beli', 12);
