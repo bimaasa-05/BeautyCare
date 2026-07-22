@@ -28,6 +28,7 @@ use App\Http\Controllers\AdminLaporanPelangganController;
 use App\Http\Controllers\KasirLaporanPelangganController;
 use App\Http\Controllers\KasirDashboardController;
 use App\Http\Controllers\AdminDashboardController;
+use App\Http\Controllers\AdminPengaturanController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -157,6 +158,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/laporan/export-pdf', [AdminLaporanController::class, 'exportPDF'])->name('admin.laporan.export-pdf');
         Route::get('/admin/laporan/export-excel', [AdminLaporanController::class, 'exportExcel'])->name('admin.laporan.export-excel');
 
+        //Route Pengaturan
+        Route::get('/admin/pengaturan', [AdminPengaturanController::class, 'index'])->name('admin.pengaturan.index');
+        Route::post('/admin/pengaturan', [AdminPengaturanController::class, 'update'])->name('admin.pengaturan.update');
         Route::get('/admin/laporan-pelanggan', [AdminLaporanPelangganController::class, 'index'])->name('admin.laporan-pelanggan.index');
         Route::get('/admin/laporan-pelanggan/export-pdf', [AdminLaporanPelangganController::class, 'exportPDF'])->name('admin.laporan-pelanggan.export-pdf');
         Route::get('/admin/laporan-pelanggan/export-excel', [AdminLaporanPelangganController::class, 'exportExcel'])->name('admin.laporan-pelanggan.export-excel');
