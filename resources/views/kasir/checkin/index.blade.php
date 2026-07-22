@@ -38,9 +38,6 @@
         .badge-selesai { background: #E8F8EE; color: #22C55E; }
         .badge-dibatalkan { background: #FDE8E8; color: #EF4444; }
 
-        .table-row-hover { transition: all 0.3s ease; }
-        .table-row-hover:hover { background: #FFF5F8 !important; }
-
         .pagination-custom nav svg { display: none; }
         .pagination-custom nav .flex a, .pagination-custom nav .flex span {
             font-size: 12px; padding: 6px 14px; border-radius: 100px !important; margin: 0 2px;
@@ -144,7 +141,7 @@
                             </thead>
                             <tbody class="text-[13px] text-gray-700 divide-y divide-gray-50">
                                 @forelse($reservasi as $r)
-                                    <tr class="table-row-hover {{ $r->status == 'diproses' ? 'bg-emerald-50/30' : '' }}">
+                                    <tr class="{{ $r->status == 'diproses' ? 'bg-emerald-50/30' : '' }} hover:bg-gray-100 transition-colors duration-150">
                                         <td class="py-3.5 px-4 text-gray-400 font-medium text-center text-[12px]">{{ $loop->iteration }}</td>
                                         <td class="py-3.5 px-4">
                                             <div class="flex items-center gap-2.5">

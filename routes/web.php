@@ -9,6 +9,7 @@ use App\Http\Controllers\KasirReservasiController;
 use App\Http\Controllers\KasirCheckinController;
 use App\Http\Controllers\KasirPembayaranController;
 use App\Http\Controllers\KasirRiwayatTransaksiController;
+use App\Http\Controllers\KasirLaporanController;
 use App\Http\Controllers\BeauticianController;
 use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\AdminPelangganController;
@@ -23,6 +24,9 @@ use App\Http\Controllers\AdminSupplierController;
 use App\Http\Controllers\AdminReservasiController;
 use App\Http\Controllers\AdminTransaksiController;
 use App\Http\Controllers\AdminLaporanController;
+use App\Http\Controllers\AdminLaporanPelangganController;
+use App\Http\Controllers\KasirLaporanPelangganController;
+use App\Http\Controllers\KasirDashboardController;
 use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\AdminPengaturanController;
 use Illuminate\Support\Facades\Route;
@@ -157,15 +161,16 @@ Route::middleware('auth')->group(function () {
         //Route Pengaturan
         Route::get('/admin/pengaturan', [AdminPengaturanController::class, 'index'])->name('admin.pengaturan.index');
         Route::post('/admin/pengaturan', [AdminPengaturanController::class, 'update'])->name('admin.pengaturan.update');
+        Route::get('/admin/laporan-pelanggan', [AdminLaporanPelangganController::class, 'index'])->name('admin.laporan-pelanggan.index');
+        Route::get('/admin/laporan-pelanggan/export-pdf', [AdminLaporanPelangganController::class, 'exportPDF'])->name('admin.laporan-pelanggan.export-pdf');
+        Route::get('/admin/laporan-pelanggan/export-excel', [AdminLaporanPelangganController::class, 'exportExcel'])->name('admin.laporan-pelanggan.export-excel');
     });
 
 
     //-------------------------------------------------
     //Route Kasir
     Route::middleware(['role:kasir'])->group(function () {
-        Route::get('/kasir/dashboard', function () {
-            return view('kasir.dashboard');
-        })->name('kasir.dashboard');
+        Route::get('/kasir/dashboard', [KasirDashboardController::class, 'index'])->name('kasir.dashboard');
 
         Route::get('/kasir/pelanggan', [KasirPelangganController::class, 'index'])->name('kasir.pelanggan.index');
         Route::get('/kasir/pelanggan/create', [KasirPelangganController::class, 'create'])->name('kasir.pelanggan.create');
@@ -203,6 +208,14 @@ Route::middleware('auth')->group(function () {
         Route::get('/kasir/invoice/{id}', [KasirTransaksiController::class, 'invoice'])->name('kasir.invoice.show');
         Route::get('/kasir/riwayat-transaksi', [KasirRiwayatTransaksiController::class, 'index'])->name('kasir.riwayat-transaksi.index');
         Route::get('/kasir/riwayat-transaksi/{id}', [KasirRiwayatTransaksiController::class, 'show'])->name('kasir.riwayat-transaksi.show');
+
+        Route::get('/kasir/laporan', [KasirLaporanController::class, 'index'])->name('kasir.laporan.index');
+        Route::get('/kasir/laporan/export-pdf', [KasirLaporanController::class, 'exportPDF'])->name('kasir.laporan.export-pdf');
+        Route::get('/kasir/laporan/export-excel', [KasirLaporanController::class, 'exportExcel'])->name('kasir.laporan.export-excel');
+
+        Route::get('/kasir/laporan-pelanggan', [KasirLaporanPelangganController::class, 'index'])->name('kasir.laporan-pelanggan.index');
+        Route::get('/kasir/laporan-pelanggan/export-pdf', [KasirLaporanPelangganController::class, 'exportPDF'])->name('kasir.laporan-pelanggan.export-pdf');
+        Route::get('/kasir/laporan-pelanggan/export-excel', [KasirLaporanPelangganController::class, 'exportExcel'])->name('kasir.laporan-pelanggan.export-excel');
 
         //Profile Kasir
         Route::get('/kasir/profile', function () {
