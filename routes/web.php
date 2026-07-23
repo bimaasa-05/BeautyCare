@@ -271,7 +271,11 @@ Route::middleware('auth')->group(function () {
             ->whereDate('selesai', '>=', now())
             ->orderBy('id_promo', 'desc')
             ->get();
-        return view('pelanggan.dashboard', compact('promos'));
+        $layanans = \App\Models\Layanan::where('status', 'Tersedia')
+            ->orderBy('id_layanan', 'asc')
+            ->get();
+        $kategoriLayanan = \App\Models\KategoriLayanan::where('status', 'tersedia')->get();
+        return view('pelanggan.dashboard', compact('promos', 'layanans', 'kategoriLayanan'));
     })->middleware(['auth', 'verified'])->name('dashboard');
     Route::middleware(['role:pelanggan'])->group(function () {
 
