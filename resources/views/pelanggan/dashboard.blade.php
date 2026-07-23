@@ -377,38 +377,20 @@
                             <a href="{{ route('pelanggan.promo') }}" style="font-size:13px;color:var(--primary);font-weight:500;">Lihat Semua</a>
                         </div>
                         <div class="booking-list">
+                            @forelse($promos as $promo)
                             <div class="booking-item">
-                                <img src="https://ui-avatars.com/api/?name=PROMO+1&background=FFE5EF&color=FF4F87&size=40&format=svg&font-size=0.30" alt="Promo">
+                                <img src="https://ui-avatars.com/api/?name={{ urlencode(substr($promo->nm_promo, 0, 2)) }}&background=FFE5EF&color=FF4F87&size=40&format=svg&font-size=0.30" alt="Promo">
                                 <div class="booking-info">
-                                    <h4>Diskon 20% Facial Treatment</h4>
-                                    <p>Berlaku hingga 31 Juli 2026</p>
+                                    <h4>{{ $promo->nm_promo }}</h4>
+                                    <p>{{ $promo->jenis_promo }} - {{ $promo->nilai }}{{ $promo->jenis_promo == 'Diskon' ? '%' : '' }} | {{ \Carbon\Carbon::parse($promo->mulai)->format('d M') }} - {{ \Carbon\Carbon::parse($promo->selesai)->format('d M Y') }}</p>
                                 </div>
-                                <span class="badge badge-primary">20%</span>
+                                <span class="badge badge-primary">{{ $promo->jenis_promo }}</span>
                             </div>
-                            <div class="booking-item">
-                                <img src="https://ui-avatars.com/api/?name=PROMO+2&background=FFF3E0&color=FF9800&size=40&format=svg&font-size=0.30" alt="Promo">
-                                <div class="booking-info">
-                                    <h4>Buy 1 Get 1 Hair Mask</h4>
-                                    <p>Untuk pembelian produk Hair Care</p>
-                                </div>
-                                <span class="badge badge-warning">BOGO</span>
+                            @empty
+                            <div style="text-align:center;padding:20px;color:var(--gray);font-size:13px;">
+                                Belum ada promo tersedia saat ini.
                             </div>
-                            <div class="booking-item">
-                                <img src="https://ui-avatars.com/api/?name=PROMO+3&background=E8F5E9&color=4CAF50&size=40&format=svg&font-size=0.30" alt="Promo">
-                                <div class="booking-info">
-                                    <h4>Paket Body Massage + Sauna</h4>
-                                    <p>Harga spesial Rp 250rb (hemat 40%)</p>
-                                </div>
-                                <span class="badge badge-success">Paket</span>
-                            </div>
-                            <div class="booking-item">
-                                <img src="https://ui-avatars.com/api/?name=PROMO+4&background=E3F2FD&color=2196F3&size=40&format=svg&font-size=0.30" alt="Promo">
-                                <div class="booking-info">
-                                    <h4>Double Poin Weekend</h4>
-                                    <p>Dapatkan 2x lipat poin setiap weekend</p>
-                                </div>
-                                <span class="badge badge-info">2x Poin</span>
-                            </div>
+                            @endforelse
                         </div>
                     </div>
 
