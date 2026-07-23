@@ -171,40 +171,10 @@
             </a>
         </div>
 
-        <div class="nav-section">
-            <div class="nav-section-title">Akun</div>
-            <a href="{{ route('kasir.profile') }}"
-                class="nav-item {{ request()->routeIs('kasir.profile') ? 'active' : '' }}"
-                title="Kelola profil dan data diri Anda">
-                <span class="nav-icon">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                        <circle cx="12" cy="7" r="4" />
-                    </svg>
-                </span>
-                Profile
-            </a>
-        </div>
+
     </nav>
 
-    <div class="sidebar-footer">
-        <form method="POST" action="{{ route('logout') }}" style="display: contents;">
-            @csrf
-            <button type="submit" class="nav-item" title="Keluar dari sistem"
-                style="background: none; border: none; cursor: pointer; width: 100%; display: flex; align-items: center; gap: 12px; padding: 12px 20px; color: inherit; font: inherit;">
-                <span class="nav-icon">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                        <polyline points="16 17 21 12 16 7" />
-                        <line x1="21" y1="12" x2="9" y2="12" />
-                    </svg>
-                </span>
-                Keluar
-            </button>
-        </form>
-    </div>
+
 </aside>
 
 <!-- Mobile Overlay -->
