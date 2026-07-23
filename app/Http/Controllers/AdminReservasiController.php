@@ -22,7 +22,11 @@ class AdminReservasiController extends Controller
                     ->orWhereHas('pelanggan', function ($q) use ($search) {
                         $q->where('nm_pelanggan', 'like', "%{$search}%");
                     });
-            })->orderBy('id_booking', 'desc')->paginate(10);
+            })
+            ->when($request->filled('id_karyawan'), function ($query) use ($request) {
+                return $query->where('id_karyawan', $request->id_karyawan);
+            })
+            ->orderBy('id_booking', 'desc')->paginate(10);
 
         return view('admin.reservasi.index', compact('reservasi', 'TotalReservasi'));
     }
