@@ -401,54 +401,25 @@
                             <a href="{{ route('pelanggan.booking') }}" style="font-size:13px;color:var(--primary);font-weight:500;">Booking</a>
                         </div>
                         <div class="employee-grid">
+                            @forelse($layanans as $layanan)
+                            @php
+                                $kategori = $kategoriLayanan->firstWhere('id_kategori_layanan', $layanan->id_kategori);
+                                $nmKategori = $kategori ? $kategori->nm_layanan : 'Layanan';
+                                $initial = substr($layanan->nm_layanan, 0, 2);
+                            @endphp
                             <div class="employee-card">
-                                <img src="https://ui-avatars.com/api/?name=FT&background=FFE5EF&color=FF4F87&size=36" alt="Facial">
+                                <img src="https://ui-avatars.com/api/?name={{ urlencode($initial) }}&background=FFE5EF&color=FF4F87&size=36" alt="{{ $layanan->nm_layanan }}">
                                 <div class="ec-info">
-                                    <h4>Facial Treatment</h4>
-                                    <p>Skincare - Mulai Rp 150rb</p>
+                                    <h4>{{ $layanan->nm_layanan }}</h4>
+                                    <p>{{ $nmKategori }} - Mulai Rp {{ number_format($layanan->harga, 0, ',', '.') }}</p>
                                 </div>
                                 <span class="ec-status online"></span>
                             </div>
-                            <div class="employee-card">
-                                <img src="https://ui-avatars.com/api/?name=BM&background=FFE5EF&color=FF4F87&size=36" alt="Massage">
-                                <div class="ec-info">
-                                    <h4>Body Massage</h4>
-                                    <p>Spa - Mulai Rp 200rb</p>
-                                </div>
-                                <span class="ec-status online"></span>
+                            @empty
+                            <div style="grid-column:1/-1;text-align:center;padding:20px;color:var(--gray);font-size:13px;">
+                                Belum ada layanan tersedia.
                             </div>
-                            <div class="employee-card">
-                                <img src="https://ui-avatars.com/api/?name=HC&background=FFE5EF&color=FF4F87&size=36" alt="Haircut">
-                                <div class="ec-info">
-                                    <h4>Haircut Premium</h4>
-                                    <p>Salon - Mulai Rp 100rb</p>
-                                </div>
-                                <span class="ec-status online"></span>
-                            </div>
-                            <div class="employee-card">
-                                <img src="https://ui-avatars.com/api/?name=NA&background=FFE5EF&color=FF4F87&size=36" alt="Nail">
-                                <div class="ec-info">
-                                    <h4>Nail Art Design</h4>
-                                    <p>Nail Art - Mulai Rp 120rb</p>
-                                </div>
-                                <span class="ec-status break"></span>
-                            </div>
-                            <div class="employee-card">
-                                <img src="https://ui-avatars.com/api/?name=HC&background=FFE5EF&color=FF4F87&size=36" alt="Hair Color">
-                                <div class="ec-info">
-                                    <h4>Hair Color</h4>
-                                    <p>Salon - Mulai Rp 250rb</p>
-                                </div>
-                                <span class="ec-status online"></span>
-                            </div>
-                            <div class="employee-card">
-                                <img src="https://ui-avatars.com/api/?name=MP&background=FFE5EF&color=FF4F87&size=36" alt="Manicure">
-                                <div class="ec-info">
-                                    <h4>Manicure & Pedicure</h4>
-                                    <p>Nail Art - Mulai Rp 130rb</p>
-                                </div>
-                                <span class="ec-status online"></span>
-                            </div>
+                            @endforelse
                         </div>
                     </div>
 
