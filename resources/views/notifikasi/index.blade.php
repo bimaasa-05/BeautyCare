@@ -132,14 +132,6 @@
                     <div class="bg-white rounded-2xl border border-pink-50 shadow-[0_2px_16px_rgba(236,72,153,0.07)] overflow-hidden">
                         <div class="p-5 border-b border-pink-50 flex items-center justify-between flex-wrap gap-3">
                             <h3 class="font-bold text-gray-800">Semua Notifikasi</h3>
-                            <div class="flex items-center gap-2">
-                                <form method="POST" action="{{ route('notif.mark-all-read', ['role' => auth()->user()->role]) }}">
-                                    @csrf
-                                    <button type="submit"
-                                        class="flex items-center gap-1.5 px-3 py-2 bg-gradient-to-r from-[#EC4899] to-[#BE185D] text-white rounded-xl text-xs font-bold shadow-sm hover:opacity-95">
-                                        <i class="fa-regular fa-check-circle"></i> Tandai Semua Dibaca
-                                    </button>
-                                </form>
                             </div>
                         </div>
 
