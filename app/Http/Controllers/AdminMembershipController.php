@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Membership;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class AdminMembershipController extends Controller
@@ -29,7 +30,8 @@ class AdminMembershipController extends Controller
 
     public function create()
     {
-        return view('admin.membership.create');
+        $pelanggan = User::where('role', 'pelanggan')->get();
+        return view('admin.membership.create', compact('pelanggan'));
     }
 
     public function store(Request $request)
@@ -53,7 +55,8 @@ class AdminMembershipController extends Controller
     public function edit($id)
     {
         $membership = Membership::findOrFail($id);
-        return view('admin.membership.edit', compact('membership'));
+        $pelanggan = User::where('role', 'pelanggan')->get();
+        return view('admin.membership.edit', compact('membership', 'pelanggan'));
     }
 
     public function update(Request $request, $id)
