@@ -58,7 +58,8 @@
     </div>
 
     <div class="flex gap-2.5">
-        <button class="flex-1 bg-[#fdf2f8] text-[#de3b7c] font-bold text-[13px] py-2.5 rounded-2xl hover:bg-pink-100 transition-colors">Jadwal</button>
+        <a href="{{ route('admin.reservasi.index', ['id_karyawan' => $b->id_user]) }}"
+            class="flex-1 bg-[#fdf2f8] text-[#de3b7c] font-bold text-[13px] py-2.5 rounded-2xl hover:bg-pink-100 transition-colors text-center inline-flex items-center justify-center">Jadwal</a>
         <a href="{{ route('admin.beautician.edit', $b->id_karyawan) }}"
             class="w-10 h-10 flex items-center justify-center text-amber-500 bg-amber-50 border border-amber-100 hover:bg-amber-100 rounded-2xl transition-colors"><i
                 class="fa-regular fa-pen-to-square text-[13px]"></i></a>
