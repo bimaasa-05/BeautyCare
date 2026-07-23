@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/dashboard.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/responsive.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
     .chart-card:hover {
@@ -181,16 +182,12 @@
                 <!-- Dashboard Grid: Charts -->
                 <div class="dashboard-grid grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
                     <!-- Pendapatan Chart -->
-                    <div class="chart-card" style="transition: all 0.3s ease;">
+                    <div class="chart-card">
                         <div class="chart-header">
                             <h3>Grafik Pendapatan {{ date('Y') }}</h3>
                         </div>
-                        <p style="font-size: 12px; color: var(--gray); margin: -12px 0 16px 0;">Total pendapatan setiap bulan</p>
                         <div class="chart-body">
-                            <canvas id="chartPendapatan" height="280"
-                                data-labels='@json($chartLabels)'
-                                data-revenue='@json($chartRevenueData)'
-                                data-max="{{ $maxRevenue }}"></canvas>
+                            <canvas id="chartPendapatan" height="280"></canvas>
                         </div>
                     </div>
 
@@ -202,7 +199,7 @@
                                 <span class="mc-total">{{ $totalBookingMinggu }}</span>
                             </div>
                             <div class="mc-body" id="miniChartBooking">
-                                <canvas id="chartBookingDonut" width="160" height="140"
+                                <canvas id="chartBookingDonut" width="200" height="200"
                                     data-values='@json(array_values($layananBookingMinggu))'
                                     data-labels='@json(array_keys($layananBookingMinggu))'></canvas>
                             </div>
@@ -397,15 +394,135 @@
     </div>
 
     <script>
-    // Set current date
     const now = new Date();
-    const options = {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-    };
+    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
     document.getElementById('currentDate').textContent = now.toLocaleDateString('id-ID', options);
+
+    Chart.defaults.font.family = "'Poppins', sans-serif";
+    Chart.defaults.color = '#9CA3AF';
+    Chart.defaults.font.size = 11;
+
+    const chartLabels = @json($chartLabels);
+    const chartRevenue = @json($chartRevenueData);
+    const maxRev = chartRevenue.length > 0 ? Math.max(...chartRevenue) : 0;
+
+    const ctx = document.getElementById('chartPendapatan').getContext('2d');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: chartLabels,
+            datasets: [{
+                label: 'Pendapatan',
+                data: chartRevenue,
+                borderColor: '#EC4899',
+                backgroundColor: 'rgba(236, 72, 153, 0.08)',
+                borderWidth: 2,
+                tension: 0.4,
+                fill: true,
+                pointBackgroundColor: '#fff',
+                pointBorderColor: '#EC4899',
+                pointBorderWidth: 2,
+                pointRadius: 3,
+                pointHoverRadius: 5
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: '#fff',
+                    titleColor: '#1F2937',
+                    bodyColor: '#4B5563',
+                    borderColor: '#FCE7F3',
+                    borderWidth: 1,
+                    padding: 10,
+                    cornerRadius: 8,
+                    callbacks: {
+                        label: function(context) {
+                            var val = context.parsed.y;
+                            if (val >= 1000000) return 'Rp ' + (val / 1000000).toFixed(1) + ' jt';
+                            return 'Rp ' + val.toLocaleString('id-ID');
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    grid: { display: false, drawBorder: false },
+                    ticks: { maxTicksLimit: Math.min(chartLabels.length, 10) }
+                },
+                y: {
+                    border: { display: false },
+                    grid: { color: '#F3E8F5', borderDash: [3, 3] },
+                    ticks: {
+                        maxTicksLimit: 6,
+                        callback: function(value) {
+                            if (maxRev > 1000000) return 'Rp' + (value / 1000000).toFixed(1) + 'jt';
+                            return 'Rp' + value.toLocaleString('id-ID');
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    const donutCanvas = document.getElementById('chartBookingDonut');
+    if (donutCanvas) {
+        const values = JSON.parse(donutCanvas.getAttribute('data-values') || '[]');
+        const labels = JSON.parse(donutCanvas.getAttribute('data-labels') || '[]');
+        const colors = ['#EC4899','#8B5CF6','#F59E0B','#10B981','#3B82F6','#EF4444','#14B8A6','#F97316','#6366F1','#84CC16'];
+        if (values.length > 0) {
+            new Chart(donutCanvas.getContext('2d'), {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: values,
+                        backgroundColor: colors.slice(0, labels.length),
+                        borderWidth: 2,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    cutout: '60%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                font: { family: 'Poppins', size: 10 },
+                                color: '#6B7280',
+                                padding: 10,
+                                usePointStyle: true,
+                                pointStyleWidth: 8
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: '#fff',
+                            titleColor: '#1F2937',
+                            bodyColor: '#4B5563',
+                            borderColor: '#FCE7F3',
+                            borderWidth: 1,
+                            padding: 10,
+                            cornerRadius: 8,
+                            callbacks: {
+                                label: function(context) {
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const pct = total > 0 ? ((context.parsed / total) * 100).toFixed(1) : 0;
+                                    return ' ' + context.label + ': ' + context.parsed + ' (' + pct + '%)';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        } else {
+            donutCanvas.parentNode.innerHTML = '<span style="font-size:12px;color:#999;">Tidak ada data</span>';
+        }
+    }
     </script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
 </body>
