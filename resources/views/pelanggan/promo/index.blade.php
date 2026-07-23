@@ -499,157 +499,62 @@
                 </div>
 
                 <div class="promo-grid">
-                    <div class="promo-card">
+                    @forelse($promos as $promo)
+                    @php
+                        $bgClass = match($promo->jenis_promo) {
+                            'Diskon' => 'diskon',
+                            'Buy 1 Get 1' => 'bogo',
+                            'Paket' => 'paket',
+                            'Cashback' => 'poin',
+                            default => 'spesial',
+                        };
+                        $icons = [
+                            'Diskon' => 'fa-solid fa-percent',
+                            'Buy 1 Get 1' => 'fa-solid fa-gift',
+                            'Paket' => 'fa-solid fa-cube',
+                            'Cashback' => 'fa-solid fa-coins',
+                        ];
+                        $icon = $icons[$promo->jenis_promo] ?? 'fa-solid fa-tag';
+                        $badgeText = $promo->jenis_promo == 'Diskon' ? $promo->nilai . '% OFF' : $promo->jenis_promo;
+                        $opacity = $promo->status == 'Tersedia' ? '' : 'opacity:0.6;';
+                    @endphp
+                    <div class="promo-card" style="{{ $opacity }}">
                         <div class="promo-banner">
-                            <div class="promo-bg diskon"></div>
+                            <div class="promo-bg {{ $bgClass }}"></div>
                             <div class="promo-deco"></div>
                             <div class="promo-deco"></div>
-                            <span class="promo-badge">20% OFF</span>
+                            <span class="promo-badge">{{ $badgeText }}</span>
                             <div class="promo-icon-big">
-                                <i class="fa-solid fa-percent"></i>
+                                <i class="{{ $icon }}"></i>
                             </div>
                         </div>
                         <div class="promo-body">
-                            <div class="promo-title">Diskon 20% Facial Treatment</div>
-                            <div class="promo-desc">Nikmati potongan harga 20% untuk semua paket Facial Treatment. Dapatkan kulit sehat dan bercahaya!</div>
+                            <div class="promo-title">{{ $promo->nm_promo }}</div>
+                            <div class="promo-desc">{{ $promo->jenis_promo }} - Nilai {{ $promo->nilai }}{{ $promo->jenis_promo == 'Diskon' ? '%' : '' }}</div>
                             <div class="promo-meta">
-                                <span class="pm-item"><i class="fa-regular fa-calendar"></i> 01 - 31 Jul 2026</span>
+                                <span class="pm-item"><i class="fa-regular fa-calendar"></i> {{ \Carbon\Carbon::parse($promo->mulai)->format('d M Y') }} - {{ \Carbon\Carbon::parse($promo->selesai)->format('d M Y') }}</span>
                                 <span class="pm-item"><i class="fa-regular fa-user"></i> Semua Pelanggan</span>
                             </div>
                             <div class="promo-divider"></div>
                             <div class="promo-footer">
-                                <span class="promo-code"><i class="fa-regular fa-ticket"></i> FACIAL20</span>
+                                <span class="promo-code"><i class="fa-regular fa-ticket"></i> {{ strtoupper(str_replace(' ', '', substr($promo->nm_promo, 0, 8))) }}</span>
+                                @if($promo->status == 'Tersedia')
                                 <button class="promo-btn-claim">Klaim Now</button>
+                                @else
+                                <button class="promo-btn-claim claimed"><i class="fa-regular fa-circle-check"></i> {{ $promo->status }}</button>
+                                @endif
                             </div>
                         </div>
                     </div>
-
-                    <div class="promo-card">
-                        <div class="promo-banner">
-                            <div class="promo-bg bogo"></div>
-                            <div class="promo-deco"></div>
-                            <div class="promo-deco"></div>
-                            <span class="promo-badge">BOGO</span>
-                            <div class="promo-icon-big">
-                                <i class="fa-solid fa-gift"></i>
-                            </div>
+                    @empty
+                    <div class="promo-empty" style="grid-column:1/-1;">
+                        <div class="pe-icon">
+                            <i class="fa-regular fa-calendar-xmark"></i>
                         </div>
-                        <div class="promo-body">
-                            <div class="promo-title">Buy 1 Get 1 Hair Mask</div>
-                            <div class="promo-desc">Beli 1 Hair Mask premium gratis 1 lagi! Kembalikan kilau alami rambut Anda dengan perawatan terbaik.</div>
-                            <div class="promo-meta">
-                                <span class="pm-item"><i class="fa-regular fa-calendar"></i> 15 - 31 Jul 2026</span>
-                                <span class="pm-item"><i class="fa-regular fa-user"></i> Member Only</span>
-                            </div>
-                            <div class="promo-divider"></div>
-                            <div class="promo-footer">
-                                <span class="promo-code"><i class="fa-regular fa-ticket"></i> HAIRBOGO</span>
-                                <button class="promo-btn-claim">Klaim Now</button>
-                            </div>
-                        </div>
+                        <h4>Belum Ada Promo</h4>
+                        <p>Belum ada promo yang tersedia saat ini.</p>
                     </div>
-
-                    <div class="promo-card">
-                        <div class="promo-banner">
-                            <div class="promo-bg paket"></div>
-                            <div class="promo-deco"></div>
-                            <div class="promo-deco"></div>
-                            <span class="promo-badge">HEMAT 40%</span>
-                            <div class="promo-icon-big">
-                                <i class="fa-solid fa-cube"></i>
-                            </div>
-                        </div>
-                        <div class="promo-body">
-                            <div class="promo-title">Paket Body Massage + Sauna</div>
-                            <div class="promo-desc">Dapatkan paket Body Massage 60 menit + Sauna dengan harga spesial. Relaksasi maksimal untuk tubuh Anda!</div>
-                            <div class="promo-meta">
-                                <span class="pm-item"><i class="fa-regular fa-calendar"></i> 01 - 31 Jul 2026</span>
-                                <span class="pm-item"><i class="fa-regular fa-user"></i> Semua Pelanggan</span>
-                            </div>
-                            <div class="promo-divider"></div>
-                            <div class="promo-footer">
-                                <span class="promo-code" style="color:#059669;background:#D1FAE5;"><i class="fa-regular fa-ticket"></i> RELAX40</span>
-                                <button class="promo-btn-claim">Klaim Now</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="promo-card">
-                        <div class="promo-banner">
-                            <div class="promo-bg poin"></div>
-                            <div class="promo-deco"></div>
-                            <div class="promo-deco"></div>
-                            <span class="promo-badge">2x POIN</span>
-                            <div class="promo-icon-big">
-                                <i class="fa-solid fa-star"></i>
-                            </div>
-                        </div>
-                        <div class="promo-body">
-                            <div class="promo-title">Double Poin Weekend</div>
-                            <div class="promo-desc">Dapatkan 2x lipat poin reward setiap melakukan transaksi di hari Sabtu dan Minggu. Kumpulkan poin sebanyak-banyaknya!</div>
-                            <div class="promo-meta">
-                                <span class="pm-item"><i class="fa-regular fa-calendar"></i> Setiap Weekend</span>
-                                <span class="pm-item"><i class="fa-regular fa-user"></i> Semua Pelanggan</span>
-                            </div>
-                            <div class="promo-divider"></div>
-                            <div class="promo-footer">
-                                <span class="promo-code"><i class="fa-regular fa-ticket"></i> DOUBLEPN</span>
-                                <button class="promo-btn-claim">Klaim Now</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="promo-card">
-                        <div class="promo-banner">
-                            <div class="promo-bg spesial"></div>
-                            <div class="promo-deco"></div>
-                            <div class="promo-deco"></div>
-                            <span class="promo-badge">15% OFF</span>
-                            <div class="promo-icon-big">
-                                <i class="fa-solid fa-wand-magic-sparkles"></i>
-                            </div>
-                        </div>
-                        <div class="promo-body">
-                            <div class="promo-title">Diskon 15% Nail Art</div>
-                            <div class="promo-desc">Tampil cantik dengan Nail Art design terbaru! Dapatkan diskon 15% untuk semua jasa Nail Art di bulan ini.</div>
-                            <div class="promo-meta">
-                                <span class="pm-item"><i class="fa-regular fa-calendar"></i> 01 - 31 Jul 2026</span>
-                                <span class="pm-item"><i class="fa-regular fa-user"></i> Pelanggan Baru</span>
-                            </div>
-                            <div class="promo-divider"></div>
-                            <div class="promo-footer">
-                                <span class="promo-code"><i class="fa-regular fa-ticket"></i> NAIL15</span>
-                                <button class="promo-btn-claim">Klaim Now</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="promo-card">
-                        <div class="promo-banner">
-                            <div class="promo-bg diskon"></div>
-                            <div class="promo-deco"></div>
-                            <div class="promo-deco"></div>
-                            <span class="promo-badge">Rp 50rb</span>
-                            <div class="promo-icon-big">
-                                <i class="fa-solid fa-coins"></i>
-                            </div>
-                        </div>
-                        <div class="promo-body">
-                            <div class="promo-title">Voucher Rp 50.000</div>
-                            <div class="promo-desc">Voucher potongan Rp 50.000 untuk pembelian produk Hair Care minimal Rp 200.000. Lengkapi koleksi produk rambut Anda!</div>
-                            <div class="promo-meta">
-                                <span class="pm-item"><i class="fa-regular fa-calendar"></i> 01 - 31 Jul 2026</span>
-                                <span class="pm-item"><i class="fa-regular fa-user"></i> Semua Pelanggan</span>
-                            </div>
-                            <div class="promo-divider"></div>
-                            <div class="promo-footer">
-                                <span class="promo-code"><i class="fa-regular fa-ticket"></i> HAIRC50</span>
-                                <button class="promo-btn-claim claimed">
-                                    <i class="fa-regular fa-circle-check"></i> Diklaim
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                    @endforelse
                 </div>
 
                 <div style="margin-top:32px;">

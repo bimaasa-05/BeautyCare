@@ -267,7 +267,11 @@ Route::middleware('auth')->group(function () {
     //--------------------------------------------------
     //Route Pelangggan
     Route::get('/pelanggan/dashboard', function () {
-        return view('pelanggan.dashboard');
+        $promos = \App\Models\Promo::where('status', 'Tersedia')
+            ->whereDate('selesai', '>=', now())
+            ->orderBy('id_promo', 'desc')
+            ->get();
+        return view('pelanggan.dashboard', compact('promos'));
     })->middleware(['auth', 'verified'])->name('dashboard');
     Route::middleware(['role:pelanggan'])->group(function () {
 
@@ -291,7 +295,8 @@ Route::middleware('auth')->group(function () {
 
         //Route Promo
         Route::get('/pelanggan/promo', function () {
-            return view('pelanggan.promo.index');
+            $promos = \App\Models\Promo::orderBy('id_promo', 'desc')->get();
+            return view('pelanggan.promo.index', compact('promos'));
         })->name('pelanggan.promo');
 
         //Route Membership
