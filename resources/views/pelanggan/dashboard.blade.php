@@ -317,52 +317,36 @@
                         </table>
                     </div>
 
-                    <!-- Produk Favorit Saya -->
+                    <!-- Produk Yang Tersedia -->
                     <div class="table-widget">
                         <div class="tw-header">
-                            <h3>Produk Favorit Saya</h3>
-                            <a href="#">Beli Lagi</a>
+                            <h3>Produk Yang Tersedia</h3>
+                            <a href="#">Lihat Semua</a>
                         </div>
                         <table class="data-table">
                             <thead>
                                 <tr>
                                     <th>Produk</th>
                                     <th>Kategori</th>
-                                    <th>Dibeli</th>
+                                    <th>Stok</th>
                                     <th>Harga</th>
                                 </tr>
                             </thead>
                             <tbody>
+                                @forelse($produks as $produk)
                                 <tr>
-                                    <td><div class="td-flex">Serum Vitamin C</div></td>
-                                    <td>Skincare</td>
-                                    <td>3x</td>
-                                    <td>Rp 125rb</td>
+                                    <td><div class="td-flex">{{ $produk->nm_produk }}</div></td>
+                                    <td>{{ $produk->kategori?->nm_produk ?? 'Umum' }}</td>
+                                    <td>{{ $produk->stok }} {{ $produk->satuan }}</td>
+                                    <td>Rp {{ number_format($produk->harga_jual, 0, ',', '.') }}</td>
                                 </tr>
+                                @empty
                                 <tr>
-                                    <td><div class="td-flex">Moisturizer Cream</div></td>
-                                    <td>Skincare</td>
-                                    <td>2x</td>
-                                    <td>Rp 85rb</td>
+                                    <td colspan="4" style="text-align:center;padding:20px;color:var(--gray);font-size:13px;">
+                                        Belum ada produk tersedia.
+                                    </td>
                                 </tr>
-                                <tr>
-                                    <td><div class="td-flex">Shampoo Premium</div></td>
-                                    <td>Hair Care</td>
-                                    <td>2x</td>
-                                    <td>Rp 65rb</td>
-                                </tr>
-                                <tr>
-                                    <td><div class="td-flex">Hair Mask</div></td>
-                                    <td>Hair Care</td>
-                                    <td>1x</td>
-                                    <td>Rp 95rb</td>
-                                </tr>
-                                <tr>
-                                    <td><div class="td-flex">Body Lotion</div></td>
-                                    <td>Body Care</td>
-                                    <td>1x</td>
-                                    <td>Rp 75rb</td>
-                                </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
