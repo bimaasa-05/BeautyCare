@@ -108,9 +108,13 @@
                         <div class="space-y-5">
                             <div>
                                 <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Nama Member</label>
-                                <input type="text" name="nm_member" value="{{ old('nm_member') }}"
-                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('nm_member') border-red-300 @enderror"
-                                    placeholder="Masukkan nama member">
+                                <select name="nm_member"
+                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all @error('nm_member') border-red-300 @enderror">
+                                    <option value="" disabled selected>Pilih member</option>
+                                    @foreach ($pelanggan as $p)
+                                        <option value="{{ $p->nama }}" {{ old('nm_member') == $p->nama ? 'selected' : '' }}>{{ $p->nama }}</option>
+                                    @endforeach
+                                </select>
                                 @error('nm_member')
                                     <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
                                 @enderror
