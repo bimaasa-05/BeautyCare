@@ -127,6 +127,13 @@ class AdminTransaksiController extends Controller
                         'diskon'       => 0,
                         'subtotal'     => $item['subtotal'] ?? 0,
                     ]);
+
+                    if (($item['jenis'] ?? 'Layanan') === 'Produk') {
+                        $produk = Produk::find($item['id_item']);
+                        if ($produk && $produk->stok >= ($item['qty'] ?? 1)) {
+                            $produk->decrement('stok', $item['qty'] ?? 1);
+                        }
+                    }
                 }
             }
         }
@@ -222,6 +229,16 @@ class AdminTransaksiController extends Controller
         Transaksi::where('id_transaksi', $id)->update($data);
 
         if ($request->has('items') && is_array($request->items)) {
+            $oldDetails = DetailTransaksi::where('id_transaksi', $id)->get();
+            foreach ($oldDetails as $old) {
+                if ($old->jenis === 'Produk') {
+                    $produk = Produk::find($old->id_item);
+                    if ($produk) {
+                        $produk->increment('stok', $old->qty);
+                    }
+                }
+            }
+
             DetailTransaksi::where('id_transaksi', $id)->delete();
             foreach ($request->items as $item) {
                 if (!empty($item['id_item'])) {
@@ -235,6 +252,13 @@ class AdminTransaksiController extends Controller
                         'diskon'       => 0,
                         'subtotal'     => $item['subtotal'] ?? 0,
                     ]);
+
+                    if (($item['jenis'] ?? 'Layanan') === 'Produk') {
+                        $produk = Produk::find($item['id_item']);
+                        if ($produk && $produk->stok >= ($item['qty'] ?? 1)) {
+                            $produk->decrement('stok', $item['qty'] ?? 1);
+                        }
+                    }
                 }
             }
         }
@@ -316,7 +340,17 @@ class AdminTransaksiController extends Controller
 
     public function destroy($id)
     {
-        $transaksi = Transaksi::findOrFail($id);
+        $transaksi = Transaksi::with('detail')->findOrFail($id);
+
+        foreach ($transaksi->detail as $detail) {
+            if ($detail->jenis === 'Produk') {
+                $produk = Produk::find($detail->id_item);
+                if ($produk) {
+                    $produk->increment('stok', $detail->qty);
+                }
+            }
+        }
+
         if ($transaksi->bukti_bayar) {
             \Illuminate\Support\Facades\Storage::disk('public')->delete($transaksi->bukti_bayar);
         }
