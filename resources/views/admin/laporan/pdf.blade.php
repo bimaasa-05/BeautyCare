@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Laporan - BeautyCare</title>
+    @include('partials.head-meta')
     <style>
         body { font-family: 'DejaVu Sans', sans-serif; font-size: 12px; color: #333; }
         h1 { text-align: center; color: #BE185D; margin-bottom: 5px; font-size: 20px; }
