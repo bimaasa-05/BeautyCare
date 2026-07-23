@@ -26,7 +26,7 @@
         @endif
     </div>
 
-    <div class="grid grid-cols-3 gap-3 mb-5">
+    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-5">
         <div class="bg-[#fdf2f8] rounded-2xl py-2.5 flex flex-col items-center justify-center">
             <span class="text-[#de3b7c] font-bold text-[15px] mb-0.5">{{ $b->jabatan }}</span>
             <span class="text-[10px] text-gray-400 font-medium">Karyawan/Kerjaan</span>
