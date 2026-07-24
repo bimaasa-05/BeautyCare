@@ -22,6 +22,14 @@
         .sidebar-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.3); z-index: 90; }
         .sidebar-overlay.active { display: block; }
         @media (max-width: 768px) { .sidebar-toggle { display: flex; align-items: center; } }
+        @media (max-width: 768px) {
+            .data-table thead { display: none; }
+            .data-table tbody tr { display: block; padding: 16px; border-bottom: 1px solid var(--border); }
+            .data-table tbody td { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border: none; font-size: 13px; text-align: right; }
+            .data-table tbody td::before { content: attr(data-label); font-weight: 600; color: var(--gray); font-size: 11px; text-transform: uppercase; }
+            .data-table tbody td:first-child { padding-left: 0; }
+            .data-table tbody td:last-child { padding-right: 0; }
+        }
         body { font-family: 'Poppins', sans-serif; }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
@@ -171,14 +179,14 @@
                                 <div class="relative">
                                     <i data-lucide="search" class="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
                                     <input type="text" placeholder="Cari nama, no hp, atau email..." name="keyword"
-                                        class="bg-gray-50 border border-gray-100 text-xs rounded-full pl-9 pr-4 py-2 w-[200px] focus:outline-none focus:border-pink-300 transition-all placeholder-gray-400"
+                                        class="bg-gray-50 border border-gray-100 text-xs rounded-full pl-9 pr-4 py-2 w-full sm:w-[200px] focus:outline-none focus:border-pink-300 transition-all placeholder-gray-400"
                                         value="{{ $search }}">
                                 </div>
                                 <input type="date" name="dari" value="{{ $dari }}"
-                                    class="bg-gray-50 border border-gray-100 text-xs rounded-full px-3 py-2 w-[140px] focus:outline-none focus:border-pink-300 transition-all">
-                                <span class="text-gray-400 text-xs">—</span>
+                                    class="bg-gray-50 border border-gray-100 text-xs rounded-full px-3 py-2 w-full sm:w-[140px] focus:outline-none focus:border-pink-300 transition-all">
+                                <span class="text-gray-400 text-xs hidden sm:inline">—</span>
                                 <input type="date" name="sampai" value="{{ $sampai }}"
-                                    class="bg-gray-50 border border-gray-100 text-xs rounded-full px-3 py-2 w-[140px] focus:outline-none focus:border-pink-300 transition-all">
+                                    class="bg-gray-50 border border-gray-100 text-xs rounded-full px-3 py-2 w-full sm:w-[140px] focus:outline-none focus:border-pink-300 transition-all">
                                 <button type="submit"
                                     class="bg-pink-50 text-pink-600 text-xs font-semibold px-4 py-2 rounded-full hover:bg-pink-100 transition-colors border border-pink-200">
                                     <i data-lucide="filter" class="w-3 h-3 inline mr-1"></i> Filter
@@ -192,7 +200,7 @@
                             </form>
 
                             <div class="overflow-x-auto">
-                                <table class="w-full text-left border-collapse">
+                                <table class="data-table w-full text-left border-collapse">
                                     <thead>
                                         <tr class="text-xs font-bold text-gray-400 uppercase border-b border-gray-100 bg-pink-50/30">
                                             <th class="py-3 px-4 w-10">#</th>
@@ -208,8 +216,8 @@
                                     <tbody class="text-sm text-gray-700 divide-y divide-gray-50">
                                         @forelse($pelanggan as $p)
                                             <tr class="hover:bg-gray-100 transition-colors duration-150">
-                                                <td class="py-3.5 px-4 text-gray-400 font-medium text-center text-xs">{{ $loop->iteration }}</td>
-                                                <td class="py-3.5 px-4">
+                                                <td data-label="#" class="py-3.5 px-4 text-gray-400 font-medium text-center text-xs">{{ $loop->iteration }}</td>
+                                                <td data-label="Pelanggan" class="py-3.5 px-4">
                                                     <div class="flex items-center gap-2">
                                                         <div class="w-7 h-7 rounded-full bg-pink-200 text-pink-600 flex items-center justify-center font-bold text-[10px]">
                                                             {{ strtoupper(substr($p->nm_pelanggan, 0, 2)) }}
@@ -217,9 +225,9 @@
                                                         <span class="font-medium text-gray-700">{{ $p->nm_pelanggan }}</span>
                                                     </div>
                                                 </td>
-                                                <td class="py-3.5 px-4 text-gray-500 text-xs">{{ $p->no_hp ?? '-' }}</td>
-                                                <td class="py-3.5 px-4 text-gray-500 text-xs">{{ $p->email }}</td>
-                                                <td class="py-3.5 px-4">
+                                                <td data-label="No. HP" class="py-3.5 px-4 text-gray-500 text-xs">{{ $p->no_hp ?? '-' }}</td>
+                                                <td data-label="Email" class="py-3.5 px-4 text-gray-500 text-xs">{{ $p->email }}</td>
+                                                <td data-label="Member" class="py-3.5 px-4">
                                                     @if ($p->membership)
                                                         <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-semibold bg-purple-50 text-purple-600 border border-purple-200">
                                                             <i data-lucide="award" class="w-3 h-3"></i> {{ $p->membership->nm_member }}
@@ -228,9 +236,9 @@
                                                         <span class="text-gray-400 text-xs">-</span>
                                                     @endif
                                                 </td>
-                                                <td class="py-3.5 px-4 text-center font-semibold text-gray-800">{{ $p->total_transaksi ?? 0 }}</td>
-                                                <td class="py-3.5 px-4 font-semibold text-gray-800">{{ $fmt($p->total_belanja ?? 0) }}</td>
-                                                <td class="py-3.5 px-4 text-gray-500 text-xs">
+                                                <td data-label="Transaksi" class="py-3.5 px-4 text-center font-semibold text-gray-800">{{ $p->total_transaksi ?? 0 }}</td>
+                                                <td data-label="Total" class="py-3.5 px-4 font-semibold text-gray-800">{{ $fmt($p->total_belanja ?? 0) }}</td>
+                                                <td data-label="Terakhir" class="py-3.5 px-4 text-gray-500 text-xs">
                                                     {{ $p->tgl_terakhir ? \Carbon\Carbon::parse($p->tgl_terakhir)->format('d/m/Y') : '-' }}
                                                 </td>
                                             </tr>
