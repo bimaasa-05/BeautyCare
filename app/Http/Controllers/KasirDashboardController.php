@@ -164,7 +164,8 @@ class KasirDashboardController extends Controller
             ->get();
 
         $stokMenipis = Produk::with('kategori')
-            ->orderBy('stok', 'desc')
+            ->where('stok', '<=', 20)
+            ->orderBy('stok', 'asc')
             ->limit(4)
             ->get();
 
