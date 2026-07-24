@@ -193,6 +193,9 @@
                                             <h5 class="text-[13px] font-bold text-green-700">Pembayaran Tunai</h5>
                                             <p class="text-[11px] text-green-500">Pembayaran akan langsung selesai</p>
                                         </div>
+                                        <span class="ml-auto inline-flex items-center gap-1 px-3 py-1 rounded-full text-[11px] font-medium bg-green-100 text-green-700">
+                                            <i class="fa-regular fa-circle-check"></i> Status: Lunas
+                                        </span>
                                     </div>
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div class="form-group">
@@ -231,20 +234,23 @@
                                             <h5 class="text-[13px] font-bold text-teal-700">E-Wallet</h5>
                                             <p class="text-[11px] text-teal-500">Pembayaran akan langsung selesai</p>
                                         </div>
+                                        <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-[11px] font-medium bg-teal-100 text-teal-700">
+                                            <i class="fa-regular fa-circle-check"></i> Status: Lunas
+                                        </span>
                                     </div>
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div class="form-group">
                                             <label class="form-label">
                                                 <i class="fa-regular fa-wallet text-pink-400 mr-1"></i>Pilih E-Wallet <span class="text-red-500">*</span>
                                             </label>
-                                            <select name="bank_asal" id="ewallet_type" class="form-input-custom @error('bank_asal') border-red-400 @enderror">
+                                            <select name="ewallet_type" id="ewallet_type" class="form-input-custom @error('ewallet_type') border-red-400 @enderror">
                                                 <option value="">-- Pilih E-Wallet --</option>
-                                                <option value="Dana" {{ old('bank_asal') == 'Dana' ? 'selected' : '' }}>Dana</option>
-                                                <option value="GoPay" {{ old('bank_asal') == 'GoPay' ? 'selected' : '' }}>GoPay</option>
-                                                <option value="OVO" {{ old('bank_asal') == 'OVO' ? 'selected' : '' }}>OVO</option>
-                                                <option value="ShopeePay" {{ old('bank_asal') == 'ShopeePay' ? 'selected' : '' }}>ShopeePay</option>
+                                                <option value="Dana" {{ old('ewallet_type') == 'Dana' ? 'selected' : '' }}>Dana</option>
+                                                <option value="GoPay" {{ old('ewallet_type') == 'GoPay' ? 'selected' : '' }}>GoPay</option>
+                                                <option value="OVO" {{ old('ewallet_type') == 'OVO' ? 'selected' : '' }}>OVO</option>
+                                                <option value="ShopeePay" {{ old('ewallet_type') == 'ShopeePay' ? 'selected' : '' }}>ShopeePay</option>
                                             </select>
-                                            @error('bank_asal')
+                                            @error('ewallet_type')
                                                 <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
                                             @enderror
                                         </div>
@@ -307,6 +313,9 @@
                                             <h5 class="text-[13px] font-bold text-amber-700">Transfer / Debit</h5>
                                             <p class="text-[11px] text-amber-500">Lampirkan bukti pembayaran untuk verifikasi</p>
                                         </div>
+                                        <span class="ml-auto inline-flex items-center gap-1 px-3 py-1 rounded-full text-[11px] font-medium bg-amber-100 text-amber-700">
+                                            <i class="fa-regular fa-clock"></i> Status: Pending
+                                        </span>
                                     </div>
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div class="form-group">
@@ -333,34 +342,18 @@
                                         </div>
                                         <div class="form-group">
                                             <label class="form-label">
-                                                <i class="fa-regular fa-image text-pink-400 mr-1"></i>Upload Bukti Pembayaran
-                                            </label>
-                                            <input type="file" name="bukti_bayar"
-                                                class="form-input-custom @error('bukti_bayar') border-red-400 @enderror"
-                                                accept="image/*">
-                                            @error('bukti_bayar')
-                                                <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
-                                            @enderror
-                                            <p class="text-[11px] text-gray-400 mt-1">Format: JPG, PNG. Maks: 2MB</p>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="form-label">
-                                                <i class="fa-regular fa-user text-pink-400 mr-1"></i>Atas Nama
-                                            </label>
-                                            <input type="text" name="atas_nama"
-                                                class="form-input-custom @error('atas_nama') border-red-400 @enderror"
-                                                placeholder="Nama pemilik rekening" value="{{ old('atas_nama') }}">
-                                            @error('atas_nama')
-                                                <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
-                                            @enderror
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="form-label">
                                                 <i class="fa-regular fa-building-columns text-pink-400 mr-1"></i>Bank Asal
                                             </label>
-                                            <input type="text" name="bank_asal"
-                                                class="form-input-custom @error('bank_asal') border-red-400 @enderror"
-                                                placeholder="Bank pengirim" value="{{ old('bank_asal') }}">
+                                            <select name="bank_asal" id="bank_asal"
+                                                class="form-input-custom @error('bank_asal') border-red-400 @enderror">
+                                                <option value="">-- Pilih Bank Asal --</option>
+                                                <option value="BRI" {{ old('bank_asal') == 'BRI' ? 'selected' : '' }}>BRI</option>
+                                                <option value="BCA" {{ old('bank_asal') == 'BCA' ? 'selected' : '' }}>BCA</option>
+                                                <option value="Mandiri" {{ old('bank_asal') == 'Mandiri' ? 'selected' : '' }}>Mandiri</option>
+                                                <option value="BNI" {{ old('bank_asal') == 'BNI' ? 'selected' : '' }}>BNI</option>
+                                                <option value="BSI" {{ old('bank_asal') == 'BSI' ? 'selected' : '' }}>BSI</option>
+                                                <option value="Lainnya" {{ old('bank_asal') == 'Lainnya' ? 'selected' : '' }}>Lainnya</option>
+                                            </select>
                                             @error('bank_asal')
                                                 <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
                                             @enderror
@@ -378,23 +371,43 @@
                                         </div>
                                         <div class="form-group">
                                             <label class="form-label">
-                                                <i class="fa-regular fa-building-columns text-pink-400 mr-1"></i>Bank Tujuan
+                                                <i class="fa-regular fa-building-columns text-pink-400 mr-1"></i>Bank Tujuan <span class="text-red-500">*</span>
                                             </label>
-                                            <input type="text" name="bank_tujuan"
+                                            <select name="bank_tujuan" id="bank_tujuan"
                                                 class="form-input-custom @error('bank_tujuan') border-red-400 @enderror"
-                                                placeholder="Bank tujuan" value="{{ old('bank_tujuan') }}">
+                                                onchange="onBankTujuanChange(this)">
+                                                <option value="">-- Pilih Bank Tujuan --</option>
+                                                @foreach ($bankTujuan as $bank => $rek)
+                                                    <option value="{{ $bank }}" data-rekening="{{ $rek }}"
+                                                        {{ old('bank_tujuan') == $bank ? 'selected' : '' }}>
+                                                        {{ $bank }}
+                                                    </option>
+                                                @endforeach
+                                                <option value="Lainnya" data-rekening="">Lainnya</option>
+                                            </select>
                                             @error('bank_tujuan')
                                                 <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
                                             @enderror
                                         </div>
                                         <div class="form-group">
                                             <label class="form-label">
-                                                <i class="fa-regular fa-arrow-left text-pink-400 mr-1"></i>Ke Rekening
+                                                <i class="fa-regular fa-arrow-left text-pink-400 mr-1"></i>Ke Rekening <span class="text-red-500">*</span>
                                             </label>
-                                            <input type="text" name="ke_rekening"
+                                            <input type="text" name="ke_rekening" id="ke_rekening"
                                                 class="form-input-custom @error('ke_rekening') border-red-400 @enderror"
-                                                placeholder="No. rekening tujuan" value="{{ old('ke_rekening') }}">
+                                                placeholder="No. rekening tujuan" value="{{ old('ke_rekening') }}" readonly>
                                             @error('ke_rekening')
+                                                <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">
+                                                <i class="fa-regular fa-user text-pink-400 mr-1"></i>Atas Nama
+                                            </label>
+                                            <input type="text" name="atas_nama"
+                                                class="form-input-custom @error('atas_nama') border-red-400 @enderror"
+                                                placeholder="Nama pemilik rekening" value="{{ old('atas_nama') }}">
+                                            @error('atas_nama')
                                                 <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
                                             @enderror
                                         </div>
@@ -402,12 +415,24 @@
                                             <label class="form-label">
                                                 <i class="fa-regular fa-hashtag text-pink-400 mr-1"></i>No. Referensi
                                             </label>
-                                            <input type="text" name="no_referensi"
+                                            <input type="text" name="no_referensi" id="no_referensi"
                                                 class="form-input-custom @error('no_referensi') border-red-400 @enderror"
-                                                placeholder="Kode referensi pembayaran" value="{{ old('no_referensi') }}">
+                                                placeholder="Otomatis" value="{{ old('no_referensi') }}" readonly>
                                             @error('no_referensi')
                                                 <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
                                             @enderror
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">
+                                                <i class="fa-regular fa-image text-pink-400 mr-1"></i>Upload Bukti Pembayaran
+                                            </label>
+                                            <input type="file" name="bukti_bayar"
+                                                class="form-input-custom @error('bukti_bayar') border-red-400 @enderror"
+                                                accept="image/*">
+                                            @error('bukti_bayar')
+                                                <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
+                                            @enderror
+                                            <p class="text-[11px] text-gray-400 mt-1">Format: JPG, PNG. Maks: 2MB</p>
                                         </div>
                                     </div>
                                 </div>
@@ -472,9 +497,26 @@
             }
         }
 
+        function onBankTujuanChange(select) {
+            const opt = select.options[select.selectedIndex];
+            const rekening = opt ? opt.dataset.rekening : '';
+            document.getElementById('ke_rekening').value = rekening || '';
+        }
+
+        function generateNoReferensi() {
+            const now = new Date();
+            const y = now.getFullYear();
+            const m = String(now.getMonth() + 1).padStart(2, '0');
+            const d = String(now.getDate()).padStart(2, '0');
+            const rand = String(Math.floor(Math.random() * 9000) + 1000);
+            return 'REF-' + y + m + d + '-' + rand;
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             const selected = document.querySelector('input[name="metode_byr"]:checked');
             if (selected) togglePaymentMethod(selected.value);
+
+            document.getElementById('no_referensi').value = generateNoReferensi();
         });
     </script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
