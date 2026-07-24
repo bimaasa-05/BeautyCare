@@ -73,11 +73,15 @@
                                 <label class="form-label">
                                     <i class="fa-regular fa-user text-pink-400 mr-1"></i>Pelanggan <span class="text-red-500">*</span>
                                 </label>
-                                <select name="id_pelanggan" class="form-input-custom @error('id_pelanggan') border-red-400 @enderror">
+                                <select name="id_pelanggan" id="id_pelanggan" class="form-input-custom @error('id_pelanggan') border-red-400 @enderror" onchange="onPelangganChange(this)">
                                     <option value="">-- Pilih Pelanggan --</option>
                                     @foreach ($pelanggan as $p)
-                                        <option value="{{ $p->id_pelanggan }}" {{ old('id_pelanggan') == $p->id_pelanggan ? 'selected' : '' }}>
-                                            {{ $p->nm_pelanggan }} ({{ $p->no_hp ?? '-' }})
+                                        <option value="{{ $p->id_pelanggan }}"
+                                            data-member="{{ $p->id_member ?? '' }}"
+                                            data-tingkat="{{ $p->membership->tingkat ?? '' }}"
+                                            data-diskon="{{ $p->membership->diskon ?? 0 }}"
+                                            {{ old('id_pelanggan') == $p->id_pelanggan ? 'selected' : '' }}>
+                                            {{ $p->nm_pelanggan }} @if($p->id_member)({{ $p->membership->tingkat ?? '' }} - Diskon {{ $p->membership->diskon ?? 0 }}%) @endif
                                         </option>
                                     @endforeach
                                 </select>
@@ -189,6 +193,13 @@
                                 <i class="fa-solid fa-plus-circle"></i> Tambah Layanan
                             </button>
 
+                            <div id="member-info" class="mt-3 hidden">
+                                <div class="flex items-center gap-2 text-[12px] px-4 py-2 rounded-lg bg-purple-50 text-purple-700 border border-purple-100">
+                                    <i class="fa-solid fa-crown"></i>
+                                    <span id="member-info-text"></span>
+                                </div>
+                            </div>
+
                             <div class="mt-4 p-4 bg-gray-50 rounded-xl">
                                 <div class="flex justify-between items-center">
                                     <span class="text-[13px] font-semibold text-gray-600">Grand Total</span>
@@ -221,6 +232,24 @@
     </div>
 
     <script>
+        function onPelangganChange(select) {
+            const opt = select.options[select.selectedIndex];
+            const tingkat = opt ? opt.dataset.tingkat : '';
+            const diskonPct = opt ? parseFloat(opt.dataset.diskon) || 0 : 0;
+            const member = opt ? opt.dataset.member : '';
+
+            const infoEl = document.getElementById('member-info');
+            const infoText = document.getElementById('member-info-text');
+
+            if (member && tingkat) {
+                infoEl.classList.remove('hidden');
+                infoText.textContent = 'Member ' + tingkat + ' — Diskon ' + diskonPct + '%';
+            } else {
+                infoEl.classList.add('hidden');
+                infoText.textContent = '';
+            }
+        }
+
         function tambahRow() {
             const container = document.getElementById('layanan-rows');
             const firstRow = container.querySelector('.layanan-row');
@@ -268,6 +297,13 @@
             });
             document.getElementById('grand-total').textContent = 'Rp ' + total.toLocaleString('id-ID');
         }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const pelangganSelect = document.getElementById('id_pelanggan');
+            if (pelangganSelect && pelangganSelect.value) {
+                onPelangganChange(pelangganSelect);
+            }
+        });
     </script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
 </body>
