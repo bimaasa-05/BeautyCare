@@ -87,7 +87,7 @@
                                             data-tingkat="{{ $p->membership->tingkat ?? '' }}"
                                             data-diskon="{{ $p->membership->diskon ?? 0 }}"
                                             {{ old('id_pelanggan', $transaksi->id_pelanggan) == $p->id_pelanggan ? 'selected' : '' }}>
-                                            {{ $p->nm_pelanggan }} ({{ $p->no_hp ?? '-' }})
+                                            {{ $p->nm_pelanggan }} @if($p->id_member)({{ $p->membership->tingkat ?? '' }} - Diskon {{ $p->membership->diskon ?? 0 }}%) @endif
                                         </option>
                                     @endforeach
                                 </select>
@@ -346,6 +346,16 @@
                                             <h5 class="text-[13px] font-bold text-amber-700">Transfer / Debit</h5>
                                             <p class="text-[11px] text-amber-500">Lampirkan bukti pembayaran untuk verifikasi</p>
                                         </div>
+                                    </div>
+                                    <div class="mb-4">
+                                        <label class="form-label">
+                                            <i class="fa-regular fa-flag text-pink-400 mr-1"></i>Status <span class="text-red-500">*</span>
+                                        </label>
+                                        <select name="status" class="form-input-custom">
+                                            <option value="Lunas" {{ old('status', $transaksi->status) == 'Lunas' ? 'selected' : '' }}>Lunas</option>
+                                            <option value="Proses" {{ old('status', $transaksi->status) == 'Proses' ? 'selected' : '' }}>Proses</option>
+                                            <option value="Batal" {{ old('status', $transaksi->status) == 'Batal' ? 'selected' : '' }}>Batal</option>
+                                        </select>
                                     </div>
 
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
