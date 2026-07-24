@@ -28,7 +28,28 @@
             <i class="{{ $metodeIcon }}"></i> {{ $t->metode_byr }}
         </span>
     </td>
-    <td class="py-3.5 px-4 text-gray-500">{{ $t->user->nama ?? '-' }}</td>
+    <td class="py-3.5 px-4">
+        @php
+            $roleBadge = match($t->user->role ?? '') {
+                'admin' => 'bg-purple-50 text-purple-600',
+                'kasir' => 'bg-amber-50 text-amber-600',
+                default => 'bg-gray-50 text-gray-500',
+            };
+            $roleIcon = match($t->user->role ?? '') {
+                'admin' => 'fa-solid fa-shield-halved',
+                'kasir' => 'fa-solid fa-user-tie',
+                default => 'fa-regular fa-user',
+            };
+        @endphp
+        <div class="flex items-center gap-1.5">
+            <span class="text-gray-500 text-[12px]">{{ $t->user->nama ?? '-' }}</span>
+            @if ($t->user && in_array($t->user->role, ['admin', 'kasir']))
+                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-semibold {{ $roleBadge }}">
+                    <i class="{{ $roleIcon }}"></i> {{ ucfirst($t->user->role) }}
+                </span>
+            @endif
+        </div>
+    </td>
     <td class="py-3.5 px-4">
         @if ($t->status == 'Lunas')
             <span class="badge-status status-selesai"><i class="fa-regular fa-circle-check"></i> Lunas</span>

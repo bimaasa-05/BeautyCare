@@ -14,9 +14,10 @@ class AdminTransaksiController extends Controller
 {
     public function index(Request $request)
     {
-        $keyword = $request->keyword;
-        $dari    = $request->dari;
-        $sampai  = $request->sampai;
+        $keyword    = $request->keyword;
+        $dari       = $request->dari;
+        $sampai     = $request->sampai;
+        $filterRole = $request->filter_role;
 
         $transaksi = Transaksi::with('pelanggan', 'detail', 'user')
             ->when($keyword, function ($q, $keyword) {
@@ -30,16 +31,25 @@ class AdminTransaksiController extends Controller
             })
             ->when($dari, fn($q, $d) => $q->whereDate('tanggal', '>=', $d))
             ->when($sampai, fn($q, $s) => $q->whereDate('tanggal', '<=', $s))
+            ->when($filterRole, function ($q, $role) {
+                return $q->whereHas('user', function ($q) use ($role) {
+                    $q->where('role', $role);
+                });
+            })
             ->orderBy('id_transaksi', 'desc')
             ->paginate(15);
 
         $totalTransaksi  = Transaksi::count();
         $totalPendapatan = Transaksi::where('status', 'Lunas')->sum('total');
+        $transaksiKasir  = Transaksi::whereHas('user', fn($q) => $q->where('role', 'kasir'))->count();
+        $transaksiAdmin  = Transaksi::whereHas('user', fn($q) => $q->where('role', 'admin'))->count();
 
         return view('admin.transaksi.index', compact(
             'transaksi',
             'totalTransaksi',
-            'totalPendapatan'
+            'totalPendapatan',
+            'transaksiKasir',
+            'transaksiAdmin'
         ));
     }
 
@@ -292,6 +302,7 @@ class AdminTransaksiController extends Controller
         $keyword = $request->keyword;
         $dari    = $request->dari;
         $sampai  = $request->sampai;
+        $filterRole = $request->filter_role;
 
         $transaksi = Transaksi::with('pelanggan', 'detail', 'user')
             ->when($keyword, function ($q, $keyword) {
@@ -305,6 +316,11 @@ class AdminTransaksiController extends Controller
             })
             ->when($dari, fn($q, $d) => $q->whereDate('tanggal', '>=', $d))
             ->when($sampai, fn($q, $s) => $q->whereDate('tanggal', '<=', $s))
+            ->when($filterRole, function ($q, $role) {
+                return $q->whereHas('user', function ($q) use ($role) {
+                    $q->where('role', $role);
+                });
+            })
             ->orderBy('id_transaksi', 'desc')
             ->get();
 

@@ -36,8 +36,8 @@
         .status-proses { background: #FEF3C7; color: #F59E0B; }
         .status-batal { background: #FDE8E8; color: #EF4444; }
 
-        .table-row-hover { transition: all 0.3s ease; }
-        .table-row-hover:hover { background: #FFF5F8 !important; transform: scale(1.002); }
+        .table-row-hover { transition: background 0.2s ease; }
+        .table-row-hover:hover { background: #FFF5F8 !important; }
 
         .pagination-custom nav svg { display: none; }
         .pagination-custom nav .flex a, .pagination-custom nav .flex span {
@@ -83,7 +83,7 @@
                         </p>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
                         <div class="stat-card bg-gradient-to-br from-sky-50 to-white rounded-xl p-4 border border-sky-100">
                             <div class="flex items-center justify-between">
                                 <div>
@@ -106,22 +106,58 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="stat-card bg-gradient-to-br from-amber-50 to-white rounded-xl p-4 border border-amber-100">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">oleh Kasir</p>
+                                    <p class="text-[26px] font-bold text-amber-600 mt-1">{{ $transaksiKasir }}</p>
+                                </div>
+                                <div class="w-11 h-11 rounded-full bg-amber-100 flex items-center justify-center">
+                                    <i class="fa-solid fa-user-tie text-amber-500 text-lg"></i>
+                                </div>
+                            </div>
+                        </div>
                         <div class="stat-card bg-gradient-to-br from-purple-50 to-white rounded-xl p-4 border border-purple-100">
                             <div class="flex items-center justify-between">
                                 <div>
-                                    <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Rata-rata</p>
-                                    <p class="text-[26px] font-bold text-purple-600 mt-1">
-                                        Rp {{ number_format($totalTransaksi > 0 ? $totalPendapatan / $totalTransaksi : 0, 0, ',', '.') }}
-                                    </p>
+                                    <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">oleh Admin</p>
+                                    <p class="text-[26px] font-bold text-purple-600 mt-1">{{ $transaksiAdmin }}</p>
                                 </div>
                                 <div class="w-11 h-11 rounded-full bg-purple-100 flex items-center justify-center">
-                                    <i class="fa-solid fa-chart-line text-purple-500 text-lg"></i>
+                                    <i class="fa-solid fa-shield-halved text-purple-500 text-lg"></i>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <form method="GET" action="{{ route('admin.transaksi.index') }}" class="flex flex-wrap items-center justify-end gap-2 mb-4">
+                        <div class="relative filter-role">
+                            <button type="button" onclick="toggleFilterRole()"
+                                class="flex items-center gap-2 border border-gray-200 text-gray-600 text-[12px] font-medium px-4 py-2 rounded-full hover:bg-gray-50 transition-colors">
+                                <i class="fa-solid fa-sliders text-gray-400"></i> Pembuat
+                                @if (request()->filter_role)
+                                    <span class="text-[10px] bg-pink-100 text-pink-600 px-1.5 py-0.5 rounded-full font-semibold">{{ ucfirst(request()->filter_role) }}</span>
+                                @endif
+                            </button>
+                            <div id="filterRolePanel"
+                                class="hidden absolute right-0 mt-2 w-44 bg-white rounded-xl shadow-lg border border-gray-100 p-4 z-50">
+                                <p class="text-[11px] font-semibold text-gray-500 mb-2 uppercase tracking-wider">Dibuat Oleh</p>
+                                <div class="space-y-2">
+                                    <label class="flex items-center gap-2 text-[12px] text-gray-700 cursor-pointer">
+                                        <input type="radio" name="filter_role" value="" {{ !request()->filter_role ? 'checked' : '' }} onchange="applyFilterRole()">
+                                        Semua
+                                    </label>
+                                    <label class="flex items-center gap-2 text-[12px] text-gray-700 cursor-pointer">
+                                        <input type="radio" name="filter_role" value="kasir" {{ request()->filter_role == 'kasir' ? 'checked' : '' }} onchange="applyFilterRole()">
+                                        <i class="fa-solid fa-user-tie text-amber-500 text-[11px]"></i> Kasir
+                                    </label>
+                                    <label class="flex items-center gap-2 text-[12px] text-gray-700 cursor-pointer">
+                                        <input type="radio" name="filter_role" value="admin" {{ request()->filter_role == 'admin' ? 'checked' : '' }} onchange="applyFilterRole()">
+                                        <i class="fa-solid fa-shield-halved text-purple-500 text-[11px]"></i> Admin
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
                         <div class="relative">
                             <i class="fa-solid fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-[12px]"></i>
                             <input type="text" placeholder="Cari invoice atau pelanggan..." name="keyword"
@@ -153,19 +189,19 @@
                         </a>
                     </form>
 
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse">
+                    <div class="overflow-hidden">
+                        <table class="w-full text-left border-collapse" style="table-layout:fixed">
                             <thead>
                                 <tr class="text-[11px] font-bold text-gray-400 uppercase border-b border-gray-100 bg-pink-50/30">
                                     <th class="py-3 px-4 w-10">#</th>
-                                    <th class="py-3 px-4">No. Invoice</th>
+                                    <th class="py-3 px-4 w-[130px]">No. Invoice</th>
                                     <th class="py-3 px-4">Pelanggan</th>
-                                    <th class="py-3 px-4">Tanggal</th>
-                                    <th class="py-3 px-4">Total</th>
-                                    <th class="py-3 px-4">Metode</th>
-                                    <th class="py-3 px-4">Admin</th>
-                                    <th class="py-3 px-4">Status</th>
-                                    <th class="py-3 px-4 text-center">Aksi</th>
+                                    <th class="py-3 px-4 w-[100px]">Tanggal</th>
+                                    <th class="py-3 px-4 w-[120px]">Total</th>
+                                    <th class="py-3 px-4 w-[100px]">Metode</th>
+                                    <th class="py-3 px-4 w-[140px]">Admin</th>
+                                    <th class="py-3 px-4 w-[90px]">Status</th>
+                                    <th class="py-3 px-4 w-[110px] text-center">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody class="text-[13px] text-gray-700 divide-y divide-gray-50">
@@ -199,7 +235,28 @@
                                                 <i class="{{ $metodeIcon }}"></i> {{ $t->metode_byr }}
                                             </span>
                                         </td>
-                                        <td class="py-3.5 px-4 text-gray-500">{{ $t->user->nama ?? '-' }}</td>
+                                        <td class="py-3.5 px-4">
+                                            @php
+                                                $roleBadge = match($t->user->role ?? '') {
+                                                    'admin' => 'bg-purple-50 text-purple-600',
+                                                    'kasir' => 'bg-amber-50 text-amber-600',
+                                                    default => 'bg-gray-50 text-gray-500',
+                                                };
+                                                $roleIcon = match($t->user->role ?? '') {
+                                                    'admin' => 'fa-solid fa-shield-halved',
+                                                    'kasir' => 'fa-solid fa-user-tie',
+                                                    default => 'fa-regular fa-user',
+                                                };
+                                            @endphp
+                                            <div class="flex items-center gap-1.5">
+                                                <span class="text-gray-500 text-[12px]">{{ $t->user->nama ?? '-' }}</span>
+                                                @if ($t->user && in_array($t->user->role, ['admin', 'kasir']))
+                                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-semibold {{ $roleBadge }}">
+                                                        <i class="{{ $roleIcon }}"></i> {{ ucfirst($t->user->role) }}
+                                                    </span>
+                                                @endif
+                                            </div>
+                                        </td>
                                         <td class="py-3.5 px-4">
                                             @if ($t->status == 'Lunas')
                                                 <span class="badge-status status-selesai"><i class="fa-regular fa-circle-check"></i> Lunas</span>
@@ -267,6 +324,25 @@
     </div>
 
     <script>
+        function toggleFilterRole() {
+            document.getElementById('filterRolePanel').classList.toggle('hidden');
+        }
+
+        function applyFilterRole() {
+            document.getElementById('filterRolePanel').classList.add('hidden');
+            document.querySelector('form[action="{{ route('admin.transaksi.index') }}"]').submit();
+        }
+
+        document.addEventListener('click', function(e) {
+            const panel = document.getElementById('filterRolePanel');
+            if (panel && !panel.classList.contains('hidden')) {
+                const btn = document.querySelector('.filter-role');
+                if (btn && !btn.contains(e.target)) {
+                    panel.classList.add('hidden');
+                }
+            }
+        });
+
         function exportTransaksi() {
             const params = new URLSearchParams();
             const keyword = document.querySelector('input[name="keyword"]')?.value;
