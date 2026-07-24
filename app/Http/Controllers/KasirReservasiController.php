@@ -33,7 +33,7 @@ class KasirReservasiController extends Controller
 
     public function create()
     {
-        $pelanggan = Pelanggan::all();
+        $pelanggan = Pelanggan::with('membership')->get();
         $karyawan = User::where('role', 'beautycian')->get();
         $layanan = Layanan::where('status', 'Tersedia')->get();
         return view('kasir.reservasi.create', compact('pelanggan', 'karyawan', 'layanan'));
@@ -100,7 +100,7 @@ class KasirReservasiController extends Controller
     public function edit($id)
     {
         $reservasi = Booking::with('detail')->findOrFail($id);
-        $pelanggan = Pelanggan::all();
+        $pelanggan = Pelanggan::with('membership')->get();
         $karyawan = User::where('role', 'beautycian')->get();
         $layanan = Layanan::where('status', 'Tersedia')->get();
         return view('kasir.reservasi.edit', compact('reservasi', 'pelanggan', 'karyawan', 'layanan'));
@@ -158,6 +158,21 @@ class KasirReservasiController extends Controller
         buatNotif(auth()->user()->id, 'Reservasi Diperbarui', 'Reservasi #' . str_pad($id, 3, '0', STR_PAD_LEFT) . ' berhasil diperbarui', 'Booking', route('kasir.reservasi.index'));
 
         return redirect('kasir/reservasi')->with('message', 'Reservasi berhasil diperbarui');
+    }
+
+    public function konfirmasi($id)
+    {
+        $booking = Booking::with('pelanggan')->findOrFail($id);
+
+        if (!in_array($booking->status, ['menunggu'])) {
+            return redirect()->back()->with('error', 'Only pending bookings can be confirmed');
+        }
+
+        $booking->update(['status' => 'dikonfirmasi']);
+
+        buatNotif(auth()->id(), 'Booking Dikonfirmasi', 'Booking ' . ($booking->pelanggan->nm_pelanggan ?? '-') . ' telah dikonfirmasi', 'Booking', route('kasir.reservasi.show', $id));
+
+        return redirect()->back()->with('success', 'Booking berhasil dikonfirmasi');
     }
 
     public function destroy($id)
