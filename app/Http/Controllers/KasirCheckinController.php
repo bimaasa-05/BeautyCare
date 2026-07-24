@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\ActivityLogger;
 use App\Models\Booking;
 use Illuminate\Http\Request;
 
@@ -41,6 +42,7 @@ class KasirCheckinController extends Controller
         $booking = Booking::findOrFail($id);
         $booking->update(['status' => 'diproses']);
 
+        ActivityLogger::log('Check In', auth()->user()->nama . ' check in pelanggan ' . ($booking->pelanggan->nm_pelanggan ?? '-'), 'Reservasi', $id);
         buatNotif(auth()->id(), 'Check In Berhasil', 'Pelanggan ' . ($booking->pelanggan->nm_pelanggan ?? '-') . ' telah check in', 'Booking', route('kasir.checkin.index'));
 
         return redirect()->route('kasir.checkin.index')
@@ -52,6 +54,7 @@ class KasirCheckinController extends Controller
         $booking = Booking::findOrFail($id);
         $booking->update(['status' => 'dikonfirmasi']);
 
+        ActivityLogger::log('Batalkan Check In', auth()->user()->nama . ' membatalkan check in pelanggan ' . ($booking->pelanggan->nm_pelanggan ?? '-'), 'Reservasi', $id);
         buatNotif(auth()->id(), 'Check In Dibatalkan', 'Check in untuk ' . ($booking->pelanggan->nm_pelanggan ?? '-') . ' dibatalkan', 'Booking', route('kasir.checkin.index'));
 
         return redirect()->route('kasir.checkin.index')
