@@ -1,10 +1,10 @@
 @forelse ($transaksi as $t)
 <tr class="table-row-hover">
-    <td class="py-3.5 px-4 text-gray-400 font-medium text-center text-[12px]">{{ $loop->iteration }}</td>
-    <td class="py-3.5 px-4">
+    <td data-label="#" class="py-3.5 px-4 text-gray-400 font-medium text-center text-[12px]">{{ $loop->iteration }}</td>
+    <td data-label="Invoice" class="py-3.5 px-4">
         <span class="font-mono font-semibold text-gray-700 text-[12px]">{{ $t->no_invoice }}</span>
     </td>
-    <td class="py-3.5 px-4">
+    <td data-label="Pelanggan" class="py-3.5 px-4">
         <div class="flex items-center gap-2">
             <div class="w-7 h-7 rounded-full bg-pink-200 text-pink-600 flex items-center justify-center font-bold text-[10px]">
                 {{ $t->pelanggan ? strtoupper(substr($t->pelanggan->nm_pelanggan, 0, 2)) : '??' }}
@@ -12,9 +12,9 @@
             <span class="font-medium text-gray-700">{{ $t->pelanggan->nm_pelanggan ?? 'Umum' }}</span>
         </div>
     </td>
-    <td class="py-3.5 px-4 text-gray-500">{{ \Carbon\Carbon::parse($t->tanggal)->format('d/m/Y') }}</td>
-    <td class="py-3.5 px-4 font-semibold text-gray-800">Rp {{ number_format($t->total, 0, ',', '.') }}</td>
-    <td class="py-3.5 px-4">
+    <td data-label="Tanggal" class="py-3.5 px-4 text-gray-500">{{ \Carbon\Carbon::parse($t->tanggal)->format('d/m/Y') }}</td>
+    <td data-label="Total" class="py-3.5 px-4 font-semibold text-gray-800">Rp {{ number_format($t->total, 0, ',', '.') }}</td>
+    <td data-label="Metode" class="py-3.5 px-4">
         @php
             $metodeIcon = match($t->metode_byr) {
                 'Tunai' => 'fa-solid fa-money-bill-wave text-emerald-500',
@@ -28,7 +28,7 @@
             <i class="{{ $metodeIcon }}"></i> {{ $t->metode_byr }}
         </span>
     </td>
-    <td class="py-3.5 px-4">
+    <td data-label="Admin" class="py-3.5 px-4">
         @php
             $roleBadge = match($t->user->role ?? '') {
                 'admin' => 'bg-purple-50 text-purple-600',
@@ -50,7 +50,7 @@
             @endif
         </div>
     </td>
-    <td class="py-3.5 px-4">
+    <td data-label="Status" class="py-3.5 px-4">
         @if ($t->status == 'Lunas')
             <span class="badge-status status-selesai"><i class="fa-regular fa-circle-check"></i> Lunas</span>
         @elseif ($t->status == 'Pending')
@@ -59,7 +59,7 @@
             <span class="badge-status status-batal"><i class="fa-regular fa-circle-xmark"></i> Batal</span>
         @endif
     </td>
-    <td class="py-3.5 px-4 text-center">
+    <td data-label="Aksi" class="py-3.5 px-4 text-center">
         <div class="flex items-center justify-center gap-2">
             <a href="{{ route('admin.transaksi.show', $t->id_transaksi) }}"
                 class="w-7 h-7 text-blue-500 bg-blue-50 hover:bg-blue-100 rounded-md transition-colors flex items-center justify-center"

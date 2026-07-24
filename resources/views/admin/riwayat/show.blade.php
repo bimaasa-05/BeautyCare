@@ -42,7 +42,7 @@
         <main class="main-content">
             @include('layouts.header2')
 
-            <div class="flex-1 overflow-y-auto p-8">
+            <div class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 space-y-4 sm:space-y-6">
                 <div class="max-w-4xl mx-auto">
                     <a href="{{ route('admin.riwayat.index') }}" class="inline-flex items-center gap-2 text-pink-500 hover:text-pink-600 text-[13px] font-medium mb-4 transition-colors">
                         <i class="fa-solid fa-arrow-left"></i> Kembali ke Riwayat
