@@ -107,7 +107,7 @@
                             </h3>
                             <p class="text-[12px] text-gray-400 mt-0.5">
                                 <i class="fa-regular fa-circle-check text-pink-300 mr-1"></i>
-                                Total {{ $TotalPelanggan->total() }} pelanggan terdaftar
+                                Total {{ $TotalPelanggan }} pelanggan terdaftar
                             </p>
                         </div>
 
