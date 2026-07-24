@@ -72,8 +72,8 @@ class KasirPembayaranController extends Controller
         $request->validate([
             'id_booking' => 'required|integer|exists:booking,id_booking',
             'metode_byr' => 'required|in:Tunai,Transfer,Debit,E-Wallet',
-            'dibayar' => 'required|numeric|min:0',
             'total' => 'required|numeric|min:0',
+            'dibayar' => 'required|numeric|min:0|gte:total',
             'catatan' => 'nullable|string',
             'bukti_bayar' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'atas_nama' => 'nullable|string|max:100',
