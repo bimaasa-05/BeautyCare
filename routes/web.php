@@ -29,6 +29,7 @@ use App\Http\Controllers\KasirLaporanPelangganController;
 use App\Http\Controllers\KasirDashboardController;
 use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\AdminPengaturanController;
+use App\Http\Controllers\AdminRiwayatController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -164,6 +165,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/laporan-pelanggan', [AdminLaporanPelangganController::class, 'index'])->name('admin.laporan-pelanggan.index');
         Route::get('/admin/laporan-pelanggan/export-pdf', [AdminLaporanPelangganController::class, 'exportPDF'])->name('admin.laporan-pelanggan.export-pdf');
         Route::get('/admin/laporan-pelanggan/export-excel', [AdminLaporanPelangganController::class, 'exportExcel'])->name('admin.laporan-pelanggan.export-excel');
+
+        Route::get('/admin/riwayat', [AdminRiwayatController::class, 'index'])->name('admin.riwayat.index');
+        Route::get('/admin/riwayat/{id}', [AdminRiwayatController::class, 'show'])->name('admin.riwayat.show');
     });
 
 
