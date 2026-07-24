@@ -6,6 +6,7 @@ use App\Models\Booking;
 use App\Models\Transaksi;
 use App\Models\DetailTransaksi;
 use Illuminate\Http\Request;
+use App\Helpers\ActivityLogger;
 use Illuminate\Support\Facades\DB;
 
 class KasirPembayaranController extends Controller
@@ -119,6 +120,8 @@ class KasirPembayaranController extends Controller
             'bank_tujuan' => $request->bank_tujuan,
             'no_referensi' => $request->no_referensi,
         ]);
+
+        ActivityLogger::log('Menambahkan', auth()->user()->nama . ' menambahkan pembayaran ' . $no_invoice, 'Pembayaran', $transaksi->id_transaksi);
 
         foreach ($booking->detail as $d) {
             DetailTransaksi::create([

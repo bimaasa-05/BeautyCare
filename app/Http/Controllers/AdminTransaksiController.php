@@ -7,6 +7,7 @@ use App\Models\Pelanggan;
 use App\Models\DetailTransaksi;
 use App\Models\Layanan;
 use App\Models\Produk;
+use App\Helpers\ActivityLogger;
 use Illuminate\Http\Request;
 
 class AdminTransaksiController extends Controller
@@ -113,6 +114,8 @@ class AdminTransaksiController extends Controller
         }
 
         $transaksi = Transaksi::create($data);
+
+        ActivityLogger::log('Menambahkan', auth()->user()->nama . ' menambahkan transaksi ' . $no_invoice, 'Transaksi', $transaksi->id_transaksi);
 
         if ($request->has('items') && is_array($request->items)) {
             foreach ($request->items as $item) {
@@ -226,7 +229,12 @@ class AdminTransaksiController extends Controller
             $data['bukti_bayar'] = $request->file('bukti_bayar')->store('uploads/bukti_bayar', 'public');
         }
 
+        $transaksiLama = Transaksi::findOrFail($id);
+        $dataLama = $transaksiLama->toArray();
+
         Transaksi::where('id_transaksi', $id)->update($data);
+
+        ActivityLogger::log('Mengubah', auth()->user()->nama . ' mengubah transaksi ' . $transaksiLama->no_invoice, 'Transaksi', $id, $dataLama, $data);
 
         if ($request->has('items') && is_array($request->items)) {
             $oldDetails = DetailTransaksi::where('id_transaksi', $id)->get();
@@ -341,6 +349,8 @@ class AdminTransaksiController extends Controller
     public function destroy($id)
     {
         $transaksi = Transaksi::with('detail')->findOrFail($id);
+
+        ActivityLogger::log('Menghapus', auth()->user()->nama . ' menghapus transaksi ' . $transaksi->no_invoice, 'Transaksi', $id);
 
         foreach ($transaksi->detail as $detail) {
             if ($detail->jenis === 'Produk') {
