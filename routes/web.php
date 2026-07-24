@@ -314,7 +314,11 @@ Route::middleware('auth')->group(function () {
 
         //Route Produk
         Route::get('/pelanggan/produk', function () {
-            return view('pelanggan.produk.index');
+            $produks = \App\Models\Produk::with('kategori')
+                ->where('status', 'Tersedia')
+                ->orderBy('id_produk', 'desc')
+                ->get();
+            return view('pelanggan.produk.index', compact('produks'));
         })->name('pelanggan.produk');
 
         //Route Keranjang
