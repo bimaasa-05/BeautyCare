@@ -55,6 +55,15 @@
                             </p>
                         </div>
                         <div class="flex gap-2">
+                            @if ($reservasi->status === 'menunggu')
+                            <form action="{{ route('kasir.reservasi.konfirmasi', $reservasi->id_booking) }}" method="POST" class="inline">
+                                @csrf
+                                <button type="submit"
+                                    class="flex items-center gap-2 bg-blue-50 text-blue-600 text-[12px] font-semibold px-4 py-2 rounded-full hover:bg-blue-100 transition-colors border border-blue-200">
+                                    <i class="fa-regular fa-circle-check"></i> Konfirmasi
+                                </button>
+                            </form>
+                            @endif
                             <a href="{{ route('kasir.reservasi.edit', $reservasi->id_booking) }}"
                                 class="flex items-center gap-2 bg-yellow-50 text-yellow-600 text-[12px] font-semibold px-4 py-2 rounded-full hover:bg-yellow-100 transition-colors border border-yellow-200">
                                 <i class="fa-solid fa-pen-to-square"></i> Edit
