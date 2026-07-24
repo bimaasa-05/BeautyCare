@@ -150,7 +150,7 @@
 
                             <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
                                 <label class="payment-option cursor-pointer">
-                                    <input type="radio" name="metode_byr" value="Tunai" class="hidden peer" {{ old('metode_byr') == 'Tunai' ? 'checked' : '' }} onchange="togglePaymentMethod('Tunai')">
+                                    <input type="radio" name="metode_byr" value="Tunai" class="hidden peer" {{ old('metode_byr') ? (old('metode_byr') == 'Tunai' ? 'checked' : '') : 'checked' }} onchange="togglePaymentMethod('Tunai')">
                                     <div class="p-4 rounded-xl border-2 border-gray-100 peer-checked:border-pink-400 peer-checked:bg-pink-50/50 hover:border-pink-200 transition-all text-center">
                                         <div class="text-2xl mb-1">💵</div>
                                         <div class="text-[12px] font-semibold text-gray-600 peer-checked:text-pink-500">Tunai</div>
@@ -487,14 +487,13 @@
         }
 
         function togglePaymentMethod(method) {
-            document.querySelectorAll('.payment-section').forEach(el => el.classList.remove('active'));
-            if (method === 'Tunai') {
-                document.getElementById('payment-section-tunai').classList.add('active');
-            } else if (method === 'E-Wallet') {
-                document.getElementById('payment-section-ewallet').classList.add('active');
-            } else {
-                document.getElementById('payment-section-bank').classList.add('active');
-            }
+            document.querySelectorAll('.payment-section').forEach(el => {
+                el.classList.remove('active');
+                el.querySelectorAll('input, select, textarea').forEach(i => i.disabled = true);
+            });
+            const activeId = 'payment-section-' + (method === 'Tunai' ? 'tunai' : method === 'E-Wallet' ? 'ewallet' : 'bank');
+            document.getElementById(activeId).classList.add('active');
+            document.getElementById(activeId).querySelectorAll('input, select, textarea').forEach(i => i.disabled = false);
         }
 
         function onBankTujuanChange(select) {
