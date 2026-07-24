@@ -19,8 +19,7 @@
         .sidebar-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.3); z-index: 90; }
         .sidebar-overlay.active { display: block; }
         @media (max-width: 768px) { .sidebar-toggle { display: flex; align-items: center; } }
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; }
+        body { font-family: 'Poppins', sans-serif; }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
@@ -82,13 +81,13 @@
         .form-group { margin-bottom: 20px; }
         .form-group:last-child { margin-bottom: 0; }
         .form-group label { display: block; font-size: 12px; font-weight: 600; color: var(--gray); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.3px; }
-        .form-group .form-control { width: 100%; padding: 11px 16px; border-radius: 12px; border: 1.5px solid var(--border); background: #FAFAFA; font-size: 13px; font-family: 'Inter', sans-serif; color: var(--dark); transition: all 0.2s ease; outline: none; }
+        .form-group .form-control { width: 100%; padding: 11px 16px; border-radius: 12px; border: 1.5px solid var(--border); background: #FAFAFA; font-size: 13px; font-family: 'Poppins', sans-serif; color: var(--dark); transition: all 0.2s ease; outline: none; }
         .form-group .form-control:focus { border-color: var(--primary); background: #fff; box-shadow: 0 0 0 3px rgba(255, 79, 135, 0.1); }
         .form-group .form-control:disabled { background: #f5f5f5; color: #999; cursor: not-allowed; }
         .form-group .input-icon-wrap { position: relative; }
         .form-group .input-icon-wrap i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #bbb; font-size: 14px; }
         .form-group .input-icon-wrap .form-control { padding-left: 40px; }
-        .btn-primary-full { width: 100%; padding: 12px 24px; border-radius: 12px; border: none; background: linear-gradient(135deg, var(--primary), #FF7BA6); color: #fff; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; font-family: 'Inter', sans-serif; box-shadow: 0 4px 16px rgba(255, 79, 135, 0.25); }
+        .btn-primary-full { width: 100%; padding: 12px 24px; border-radius: 12px; border: none; background: linear-gradient(135deg, var(--primary), #FF7BA6); color: #fff; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; font-family: 'Poppins', sans-serif; box-shadow: 0 4px 16px rgba(255, 79, 135, 0.25); }
         .btn-primary-full:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(255, 79, 135, 0.35); }
         .info-row { display: flex; align-items: center; padding: 14px 0; border-bottom: 1px solid #F5F5F5; }
         .info-row:last-child { border-bottom: none; }
