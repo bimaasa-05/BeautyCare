@@ -24,6 +24,34 @@
         @media (max-width: 768px) { .sidebar-toggle { display: flex; align-items: center; } }
     </style>
     <style>
+        @media (max-width: 768px) {
+            .data-table thead { display: none; }
+            .data-table tbody tr {
+                display: block;
+                padding: 16px;
+                border-bottom: 1px solid var(--border);
+            }
+            .data-table tbody td {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 8px 0;
+                border: none;
+                font-size: 13px;
+                text-align: right;
+            }
+            .data-table tbody td::before {
+                content: attr(data-label);
+                font-weight: 600;
+                color: var(--gray);
+                font-size: 11px;
+                text-transform: uppercase;
+            }
+            .data-table tbody td:first-child { padding-left: 0; }
+            .data-table tbody td:last-child { padding-right: 0; }
+        }
+    </style>
+    <style>
         body { font-family: 'Poppins', sans-serif; }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
@@ -51,7 +79,7 @@
         <main class="main-content">
             @include('layouts.header2')
 
-            <div class="flex-1 overflow-y-auto p-8">
+            <div class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 space-y-4 sm:space-y-6">
                 <div class="bg-white rounded-2xl p-6 shadow-[0_2px_10px_-4px rgba(0,0,0,0.05)] relative overflow-hidden">
                     <div class="float-icon" style="top:-20px;right:-5px;">📋</div>
 
@@ -65,7 +93,7 @@
                                 Informasi lengkap transaksi {{ $transaksi->no_invoice }}
                             </p>
                         </div>
-                        <div class="flex items-center gap-2 no-print">
+                        <div class="flex flex-wrap items-center gap-2 no-print">
                             @if ($transaksi->status === 'Pending')
                             <form action="{{ route('admin.transaksi.update', $transaksi->id_transaksi) }}" method="POST" class="inline">
                                 @csrf
@@ -261,7 +289,7 @@
                                     <i class="fa-regular fa-cart-shopping text-pink-400"></i> Items
                                 </h4>
                                 <div class="overflow-x-auto">
-                                    <table class="w-full text-xs">
+                                    <table class="data-table w-full text-xs">
                                         <thead>
                                             <tr class="bg-pink-50/50">
                                                 <th class="text-left px-3 py-2 font-semibold text-gray-500">Item</th>
@@ -274,11 +302,11 @@
                                         <tbody>
                                             @foreach ($transaksi->detail as $d)
                                             <tr class="border-t border-pink-50">
-                                                <td class="px-3 py-2 font-medium">{{ $d->nm_item }}</td>
-                                                <td class="px-3 py-2 text-gray-500">{{ $d->jenis }}</td>
-                                                <td class="px-3 py-2 text-center">{{ $d->qty }}</td>
-                                                <td class="px-3 py-2 text-right">Rp {{ number_format($d->harga, 0, ',', '.') }}</td>
-                                                <td class="px-3 py-2 text-right font-semibold">Rp {{ number_format($d->subtotal, 0, ',', '.') }}</td>
+                                                <td data-label="Item" class="px-3 py-2 font-medium">{{ $d->nm_item }}</td>
+                                                <td data-label="Jenis" class="px-3 py-2 text-gray-500">{{ $d->jenis }}</td>
+                                                <td data-label="Qty" class="px-3 py-2 text-center">{{ $d->qty }}</td>
+                                                <td data-label="Harga" class="px-3 py-2 text-right">Rp {{ number_format($d->harga, 0, ',', '.') }}</td>
+                                                <td data-label="Subtotal" class="px-3 py-2 text-right font-semibold">Rp {{ number_format($d->subtotal, 0, ',', '.') }}</td>
                                             </tr>
                                             @endforeach
                                         </tbody>

@@ -24,6 +24,14 @@
         .sidebar-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.3); z-index: 90; }
         .sidebar-overlay.active { display: block; }
         @media (max-width: 768px) { .sidebar-toggle { display: flex; align-items: center; } }
+        @media (max-width: 768px) {
+            .data-table thead { display: none; }
+            .data-table tbody tr { display: block; padding: 16px; border-bottom: 1px solid var(--border); }
+            .data-table tbody td { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border: none; font-size: 13px; text-align: right; }
+            .data-table tbody td::before { content: attr(data-label); font-weight: 600; color: var(--gray); font-size: 11px; text-transform: uppercase; }
+            .data-table tbody td:first-child { padding-left: 0; }
+            .data-table tbody td:last-child { padding-right: 0; }
+        }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
@@ -52,7 +60,7 @@
         <main class="main-content">
             @include('layouts.header2')
 
-            <div class="flex-1 overflow-y-auto p-8">
+            <div class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 space-y-4 sm:space-y-6">
                 <div class="bg-white rounded-2xl p-6 shadow-[0_2px_10px_-4px rgba(0,0,0,0.05)] relative overflow-hidden">
 
                     <div class="mb-6">
@@ -90,14 +98,14 @@
                     </div>
 
                     <form method="GET" action="{{ route('admin.riwayat.index') }}" class="flex flex-wrap items-center justify-end gap-2 mb-4">
-                        <select name="role" class="bg-gray-50 border border-gray-100 text-[12px] rounded-full px-3 py-2 w-[130px] focus:outline-none focus:border-pink-300 transition-all">
+                        <select name="role" class="bg-gray-50 border border-gray-100 text-[12px] rounded-full px-3 py-2 w-full sm:w-[130px] focus:outline-none focus:border-pink-300 transition-all">
                             <option value="">Semua Role</option>
                             <option value="admin" {{ request()->role == 'admin' ? 'selected' : '' }}>Admin</option>
                             <option value="kasir" {{ request()->role == 'kasir' ? 'selected' : '' }}>Kasir</option>
                             <option value="beautycian" {{ request()->role == 'beautycian' ? 'selected' : '' }}>Beautycian</option>
                             <option value="pelanggan" {{ request()->role == 'pelanggan' ? 'selected' : '' }}>Pelanggan</option>
                         </select>
-                        <select name="tipe" class="bg-gray-50 border border-gray-100 text-[12px] rounded-full px-3 py-2 w-[150px] focus:outline-none focus:border-pink-300 transition-all">
+                        <select name="tipe" class="bg-gray-50 border border-gray-100 text-[12px] rounded-full px-3 py-2 w-full sm:w-[150px] focus:outline-none focus:border-pink-300 transition-all">
                             <option value="">Semua Tipe</option>
                             <option value="transaksi" {{ request()->tipe == 'transaksi' ? 'selected' : '' }}>Transaksi</option>
                             <option value="booking" {{ request()->tipe == 'booking' ? 'selected' : '' }}>Booking</option>
@@ -110,14 +118,14 @@
                         <div class="relative">
                             <i class="fa-solid fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-[12px]"></i>
                             <input type="text" placeholder="Cari aktivitas..." name="keyword"
-                                class="bg-gray-50 border border-gray-100 text-[12px] rounded-full pl-9 pr-4 py-2 w-[180px] focus:outline-none focus:border-pink-300 transition-all placeholder-gray-400"
+                                class="bg-gray-50 border border-gray-100 text-[12px] rounded-full pl-9 pr-4 py-2 w-full sm:w-[180px] focus:outline-none focus:border-pink-300 transition-all placeholder-gray-400"
                                 value="{{ request()->keyword }}">
                         </div>
                         <input type="date" name="dari" value="{{ request()->dari }}"
-                            class="bg-gray-50 border border-gray-100 text-[12px] rounded-full px-3 py-2 w-[140px] focus:outline-none focus:border-pink-300 transition-all">
-                        <span class="text-gray-400 text-[12px]">—</span>
+                            class="bg-gray-50 border border-gray-100 text-[12px] rounded-full px-3 py-2 w-full sm:w-[140px] focus:outline-none focus:border-pink-300 transition-all">
+                        <span class="text-gray-400 text-[12px] hidden sm:inline">—</span>
                         <input type="date" name="sampai" value="{{ request()->sampai }}"
-                            class="bg-gray-50 border border-gray-100 text-[12px] rounded-full px-3 py-2 w-[140px] focus:outline-none focus:border-pink-300 transition-all">
+                            class="bg-gray-50 border border-gray-100 text-[12px] rounded-full px-3 py-2 w-full sm:w-[140px] focus:outline-none focus:border-pink-300 transition-all">
                         <button type="submit"
                             class="bg-pink-50 text-pink-600 text-[12px] font-semibold px-4 py-2 rounded-full hover:bg-pink-100 transition-colors border border-pink-200">
                             <i class="fa-solid fa-filter mr-1"></i> Filter
@@ -131,7 +139,7 @@
                     </form>
 
                     <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse">
+                        <table class="data-table w-full text-left border-collapse">
                             <thead>
                                 <tr class="text-[11px] font-bold text-gray-400 uppercase border-b border-gray-100 bg-pink-50/30">
                                     <th class="py-3 px-4 w-10">#</th>
@@ -147,11 +155,11 @@
                             <tbody class="text-[13px] text-gray-700 divide-y divide-gray-50">
                                 @forelse($riwayat as $r)
                                     <tr class="table-row-hover">
-                                        <td class="py-3.5 px-4 text-gray-400 font-medium text-center text-[12px]">{{ $loop->iteration }}</td>
-                                        <td class="py-3.5 px-4 whitespace-nowrap">
+                                        <td data-label="#" class="py-3.5 px-4 text-gray-400 font-medium text-center text-[12px]">{{ $loop->iteration }}</td>
+                                        <td data-label="Waktu" class="py-3.5 px-4 whitespace-nowrap">
                                             <span class="text-[12px] text-gray-500">{{ \Carbon\Carbon::parse($r->created_at)->format('d/m/Y H:i') }}</span>
                                         </td>
-                                        <td class="py-3.5 px-4">
+                                        <td data-label="User" class="py-3.5 px-4">
                                             <div class="flex items-center gap-2">
                                                 <div class="w-7 h-7 rounded-full bg-pink-200 text-pink-600 flex items-center justify-center font-bold text-[10px]">
                                                     {{ $r->user ? strtoupper(substr($r->user->nama, 0, 2)) : '??' }}
@@ -159,7 +167,7 @@
                                                 <span class="font-medium text-gray-700">{{ $r->user->nama ?? 'System' }}</span>
                                             </div>
                                         </td>
-                                        <td class="py-3.5 px-4">
+                                        <td data-label="Role" class="py-3.5 px-4">
                                             @php
                                                 $roleClass = match($r->role) {
                                                     'admin' => 'role-admin',
@@ -173,20 +181,20 @@
                                                 <i class="fa-solid fa-circle text-[6px]"></i> {{ ucfirst($r->role) }}
                                             </span>
                                         </td>
-                                        <td class="py-3.5 px-4">
+                                        <td data-label="Aksi" class="py-3.5 px-4">
                                             <span class="aksi-badge">{{ $r->aksi }}</span>
                                         </td>
-                                        <td class="py-3.5 px-4">
+                                        <td data-label="Tipe" class="py-3.5 px-4">
                                             @if ($r->tipe)
                                                 <span class="text-[12px] font-medium text-gray-500 bg-gray-100 px-2.5 py-1 rounded-full">{{ $r->tipe }}</span>
                                             @else
                                                 <span class="text-gray-300">-</span>
                                             @endif
                                         </td>
-                                        <td class="py-3.5 px-4 max-w-[250px]">
+                                        <td data-label="Deskripsi" class="py-3.5 px-4 max-w-[250px]">
                                             <p class="truncate text-gray-600">{{ $r->deskripsi }}</p>
                                         </td>
-                                        <td class="py-3.5 px-4 text-center">
+                                        <td data-label="Detail" class="py-3.5 px-4 text-center">
                                             <a href="{{ route('admin.riwayat.show', $r->id) }}"
                                                 class="w-7 h-7 text-blue-500 bg-blue-50 hover:bg-blue-100 rounded-md transition-colors inline-flex items-center justify-center"
                                                 title="Detail"><i class="fa-regular fa-eye text-xs"></i></a>
