@@ -18,7 +18,7 @@ class KasirPembayaranController extends Controller
         $search = $request->keyword;
 
         $reservasiSelesai = Booking::with(['pelanggan', 'detail.layanan'])
-            ->where('status', 'selesai')
+            ->whereIn('status', ['diproses', 'selesai'])
             ->whereNotIn('id_booking', $bookedIds)
             ->when($search, function ($query, $search) {
                 return $query->whereHas('pelanggan', function ($q) use ($search) {
@@ -29,7 +29,7 @@ class KasirPembayaranController extends Controller
             ->orderBy('tanggal', 'desc')
             ->get();
 
-        $totalTagihan = Booking::where('status', 'selesai')->whereNotIn('id_booking', $bookedIds)
+        $totalTagihan = Booking::whereIn('status', ['diproses', 'selesai'])->whereNotIn('id_booking', $bookedIds)
             ->when($search, function ($query, $search) {
                 return $query->whereHas('pelanggan', function ($q) use ($search) {
                     $q->where('nm_pelanggan', 'like', "%{$search}%")
@@ -47,8 +47,8 @@ class KasirPembayaranController extends Controller
     {
         $booking = Booking::with(['pelanggan', 'karyawan', 'detail.layanan'])->findOrFail($id);
 
-        if ($booking->status !== 'selesai') {
-            return redirect()->route('kasir.pembayaran.index')->with('error', 'Booking belum selesai, tidak bisa diproses');
+        if (!in_array($booking->status, ['diproses', 'selesai'])) {
+            return redirect()->route('kasir.pembayaran.index')->with('error', 'Booking belum check-in, tidak bisa diproses');
         }
 
         $transaksiExists = Transaksi::where('id_booking', $id)->exists();
@@ -56,7 +56,15 @@ class KasirPembayaranController extends Controller
             return redirect()->route('kasir.pembayaran.index')->with('error', 'Booking ini sudah memiliki pembayaran');
         }
 
-        return view('kasir.pembayaran.create', compact('booking'));
+        $bankTujuan = [
+            'BRI' => '10101010',
+            'BCA' => '20202020',
+            'Mandiri' => '30303030',
+            'BNI' => '40404040',
+            'BSI' => '50505050',
+        ];
+
+        return view('kasir.pembayaran.create', compact('booking', 'bankTujuan'));
     }
 
     public function store(Request $request)
@@ -74,6 +82,7 @@ class KasirPembayaranController extends Controller
             'bank_asal' => 'nullable|string|max:50',
             'bank_tujuan' => 'nullable|string|max:50',
             'no_referensi' => 'nullable|string|max:50',
+            'ewallet_type' => 'nullable|string|max:50',
         ]);
 
         $booking = Booking::with(['pelanggan', 'detail.layanan'])->findOrFail($request->id_booking);
@@ -116,7 +125,7 @@ class KasirPembayaranController extends Controller
             'atas_nama' => $request->atas_nama,
             'dari_rekening' => $request->dari_rekening,
             'ke_rekening' => $request->ke_rekening,
-            'bank_asal' => $request->bank_asal,
+            'bank_asal' => $request->bank_asal ?? $request->ewallet_type,
             'bank_tujuan' => $request->bank_tujuan,
             'no_referensi' => $request->no_referensi,
         ]);
@@ -136,7 +145,7 @@ class KasirPembayaranController extends Controller
             ]);
         }
 
-        Booking::where('id_booking', $request->id_booking)->update(['status' => 'dikonfirmasi']);
+        Booking::where('id_booking', $request->id_booking)->update(['status' => 'selesai']);
 
         buatNotif(auth()->user()->id, 'Pembayaran Berhasil', 'Pembayaran ' . $no_invoice . ' berhasil diproses (' . $request->metode_byr . ')', 'Transaksi', route('kasir.pembayaran.show', $transaksi->id_transaksi));
 
