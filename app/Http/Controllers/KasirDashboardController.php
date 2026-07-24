@@ -18,6 +18,21 @@ class KasirDashboardController extends Controller
         $today = date('Y-m-d');
         $yesterday = date('Y-m-d', strtotime('-1 day'));
         $periode = $request->get('periode', '7hari');
+        $paymentPeriode = $request->get('payment_periode', '7hari');
+
+        $periodStart = match ($periode) {
+            '30hari' => date('Y-m-d', strtotime('-30 days')),
+            'bulanini' => date('Y-m-01'),
+            'tahunini' => date('Y-01-01'),
+            default => date('Y-m-d', strtotime('-7 days')),
+        };
+
+        $paymentPeriodStart = match ($paymentPeriode) {
+            '30hari' => date('Y-m-d', strtotime('-30 days')),
+            'bulanini' => date('Y-m-01'),
+            'tahunini' => date('Y-01-01'),
+            default => date('Y-m-d', strtotime('-7 days')),
+        };
 
         $pendapatanHariIni = (float) Transaksi::where('id_user', $userId)
             ->whereDate('tanggal', $today)
@@ -90,12 +105,12 @@ class KasirDashboardController extends Controller
             ? round((($produkTerjual - $produkTerjualKemarin) / $produkTerjualKemarin) * 100)
             : ($produkTerjual > 0 ? 100 : 0);
 
-        [$chartLabels, $chartRevenue] = $this->getChartData($userId, $periode);
+        [$chartLabels, $chartRevenue] = $this->getChartData($userId, $periode, $periodStart);
 
         $paymentData = Transaksi::select('metode_byr', DB::raw('COUNT(*) as total'), DB::raw('COALESCE(SUM(total),0) as jumlah'))
             ->where('id_user', $userId)
-            ->whereDate('tanggal', $today)
             ->where('status', 'Lunas')
+            ->whereBetween('tanggal', [$paymentPeriodStart, $today])
             ->groupBy('metode_byr')
             ->orderBy('total', 'desc')
             ->get();
@@ -105,6 +120,7 @@ class KasirDashboardController extends Controller
 
         $transaksiTerbaru = Transaksi::with('pelanggan')
             ->where('id_user', $userId)
+            ->whereBetween('tanggal', [$periodStart, $today])
             ->orderBy('id_transaksi', 'desc')
             ->limit(5)
             ->get();
@@ -118,6 +134,7 @@ class KasirDashboardController extends Controller
             )
             ->join('transaksi', 'transaksi.id_transaksi', '=', 'detail_transaksi.id_transaksi')
             ->where('transaksi.id_user', $userId)
+            ->whereBetween('transaksi.tanggal', [$periodStart, $today])
             ->groupBy('detail_transaksi.id_item', 'detail_transaksi.nm_item', 'detail_transaksi.jenis')
             ->orderByDesc('total_qty')
             ->limit(5)
@@ -129,7 +146,7 @@ class KasirDashboardController extends Controller
                 DB::raw('COALESCE(SUM(total),0) as total')
             )
             ->where('id_user', $userId)
-            ->whereDate('tanggal', $today)
+            ->whereBetween('tanggal', [$paymentPeriodStart, $today])
             ->groupBy('metode_byr')
             ->orderBy('jumlah', 'desc')
             ->get();
@@ -147,7 +164,7 @@ class KasirDashboardController extends Controller
             ->get();
 
         $stokMenipis = Produk::with('kategori')
-            ->orderBy('stok')
+            ->orderBy('stok', 'desc')
             ->limit(4)
             ->get();
 
@@ -172,7 +189,7 @@ class KasirDashboardController extends Controller
             'pesananPending', 'pendingGrowth',
             'produkTerjual', 'produkTerjualGrowth',
             'chartLabels', 'chartRevenue', 'periode',
-            'paymentLabels', 'paymentValues',
+            'paymentLabels', 'paymentValues', 'paymentPeriode',
             'transaksiTerbaru',
             'produkTerlaris',
             'rekapPembayaran',
@@ -183,14 +200,9 @@ class KasirDashboardController extends Controller
         ));
     }
 
-    private function getChartData($userId, $periode)
+    private function getChartData($userId, $periode, $start)
     {
         $end = date('Y-m-d');
-        $start = match ($periode) {
-            '30hari' => date('Y-m-d', strtotime('-30 days')),
-            'bulanini' => date('Y-m-01'),
-            default => date('Y-m-d', strtotime('-7 days')),
-        };
 
         $data = Transaksi::select(
                 DB::raw('DATE(tanggal) as label'),
