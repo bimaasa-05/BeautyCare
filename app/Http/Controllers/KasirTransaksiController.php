@@ -15,9 +15,11 @@ class KasirTransaksiController extends Controller
     public function index(Request $request)
     {
         $search = $request->keyword;
+        $userId = auth()->id();
 
-        $TotalTransaksi = Transaksi::count();
+        $TotalTransaksi = Transaksi::where('id_user', $userId)->count();
         $transaksi = Transaksi::with('pelanggan')
+            ->where('id_user', $userId)
             ->when($search, function ($query, $search) {
                 return $query->where('no_invoice', 'like', "%{$search}%")
                     ->orWhere('tanggal', 'like', "%{$search}%");
@@ -29,7 +31,7 @@ class KasirTransaksiController extends Controller
     public function create()
     {
         $pelanggan = Pelanggan::with('membership')->get();
-        $layanan = Layanan::where('status', 1)->get();
+        $layanan = Layanan::where('status', 'Tersedia')->get();
         $produk = Produk::where('status', 1)->get();
 
         $bankTujuan = [
@@ -64,7 +66,7 @@ class KasirTransaksiController extends Controller
             'bank_tujuan' => 'nullable|string|max:50',
             'no_referensi' => 'nullable|string|max:50',
             'ewallet_type' => 'nullable|string|max:50',
-            'status' => 'nullable|in:Lunas,Proses,Batal',
+            'status' => 'nullable|in:Lunas,Proses,Batal,Pending',
         ]);
 
         $lastId = Transaksi::max('id_transaksi') + 1;
@@ -76,7 +78,7 @@ class KasirTransaksiController extends Controller
         }
 
         $data = [
-            'id_booking' => $lastId,
+            'id_booking' => null,
             'id_pelanggan' => $request->id_pelanggan,
             'id_user' => auth()->user()->id,
             'no_invoice' => $no_invoice,
@@ -155,12 +157,14 @@ class KasirTransaksiController extends Controller
         $search = $request->keyword;
         $dari = $request->dari;
         $sampai = $request->sampai;
+        $userId = auth()->id();
 
-        $totalInvoice = Transaksi::count();
-        $totalLunas = Transaksi::where('status', 'Lunas')->count();
-        $totalPending = Transaksi::where('status', 'Pending')->count();
+        $totalInvoice = Transaksi::where('id_user', $userId)->count();
+        $totalLunas = Transaksi::where('id_user', $userId)->where('status', 'Lunas')->count();
+        $totalPending = Transaksi::where('id_user', $userId)->where('status', 'Pending')->count();
 
         $invoices = Transaksi::with('pelanggan')
+            ->where('id_user', $userId)
             ->when($search, function ($query, $search) {
                 return $query->where('no_invoice', 'like', "%{$search}%")
                     ->orWhereHas('pelanggan', function ($q) use ($search) {
@@ -185,7 +189,7 @@ class KasirTransaksiController extends Controller
     {
         $transaksi = Transaksi::with('detail')->findOrFail($id);
         $pelanggan = Pelanggan::with('membership')->get();
-        $layanan = Layanan::where('status', 1)->get();
+        $layanan = Layanan::where('status', 'Tersedia')->get();
         $produk = Produk::where('status', 1)->get();
 
         $bankTujuan = [
@@ -220,7 +224,7 @@ class KasirTransaksiController extends Controller
             'bank_tujuan' => 'nullable|string|max:50',
             'no_referensi' => 'nullable|string|max:50',
             'ewallet_type' => 'nullable|string|max:50',
-            'status' => 'nullable|in:Lunas,Proses,Batal',
+            'status' => 'nullable|in:Lunas,Proses,Batal,Pending',
         ]);
 
         $status = $request->status;
@@ -303,10 +307,6 @@ class KasirTransaksiController extends Controller
 
     public function destroy($id)
     {
-<<<<<<< HEAD
-        $transaksi = Transaksi::findOrFail($id);
-        ActivityLogger::log('Menghapus', auth()->user()->nama . ' menghapus transaksi ' . $transaksi->no_invoice, 'Transaksi', $id);
-=======
         $transaksi = Transaksi::with('detail')->findOrFail($id);
 
         foreach ($transaksi->detail as $detail) {
@@ -318,7 +318,6 @@ class KasirTransaksiController extends Controller
             }
         }
 
->>>>>>> 3bb2fdf0 (Memperbaiki KasirController dan mengoptimalkannya)
         if ($transaksi->bukti_bayar) {
             \Illuminate\Support\Facades\Storage::disk('public')->delete($transaksi->bukti_bayar);
         }
