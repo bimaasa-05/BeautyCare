@@ -7,6 +7,7 @@ use App\Models\DetailBooking;
 use App\Models\Pelanggan;
 use App\Models\Layanan;
 use App\Models\User;
+use App\Helpers\ActivityLogger;
 use Illuminate\Http\Request;
 
 class KasirReservasiController extends Controller
@@ -85,6 +86,8 @@ class KasirReservasiController extends Controller
             buatNotif($admin->id, 'Reservasi Baru', 'Reservasi baru oleh ' . auth()->user()->nama . ' untuk ' . ($booking->pelanggan->nm_pelanggan ?? 'Pelanggan'), 'Booking', url('/admin/dashboard'));
         }
 
+        ActivityLogger::log('Menambahkan', auth()->user()->nama . ' menambahkan reservasi untuk ' . ($booking->pelanggan->nm_pelanggan ?? 'Pelanggan'), 'Reservasi', $booking->id_booking);
+
         return redirect('kasir/reservasi')->with('message', 'Reservasi berhasil dibuat');
     }
 
@@ -120,14 +123,19 @@ class KasirReservasiController extends Controller
             'diskon.*' => 'nullable|numeric|min:0',
         ]);
 
-        Booking::where('id_booking', $id)->update([
+        $dataBooking = [
             'id_pelanggan' => $request->id_pelanggan,
             'id_karyawan' => $request->id_karyawan,
             'tanggal' => $request->tanggal,
             'jam' => $request->jam,
             'status' => $request->status,
             'catatan' => $request->catatan ?? '',
-        ]);
+        ];
+
+        $bookingLama = Booking::with('pelanggan')->findOrFail($id);
+        $dataLama = $bookingLama->toArray();
+
+        Booking::where('id_booking', $id)->update($dataBooking);
 
         DetailBooking::where('id_booking', $id)->delete();
 
@@ -145,6 +153,8 @@ class KasirReservasiController extends Controller
             ]);
         }
 
+        ActivityLogger::log('Mengubah', auth()->user()->nama . ' mengubah reservasi #' . str_pad($id, 3, '0', STR_PAD_LEFT), 'Reservasi', $id, $dataLama, $dataBooking);
+
         buatNotif(auth()->user()->id, 'Reservasi Diperbarui', 'Reservasi #' . str_pad($id, 3, '0', STR_PAD_LEFT) . ' berhasil diperbarui', 'Booking', route('kasir.reservasi.index'));
 
         return redirect('kasir/reservasi')->with('message', 'Reservasi berhasil diperbarui');
@@ -152,8 +162,10 @@ class KasirReservasiController extends Controller
 
     public function destroy($id)
     {
+        $booking = Booking::findOrFail($id);
+        ActivityLogger::log('Menghapus', auth()->user()->nama . ' menghapus reservasi #' . str_pad($id, 3, '0', STR_PAD_LEFT), 'Reservasi', $id);
         DetailBooking::where('id_booking', $id)->delete();
-        Booking::findOrFail($id)->delete();
+        $booking->delete();
 
         buatNotif(auth()->user()->id, 'Reservasi Dihapus', 'Reservasi #' . str_pad($id, 3, '0', STR_PAD_LEFT) . ' berhasil dihapus', 'Booking', route('kasir.reservasi.index'));
 

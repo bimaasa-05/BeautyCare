@@ -7,6 +7,7 @@ use App\Models\DetailBooking;
 use App\Models\Pelanggan;
 use App\Models\Layanan;
 use App\Models\User;
+use App\Helpers\ActivityLogger;
 use Illuminate\Http\Request;
 
 class AdminReservasiController extends Controller
@@ -79,6 +80,8 @@ class AdminReservasiController extends Controller
             ]);
         }
 
+        ActivityLogger::log('Menambahkan', auth()->user()->nama . ' menambahkan reservasi untuk ' . ($booking->pelanggan->nm_pelanggan ?? 'Pelanggan'), 'Reservasi', $booking->id_booking);
+
         return redirect()->route('admin.reservasi.index')->with('success', 'Reservasi berhasil dibuat');
     }
 
@@ -114,14 +117,19 @@ class AdminReservasiController extends Controller
             'diskon.*' => 'nullable|numeric|min:0',
         ]);
 
-        Booking::where('id_booking', $id)->update([
+        $dataBooking = [
             'id_pelanggan' => $request->id_pelanggan,
             'id_karyawan' => $request->id_karyawan,
             'tanggal' => $request->tanggal,
             'jam' => $request->jam,
             'status' => $request->status,
             'catatan' => $request->catatan ?? '',
-        ]);
+        ];
+
+        $bookingLama = Booking::with('pelanggan')->findOrFail($id);
+        $dataLama = $bookingLama->toArray();
+
+        Booking::where('id_booking', $id)->update($dataBooking);
 
         DetailBooking::where('id_booking', $id)->delete();
 
@@ -139,6 +147,8 @@ class AdminReservasiController extends Controller
             ]);
         }
 
+        ActivityLogger::log('Mengubah', auth()->user()->nama . ' mengubah reservasi #' . str_pad($id, 3, '0', STR_PAD_LEFT), 'Reservasi', $id, $dataLama, $dataBooking);
+
         return redirect()->route('admin.reservasi.index')->with('success', 'Reservasi berhasil diperbarui');
     }
 
@@ -148,9 +158,14 @@ class AdminReservasiController extends Controller
             'status' => 'required|in:menunggu,dikonfirmasi,diproses,selesai,dibatalkan',
         ]);
 
+        $bookingLama = Booking::findOrFail($id);
+        $statusLama = $bookingLama->status;
+
         Booking::where('id_booking', $id)->update([
             'status' => $request->status,
         ]);
+
+        ActivityLogger::log('Mengubah Status', auth()->user()->nama . ' mengubah status reservasi #' . str_pad($id, 3, '0', STR_PAD_LEFT) . ' dari ' . $statusLama . ' menjadi ' . $request->status, 'Reservasi', $id);
 
         if ($request->wantsJson()) {
             return response()->json(['success' => true]);
@@ -161,8 +176,10 @@ class AdminReservasiController extends Controller
 
     public function destroy($id)
     {
+        $booking = Booking::findOrFail($id);
+        ActivityLogger::log('Menghapus', auth()->user()->nama . ' menghapus reservasi #' . str_pad($id, 3, '0', STR_PAD_LEFT), 'Reservasi', $id);
         DetailBooking::where('id_booking', $id)->delete();
-        Booking::findOrFail($id)->delete();
+        $booking->delete();
         return redirect()->route('admin.reservasi.index')->with('success', 'Reservasi berhasil dihapus');
     }
 
