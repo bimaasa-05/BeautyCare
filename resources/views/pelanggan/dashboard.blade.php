@@ -46,6 +46,83 @@
         display: block;
     }
 
+    .table-widget {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .table-widget .table-scroll {
+        flex: 1;
+        max-height: 242px;
+        overflow-y: auto;
+        border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+    }
+
+    .table-widget .table-scroll::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    .table-widget .table-scroll::-webkit-scrollbar-thumb {
+        background: #ddd;
+        border-radius: 10px;
+    }
+
+    .table-widget .table-scroll::-webkit-scrollbar-thumb:hover {
+        background: #bbb;
+    }
+
+    .table-widget .table-scroll thead {
+        position: sticky;
+        top: 0;
+        z-index: 2;
+    }
+
+    .table-widget .table-scroll thead th {
+        background: var(--white);
+    }
+
+    .table-widget .table-scroll thead th::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 12px;
+        right: 12px;
+        height: 1px;
+        background: var(--border);
+    }
+
+    .dashboard-bottom-row .list-widget {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .dashboard-bottom-row .list-widget .content-scroll {
+        flex: 1;
+        overflow-y: auto;
+        max-height: 176px;
+    }
+
+    .dashboard-bottom-row .list-widget .content-scroll::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    .dashboard-bottom-row .list-widget .content-scroll::-webkit-scrollbar-thumb {
+        background: #ddd;
+        border-radius: 10px;
+    }
+
+    .dashboard-bottom-row .list-widget .content-scroll::-webkit-scrollbar-thumb:hover {
+        background: #bbb;
+    }
+
+    .dashboard-bottom-row .list-widget .booking-list {
+        flex: 1;
+    }
+
+    .dashboard-bottom-row .list-widget .stock-grid {
+        flex: 1;
+    }
+
     @media (max-width: 768px) {
         .sidebar-toggle {
             display: flex;
@@ -273,6 +350,7 @@
                             <h3>Riwayat Treatment Saya</h3>
                             <a href="{{ route('pelanggan.treatment') }}">Lihat Semua</a>
                         </div>
+                        <div class="table-scroll">
                         <table class="data-table">
                             <thead>
                                 <tr>
@@ -315,6 +393,7 @@
                                 </tr>
                             </tbody>
                         </table>
+                        </div>
                     </div>
 
                     <!-- Produk Yang Tersedia -->
@@ -323,6 +402,7 @@
                             <h3>Produk Yang Tersedia</h3>
                             <a href="#">Lihat Semua</a>
                         </div>
+                        <div class="table-scroll">
                         <table class="data-table">
                             <thead>
                                 <tr>
@@ -349,6 +429,7 @@
                                 @endforelse
                             </tbody>
                         </table>
+                        </div>
                     </div>
                 </div>
 
@@ -384,6 +465,7 @@
                             <h3>Layanan Populer</h3>
                             <a href="{{ route('pelanggan.booking') }}" style="font-size:13px;color:var(--primary);font-weight:500;">Booking</a>
                         </div>
+                        <div class="content-scroll">
                         <div class="employee-grid">
                             @forelse($layanans as $layanan)
                             @php
@@ -404,6 +486,7 @@
                                 Belum ada layanan tersedia.
                             </div>
                             @endforelse
+                        </div>
                         </div>
                     </div>
 
