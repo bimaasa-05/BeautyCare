@@ -85,7 +85,7 @@
                                             data-tingkat="{{ $p->membership->tingkat ?? '' }}"
                                             data-diskon="{{ $p->membership->diskon ?? 0 }}"
                                             {{ old('id_pelanggan') == $p->id_pelanggan ? 'selected' : '' }}>
-                                            {{ $p->nm_pelanggan }} ({{ $p->no_hp ?? '-' }})
+                                            {{ $p->nm_pelanggan }} @if($p->id_member)({{ $p->membership->tingkat ?? '' }} - Diskon {{ $p->membership->diskon ?? 0 }}%) @endif
                                         </option>
                                     @endforeach
                                 </select>
@@ -207,6 +207,16 @@
                                             <p class="text-[11px] text-amber-500">Lampirkan bukti pembayaran untuk verifikasi</p>
                                         </div>
                                     </div>
+                                    <div class="mb-4">
+                                        <label class="form-label">
+                                            <i class="fa-regular fa-flag text-pink-400 mr-1"></i>Status <span class="text-red-500">*</span>
+                                        </label>
+                                        <select name="status" class="form-input-custom">
+                                            <option value="Lunas" {{ old('status') == 'Lunas' ? 'selected' : '' }}>Lunas</option>
+                                            <option value="Proses" {{ old('status') == 'Proses' ? 'selected' : '' }}>Proses</option>
+                                            <option value="Batal" {{ old('status') == 'Batal' ? 'selected' : '' }}>Batal</option>
+                                        </select>
+                                    </div>
 
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div class="form-group">
@@ -324,11 +334,7 @@
                                             <h5 class="text-[13px] font-bold text-teal-700">E-Wallet</h5>
                                             <p class="text-[11px] text-teal-500">Pembayaran akan langsung selesai</p>
                                         </div>
-                                        <div class="ml-auto">
-                                            <div id="timer-ewallet" class="text-[13px] font-mono font-bold text-gray-500 hidden">
-                                                ⏱️ 01:00
-                                            </div>
-                                        </div>
+
                                     </div>
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div class="form-group">
@@ -571,9 +577,13 @@
             const idField = jenis === 'Layanan' ? 'id_layanan' : 'id_produk';
             const nmField = jenis === 'Layanan' ? 'nm_layanan' : 'nm_produk';
             const priceField = jenis === 'Layanan' ? 'harga' : 'harga_jual';
-            return data.map(item =>
-                `<option value="${item[idField]}" data-nama="${item[nmField]}" data-harga="${item[priceField] || 0}">${item[nmField]} — Rp ${Number(item[priceField] || 0).toLocaleString('id-ID')}</option>`
-            ).join('');
+            return data.map(item => {
+                if (jenis === 'Produk') {
+                    const stok = item.stok || 0;
+                    return `<option value="${item[idField]}" data-nama="${item[nmField]}" data-harga="${item[priceField] || 0}" data-stok="${stok}">${item[nmField]} | Rp ${Number(item[priceField] || 0).toLocaleString('id-ID')} | Stok: ${stok}</option>`;
+                }
+                return `<option value="${item[idField]}" data-nama="${item[nmField]}" data-harga="${item[priceField] || 0}">${item[nmField]} — Rp ${Number(item[priceField] || 0).toLocaleString('id-ID')}</option>`;
+            }).join('');
         }
 
         function addItemRow() {
@@ -611,17 +621,25 @@
         function onItemChange(select) {
             const row = select.closest('.item-row');
             const option = select.options[select.selectedIndex];
+            const jenis = row.querySelector('.item-jenis-select').value;
             if (option && option.value) {
                 const harga = parseFloat(option.dataset.harga) || 0;
                 row.querySelector('.item-id-hidden').value = option.value;
                 row.querySelector('.item-nama-hidden').value = option.dataset.nama;
                 row.querySelector('.item-harga-hidden').value = harga;
                 row.querySelector('.item-harga-display').textContent = 'Rp ' + formatRp(harga);
+                if (jenis === 'Produk') {
+                    const stok = parseInt(option.dataset.stok) || 0;
+                    row.dataset.stok = stok;
+                } else {
+                    delete row.dataset.stok;
+                }
             } else {
                 row.querySelector('.item-id-hidden').value = '';
                 row.querySelector('.item-nama-hidden').value = '';
                 row.querySelector('.item-harga-hidden').value = 0;
                 row.querySelector('.item-harga-display').textContent = 'Rp 0';
+                delete row.dataset.stok;
             }
             onQtyChange(row.querySelector('.item-qty'));
         }
@@ -629,10 +647,15 @@
         function onQtyChange(input) {
             const row = input.closest('.item-row');
             const qty = parseInt(input.value) || 1;
-            if (qty < 1) input.value = 1;
+            if (qty < 1) { input.value = 1; }
+            const stok = parseInt(row.dataset.stok);
+            if (stok && qty > stok) {
+                alert('Stok tidak mencukupi! Stok tersedia: ' + stok);
+                input.value = stok;
+            }
             const harga = parseFloat(row.querySelector('.item-harga-hidden').value) || 0;
-            const subtotal = qty * harga;
-            row.querySelector('.item-qty-hidden').value = qty;
+            const subtotal = parseInt(input.value) * harga;
+            row.querySelector('.item-qty-hidden').value = parseInt(input.value);
             row.querySelector('.item-subtotal-hidden').value = subtotal;
             row.querySelector('.item-subtotal-display').textContent = 'Rp ' + formatRp(subtotal);
             recalculateSubtotal();
@@ -758,7 +781,6 @@
             } else if (method === 'E-Wallet') {
                 document.getElementById('payment-section-ewallet').classList.add('active');
                 if (btn) btn.innerHTML = '<i class="fa-regular fa-circle-check"></i> Bayar & Simpan';
-                startPaymentTimer('timer-ewallet');
             } else {
                 document.getElementById('payment-section-bank').classList.add('active');
                 if (btn) btn.innerHTML = '<i class="fa-regular fa-circle-check"></i> Bayar & Simpan';
