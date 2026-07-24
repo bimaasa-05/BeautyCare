@@ -138,9 +138,15 @@
                                             Rp {{ number_format($r->detail->sum(fn($d) => ($d->harga ?? 0) - ($d->diskon ?? 0)), 0, ',', '.') }}
                                         </td>
                                         <td class="py-3 px-4 text-center">
-                                            <span class="badge-status badge-selesai">
-                                                <i class="fa-regular fa-circle-check"></i> Selesai
-                                            </span>
+                                            @if($r->status == 'selesai')
+                                                <span class="badge-status badge-selesai">
+                                                    <i class="fa-regular fa-circle-check"></i> Selesai
+                                                </span>
+                                            @else
+                                                <span class="badge-status" style="background:#EEF2FF;color:#6366F1;">
+                                                    <i class="fa-regular fa-clock"></i> Diproses
+                                                </span>
+                                            @endif
                                         </td>
                                         <td class="py-3 px-4 text-center">
                                             <a href="{{ route('kasir.pembayaran.create', $r->id_booking) }}"
