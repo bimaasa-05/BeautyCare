@@ -53,11 +53,11 @@
         <main class="main-content">
             @include('layouts.header2')
 
-            <div class="flex-1 overflow-y-auto p-8">
+            <div class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 space-y-4 sm:space-y-6">
                 <div class="bg-white rounded-2xl p-6 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] relative overflow-hidden">
                     <div class="float-icon" style="top:-15px;right:-10px;">🧾</div>
 
-                    <div class="flex justify-between items-center mb-6">
+                    <div class="flex flex-wrap items-start sm:items-center justify-between gap-3 mb-6">
                         <div>
                             <h3 class="text-[16px] font-bold text-gray-800">
                                 <i class="fa-solid fa-plus-circle text-pink-500 mr-2"></i>Tambah Transaksi
@@ -547,7 +547,7 @@
         // ========== Item Functions ==========
         function getItemTemplate(index) {
             return `
-            <div class="item-row flex items-center gap-3 mb-3 p-3 bg-gray-50 rounded-xl border border-gray-100" data-index="${index}">
+            <div class="item-row flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 mb-3 p-3 bg-gray-50 rounded-xl border border-gray-100" data-index="${index}">
                 <input type="hidden" name="items[${index}][jenis]" class="item-jenis-hidden" value="Layanan">
                 <input type="hidden" name="items[${index}][id_item]" class="item-id-hidden" value="">
                 <input type="hidden" name="items[${index}][nm_item]" class="item-nama-hidden" value="">
@@ -555,24 +555,26 @@
                 <input type="hidden" name="items[${index}][harga]" class="item-harga-hidden" value="0">
                 <input type="hidden" name="items[${index}][subtotal]" class="item-subtotal-hidden" value="0">
 
-                <select class="form-input-custom item-jenis-select !w-[120px] !py-2 !text-[12px] flex-shrink-0"
-                    onchange="onJenisChange(this)">
-                    <option value="Layanan">Layanan</option>
-                    <option value="Produk">Produk</option>
-                </select>
-                <select class="form-input-custom item-select !w-full !py-2 !text-[12px]"
-                    onchange="onItemChange(this)">
-                    <option value="">-- Pilih --</option>
-                </select>
-                <span class="item-harga-display text-[12px] text-gray-600 font-medium w-24 text-right flex-shrink-0">Rp 0</span>
-                <input type="number" value="1" min="1"
-                    class="form-input-custom item-qty !w-16 !py-2 !text-[12px] text-center flex-shrink-0"
-                    oninput="onQtyChange(this)">
-                <span class="item-subtotal-display text-[13px] text-pink-600 font-bold w-32 text-right flex-shrink-0">Rp 0</span>
-                <button type="button" onclick="removeItemRow(this)"
-                    class="w-7 h-7 flex items-center justify-center text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors flex-shrink-0">
-                    <i class="fa-regular fa-trash-can text-xs"></i>
-                </button>
+                <div class="flex flex-wrap items-center gap-2 sm:gap-3">
+                    <select class="form-input-custom item-jenis-select !w-full sm:!w-[120px] !py-2 !text-[12px] flex-shrink-0"
+                        onchange="onJenisChange(this)">
+                        <option value="Layanan">Layanan</option>
+                        <option value="Produk">Produk</option>
+                    </select>
+                    <select class="form-input-custom item-select !w-full sm:!w-full !py-2 !text-[12px] flex-1"
+                        onchange="onItemChange(this)">
+                        <option value="">-- Pilih --</option>
+                    </select>
+                    <span class="item-harga-display text-[12px] text-gray-600 font-medium w-24 text-right flex-shrink-0">Rp 0</span>
+                    <input type="number" value="1" min="1"
+                        class="form-input-custom item-qty !w-16 !py-2 !text-[12px] text-center flex-shrink-0"
+                        oninput="onQtyChange(this)">
+                    <span class="item-subtotal-display text-[13px] text-pink-600 font-bold w-32 text-right flex-shrink-0">Rp 0</span>
+                    <button type="button" onclick="removeItemRow(this)"
+                        class="w-7 h-7 flex items-center justify-center text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors flex-shrink-0">
+                        <i class="fa-regular fa-trash-can text-xs"></i>
+                    </button>
+                </div>
             </div>`;
         }
 
