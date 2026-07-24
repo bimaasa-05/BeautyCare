@@ -199,6 +199,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/kasir/reservasi/{id}', [KasirReservasiController::class, 'show'])->name('kasir.reservasi.show');
         Route::get('/kasir/reservasi/{id}/edit', [KasirReservasiController::class, 'edit'])->name('kasir.reservasi.edit');
         Route::put('/kasir/reservasi/{id}', [KasirReservasiController::class, 'update'])->name('kasir.reservasi.update');
+        Route::post('/kasir/reservasi/{id}/konfirmasi', [KasirReservasiController::class, 'konfirmasi'])->name('kasir.reservasi.konfirmasi');
         Route::delete('/kasir/reservasi/{id}', [KasirReservasiController::class, 'destroy'])->name('kasir.reservasi.destroy');
 
         Route::get('/kasir/checkin', [KasirCheckinController::class, 'index'])->name('kasir.checkin.index');
