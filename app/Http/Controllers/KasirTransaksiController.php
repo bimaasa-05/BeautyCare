@@ -64,10 +64,16 @@ class KasirTransaksiController extends Controller
             'bank_tujuan' => 'nullable|string|max:50',
             'no_referensi' => 'nullable|string|max:50',
             'ewallet_type' => 'nullable|string|max:50',
+            'status' => 'nullable|in:Lunas,Proses,Batal',
         ]);
 
         $lastId = Transaksi::max('id_transaksi') + 1;
         $no_invoice = 'INV-' . date('Ymd') . '-' . str_pad($lastId, 4, '0', STR_PAD_LEFT);
+
+        $status = $request->status;
+        if (!$status) {
+            $status = in_array($request->metode_byr, ['Tunai', 'E-Wallet']) ? 'Lunas' : 'Pending';
+        }
 
         $data = [
             'id_booking' => $lastId,
@@ -83,7 +89,7 @@ class KasirTransaksiController extends Controller
             'dibayar' => $request->dibayar,
             'kembali' => $request->kembali,
             'catatan' => $request->catatan ?? '',
-            'status' => in_array($request->metode_byr, ['Tunai', 'E-Wallet']) ? 'Lunas' : 'Pending',
+            'status' => $status,
             'atas_nama' => $request->atas_nama,
             'dari_rekening' => $request->dari_rekening,
             'ke_rekening' => $request->ke_rekening,
@@ -113,6 +119,13 @@ class KasirTransaksiController extends Controller
                         'diskon' => 0,
                         'subtotal' => $item['subtotal'] ?? 0,
                     ]);
+
+                    if (($item['jenis'] ?? 'Layanan') === 'Produk') {
+                        $produk = Produk::find($item['id_item']);
+                        if ($produk && $produk->stok >= ($item['qty'] ?? 1)) {
+                            $produk->decrement('stok', $item['qty'] ?? 1);
+                        }
+                    }
                 }
             }
         }
@@ -207,7 +220,13 @@ class KasirTransaksiController extends Controller
             'bank_tujuan' => 'nullable|string|max:50',
             'no_referensi' => 'nullable|string|max:50',
             'ewallet_type' => 'nullable|string|max:50',
+            'status' => 'nullable|in:Lunas,Proses,Batal',
         ]);
+
+        $status = $request->status;
+        if (!$status) {
+            $status = in_array($request->metode_byr, ['Tunai', 'E-Wallet']) ? 'Lunas' : 'Pending';
+        }
 
         $data = [
             'id_pelanggan' => $request->id_pelanggan,
@@ -220,6 +239,7 @@ class KasirTransaksiController extends Controller
             'dibayar' => $request->dibayar,
             'kembali' => $request->kembali,
             'catatan' => $request->catatan ?? '',
+            'status' => $status,
             'atas_nama' => $request->atas_nama,
             'dari_rekening' => $request->dari_rekening,
             'ke_rekening' => $request->ke_rekening,
@@ -227,10 +247,6 @@ class KasirTransaksiController extends Controller
             'bank_tujuan' => $request->bank_tujuan,
             'no_referensi' => $request->no_referensi,
         ];
-
-        if (in_array($request->metode_byr, ['Tunai', 'E-Wallet'])) {
-            $data['status'] = 'Lunas';
-        }
 
         if ($request->hasFile('bukti_bayar')) {
             $transaksi = Transaksi::findOrFail($id);
@@ -248,6 +264,16 @@ class KasirTransaksiController extends Controller
         ActivityLogger::log('Mengubah', auth()->user()->nama . ' mengubah transaksi ' . $transaksiLama->no_invoice, 'Transaksi', $id, $dataLama, $data);
 
         if ($request->has('items') && is_array($request->items)) {
+            $oldDetails = DetailTransaksi::where('id_transaksi', $id)->get();
+            foreach ($oldDetails as $old) {
+                if ($old->jenis === 'Produk') {
+                    $produk = Produk::find($old->id_item);
+                    if ($produk) {
+                        $produk->increment('stok', $old->qty);
+                    }
+                }
+            }
+
             DetailTransaksi::where('id_transaksi', $id)->delete();
             foreach ($request->items as $item) {
                 if (!empty($item['id_item'])) {
@@ -261,6 +287,13 @@ class KasirTransaksiController extends Controller
                         'diskon' => 0,
                         'subtotal' => $item['subtotal'] ?? 0,
                     ]);
+
+                    if (($item['jenis'] ?? 'Layanan') === 'Produk') {
+                        $produk = Produk::find($item['id_item']);
+                        if ($produk && $produk->stok >= ($item['qty'] ?? 1)) {
+                            $produk->decrement('stok', $item['qty'] ?? 1);
+                        }
+                    }
                 }
             }
         }
@@ -270,8 +303,22 @@ class KasirTransaksiController extends Controller
 
     public function destroy($id)
     {
+<<<<<<< HEAD
         $transaksi = Transaksi::findOrFail($id);
         ActivityLogger::log('Menghapus', auth()->user()->nama . ' menghapus transaksi ' . $transaksi->no_invoice, 'Transaksi', $id);
+=======
+        $transaksi = Transaksi::with('detail')->findOrFail($id);
+
+        foreach ($transaksi->detail as $detail) {
+            if ($detail->jenis === 'Produk') {
+                $produk = Produk::find($detail->id_item);
+                if ($produk) {
+                    $produk->increment('stok', $detail->qty);
+                }
+            }
+        }
+
+>>>>>>> 3bb2fdf0 (Memperbaiki KasirController dan mengoptimalkannya)
         if ($transaksi->bukti_bayar) {
             \Illuminate\Support\Facades\Storage::disk('public')->delete($transaksi->bukti_bayar);
         }
