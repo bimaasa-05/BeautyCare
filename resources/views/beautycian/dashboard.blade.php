@@ -16,44 +16,7 @@
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/dashboard.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/responsive.css') }}">
-
-    <style>
-    .sidebar-toggle {
-        display: none;
-        background: none;
-        border: none;
-        cursor: pointer;
-        padding: 8px;
-    }
-
-    .sidebar-toggle svg {
-        width: 24px;
-        height: 24px;
-        color: var(--dark);
-    }
-
-    .sidebar-overlay {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0, 0, 0, 0.3);
-        z-index: 90;
-    }
-
-    .sidebar-overlay.active {
-        display: block;
-    }
-
-    @media (max-width: 768px) {
-        .sidebar-toggle {
-            display: flex;
-            align-items: center;
-        }
-    }
-    </style>
+    <link rel="stylesheet" href="{{ asset('assets/css/beautycian.css') }}">
 </head>
 
 <body>
@@ -491,16 +454,7 @@
         </main>
     </div>
 
-    <script>
-    const now = new Date();
-    const options = {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-    };
-    document.getElementById('currentDate').textContent = now.toLocaleDateString('id-ID', options);
-    </script>
+    <script src="{{ asset('assets/js/beautycian.js') }}"></script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
 </body>
 
