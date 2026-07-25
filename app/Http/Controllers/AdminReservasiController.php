@@ -34,7 +34,7 @@ class AdminReservasiController extends Controller
 
     public function create()
     {
-        $pelanggan = Pelanggan::all();
+        $pelanggan = Pelanggan::with('membership')->get();
         $karyawan = User::where('role', 'beautycian')->get();
         $layanan = Layanan::where('status', 'Tersedia')->get();
         return view('admin.reservasi.create', compact('pelanggan', 'karyawan', 'layanan'));
@@ -94,7 +94,7 @@ class AdminReservasiController extends Controller
     public function edit($id)
     {
         $reservasi = Booking::with('detail')->findOrFail($id);
-        $pelanggan = Pelanggan::all();
+        $pelanggan = Pelanggan::with('membership')->get();
         $karyawan = User::where('role', 'beautycian')->get();
         $layanan = Layanan::where('status', 'Tersedia')->get();
         return view('admin.reservasi.edit', compact('reservasi', 'pelanggan', 'karyawan', 'layanan'));
