@@ -46,7 +46,7 @@ if (!isset($pageTitle)) {
         </button>
         <div>
             <h2>{{ $pageTitle }}</h2>
-            <span class="page-title">Selamat datang, {{ auth()->user()->nama }}!</span>
+            <span class="page-title">Selamat datang, {{ auth()->user()->nama }}</span>
         </div>
     </div>
 
