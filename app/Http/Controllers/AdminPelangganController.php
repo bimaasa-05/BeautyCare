@@ -216,4 +216,20 @@ class AdminPelangganController extends Controller
         return redirect()->route('admin.pelanggan.index')
             ->with('success', 'Pelanggan berhasil dihapus.');
     }
+
+    public function toggleStatus(User $user)
+    {
+        if ($user->status === 'suspend' || $user->status === 'non_aktif') {
+            $user->status = 'aktif';
+        } else {
+            $user->status = 'non_aktif';
+        }
+        $user->save();
+
+        $aksi = $user->status === 'aktif' ? 'diaktifkan' : 'dinonaktifkan';
+        buatNotif($user->id, 'Status Akun', 'Akun Anda telah ' . $aksi . ' oleh ' . auth()->user()->nama, 'Lainnya', route('admin.pelanggan.index'));
+
+        return redirect()->route('admin.pelanggan.index')
+            ->with('success', 'Status pelanggan berhasil ' . $aksi . '.');
+    }
 }
