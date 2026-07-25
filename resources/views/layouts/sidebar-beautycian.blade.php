@@ -16,7 +16,7 @@
     </div>
 
     <div class="sidebar-profile">
-        <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->nama) }}&background=FF4F87&color=fff&size=44"
+        <img src="{{ auth()->user()->foto ? asset('storage/' . auth()->user()->foto) : 'https://ui-avatars.com/api/?name=' . urlencode(auth()->user()->nama) . '&background=FF4F87&color=fff&size=44' }}"
             alt="Profile">
         <div class="sp-info">
             <h4>{{ auth()->user()->nama }}</h4>
@@ -45,7 +45,7 @@
 
         <div class="nav-section">
             <div class="nav-section-title">Treatment</div>
-            <a href="#" class="nav-item" title="Lihat jadwal treatment hari ini">
+            <a href="{{ route('beautycian.jadwal-treatment.index') }}" class="nav-item {{ request()->routeIs('beautycian.jadwal-treatment.index') ? 'active' : '' }}" title="Lihat jadwal treatment hari ini">
                 <span class="nav-icon">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
