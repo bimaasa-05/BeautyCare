@@ -54,11 +54,6 @@
         }
     }
 
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-
-    body {
-        font-family: 'Inter', sans-serif;
-    }
 
     ::-webkit-scrollbar {
         width: 6px;
@@ -76,6 +71,124 @@
 
     ::-webkit-scrollbar-thumb:hover {
         background: #94a3b8;
+    }
+
+    .custom-select-wrap {
+        position: relative;
+    }
+
+    .custom-select-trigger {
+        width: 100%;
+        padding: 11px 16px;
+        border-radius: 12px;
+        border: 1.5px solid var(--border);
+        background: #FAFAFA;
+        font-size: 13px;
+        font-family: 'Poppins', sans-serif;
+        color: var(--dark);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        transition: all 0.2s ease;
+        user-select: none;
+        box-sizing: border-box;
+    }
+
+    .custom-select-trigger:hover {
+        border-color: #d0d0d0;
+    }
+
+    .custom-select-trigger.open {
+        border-color: var(--primary);
+        background: #fff;
+        box-shadow: 0 0 0 3px rgba(255, 79, 135, 0.1);
+    }
+
+    .custom-select-trigger .cst-placeholder {
+        color: #bbb;
+    }
+
+    .custom-select-trigger .cst-text {
+        color: var(--dark);
+    }
+
+    .custom-select-trigger .cst-arrow {
+        font-size: 11px;
+        color: #999;
+        transition: transform 0.2s ease;
+        flex-shrink: 0;
+    }
+
+    .custom-select-trigger.open .cst-arrow {
+        transform: rotate(180deg);
+    }
+
+    .custom-select-dropdown {
+        position: absolute;
+        top: calc(100% + 4px);
+        left: 0;
+        right: 0;
+        background: #fff;
+        border: 1.5px solid var(--border);
+        border-radius: 12px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+        z-index: 100;
+        display: none;
+        overflow: hidden;
+        max-height: 180px;
+        overflow-y: auto;
+    }
+
+    .custom-select-dropdown.open {
+        display: block;
+    }
+
+    .custom-select-dropdown .csd-item {
+        padding: 10px 16px;
+        font-size: 13px;
+        cursor: pointer;
+        transition: background 0.15s ease;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+        color: var(--dark);
+    }
+
+    .custom-select-dropdown .csd-item:hover {
+        background: var(--hover);
+    }
+
+    .custom-select-dropdown .csd-item.selected {
+        background: var(--hover);
+        color: var(--primary);
+        font-weight: 600;
+    }
+
+    .custom-select-dropdown .csd-item .csd-price {
+        color: var(--gray);
+        font-size: 12px;
+        font-weight: 500;
+        white-space: nowrap;
+    }
+
+    .custom-select-dropdown .csd-item.selected .csd-price {
+        color: var(--primary);
+    }
+
+    .custom-select-dropdown::-webkit-scrollbar {
+        width: 5px;
+    }
+
+    .custom-select-dropdown::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .custom-select-dropdown::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 10px;
     }
 
     /* ─── Header Back ─── */
@@ -272,7 +385,7 @@
         border: 1.5px solid var(--border);
         background: #FAFAFA;
         font-size: 13px;
-        font-family: 'Inter', sans-serif;
+        font-family: 'Poppins', sans-serif;
         color: var(--dark);
         transition: all 0.2s ease;
         outline: none;
@@ -423,7 +536,7 @@
         align-items: center;
         justify-content: center;
         gap: 10px;
-        font-family: 'Inter', sans-serif;
+        font-family: 'Poppins', sans-serif;
     }
 
     .form-actions .btn-submit:hover {
@@ -450,7 +563,7 @@
         align-items: center;
         justify-content: center;
         gap: 8px;
-        font-family: 'Inter', sans-serif;
+        font-family: 'Poppins', sans-serif;
     }
 
     .form-actions .btn-cancel-form:hover {
@@ -564,7 +677,7 @@
                                         <i class="fa-regular fa-spa fg-label-icon"></i>
                                         Layanan Treatment <span class="fg-required">*</span>
                                     </label>
-                                    <select name="id_layanan" id="id_layanan" class="fg-input" required onchange="updateHarga()">
+                                    <select name="id_layanan" id="id_layanan" required style="display:none">
                                         <option value="">— Pilih Layanan —</option>
                                         @foreach($layanans as $layanan)
                                         <option value="{{ $layanan->id_layanan }}" data-harga="{{ $layanan->harga }}">
@@ -572,6 +685,13 @@
                                         </option>
                                         @endforeach
                                     </select>
+                                    <div class="custom-select-wrap" id="customLayananWrap">
+                                        <div class="custom-select-trigger" id="customLayananTrigger">
+                                            <span class="cst-placeholder">— Pilih Layanan —</span>
+                                            <span class="cst-arrow"><i class="fa-solid fa-chevron-down"></i></span>
+                                        </div>
+                                        <div class="custom-select-dropdown" id="customLayananDropdown"></div>
+                                    </div>
                                 </div>
 
                                 <div class="fg-premium">
@@ -582,7 +702,7 @@
                                     <select name="id_karyawan" class="fg-input" required>
                                         <option value="">— Pilih Terapis —</option>
                                         @foreach($karyawans as $karyawan)
-                                        <option value="{{ $karyawan->id_karyawan }}">{{ $karyawan->nama }} — {{ $karyawan->jabatan }}</option>
+                                        <option value="{{ $karyawan->user->id }}">{{ $karyawan->user->nama }} — {{ $karyawan->jabatan }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -731,7 +851,102 @@
         document.getElementById('summary_total').textContent = formatRupiah(total);
     }
 
-    // Set default time
+    // ─── Custom Select Dropdown ───
+    function initCustomSelect(selectId, wrapId, triggerId, dropdownId) {
+        const select = document.getElementById(selectId);
+        const wrap = document.getElementById(wrapId);
+        const trigger = document.getElementById(triggerId);
+        const dropdown = document.getElementById(dropdownId);
+        if (!select || !wrap || !trigger || !dropdown) return;
+
+        function buildList() {
+            let html = '';
+            for (let i = 0; i < select.options.length; i++) {
+                const opt = select.options[i];
+                if (!opt.value) {
+                    html += '<div class="csd-item" data-value="" data-harga="0"><span>' + opt.text + '</span></div>';
+                } else {
+                    const parts = opt.text.split(' — ');
+                    const name = parts[0] || opt.text;
+                    const price = parts[1] || '';
+                    const harga = opt.getAttribute('data-harga') || '0';
+                    html += '<div class="csd-item" data-value="' + opt.value + '" data-harga="' + harga + '">';
+                    html += '<span>' + name + '</span>';
+                    if (price) html += '<span class="csd-price">' + price + '</span>';
+                    html += '</div>';
+                }
+            }
+            dropdown.innerHTML = html;
+        }
+
+        function updateTrigger() {
+            const idx = select.selectedIndex;
+            if (idx > 0 && select.options[idx]) {
+                const opt = select.options[idx];
+                const parts = opt.text.split(' — ');
+                trigger.innerHTML = '<span class="cst-text">' + (parts[0] || opt.text) + '</span><span class="cst-arrow"><i class="fa-solid fa-chevron-down"></i></span>';
+            } else {
+                trigger.innerHTML = '<span class="cst-placeholder">— Pilih Layanan —</span><span class="cst-arrow"><i class="fa-solid fa-chevron-down"></i></span>';
+            }
+            updateHarga();
+
+            const items = dropdown.querySelectorAll('.csd-item');
+            items.forEach(function(item) {
+                item.classList.toggle('selected', item.getAttribute('data-value') === select.value);
+            });
+        }
+
+        function selectItem(el) {
+            const val = el.getAttribute('data-value');
+            const harga = el.getAttribute('data-harga');
+            select.value = val;
+            if (select.getAttribute('data-harga')) {
+                select.setAttribute('data-harga', harga);
+            }
+            updateTrigger();
+            closeDropdown();
+            select.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+
+        function openDropdown() {
+            buildList();
+            updateTrigger();
+            dropdown.classList.add('open');
+            trigger.classList.add('open');
+        }
+
+        function closeDropdown() {
+            dropdown.classList.remove('open');
+            trigger.classList.remove('open');
+        }
+
+        function toggleDropdown(e) {
+            e.stopPropagation();
+            if (dropdown.classList.contains('open')) {
+                closeDropdown();
+            } else {
+                openDropdown();
+            }
+        }
+
+        trigger.addEventListener('click', toggleDropdown);
+
+        dropdown.addEventListener('click', function(e) {
+            const item = e.target.closest('.csd-item');
+            if (item) selectItem(item);
+        });
+
+        document.addEventListener('click', function(e) {
+            if (!wrap.contains(e.target)) {
+                closeDropdown();
+            }
+        });
+
+        buildList();
+        updateTrigger();
+    }
+
+    // Set default time & init custom select
     document.addEventListener('DOMContentLoaded', function() {
         const jamInput = document.querySelector('input[name="jam"]');
         if (jamInput && !jamInput.value) {
@@ -740,6 +955,8 @@
             const minutes = String(now.getMinutes()).padStart(2, '0');
             jamInput.value = hours + ':' + minutes;
         }
+
+        initCustomSelect('id_layanan', 'customLayananWrap', 'customLayananTrigger', 'customLayananDropdown');
     });
 
     const now = new Date();
