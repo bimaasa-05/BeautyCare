@@ -22,14 +22,14 @@ class KasirDashboardController extends Controller
 
         $periodStart = match ($periode) {
             '30hari' => date('Y-m-d', strtotime('-30 days')),
-            'bulanini' => date('Y-m-01'),
+            '3bulan' => date('Y-m-d', strtotime('-3 months')),
             'tahunini' => date('Y-01-01'),
             default => date('Y-m-d', strtotime('-7 days')),
         };
 
         $paymentPeriodStart = match ($paymentPeriode) {
             '30hari' => date('Y-m-d', strtotime('-30 days')),
-            'bulanini' => date('Y-m-01'),
+            '3bulan' => date('Y-m-d', strtotime('-3 months')),
             'tahunini' => date('Y-01-01'),
             default => date('Y-m-d', strtotime('-7 days')),
         };
@@ -122,7 +122,7 @@ class KasirDashboardController extends Controller
             ->where('id_user', $userId)
             ->whereBetween('tanggal', [$periodStart, $today])
             ->orderBy('id_transaksi', 'desc')
-            ->limit(5)
+            ->limit(10)
             ->get();
 
         $produkTerlaris = DetailTransaksi::select(
@@ -137,7 +137,7 @@ class KasirDashboardController extends Controller
             ->whereBetween('transaksi.tanggal', [$periodStart, $today])
             ->groupBy('detail_transaksi.id_item', 'detail_transaksi.nm_item', 'detail_transaksi.jenis')
             ->orderByDesc('total_qty')
-            ->limit(5)
+            ->limit(10)
             ->get();
 
         $rekapPembayaran = Transaksi::select(
@@ -160,13 +160,13 @@ class KasirDashboardController extends Controller
         $riwayatTransaksi = Transaksi::with('pelanggan')
             ->where('id_user', $userId)
             ->orderBy('id_transaksi', 'desc')
-            ->limit(5)
+            ->limit(10)
             ->get();
 
         $stokMenipis = Produk::with('kategori')
             ->where('stok', '<=', 20)
             ->orderBy('stok', 'asc')
-            ->limit(4)
+            ->limit(10)
             ->get();
 
         $fmt = function ($amount) {
