@@ -18,7 +18,13 @@ class Pelanggan extends Model
         'id_member',
         'catatan_alergi',
         'foto',
+        'id_user',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'id_user');
+    }
 
     public function membership()
     {
