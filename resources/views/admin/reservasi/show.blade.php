@@ -60,7 +60,7 @@
                         <div class="flex items-center gap-2">
                             <a href="{{ route('admin.reservasi.edit', $reservasi->id_booking) }}"
                                 class="flex items-center gap-2 bg-[#FF4F87] text-white text-[12px] font-semibold px-4 py-2 rounded-full hover:bg-[#ff3a78] transition-all shadow-sm">
-                                <i class="fa-regular fa-pen-to-square"></i> Edit
+                                <i class="fa-solid fa-pen-to-square"></i> Edit
                             </a>
                             <a href="{{ route('admin.reservasi.index') }}"
                                 class="flex items-center gap-2 border border-gray-200 text-gray-600 text-[12px] font-medium px-4 py-2 rounded-full hover:bg-gray-50 transition-colors">
@@ -83,7 +83,7 @@
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <div>
-                            <p class="detail-label"><i class="fa-regular fa-user text-pink-400 mr-1"></i>Pelanggan</p>
+                            <p class="detail-label"><i class="fa-solid fa-user text-pink-400 mr-1"></i>Pelanggan</p>
                             <p class="detail-value">{{ $reservasi->pelanggan->nm_pelanggan ?? '-' }}</p>
                         </div>
                         <div>
@@ -91,15 +91,15 @@
                             <p class="detail-value">{{ $reservasi->pelanggan->email ?? '-' }}</p>
                         </div>
                         <div>
-                            <p class="detail-label"><i class="fa-regular fa-phone text-pink-400 mr-1"></i>No. HP Pelanggan</p>
+                            <p class="detail-label"><i class="fa-solid fa-phone text-pink-400 mr-1"></i>No. HP Pelanggan</p>
                             <p class="detail-value">{{ $reservasi->pelanggan->no_hp ?? '-' }}</p>
                         </div>
                         <div>
-                            <p class="detail-label"><i class="fa-regular fa-user text-pink-400 mr-1"></i>Beautician</p>
+                            <p class="detail-label"><i class="fa-solid fa-user text-pink-400 mr-1"></i>Beautician</p>
                             <p class="detail-value">{{ $reservasi->karyawan->nama ?? '-' }}</p>
                         </div>
                         <div>
-                            <p class="detail-label"><i class="fa-regular fa-calendar text-pink-400 mr-1"></i>Tanggal</p>
+                            <p class="detail-label"><i class="fa-solid fa-calendar text-pink-400 mr-1"></i>Tanggal</p>
                             <p class="detail-value">{{ \Carbon\Carbon::parse($reservasi->tanggal)->isoFormat('D MMMM Y') }}</p>
                         </div>
                         <div>
@@ -107,7 +107,7 @@
                             <p class="detail-value">{{ $reservasi->jam }}</p>
                         </div>
                         <div>
-                            <p class="detail-label"><i class="fa-regular fa-flag text-pink-400 mr-1"></i>Status</p>
+                            <p class="detail-label"><i class="fa-solid fa-flag text-pink-400 mr-1"></i>Status</p>
                             <span class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-semibold {{ $statusClass }}">
                                 {{ ucfirst($reservasi->status) }}
                             </span>
@@ -116,7 +116,7 @@
 
                     <div class="mt-6 pt-4 border-t border-gray-100">
                         <h4 class="text-[14px] font-bold text-gray-700 mb-1">
-                            <i class="fa-regular fa-list text-pink-500 mr-2"></i>Layanan
+                            <i class="fa-solid fa-list text-pink-500 mr-2"></i>Layanan
                         </h4>
                         <p class="text-[12px] text-gray-400 mb-4">Daftar layanan yang direservasi</p>
 
@@ -160,7 +160,7 @@
                     @if ($reservasi->catatan)
                     <div class="mt-6 pt-4 border-t border-gray-100">
                         <h4 class="text-[14px] font-bold text-gray-700 mb-1">
-                            <i class="fa-regular fa-note-sticky text-pink-500 mr-2"></i>Catatan
+                            <i class="fa-solid fa-note-sticky text-pink-500 mr-2"></i>Catatan
                         </h4>
                         <p class="text-[13px] text-gray-600 mt-2 bg-gray-50 rounded-xl p-4">{{ $reservasi->catatan }}</p>
                     </div>
