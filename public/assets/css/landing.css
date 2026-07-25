@@ -2,6 +2,10 @@
    BEAUTYCARE - LANDING PAGE STYLES
    ============================================= */
 
+html {
+  touch-action: pan-x pan-y;
+}
+
 /* ---- Navbar ---- */
 .navbar {
   position: fixed;
@@ -1123,4 +1127,162 @@
 .animate-on-scroll.visible {
   opacity: 1;
   transform: translateY(0);
+}
+
+/* =============================================
+   ADDITIONAL RESPONSIVE FIXES
+   ============================================= */
+
+@media screen and (max-width: 768px) {
+  .hero {
+    padding: 100px 0 60px;
+  }
+  .hero-content h1 {
+    font-size: 32px;
+  }
+  .hero-content p {
+    font-size: 15px;
+  }
+  .hero-image .mockup {
+    max-width: 90%;
+    margin: 0 auto;
+  }
+  .about-image .experience-badge {
+    bottom: -10px;
+    right: 10px;
+    padding: 14px 20px;
+  }
+  .about-image .experience-badge h3 {
+    font-size: 22px;
+  }
+  .layanan-card {
+    height: 220px;
+  }
+  .layanan-card .overlay h3 {
+    font-size: 17px;
+  }
+  .pricing-card .price {
+    font-size: 36px;
+  }
+  .pricing-card.featured {
+    transform: scale(1);
+  }
+  .pricing-card.featured:hover {
+    transform: translateY(-6px);
+  }
+  .contact-map {
+    min-height: 280px;
+  }
+  .contact-form {
+    padding: 28px 20px;
+  }
+  .navbar-brand {
+    font-size: 18px;
+  }
+  .navbar-brand svg {
+    width: 28px;
+    height: 28px;
+  }
+}
+
+@media screen and (max-width: 576px) {
+  .hero {
+    padding: 80px 0 40px;
+  }
+  .hero-content h1 {
+    font-size: 26px;
+  }
+  .hero-content p {
+    font-size: 14px;
+  }
+  .hero-buttons .btn {
+    width: 100%;
+    text-align: center;
+  }
+  .step-number {
+    width: 60px;
+    height: 60px;
+    font-size: 22px;
+  }
+  .step-card h3 {
+    font-size: 16px;
+  }
+  .stat-card h3 {
+    font-size: 30px;
+  }
+  .stat-card .stat-icon svg {
+    width: 32px;
+    height: 32px;
+  }
+  .statistik {
+    padding: 50px 0;
+  }
+  .section-header {
+    margin-bottom: 36px;
+  }
+  .section-header h2 {
+    font-size: 24px;
+  }
+  .section-header p {
+    font-size: 14px;
+  }
+  .about-content h2 {
+    font-size: 24px;
+  }
+  .about-content p {
+    font-size: 14px;
+  }
+  .faq-question {
+    font-size: 14px;
+    padding: 16px 18px;
+  }
+  .pricing-card {
+    padding: 28px 20px;
+  }
+  .pricing-card .price {
+    font-size: 32px;
+  }
+  .testimoni-card {
+    padding: 24px 20px;
+  }
+  .contact-form h3 {
+    font-size: 20px;
+  }
+  .feature-card {
+    padding: 24px 18px;
+  }
+  .feature-card .fc-icon {
+    width: 52px;
+    height: 52px;
+  }
+  .navbar-actions .btn {
+    font-size: 12px;
+    padding: 8px 14px;
+  }
+}
+
+@media screen and (max-width: 400px) {
+  .container {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  .hero-content h1 {
+    font-size: 22px;
+  }
+  .stat-card h3 {
+    font-size: 26px;
+  }
+  .layanan-grid {
+    gap: 16px;
+  }
+  .layanan-card {
+    height: 180px;
+    border-radius: var(--radius-md);
+  }
+  .pricing-card .price {
+    font-size: 28px;
+  }
+  .pricing-card .price span {
+    font-size: 15px;
+  }
 }
