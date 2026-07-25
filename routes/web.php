@@ -30,6 +30,7 @@ use App\Http\Controllers\KasirDashboardController;
 use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\AdminPengaturanController;
 use App\Http\Controllers\AdminRiwayatController;
+use App\Http\Controllers\BeatycianJadwalTreatmentController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -270,6 +271,11 @@ Route::middleware('auth')->group(function () {
             auth()->user()->update(['password' => bcrypt($req->new_password)]);
             return back()->with('success', 'Password berhasil diperbarui!');
         })->name('beautycian.profile.update-password');
+
+        //Route Jadwal Treatment
+        Route::get('/beautycian/jadwal-treatment', [BeatycianJadwalTreatmentController::class, 'index'])->name('beautycian.jadwal-treatment.index');
+        Route::post('/beautycian/jadwal-treatment', [BeatycianJadwalTreatmentController::class, 'updateStatus'])->name('beautycian.jadwal-treatment.update');
+        
     });
     //--------------------------------------------------
     //Route Pelangggan
