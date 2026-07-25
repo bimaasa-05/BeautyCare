@@ -32,7 +32,7 @@ class PelangganController extends Controller
                 $keyword = strtolower($search);
                 $idBooking = '#' . str_pad($b->id_booking, 3, '0', STR_PAD_LEFT);
                 $namaKaryawan = $b->karyawan ? strtolower($b->karyawan->nama) : '';
-                $nmLayanan = $b->detail && $b->detail->layanan ? strtolower($b->detail->layanan->nm_layanan) : '';
+                $nmLayanan = $b->detail->first() && $b->detail->first()->layanan ? strtolower($b->detail->first()->layanan->nm_layanan) : '';
 
                 return str_contains(strtolower($b->status), $keyword)
                     || str_contains(strtolower($b->tanggal), $keyword)
@@ -57,8 +57,12 @@ class PelangganController extends Controller
 
     public function create()
     {
-        $layanans = Layanan::where('status', 'aktif')->get();
-        $karyawans = Karyawan::where('status', 1)->get();
+        $layanans = Layanan::where('status', 'Tersedia')->get();
+        $karyawans = Karyawan::with('user')
+            ->whereHas('user', fn($q) => $q->where('role', 'beautycian'))
+            ->where('status', 'Tersedia')
+            ->orderBy('id_user')
+            ->get();
 
         return view('pelanggan.booking.create', compact('layanans', 'karyawans'));
     }
@@ -114,8 +118,12 @@ class PelangganController extends Controller
             ->firstOrFail();
 
         $detail = DetailBooking::where('id_booking', $booking->id_booking)->first();
-        $layanans = Layanan::where('status', 'aktif')->get();
-        $karyawans = Karyawan::where('status', 1)->get();
+        $layanans = Layanan::where('status', 'Tersedia')->get();
+        $karyawans = Karyawan::with('user')
+            ->whereHas('user', fn($q) => $q->where('role', 'beautycian'))
+            ->where('status', 'Tersedia')
+            ->orderBy('id_user')
+            ->get();
 
         return view('pelanggan.booking.edit', compact('booking', 'detail', 'layanans', 'karyawans'));
     }
