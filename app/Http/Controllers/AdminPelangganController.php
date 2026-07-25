@@ -3,34 +3,86 @@
 namespace App\Http\Controllers;
 
 use App\Models\Pelanggan;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 
 class AdminPelangganController extends Controller
 {
     public function index(Request $request)
     {
-        $pelanggan = Pelanggan::orderBy('id_pelanggan', $request->filter_sort === 'asc' ? 'asc' : 'desc');
+        $sortOrder = $request->filter_sort === 'asc' ? 'asc' : 'desc';
+
+        $onlineQuery = User::where('role', 'pelanggan')
+            ->leftJoin('pelanggan', 'users.id', '=', 'pelanggan.id_user')
+            ->select(
+                'users.id as user_id',
+                'users.nama',
+                'users.email',
+                'users.no_hp',
+                'users.foto',
+                'users.status',
+                'users.created_at',
+                'pelanggan.id_pelanggan',
+                'pelanggan.nm_pelanggan',
+                'pelanggan.alamat',
+                'pelanggan.id_member',
+                'pelanggan.catatan_alergi',
+            );
+
+        $walkinQuery = Pelanggan::whereNull('id_user')
+            ->select(
+                DB::raw('NULL as user_id'),
+                DB::raw('NULL as nama'),
+                'email',
+                'no_hp',
+                'foto',
+                DB::raw('NULL as status'),
+                'created_at',
+                'id_pelanggan',
+                'nm_pelanggan',
+                'alamat',
+                'id_member',
+                'catatan_alergi',
+            );
 
         if ($request->filled('search')) {
             $search = $request->search;
-            $pelanggan->where(function ($q) use ($search) {
+            $onlineQuery->where(function ($q) use ($search) {
+                $q->where('users.nama', 'like', "%{$search}%")
+                  ->orWhere('users.email', 'like', "%{$search}%")
+                  ->orWhere('users.no_hp', 'like', "%{$search}%")
+                  ->orWhere('pelanggan.alamat', 'like', "%{$search}%")
+                  ->orWhere('pelanggan.nm_pelanggan', 'like', "%{$search}%");
+            });
+            $walkinQuery->where(function ($q) use ($search) {
                 $q->where('nm_pelanggan', 'like', "%{$search}%")
-                  ->orWhere('no_hp', 'like', "%{$search}%")
                   ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('no_hp', 'like', "%{$search}%")
                   ->orWhere('alamat', 'like', "%{$search}%");
             });
         }
 
         if ($request->filled('filter_member')) {
             if ($request->filter_member === 'yes') {
-                $pelanggan->whereNotNull('id_member');
+                $onlineQuery->whereNotNull('pelanggan.id_member');
+                $walkinQuery->whereNotNull('id_member');
             } elseif ($request->filter_member === 'no') {
-                $pelanggan->whereNull('id_member');
+                $onlineQuery->whereNull('pelanggan.id_member');
+                $walkinQuery->whereNull('id_member');
             }
         }
 
-        $pelanggan = $pelanggan->get();
+        $online = $onlineQuery->get()->each(fn($item) => $item->sumber = 'Online');
+        $walkin = $walkinQuery->get()->each(fn($item) => $item->sumber = 'Walk-in');
+
+        $pelanggan = $online->concat($walkin);
+        $pelanggan = $sortOrder === 'asc'
+            ? $pelanggan->sortBy('created_at')
+            : $pelanggan->sortByDesc('created_at');
+        $pelanggan = $pelanggan->values();
 
         if ($request->ajax()) {
             return view('admin.pelanggan.partials.table', compact('pelanggan'));
@@ -46,7 +98,7 @@ class AdminPelangganController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $rules = [
             'nm_pelanggan'  => 'required|string|max:100',
             'no_hp'         => 'nullable|string|max:20',
             'email'         => 'required|email|max:100',
@@ -54,7 +106,40 @@ class AdminPelangganController extends Controller
             'id_member'     => 'nullable|integer',
             'catatan_alergi'=> 'required|string',
             'foto'          => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-        ]);
+            'tipe'          => 'required|in:walkin,online',
+        ];
+
+        if ($request->tipe === 'online') {
+            $rules['password'] = 'required|string|min:8|confirmed';
+            $rules['email'] = 'required|email|max:100|unique:users,email';
+        }
+
+        $request->validate($rules);
+
+        if ($request->tipe === 'online') {
+            $user = User::create([
+                'nama'     => $request->nm_pelanggan,
+                'email'    => $request->email,
+                'no_hp'    => $request->no_hp,
+                'password' => Hash::make($request->password),
+                'role'     => 'pelanggan',
+                'status'   => 'aktif',
+            ]);
+
+            $data = $request->only(['nm_pelanggan', 'no_hp', 'email', 'alamat', 'id_member', 'catatan_alergi']);
+            $data['id_user'] = $user->id;
+
+            if ($request->hasFile('foto')) {
+                $data['foto'] = $request->file('foto')->store('pelanggan', 'public');
+            }
+
+            Pelanggan::create($data);
+
+            buatNotif(auth()->id(), 'Pelanggan Ditambahkan', 'Pelanggan ' . $request->nm_pelanggan . ' berhasil ditambahkan (Online)', 'Lainnya', route('admin.pelanggan.index'));
+
+            return redirect()->route('admin.pelanggan.index')
+                ->with('success', 'Pelanggan online berhasil ditambahkan.');
+        }
 
         $data = $request->only(['nm_pelanggan', 'no_hp', 'email', 'alamat', 'id_member', 'catatan_alergi']);
 
@@ -62,7 +147,7 @@ class AdminPelangganController extends Controller
             $data['foto'] = $request->file('foto')->store('pelanggan', 'public');
         }
 
-        $pelanggan = Pelanggan::create($data);
+        Pelanggan::create($data);
 
         buatNotif(auth()->id(), 'Pelanggan Ditambahkan', 'Pelanggan ' . $request->nm_pelanggan . ' berhasil ditambahkan', 'Lainnya', route('admin.pelanggan.index'));
 
@@ -98,6 +183,14 @@ class AdminPelangganController extends Controller
 
         $pelanggan->update($data);
 
+        if ($pelanggan->id_user) {
+            $pelanggan->user()->update([
+                'nama'  => $request->nm_pelanggan,
+                'email' => $request->email,
+                'no_hp' => $request->no_hp,
+            ]);
+        }
+
         buatNotif(auth()->id(), 'Pelanggan Diperbarui', 'Data pelanggan ' . $pelanggan->nm_pelanggan . ' berhasil diperbarui', 'Lainnya', route('admin.pelanggan.edit', $pelanggan->id_pelanggan));
 
         return redirect()->route('admin.pelanggan.index')
@@ -111,7 +204,12 @@ class AdminPelangganController extends Controller
         }
 
         $nm = $pelanggan->nm_pelanggan;
+        $userId = $pelanggan->id_user;
         $pelanggan->delete();
+
+        if ($userId) {
+            User::where('id', $userId)->delete();
+        }
 
         buatNotif(auth()->id(), 'Pelanggan Dihapus', 'Pelanggan ' . $nm . ' berhasil dihapus dari sistem', 'Lainnya', route('admin.pelanggan.index'));
 
