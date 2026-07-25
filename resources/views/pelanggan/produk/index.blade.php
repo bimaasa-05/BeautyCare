@@ -54,11 +54,6 @@
         }
     }
 
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-
-    body {
-        font-family: 'Inter', sans-serif;
-    }
 
     ::-webkit-scrollbar {
         width: 6px;
@@ -185,7 +180,7 @@
         color: var(--gray);
         cursor: pointer;
         transition: all 0.2s ease;
-        font-family: 'Inter', sans-serif;
+        font-family: 'Poppins', sans-serif;
         display: inline-flex;
         align-items: center;
         gap: 6px;
@@ -225,7 +220,7 @@
         border: 1.5px solid var(--border);
         background: #FAFAFA;
         font-size: 12px;
-        font-family: 'Inter', sans-serif;
+        font-family: 'Poppins', sans-serif;
         color: var(--dark);
         width: 220px;
         transition: all 0.2s ease;
@@ -372,7 +367,7 @@
         font-weight: 600;
         cursor: pointer;
         transition: all 0.2s ease;
-        font-family: 'Inter', sans-serif;
+        font-family: 'Poppins', sans-serif;
         box-shadow: 0 4px 12px rgba(255, 79, 135, 0.2);
         display: inline-flex;
         align-items: center;
@@ -395,7 +390,7 @@
         font-weight: 600;
         cursor: pointer;
         transition: all 0.2s ease;
-        font-family: 'Inter', sans-serif;
+        font-family: 'Poppins', sans-serif;
         display: inline-flex;
         align-items: center;
         gap: 6px;
@@ -450,7 +445,7 @@
         border-radius: 14px;
         font-size: 13px;
         font-weight: 600;
-        font-family: 'Inter', sans-serif;
+        font-family: 'Poppins', sans-serif;
         box-shadow: 0 8px 30px rgba(0,0,0,0.15);
         display: flex;
         align-items: center;
@@ -635,7 +630,7 @@
         align-items: center;
         justify-content: center;
         transition: all 0.2s ease;
-        font-family: 'Inter', sans-serif;
+        font-family: 'Poppins', sans-serif;
     }
 
     .beli-modal .bm-body .bm-qty .qty-control button:hover {
@@ -654,7 +649,7 @@
         font-weight: 700;
         color: var(--dark);
         outline: none;
-        font-family: 'Inter', sans-serif;
+        font-family: 'Poppins', sans-serif;
     }
 
     .bm-btn-beli {
@@ -666,7 +661,7 @@
         font-weight: 700;
         cursor: pointer;
         transition: all 0.2s ease;
-        font-family: 'Inter', sans-serif;
+        font-family: 'Poppins', sans-serif;
         background: linear-gradient(135deg, var(--primary), #FF7BA6);
         color: #fff;
         box-shadow: 0 4px 16px rgba(255, 79, 135, 0.25);
@@ -851,7 +846,7 @@
         font-size: 12px;
         font-weight: 600;
         color: var(--dark);
-        font-family: 'Inter', sans-serif;
+        font-family: 'Poppins', sans-serif;
     }
 
     .checkout-modal .cmp-option label:hover {
@@ -876,7 +871,7 @@
         font-weight: 700;
         cursor: pointer;
         transition: all 0.2s ease;
-        font-family: 'Inter', sans-serif;
+        font-family: 'Poppins', sans-serif;
         background: linear-gradient(135deg, var(--primary), #FF7BA6);
         color: #fff;
         box-shadow: 0 4px 16px rgba(255, 79, 135, 0.25);

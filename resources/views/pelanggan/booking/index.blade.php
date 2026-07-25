@@ -54,11 +54,6 @@
         }
     }
 
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-
-    body {
-        font-family: 'Inter', sans-serif;
-    }
 
     ::-webkit-scrollbar {
         width: 6px;
@@ -785,7 +780,7 @@
         border: 1.5px solid var(--border);
         background: #FAFAFA;
         font-size: 12px;
-        font-family: 'Inter', sans-serif;
+        font-family: 'Poppins', sans-serif;
         color: var(--dark);
         width: 220px;
         transition: all 0.2s ease;
@@ -819,7 +814,7 @@
         transition: all 0.2s ease;
         box-shadow: 0 4px 12px rgba(222, 59, 124, 0.25);
         text-decoration: none;
-        font-family: 'Inter', sans-serif;
+        font-family: 'Poppins', sans-serif;
     }
 
     .btn-primary-rounded:hover {
@@ -1066,7 +1061,7 @@
                                         </div>
                                     </td>
                                     <td data-label="Layanan">
-                                        <span style="font-weight:500;">{{ $booking->detail && $booking->detail->layanan ? $booking->detail->layanan->nm_layanan : '-' }}</span>
+                                        <span style="font-weight:500;">{{ $booking->detail->first() && $booking->detail->first()->layanan ? $booking->detail->first()->layanan->nm_layanan : '-' }}</span>
                                     </td>
                                     <td data-label="Status">
                                         <span class="status-badge {{ $booking->status }}">

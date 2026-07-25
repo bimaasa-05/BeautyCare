@@ -54,11 +54,6 @@
         }
     }
 
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-
-    body {
-        font-family: 'Inter', sans-serif;
-    }
 
     ::-webkit-scrollbar {
         width: 6px;
@@ -200,7 +195,7 @@
         color: var(--gray);
         cursor: pointer;
         transition: all 0.2s ease;
-        font-family: 'Inter', sans-serif;
+        font-family: 'Poppins', sans-serif;
         display: inline-flex;
         align-items: center;
         gap: 6px;
@@ -300,7 +295,7 @@
         border: 1.5px solid var(--border);
         background: #FAFAFA;
         font-size: 12px;
-        font-family: 'Inter', sans-serif;
+        font-family: 'Poppins', sans-serif;
         color: var(--dark);
         width: 220px;
         transition: all 0.2s ease;
@@ -738,11 +733,11 @@
                                     </td>
                                     <td data-label="Layanan">
                                         <div class="layanan-cell">
-                                            <span class="layanan-name">{{ $reservasi->detail && $reservasi->detail->layanan ? $reservasi->detail->layanan->nm_layanan : '-' }}</span>
+                                            <span class="layanan-name">{{ $reservasi->detail->first() && $reservasi->detail->first()->layanan ? $reservasi->detail->first()->layanan->nm_layanan : '-' }}</span>
                                         </div>
                                     </td>
                                     <td data-label="Harga">
-                                        <span class="harga-cell">Rp {{ number_format($reservasi->detail->subtotal ?? 0, 0, ',', '.') }}</span>
+                                        <span class="harga-cell">Rp {{ number_format($reservasi->detail->first()->subtotal ?? 0, 0, ',', '.') }}</span>
                                     </td>
                                     <td data-label="Status">
                                         <span class="status-badge {{ $reservasi->status }}">
