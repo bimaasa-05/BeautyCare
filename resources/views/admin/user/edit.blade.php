@@ -164,6 +164,7 @@
                                     <option value="" disabled>Pilih status</option>
                                     <option value="aktif" {{ old('status', $user->status) == 'aktif' ? 'selected' : '' }}>Aktif</option>
                                     <option value="non_aktif" {{ old('status', $user->status) == 'non_aktif' ? 'selected' : '' }}>Non Aktif</option>
+                                    <option value="suspend" {{ old('status', $user->status) == 'suspend' ? 'selected' : '' }}>Suspend</option>
                                 </select>
                                 @error('status')
                                     <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
