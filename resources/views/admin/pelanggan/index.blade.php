@@ -186,6 +186,8 @@
                                         class="text-[11px] font-bold text-gray-400 uppercase border-b border-gray-100 bg-gray-50/50">
                                         <th class="py-3 px-4 w-10">#</th>
                                         <th class="py-3 px-4">Nama Lengkap</th>
+                                        <th class="py-3 px-4">Sumber</th>
+                                        <th class="py-3 px-4">Status</th>
                                         <th class="py-3 px-4">Nomor Hp</th>
                                         <th class="py-3 px-4">Email</th>
                                         <th class="py-3 px-4">Alamat</th>
