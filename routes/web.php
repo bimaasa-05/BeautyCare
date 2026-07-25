@@ -58,6 +58,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/users/{user}/edit', [AdminUserController::class, 'edit'])->name('admin.user.edit');
         Route::put('/admin/users/{user}', [AdminUserController::class, 'update'])->name('admin.user.update');
         Route::delete('/admin/users/{user}', [AdminUserController::class, 'destroy'])->name('admin.user.destroy');
+        Route::post('/admin/users/{user}/update-status', [AdminUserController::class, 'updateStatus'])->name('admin.user.update-status');
 
         Route::get('/admin/pelanggan', [AdminPelangganController::class, 'index'])->name('admin.pelanggan.index');
         Route::get('/admin/pelanggan/create', [AdminPelangganController::class, 'create'])->name('admin.pelanggan.create');
@@ -65,6 +66,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/pelanggan/{pelanggan}/edit', [AdminPelangganController::class, 'edit'])->name('admin.pelanggan.edit');
         Route::put('/admin/pelanggan/{pelanggan}', [AdminPelangganController::class, 'update'])->name('admin.pelanggan.update');
         Route::delete('/admin/pelanggan/{pelanggan}', [AdminPelangganController::class, 'destroy'])->name('admin.pelanggan.destroy');
+        Route::post('/admin/pelanggan/{user}/toggle-status', [AdminPelangganController::class, 'toggleStatus'])->name('admin.pelanggan.toggle-status');
 
         Route::get('/admin/beautician', [AdminBeautycianController::class, 'index'])->name('admin.beautician.index');
         Route::get('/admin/beautician/create', [AdminBeautycianController::class, 'create'])->name('admin.beautician.create');

@@ -24,11 +24,18 @@
         <span class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold border {{ $roleClass }}">{{ ucfirst($user->role) }}</span>
     </td>
     <td class="py-3.5 px-4" data-label="Status">
-        @if ($user->status === 'aktif')
-            <span class="px-2.5 py-0.5 bg-emerald-50 text-emerald-600 rounded-full text-[11px] font-semibold">Aktif</span>
-        @else
-            <span class="px-2.5 py-0.5 bg-red-50 text-red-600 rounded-full text-[11px] font-semibold">Non Aktif</span>
-        @endif
+        <form action="{{ route('admin.user.update-status', $user->id) }}" method="POST" class="inline-flex items-center gap-1">
+            @csrf
+            <select name="status" onchange="this.form.submit()"
+                class="text-[11px] font-semibold px-2 py-1 rounded-full border-0 cursor-pointer appearance-none
+                @if ($user->status === 'aktif') bg-emerald-50 text-emerald-600
+                @elseif ($user->status === 'suspend') bg-amber-50 text-amber-600
+                @else bg-red-50 text-red-600 @endif">
+                <option value="aktif" {{ $user->status === 'aktif' ? 'selected' : '' }}>Aktif</option>
+                <option value="suspend" {{ $user->status === 'suspend' ? 'selected' : '' }}>Suspend</option>
+                <option value="non_aktif" {{ $user->status === 'non_aktif' ? 'selected' : '' }}>Non Aktif</option>
+            </select>
+        </form>
     </td>
     <td class="py-3.5 px-4 text-center" data-label="Aksi">
         <div class="flex items-center justify-center gap-2">

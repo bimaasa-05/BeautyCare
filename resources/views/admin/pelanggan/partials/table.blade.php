@@ -10,7 +10,26 @@
             <span class="text-amber-500 bg-amber-50 px-2 py-0.5 rounded-full text-[11px] font-semibold">Walk-in</span>
         @endif
     </td>
-    <td class="py-3.5 px-4 font-medium text-gray-500" data-label="Status">{{ $p->status ?? '-' }}</td>
+    <td class="py-3.5 px-4 font-medium text-gray-500" data-label="Status">
+        @if ($p->user_id)
+            <form action="{{ route('admin.pelanggan.toggle-status', $p->user_id) }}" method="POST" class="inline">
+                @csrf
+                @php
+                    $statusColor = match($p->status ?? 'suspend') {
+                        'aktif' => 'bg-green-50 text-green-600 hover:bg-green-100',
+                        'non_aktif' => 'bg-red-50 text-red-500 hover:bg-red-100',
+                        default => 'bg-amber-50 text-amber-600 hover:bg-amber-100',
+                    };
+                @endphp
+                <button type="submit"
+                    class="text-[11px] font-semibold px-2.5 py-1 rounded-full transition-colors cursor-pointer {{ $statusColor }}">
+                    {{ $p->status ?? 'suspend' }}
+                </button>
+            </form>
+        @else
+            <span class="text-gray-400">-</span>
+        @endif
+    </td>
     <td class="py-3.5 px-4 text-gray-500 font-medium" data-label="Nomor Hp">{{ $p->no_hp ?? '-' }}
     </td>
     <td class="py-3.5 px-4 font-medium text-gray-500" data-label="Email">{{ $p->email }}</td>
