@@ -183,6 +183,11 @@
                                                     onchange="applyFilterUser()">
                                                 Non Aktif
                                             </label>
+                                            <label class="flex items-center gap-2 text-[12px] text-gray-700 cursor-pointer">
+                                                <input type="radio" name="filter_status" value="suspend"
+                                                    onchange="applyFilterUser()">
+                                                Suspend
+                                            </label>
                                         </div>
                                     </div>
                                 </div>
