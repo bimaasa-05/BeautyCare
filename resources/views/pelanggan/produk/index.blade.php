@@ -293,6 +293,10 @@
         background: linear-gradient(135deg, #A78BFA, #C4B5FD);
     }
 
+    .produk-card .pc-image .pc-img-placeholder.nailcare {
+        background: linear-gradient(135deg, #F43F5E, #FB7185);
+    }
+
     .produk-card .pc-image .pc-img-placeholder.lainnya {
         background: linear-gradient(135deg, #94A3B8, #CBD5E1);
     }
@@ -516,6 +520,7 @@
     .beli-modal .bm-banner.haircare { background: linear-gradient(135deg, #34D399, #6EE7B7); }
     .beli-modal .bm-banner.bodycare { background: linear-gradient(135deg, #60A5FA, #93C5FD); }
     .beli-modal .bm-banner.makeup { background: linear-gradient(135deg, #A78BFA, #C4B5FD); }
+    .beli-modal .bm-banner.nailcare { background: linear-gradient(135deg, #F43F5E, #FB7185); }
     .beli-modal .bm-banner.lainnya { background: linear-gradient(135deg, #94A3B8, #CBD5E1); }
 
     .beli-modal .bm-close {
@@ -956,6 +961,9 @@
                         <a href="javascript:void(0)" class="filter-tab" data-kategori="Makeup" onclick="filterProduk('Makeup')">
                             <i class="fa-solid fa-palette"></i> Makeup
                         </a>
+                        <a href="javascript:void(0)" class="filter-tab" data-kategori="Nailcare" onclick="filterProduk('Nailcare')">
+                            <i class="fa-solid fa-hand"></i> Nailcare
+                        </a>
                     </div>
                     <div class="pt-right">
                         <div class="search-input-wrap">
@@ -970,8 +978,8 @@
                     @php
                         $nmKategori = $produk->kategori?->nm_produk ?? 'Lainnya';
                         $kategoriLower = strtolower($nmKategori);
-                        $classMap = ['skincare' => 'skincare', 'haircare' => 'haircare', 'bodycare' => 'bodycare', 'makeup' => 'makeup'];
-                        $iconMap = ['skincare' => 'fa-spa', 'haircare' => 'fa-scissors', 'bodycare' => 'fa-hand-sparkles', 'makeup' => 'fa-palette'];
+                        $classMap = ['skincare' => 'skincare', 'haircare' => 'haircare', 'bodycare' => 'bodycare', 'makeup' => 'makeup', 'nailcare' => 'nailcare'];
+                        $iconMap = ['skincare' => 'fa-spa', 'haircare' => 'fa-scissors', 'bodycare' => 'fa-hand-sparkles', 'makeup' => 'fa-palette', 'nailcare' => 'fa-hand'];
                         $class = $classMap[$kategoriLower] ?? 'lainnya';
                         $icon = $iconMap[$kategoriLower] ?? 'fa-cube';
                     @endphp
@@ -1108,7 +1116,8 @@
         'Skincare': '<i class="fa-solid fa-spa"></i>',
         'Haircare': '<i class="fa-solid fa-scissors"></i>',
         'Bodycare': '<i class="fa-solid fa-hand-sparkles"></i>',
-        'Makeup': '<i class="fa-solid fa-palette"></i>'
+        'Makeup': '<i class="fa-solid fa-palette"></i>',
+        'Nailcare': '<i class="fa-solid fa-hand"></i>'
     };
 
     function formatRupiah(angka) {
