@@ -131,7 +131,9 @@ class KeranjangController extends Controller
                 buatNotif($admin->id, 'Pembelian Langsung', auth()->user()->nama . ' membeli ' . $request->nm_produk . ' (' . $request->qty . ' pcs) via ' . $request->metode, 'Transaksi', url('/admin/dashboard'));
             }
 
-            Troli::where('id_user', auth()->id())->delete();
+            Troli::where('id_user', auth()->id())
+                ->where('nm_produk', $request->nm_produk)
+                ->delete();
         } else {
             $itemCount = Troli::where('id_user', auth()->id())->count();
 
