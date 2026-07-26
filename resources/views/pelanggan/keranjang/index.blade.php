@@ -1085,6 +1085,118 @@
             grid-template-columns: 1fr;
         }
     }
+
+    /* ─── Modal Premium ─── */
+    .modal-premium {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(4px);
+        z-index: 200;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        animation: fadeIn 0.2s ease;
+    }
+
+    .modal-premium.show {
+        display: flex;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    .modal-premium .modal-box {
+        background: var(--white);
+        border-radius: 24px;
+        padding: 32px;
+        width: 100%;
+        max-width: 400px;
+        margin: 0 16px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+        animation: scaleIn 0.3s ease;
+    }
+
+    @keyframes scaleIn {
+        from { transform: scale(0.9); opacity: 0; }
+        to { transform: scale(1); opacity: 1; }
+    }
+
+    .modal-premium .modal-box .modal-icon-wrap {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        background: #FEE2E2;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 16px;
+    }
+
+    .modal-premium .modal-box .modal-icon-wrap i {
+        font-size: 28px;
+        color: #DC2626;
+    }
+
+    .modal-premium .modal-box h3 {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--dark);
+        text-align: center;
+        margin-bottom: 8px;
+    }
+
+    .modal-premium .modal-box p {
+        font-size: 13px;
+        color: var(--gray);
+        text-align: center;
+        margin-bottom: 24px;
+        line-height: 1.6;
+    }
+
+    .modal-premium .modal-box .modal-actions {
+        display: flex;
+        gap: 12px;
+    }
+
+    .modal-premium .modal-box .modal-actions .btn-cancel {
+        flex: 1;
+        padding: 11px 20px;
+        border-radius: 12px;
+        border: 1.5px solid var(--border);
+        background: var(--white);
+        color: var(--gray);
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .modal-premium .modal-box .modal-actions .btn-cancel:hover {
+        background: var(--background);
+        border-color: #ddd;
+    }
+
+    .modal-premium .modal-box .modal-actions .btn-danger {
+        flex: 1;
+        padding: 11px 20px;
+        border-radius: 12px;
+        border: none;
+        background: linear-gradient(135deg, #DC2626, #EF4444);
+        color: #fff;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
+    }
+
+    .modal-premium .modal-box .modal-actions .btn-danger:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 20px rgba(220, 38, 38, 0.35);
+    }
     </style>
 </head>
 
@@ -1185,13 +1297,9 @@
                                     <a href="javascript:void(0)" class="kc-btn-detail" onclick="showDetail({{ $item->id }})">
                                         <i class="fa-regular fa-eye"></i> Selengkapnya
                                     </a>
-                                    <form action="{{ route('pelanggan.keranjang.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Hapus produk ini dari keranjang?')" style="margin:0;">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="kc-btn-hapus">
-                                            <i class="fa-solid fa-trash-can"></i>
-                                        </button>
-                                    </form>
+                                    <button onclick="confirmDelete({{ $item->id }})" class="kc-btn-hapus">
+                                        <i class="fa-solid fa-trash-can"></i>
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -1212,8 +1320,9 @@
                             </button>
                         </div>
                     </div>
-                @else
-                    <div class="keranjang-empty">
+                @endif
+
+                    <div class="keranjang-empty" id="keranjangEmpty" style="display: {{ $troli->count() > 0 ? 'none' : '' }};">
                         <div class="ke-icon">
                             <i class="fa-solid fa-cart-plus"></i>
                         </div>
@@ -1223,7 +1332,6 @@
                             <i class="fa-solid fa-store"></i> Mulai Belanja
                         </a>
                     </div>
-                @endif
             </div>
 
             <div class="cart-notif" id="cartNotif">
@@ -1308,6 +1416,25 @@
                 </div>
             </div>
         </main>
+    </div>
+
+    <!-- ═══ Modal Delete Premium ═══ -->
+    <div id="deleteModal" class="modal-premium">
+        <div class="modal-box">
+            <form id="deleteForm" method="POST">
+                @csrf
+                @method('DELETE')
+                <div class="modal-icon-wrap">
+                    <i class="fa-regular fa-trash-can"></i>
+                </div>
+                <h3 id="modalDeleteTitle">Hapus Produk</h3>
+                <p id="modalDeleteBody">Apakah Anda yakin ingin menghapus produk ini?<br>Tindakan ini tidak dapat dibatalkan.</p>
+                <div class="modal-actions">
+                    <button type="button" onclick="closeDeleteModal()" class="btn-cancel">Batal</button>
+                    <button type="submit" class="btn-danger">Ya, Hapus</button>
+                </div>
+            </form>
+        </div>
     </div>
 
     <script>
@@ -1407,14 +1534,61 @@
     }
 
     var hapusMode = false;
+    var deleteMode = 'single';
+    var deleteId = null;
 
     function onHapusBtnClick() {
         if (hapusMode) {
-            hapusTerpilih();
+            confirmBatchDelete();
         } else {
             toggleHapusMode();
         }
     }
+
+    function confirmDelete(id) {
+        deleteMode = 'single';
+        deleteId = id;
+        document.getElementById('deleteForm').action = '/pelanggan/keranjang/' + id;
+        document.getElementById('modalDeleteTitle').textContent = 'Hapus Produk';
+        document.getElementById('modalDeleteBody').innerHTML = 'Apakah Anda yakin ingin menghapus produk ini?<br>Tindakan ini tidak dapat dibatalkan.';
+        document.getElementById('deleteModal').classList.add('show');
+    }
+
+    function confirmBatchDelete() {
+        var selected = [];
+        document.querySelectorAll('.cb-hapus:checked').forEach(function(cb) {
+            selected.push(cb.value);
+        });
+        if (selected.length === 0) {
+            showNotif('Pilih produk yang ingin dihapus.');
+            return;
+        }
+        deleteMode = 'batch';
+        document.getElementById('modalDeleteTitle').textContent = 'Hapus Produk';
+        document.getElementById('modalDeleteBody').innerHTML = 'Apakah Anda yakin ingin menghapus ' + selected.length + ' produk ini?<br>Tindakan ini tidak dapat dibatalkan.';
+        document.getElementById('deleteModal').classList.add('show');
+    }
+
+    function closeDeleteModal() {
+        document.getElementById('deleteModal').classList.remove('show');
+        deleteId = null;
+    }
+
+    document.getElementById('deleteModal').addEventListener('click', function(e) {
+        if (e.target === this) closeDeleteModal();
+    });
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closeDeleteModal();
+    });
+
+    document.getElementById('deleteForm').addEventListener('submit', function(e) {
+        if (deleteMode === 'batch') {
+            e.preventDefault();
+            closeDeleteModal();
+            hapusTerpilih();
+        }
+    });
 
     function toggleHapusMode() {
         hapusMode = !hapusMode;
@@ -1527,8 +1701,26 @@
     function bayarSekarang() {
         var metode = document.querySelector('input[name="metode_bayar"]:checked');
         if (metode) {
-            alert('Pembayaran via ' + metode.value + ' sedang diproses. Terima kasih!');
-            closeCheckout();
+            var csrf = document.querySelector('meta[name="csrf-token"]').content;
+
+            fetch('/pelanggan/checkout-notif', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrf
+                }
+            })
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                if (data.success) {
+                    closeCheckout();
+                    document.querySelector('.keranjang-tools').style.display = 'none';
+                    document.querySelector('.keranjang-grid').style.display = 'none';
+                    document.querySelector('.keranjang-footer').style.display = 'none';
+                    document.getElementById('keranjangEmpty').style.display = '';
+                    showNotif(data.message);
+                }
+            });
         }
     }
 
