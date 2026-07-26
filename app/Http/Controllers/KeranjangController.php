@@ -58,6 +58,13 @@ class KeranjangController extends Controller
 
         $count = Troli::where('id_user', auth()->id())->count();
 
+        buatNotif(auth()->id(), 'Produk Ditambahkan', 'Produk ' . $request->nm_produk . ' berhasil ditambahkan ke keranjang', 'Transaksi', route('pelanggan.keranjang'));
+
+        $admins = \App\Models\User::where('role', 'admin')->get();
+        foreach ($admins as $admin) {
+            buatNotif($admin->id, 'Produk Dibeli', $request->nm_produk . ' ditambahkan ke keranjang oleh ' . auth()->user()->nama, 'Transaksi', url('/admin/dashboard'));
+        }
+
         return response()->json([
             'success' => true,
             'message' => 'Produk berhasil ditambahkan ke keranjang!',
@@ -95,6 +102,8 @@ class KeranjangController extends Controller
         $total_all = Troli::where('id_user', auth()->id())->sum('total_harga');
         $count = Troli::where('id_user', auth()->id())->count();
 
+        buatNotif(auth()->id(), 'Produk Dihapus', count($ids) . ' produk berhasil dihapus dari keranjang', 'Transaksi', route('pelanggan.keranjang'));
+
         return response()->json([
             'success' => true,
             'message' => count($ids) . ' produk berhasil dihapus!',
@@ -106,6 +115,39 @@ class KeranjangController extends Controller
     public function destroy($id)
     {
         Troli::where('id', $id)->where('id_user', auth()->id())->delete();
+
+        buatNotif(auth()->id(), 'Produk Dihapus', 'Produk berhasil dihapus dari keranjang', 'Transaksi', route('pelanggan.keranjang'));
+
         return redirect()->back()->with('success', 'Produk berhasil dihapus dari keranjang!');
+    }
+
+    public function checkoutNotif(Request $request)
+    {
+        if ($request->nm_produk) {
+            buatNotif(auth()->id(), 'Pembelian Langsung', 'Pembelian ' . $request->nm_produk . ' (' . $request->qty . ' pcs) via ' . $request->metode . ' berhasil', 'Transaksi', route('pelanggan.produk'));
+
+            $admins = \App\Models\User::where('role', 'admin')->get();
+            foreach ($admins as $admin) {
+                buatNotif($admin->id, 'Pembelian Langsung', auth()->user()->nama . ' membeli ' . $request->nm_produk . ' (' . $request->qty . ' pcs) via ' . $request->metode, 'Transaksi', url('/admin/dashboard'));
+            }
+
+            Troli::where('id_user', auth()->id())->delete();
+        } else {
+            $itemCount = Troli::where('id_user', auth()->id())->count();
+
+            buatNotif(auth()->id(), 'Checkout Berhasil', $itemCount . ' produk berhasil di-checkout', 'Transaksi', route('pelanggan.produk'));
+
+            $admins = \App\Models\User::where('role', 'admin')->get();
+            foreach ($admins as $admin) {
+                buatNotif($admin->id, 'Checkout Pelanggan', auth()->user()->nama . ' melakukan checkout ' . $itemCount . ' produk', 'Transaksi', url('/admin/dashboard'));
+            }
+
+            Troli::where('id_user', auth()->id())->delete();
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Checkout berhasil!',
+        ]);
     }
 }
