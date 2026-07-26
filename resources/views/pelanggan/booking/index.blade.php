@@ -1320,8 +1320,8 @@
                 <div class="modal-icon-wrap">
                     <i class="fa-regular fa-trash-can"></i>
                 </div>
-                <h3>Hapus Booking</h3>
-                <p>Apakah Anda yakin ingin menghapus booking ini?<br>Tindakan ini tidak dapat dibatalkan.</p>
+                <h3 id="modalDeleteTitle">Hapus Booking</h3>
+                <p id="modalDeleteBody">Apakah Anda yakin ingin menghapus booking ini?<br>Tindakan ini tidak dapat dibatalkan.</p>
                 <div class="modal-actions">
                     <button type="button" onclick="closeDeleteModal()" class="btn-cancel">Batal</button>
                     <button type="submit" class="btn-danger">Ya, Hapus</button>
@@ -1335,9 +1335,12 @@
     const deleteBaseUrl = '{{ url('/pelanggan/booking') }}';
 
     function confirmDelete(id) {
+        deleteMode = 'single';
         deleteId = id;
         const form = document.getElementById('deleteForm');
         form.action = deleteBaseUrl + '/' + id;
+        document.getElementById('modalDeleteTitle').textContent = 'Hapus Booking';
+        document.getElementById('modalDeleteBody').innerHTML = 'Apakah Anda yakin ingin menghapus booking ini?<br>Tindakan ini tidak dapat dibatalkan.';
         const modal = document.getElementById('deleteModal');
         modal.classList.add('show');
     }
@@ -1354,6 +1357,14 @@
 
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') closeDeleteModal();
+    });
+
+    document.getElementById('deleteForm').addEventListener('submit', function(e) {
+        if (deleteMode === 'batch') {
+            e.preventDefault();
+            closeDeleteModal();
+            hapusTerpilih();
+        }
     });
 
     const now = new Date();
@@ -1392,13 +1403,29 @@
 
     // ═══ Hapus Sebagian ═══
     var hapusMode = false;
+    var deleteMode = 'single';
 
     function onHapusBtnClick() {
         if (hapusMode) {
-            hapusTerpilih();
+            confirmBatchDelete();
         } else {
             toggleHapusMode();
         }
+    }
+
+    function confirmBatchDelete() {
+        var selected = [];
+        document.querySelectorAll('.cb-hapus:checked').forEach(function(cb) {
+            selected.push(cb.value);
+        });
+        if (selected.length === 0) {
+            showNotif('Pilih booking yang ingin dihapus.');
+            return;
+        }
+        deleteMode = 'batch';
+        document.getElementById('modalDeleteTitle').textContent = 'Hapus Booking';
+        document.getElementById('modalDeleteBody').innerHTML = 'Apakah Anda yakin ingin menghapus ' + selected.length + ' booking ini?<br>Tindakan ini tidak dapat dibatalkan.';
+        document.getElementById('deleteModal').classList.add('show');
     }
 
     function toggleHapusMode() {
