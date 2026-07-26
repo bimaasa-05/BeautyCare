@@ -1279,8 +1279,29 @@
     function bayarLangsung() {
         var metode = document.querySelector('input[name="metode_bayar"]:checked');
         if (metode) {
-            closeCheckoutLangsung();
-            showNotif('Pembayaran via ' + metode.value + ' sedang diproses!');
+            var csrf = document.querySelector('meta[name="csrf-token"]').content;
+            var nama = document.getElementById('modalNama').textContent;
+            var qty = parseInt(document.getElementById('qtyInput').value) || 1;
+
+            fetch('/pelanggan/checkout-notif', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrf
+                },
+                body: JSON.stringify({
+                    nm_produk: nama,
+                    qty: qty,
+                    metode: metode.value
+                })
+            })
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                if (data.success) {
+                    closeCheckoutLangsung();
+                    showNotif(data.message);
+                }
+            });
         }
     }
     </script>
