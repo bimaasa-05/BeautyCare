@@ -19,11 +19,6 @@
     <link rel="stylesheet" href="{{ asset('assets/css/responsive.css') }}">
 
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-
-    body {
-        font-family: 'Inter', sans-serif;
-    }
 
     ::-webkit-scrollbar {
         width: 6px;
@@ -165,7 +160,7 @@
         border: 1.5px solid var(--border);
         background: #FAFAFA;
         font-size: 12px;
-        font-family: 'Inter', sans-serif;
+        font-family: 'Poppins', sans-serif;
         color: var(--dark);
         width: 220px;
         transition: all 0.2s ease;
@@ -202,7 +197,7 @@
         color: var(--gray);
         cursor: pointer;
         transition: all 0.2s ease;
-        font-family: 'Inter', sans-serif;
+        font-family: 'Poppins', sans-serif;
         user-select: none;
     }
 
@@ -237,7 +232,7 @@
         font-weight: 600;
         cursor: pointer;
         transition: all 0.25s ease;
-        font-family: 'Inter', sans-serif;
+        font-family: 'Poppins', sans-serif;
         display: inline-flex;
         align-items: center;
         gap: 8px;
@@ -443,7 +438,7 @@
         align-items: center;
         justify-content: center;
         transition: all 0.2s ease;
-        font-family: 'Inter', sans-serif;
+        font-family: 'Poppins', sans-serif;
     }
 
     .keranjang-card .kc-qty-row .kc-qty-control button:hover {
@@ -500,7 +495,7 @@
         font-weight: 600;
         cursor: pointer;
         transition: all 0.2s ease;
-        font-family: 'Inter', sans-serif;
+        font-family: 'Poppins', sans-serif;
         display: inline-flex;
         align-items: center;
         justify-content: center;
@@ -524,7 +519,7 @@
         font-weight: 600;
         cursor: pointer;
         transition: all 0.2s ease;
-        font-family: 'Inter', sans-serif;
+        font-family: 'Poppins', sans-serif;
         display: inline-flex;
         align-items: center;
         justify-content: center;
@@ -606,7 +601,7 @@
         font-weight: 600;
         cursor: pointer;
         transition: all 0.2s ease;
-        font-family: 'Inter', sans-serif;
+        font-family: 'Poppins', sans-serif;
         text-decoration: none;
         display: inline-flex;
         align-items: center;
@@ -675,7 +670,7 @@
         border-radius: 14px;
         font-size: 13px;
         font-weight: 600;
-        font-family: 'Inter', sans-serif;
+        font-family: 'Poppins', sans-serif;
         box-shadow: 0 8px 30px rgba(0,0,0,0.15);
         display: flex;
         align-items: center;
@@ -1005,7 +1000,7 @@
         font-size: 12px;
         font-weight: 600;
         color: var(--dark);
-        font-family: 'Inter', sans-serif;
+        font-family: 'Poppins', sans-serif;
     }
 
     .checkout-modal .cmp-option label:hover {
@@ -1030,7 +1025,7 @@
         font-weight: 700;
         cursor: pointer;
         transition: all 0.2s ease;
-        font-family: 'Inter', sans-serif;
+        font-family: 'Poppins', sans-serif;
         background: linear-gradient(135deg, var(--primary), #FF7BA6);
         color: #fff;
         box-shadow: 0 4px 16px rgba(255, 79, 135, 0.25);

@@ -55,11 +55,6 @@
         }
     }
 
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-
-    body {
-        font-family: 'Inter', sans-serif;
-    }
 
     ::-webkit-scrollbar {
         width: 6px;
@@ -186,7 +181,7 @@
         color: var(--gray);
         cursor: pointer;
         transition: all 0.2s ease;
-        font-family: 'Inter', sans-serif;
+        font-family: 'Poppins', sans-serif;
         display: inline-flex;
         align-items: center;
         gap: 6px;
@@ -226,7 +221,7 @@
         border: 1.5px solid var(--border);
         background: #FAFAFA;
         font-size: 12px;
-        font-family: 'Inter', sans-serif;
+        font-family: 'Poppins', sans-serif;
         color: var(--dark);
         width: 220px;
         transition: all 0.2s ease;
@@ -373,7 +368,7 @@
         font-weight: 600;
         cursor: pointer;
         transition: all 0.2s ease;
-        font-family: 'Inter', sans-serif;
+        font-family: 'Poppins', sans-serif;
         box-shadow: 0 4px 12px rgba(255, 79, 135, 0.2);
         display: inline-flex;
         align-items: center;
@@ -396,7 +391,7 @@
         font-weight: 600;
         cursor: pointer;
         transition: all 0.2s ease;
-        font-family: 'Inter', sans-serif;
+        font-family: 'Poppins', sans-serif;
         display: inline-flex;
         align-items: center;
         gap: 6px;
@@ -451,7 +446,7 @@
         border-radius: 14px;
         font-size: 13px;
         font-weight: 600;
-        font-family: 'Inter', sans-serif;
+        font-family: 'Poppins', sans-serif;
         box-shadow: 0 8px 30px rgba(0,0,0,0.15);
         display: flex;
         align-items: center;
@@ -636,7 +631,7 @@
         align-items: center;
         justify-content: center;
         transition: all 0.2s ease;
-        font-family: 'Inter', sans-serif;
+        font-family: 'Poppins', sans-serif;
     }
 
     .beli-modal .bm-body .bm-qty .qty-control button:hover {
@@ -655,7 +650,7 @@
         font-weight: 700;
         color: var(--dark);
         outline: none;
-        font-family: 'Inter', sans-serif;
+        font-family: 'Poppins', sans-serif;
     }
 
     .bm-btn-beli {
@@ -667,7 +662,7 @@
         font-weight: 700;
         cursor: pointer;
         transition: all 0.2s ease;
-        font-family: 'Inter', sans-serif;
+        font-family: 'Poppins', sans-serif;
         background: linear-gradient(135deg, var(--primary), #FF7BA6);
         color: #fff;
         box-shadow: 0 4px 16px rgba(255, 79, 135, 0.25);
@@ -852,7 +847,7 @@
         font-size: 12px;
         font-weight: 600;
         color: var(--dark);
-        font-family: 'Inter', sans-serif;
+        font-family: 'Poppins', sans-serif;
     }
 
     .checkout-modal .cmp-option label:hover {
@@ -877,7 +872,7 @@
         font-weight: 700;
         cursor: pointer;
         transition: all 0.2s ease;
-        font-family: 'Inter', sans-serif;
+        font-family: 'Poppins', sans-serif;
         background: linear-gradient(135deg, var(--primary), #FF7BA6);
         color: #fff;
         box-shadow: 0 4px 16px rgba(255, 79, 135, 0.25);
@@ -971,165 +966,43 @@
                 </div>
 
                 <div class="produk-grid">
+                    @forelse($produks as $produk)
+                    @php
+                        $nmKategori = $produk->kategori?->nm_produk ?? 'Lainnya';
+                        $kategoriLower = strtolower($nmKategori);
+                        $classMap = ['skincare' => 'skincare', 'haircare' => 'haircare', 'bodycare' => 'bodycare', 'makeup' => 'makeup'];
+                        $iconMap = ['skincare' => 'fa-spa', 'haircare' => 'fa-scissors', 'bodycare' => 'fa-hand-sparkles', 'makeup' => 'fa-palette'];
+                        $class = $classMap[$kategoriLower] ?? 'lainnya';
+                        $icon = $iconMap[$kategoriLower] ?? 'fa-cube';
+                    @endphp
                     <div class="produk-card">
                         <div class="pc-image">
-                            <div class="pc-img-placeholder skincare">
-                                <i class="fa-solid fa-spa"></i>
+                            <div class="pc-img-placeholder {{ $class }}">
+                                <i class="fa-solid {{ $icon }}"></i>
                             </div>
-                            <span class="pc-category-badge">Skincare</span>
+                            <span class="pc-category-badge">{{ $nmKategori }}</span>
                         </div>
                         <div class="pc-body">
-                            <div class="pc-name">Serum Vitamin C Brightening</div>
-                            <div class="pc-category">Skincare</div>
+                            <div class="pc-name">{{ $produk->nm_produk }}</div>
+                            <div class="pc-category">{{ $nmKategori }}</div>
                             <div class="pc-divider"></div>
                             <div class="pc-footer">
-                                <div class="pc-price">Rp 125.000 <span>/pcs</span></div>
-                                <a href="#" class="pc-btn-beli" data-produk="serum-vitamin-c" data-nama="Serum Vitamin C Brightening" data-kategori="Skincare" data-harga="Rp 125.000" data-harga-numeric="125000" onclick="showBeliModal(this)">
+                                <div class="pc-price">Rp {{ number_format($produk->harga_jual, 0, ',', '.') }} <span>/{{ $produk->satuan }}</span></div>
+                                <a href="#" class="pc-btn-beli" data-produk="{{ $produk->id_produk }}" data-nama="{{ $produk->nm_produk }}" data-kategori="{{ $nmKategori }}" data-harga="Rp {{ number_format($produk->harga_jual, 0, ',', '.') }}" data-harga-numeric="{{ $produk->harga_jual }}" onclick="showBeliModal(this)">
                                     <i class="fa-solid fa-cart-plus"></i> Beli
                                 </a>
                             </div>
                         </div>
                     </div>
-
-                    <div class="produk-card">
-                        <div class="pc-image">
-                            <div class="pc-img-placeholder skincare">
-                                <i class="fa-solid fa-spa"></i>
-                            </div>
-                            <span class="pc-category-badge">Skincare</span>
+                    @empty
+                    <div class="produk-empty" style="grid-column:1/-1;">
+                        <div class="pe-icon">
+                            <i class="fa-solid fa-cube"></i>
                         </div>
-                        <div class="pc-body">
-                            <div class="pc-name">Moisturizer Cream Collagen</div>
-                            <div class="pc-category">Skincare</div>
-                            <div class="pc-divider"></div>
-                            <div class="pc-footer">
-                                <div class="pc-price">Rp 85.000 <span>/pcs</span></div>
-                                <a href="#" class="pc-btn-beli" data-produk="moisturizer-cream" data-nama="Moisturizer Cream Collagen" data-kategori="Skincare" data-harga="Rp 85.000" data-harga-numeric="85000" onclick="showBeliModal(this)">
-                                    <i class="fa-solid fa-cart-plus"></i> Beli
-                                </a>
-                            </div>
-                        </div>
+                        <h4>Belum Ada Produk</h4>
+                        <p>Belum ada produk yang tersedia saat ini.</p>
                     </div>
-
-                    <div class="produk-card">
-                        <div class="pc-image">
-                            <div class="pc-img-placeholder haircare">
-                                <i class="fa-solid fa-scissors"></i>
-                            </div>
-                            <span class="pc-category-badge">Haircare</span>
-                        </div>
-                        <div class="pc-body">
-                            <div class="pc-name">Shampoo Premium Keratin</div>
-                            <div class="pc-category">Haircare</div>
-                            <div class="pc-divider"></div>
-                            <div class="pc-footer">
-                                <div class="pc-price">Rp 65.000 <span>/pcs</span></div>
-                                <a href="#" class="pc-btn-beli" data-produk="shampoo-premium" data-nama="Shampoo Premium Keratin" data-kategori="Haircare" data-harga="Rp 65.000" data-harga-numeric="65000" onclick="showBeliModal(this)">
-                                    <i class="fa-solid fa-cart-plus"></i> Beli
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="produk-card">
-                        <div class="pc-image">
-                            <div class="pc-img-placeholder haircare">
-                                <i class="fa-solid fa-scissors"></i>
-                            </div>
-                            <span class="pc-category-badge">Haircare</span>
-                        </div>
-                        <div class="pc-body">
-                            <div class="pc-name">Hair Mask Argan Oil</div>
-                            <div class="pc-category">Haircare</div>
-                            <div class="pc-divider"></div>
-                            <div class="pc-footer">
-                                <div class="pc-price">Rp 95.000 <span>/pcs</span></div>
-                                <a href="#" class="pc-btn-beli" data-produk="hair-mask" data-nama="Hair Mask Argan Oil" data-kategori="Haircare" data-harga="Rp 95.000" data-harga-numeric="95000" onclick="showBeliModal(this)">
-                                    <i class="fa-solid fa-cart-plus"></i> Beli
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="produk-card">
-                        <div class="pc-image">
-                            <div class="pc-img-placeholder bodycare">
-                                <i class="fa-solid fa-hand-sparkles"></i>
-                            </div>
-                            <span class="pc-category-badge">Bodycare</span>
-                        </div>
-                        <div class="pc-body">
-                            <div class="pc-name">Body Lotion Sakura Glow</div>
-                            <div class="pc-category">Bodycare</div>
-                            <div class="pc-divider"></div>
-                            <div class="pc-footer">
-                                <div class="pc-price">Rp 75.000 <span>/pcs</span></div>
-                                <a href="#" class="pc-btn-beli" data-produk="body-lotion" data-nama="Body Lotion Sakura Glow" data-kategori="Bodycare" data-harga="Rp 75.000" data-harga-numeric="75000" onclick="showBeliModal(this)">
-                                    <i class="fa-solid fa-cart-plus"></i> Beli
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="produk-card">
-                        <div class="pc-image">
-                            <div class="pc-img-placeholder bodycare">
-                                <i class="fa-solid fa-hand-sparkles"></i>
-                            </div>
-                            <span class="pc-category-badge">Bodycare</span>
-                        </div>
-                        <div class="pc-body">
-                            <div class="pc-name">Body Scrub Coffee Sugar</div>
-                            <div class="pc-category">Bodycare</div>
-                            <div class="pc-divider"></div>
-                            <div class="pc-footer">
-                                <div class="pc-price">Rp 89.000 <span>/pcs</span></div>
-                                <a href="#" class="pc-btn-beli" data-produk="body-scrub" data-nama="Body Scrub Coffee Sugar" data-kategori="Bodycare" data-harga="Rp 89.000" data-harga-numeric="89000" onclick="showBeliModal(this)">
-                                    <i class="fa-solid fa-cart-plus"></i> Beli
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="produk-card">
-                        <div class="pc-image">
-                            <div class="pc-img-placeholder makeup">
-                                <i class="fa-solid fa-palette"></i>
-                            </div>
-                            <span class="pc-category-badge">Makeup</span>
-                        </div>
-                        <div class="pc-body">
-                            <div class="pc-name">Lipstik Matte Velvet</div>
-                            <div class="pc-category">Makeup</div>
-                            <div class="pc-divider"></div>
-                            <div class="pc-footer">
-                                <div class="pc-price">Rp 55.000 <span>/pcs</span></div>
-                                <a href="#" class="pc-btn-beli" data-produk="lipstik-matte" data-nama="Lipstik Matte Velvet" data-kategori="Makeup" data-harga="Rp 55.000" data-harga-numeric="55000" onclick="showBeliModal(this)">
-                                    <i class="fa-solid fa-cart-plus"></i> Beli
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="produk-card">
-                        <div class="pc-image">
-                            <div class="pc-img-placeholder makeup">
-                                <i class="fa-solid fa-palette"></i>
-                            </div>
-                            <span class="pc-category-badge">Makeup</span>
-                        </div>
-                        <div class="pc-body">
-                            <div class="pc-name">Setting Spray Matte Finish</div>
-                            <div class="pc-category">Makeup</div>
-                            <div class="pc-divider"></div>
-                            <div class="pc-footer">
-                                <div class="pc-price">Rp 68.000 <span>/pcs</span></div>
-                                <a href="#" class="pc-btn-beli" data-produk="setting-spray" data-nama="Setting Spray Matte Finish" data-kategori="Makeup" data-harga="Rp 68.000" data-harga-numeric="68000" onclick="showBeliModal(this)">
-                                    <i class="fa-solid fa-cart-plus"></i> Beli
-                                </a>
-                            </div>
-                        </div>
-                    </div>
+                    @endforelse
                 </div>
             </div>
         </main>

@@ -280,7 +280,146 @@ Route::middleware('auth')->group(function () {
     //--------------------------------------------------
     //Route Pelangggan
     Route::get('/pelanggan/dashboard', function () {
-        return view('pelanggan.dashboard');
+        $promos = \App\Models\Promo::where('status', 'Tersedia')
+            ->whereDate('selesai', '>=', now())
+            ->orderBy('id_promo', 'desc')
+            ->get();
+        $layanans = \App\Models\Layanan::where('status', 'Tersedia')
+            ->orderBy('id_layanan', 'asc')
+            ->get();
+        $kategoriLayanan = \App\Models\KategoriLayanan::where('status', 'tersedia')->get();
+        $produks = \App\Models\Produk::with('kategori')
+            ->where('status', 'Tersedia')
+            ->orderBy('id_produk', 'desc')
+            ->get();
+
+        $userId = auth()->id();
+        $user = auth()->user();
+
+        $totalBooking = \App\Models\Booking::where('id_pelanggan', $userId)->count();
+        $bookingAktif = \App\Models\Booking::where('id_pelanggan', $userId)
+            ->whereIn('status', ['menunggu', 'dikonfirmasi', 'diproses'])
+            ->count();
+        $riwayatTreatment = \App\Models\Booking::where('id_pelanggan', $userId)
+            ->where('status', 'selesai')
+            ->count();
+
+        $riwayatTreatments = \App\Models\Booking::with(['detail.layanan', 'karyawan'])
+            ->where('id_pelanggan', $userId)
+            ->where('status', 'selesai')
+            ->orderBy('tanggal', 'desc')
+            ->orderBy('jam', 'desc')
+            ->take(5)
+            ->get();
+
+        $bookingMendatang = \App\Models\Booking::with(['detail.layanan', 'karyawan'])
+            ->where('id_pelanggan', $userId)
+            ->whereIn('status', ['menunggu', 'dikonfirmasi', 'diproses'])
+            ->whereDate('tanggal', '>=', now())
+            ->orderBy('tanggal', 'asc')
+            ->orderBy('jam', 'asc')
+            ->take(3)
+            ->get();
+
+        $favoritLayananIds = \App\Models\DetailBooking::select('id_layanan')
+            ->whereHas('booking', fn($q) => $q->where('id_pelanggan', $userId))
+            ->groupBy('id_layanan')
+            ->orderByRaw('COUNT(*) DESC')
+            ->limit(4)
+            ->pluck('id_layanan');
+
+        $layananFavorit = \App\Models\Layanan::whereIn('id_layanan', $favoritLayananIds)->get();
+        if ($layananFavorit->isEmpty()) {
+            $layananFavorit = \App\Models\Layanan::where('status', 'Tersedia')->inRandomOrder()->take(4)->get();
+        }
+
+        $produkTerlarisRaw = \Illuminate\Support\Facades\DB::table('detail_transaksi')
+            ->select('id_item', \Illuminate\Support\Facades\DB::raw('COALESCE(SUM(qty), 0) as total_terjual'))
+            ->where('jenis', 'Produk')
+            ->groupBy('id_item')
+            ->orderBy('total_terjual', 'desc')
+            ->limit(4)
+            ->get();
+
+        $produkTerlaris = collect();
+        if ($produkTerlarisRaw->isNotEmpty()) {
+            $ids = $produkTerlarisRaw->pluck('id_item');
+            $produks = \App\Models\Produk::with('kategori')->whereIn('id_produk', $ids)->get()->keyBy('id_produk');
+            foreach ($produkTerlarisRaw as $item) {
+                if ($p = $produks->get($item->id_item)) {
+                    $p->total_terjual = $item->total_terjual;
+                    $produkTerlaris->push($p);
+                }
+            }
+        }
+        if ($produkTerlaris->isEmpty()) {
+            $produkTerlaris = \App\Models\Produk::with('kategori')
+                ->where('status', 'Tersedia')
+                ->inRandomOrder()
+                ->take(4)
+                ->get();
+            $produkTerlaris->each(fn($p) => $p->total_terjual = 0);
+        }
+        // Kunjungan Bulan Ini — distinct days with any activity (booking, session)
+        $kunjunganBulanIni = \App\Models\Booking::where('id_pelanggan', $userId)
+            ->whereYear('tanggal', now()->year)
+            ->whereMonth('tanggal', now()->month)
+            ->distinct('tanggal')
+            ->count('tanggal');
+        try {
+            $sessionsDates = \Illuminate\Support\Facades\DB::table('sessions')
+                ->where('user_id', $userId)
+                ->get()
+                ->pluck('last_activity')
+                ->map(fn($ts) => date('Y-m-d', $ts))
+                ->filter(fn($d) => substr($d, 0, 7) === now()->format('Y-m'))
+                ->unique()
+                ->count();
+            $kunjunganBulanIni = max($kunjunganBulanIni, $sessionsDates);
+        } catch (\Exception $e) {}
+
+        $pelanggan = \App\Models\Pelanggan::where('email', $user->email)->first();
+        if (!$pelanggan) {
+            $pelanggan = \App\Models\Pelanggan::where('nm_pelanggan', $user->nama)->first();
+        }
+        if (!$pelanggan) {
+            $pelanggan = \App\Models\Pelanggan::create([
+                'nm_pelanggan' => $user->nama,
+                'email' => $user->email,
+                'no_hp' => $user->no_hp ?? '',
+                'alamat' => '',
+                'catatan_alergi' => '',
+                'id_member' => 1,
+            ]);
+        }
+        $memberTingkat = null;
+        $memberList = collect();
+        if ($pelanggan && $pelanggan->id_member) {
+            $member = \App\Models\Membership::find($pelanggan->id_member);
+            $memberTingkat = $member ? $member->tingkat : null;
+            $memberList = \App\Models\Membership::where('status', 'aktif')->orderBy('id_member')->get();
+        }
+
+        $chartMonths = [];
+        $chartCounts = [];
+        for ($i = 11; $i >= 0; $i--) {
+            $date = now()->subMonths($i);
+            $count = \App\Models\Booking::where('id_pelanggan', $userId)
+                ->whereYear('tanggal', $date->year)
+                ->whereMonth('tanggal', $date->month)
+                ->count();
+            $chartMonths[] = $date->format('M');
+            $chartCounts[] = $count;
+        }
+
+        return view('pelanggan.dashboard', compact(
+            'promos', 'layanans', 'kategoriLayanan', 'produks',
+            'totalBooking', 'bookingAktif', 'riwayatTreatment', 'kunjunganBulanIni',
+            'memberTingkat', 'memberList',
+            'chartMonths', 'chartCounts',
+            'riwayatTreatments', 'bookingMendatang',
+            'layananFavorit', 'produkTerlaris'
+        ));
     })->middleware(['auth', 'verified'])->name('dashboard');
     Route::middleware(['role:pelanggan'])->group(function () {
 
@@ -299,12 +438,27 @@ Route::middleware('auth')->group(function () {
 
         //Route Treatment
         Route::get('/pelanggan/treatment', function () {
-            return view('pelanggan.treatment.index');
+            $userId = auth()->id();
+            $status = request('status', 'selesai');
+
+            $query = \App\Models\Booking::with(['detail.layanan', 'karyawan'])
+                ->where('id_pelanggan', $userId);
+
+            if ($status && in_array($status, ['menunggu', 'dikonfirmasi', 'diproses', 'selesai', 'dibatalkan'])) {
+                $query->where('status', $status);
+            }
+
+            $bookings = $query->orderBy('tanggal', 'desc')
+                ->orderBy('jam', 'desc')
+                ->get();
+
+            return view('pelanggan.treatment.index', compact('bookings'));
         })->name('pelanggan.treatment');
 
         //Route Promo
         Route::get('/pelanggan/promo', function () {
-            return view('pelanggan.promo.index');
+            $promos = \App\Models\Promo::orderBy('id_promo', 'desc')->get();
+            return view('pelanggan.promo.index', compact('promos'));
         })->name('pelanggan.promo');
 
         //Route Membership
@@ -314,7 +468,11 @@ Route::middleware('auth')->group(function () {
 
         //Route Produk
         Route::get('/pelanggan/produk', function () {
-            return view('pelanggan.produk.index');
+            $produks = \App\Models\Produk::with('kategori')
+                ->where('status', 'Tersedia')
+                ->orderBy('id_produk', 'desc')
+                ->get();
+            return view('pelanggan.produk.index', compact('produks'));
         })->name('pelanggan.produk');
 
         //Route Keranjang
