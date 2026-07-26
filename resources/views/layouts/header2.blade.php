@@ -19,7 +19,7 @@ if (!isset($pageTitle)) {
         if ($last === 'dashboard') {
             $roleLabels = ['admin' => 'Admin', 'kasir' => 'Kasir', 'beautycian' => 'Beautycian', 'pelanggan' => 'Pelanggan'];
             $role = $parts[0] ?? '';
-            $pageTitle = 'Dashboard ' . ($roleLabels[$role] ?? Str::title($role));
+            $pageTitle = isset($roleLabels[$role]) ? 'Dashboard ' . $roleLabels[$role] : 'Dashboard';
         } elseif ($routeName === 'pelanggan.booking') {
             $pageTitle = 'Booking Saya';
         } elseif (isset($actionLabels[$last]) && count($parts) >= 2) {
