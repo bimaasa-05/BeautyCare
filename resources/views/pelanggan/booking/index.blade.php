@@ -1179,12 +1179,10 @@
                             </div>
                         </div>
                         <div class="bc-actions">
-                            <form action="{{ route('pelanggan.booking') }}" method="GET">
-                                <div class="search-input-wrap">
-                                    <i class="fa-solid fa-search si-icon"></i>
-                                    <input type="text" name="search" placeholder="Cari booking..." value="{{ $search }}">
-                                </div>
-                            </form>
+                            <div class="search-input-wrap">
+                                <i class="fa-solid fa-search si-icon"></i>
+                                <input type="text" id="searchBooking" placeholder="Cari booking..." oninput="cariBooking()">
+                            </div>
                             <div class="select-all-wrap" id="selectAllWrap">
                                 <input type="checkbox" id="cbSelectAll" onchange="toggleAll(event)">
                                 <label for="cbSelectAll">Pilih Semua</label>
@@ -1367,6 +1365,30 @@
     };
     const dateEl = document.getElementById('currentDate');
     if (dateEl) dateEl.textContent = now.toLocaleDateString('id-ID', options);
+
+    // ═══ Search Real-time ═══
+    function cariBooking() {
+        var keyword = document.getElementById('searchBooking').value.toLowerCase().trim();
+        var rows = document.querySelectorAll('.booking-table tbody tr');
+        var visible = 0;
+
+        rows.forEach(function(row) {
+            if (row.querySelector('.empty-state')) return;
+            var text = row.textContent.toLowerCase();
+            var match = keyword === '' || text.includes(keyword);
+            row.style.display = match ? '' : 'none';
+            if (match) visible++;
+        });
+
+        var infoEl = document.querySelector('.tf-info');
+        if (infoEl) {
+            if (keyword) {
+                infoEl.innerHTML = '<span class="tf-dot"></span> Menampilkan ' + visible + ' booking';
+            } else {
+                infoEl.innerHTML = '<span class="tf-dot"></span> Menampilkan ' + rows.length + ' booking';
+            }
+        }
+    }
 
     // ═══ Hapus Sebagian ═══
     var hapusMode = false;
