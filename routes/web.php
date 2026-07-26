@@ -429,6 +429,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/pelanggan/booking', [PelangganController::class, 'store'])->name('pelanggan.booking.store');
         Route::get('/pelanggan/booking/{id}/edit', [PelangganController::class, 'edit'])->name('pelanggan.booking.edit');
         Route::put('/pelanggan/booking/{id}', [PelangganController::class, 'update'])->name('pelanggan.booking.update');
+        Route::delete('/pelanggan/booking/batch', [PelangganController::class, 'batchDestroy'])->name('pelanggan.booking.batch');
         Route::delete('/pelanggan/booking/{id}', [PelangganController::class, 'destroy'])->name('pelanggan.booking.destroy');
 
         //Route Reservasi
