@@ -175,7 +175,7 @@
                                                         class="w-8 h-8 rounded-full object-cover ring-2 ring-pink-100">
                                                 @else
                                                     <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 text-[10px]">
-                                                        <i class="fa-regular fa-user"></i>
+                                                        <i class="fa-solid fa-user"></i>
                                                     </div>
                                                 @endif
                                             </td>
@@ -186,7 +186,7 @@
                                                             class="fa-regular fa-eye text-xs"></i></a>
                                                     <a href="{{ route('kasir.pelanggan.edit', $p->id_pelanggan) }}"
                                                         class="w-7 h-7 text-amber-500 bg-amber-50 hover:bg-amber-100 rounded-md transition-colors flex items-center justify-center"><i
-                                                            class="fa-regular fa-pen-to-square text-xs"></i></a>
+                                                            class="fa-solid fa-pen-to-square text-xs"></i></a>
                                                     <form
                                                         action="{{ route('kasir.pelanggan.destroy', $p->id_pelanggan) }}"
                                                         method="POST" class="inline"
@@ -205,7 +205,7 @@
                                             <td colspan="9" class="py-14 text-center">
                                                 <div class="flex flex-col items-center gap-3">
                                                     <div class="w-20 h-20 rounded-full bg-pink-50 flex items-center justify-center">
-                                                        <i class="fa-regular fa-user text-3xl text-pink-200"></i>
+                                                        <i class="fa-solid fa-user text-3xl text-pink-200"></i>
                                                     </div>
                                                     <p class="text-gray-400 font-medium text-[14px]">Belum ada data pelanggan</p>
                                                     <p class="text-gray-300 text-[12px] -mt-2">Tambahkan pelanggan baru untuk memulai</p>
