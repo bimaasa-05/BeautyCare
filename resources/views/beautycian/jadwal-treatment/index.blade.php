@@ -16,6 +16,14 @@
     <link rel="stylesheet" href="{{ asset('assets/css/dashboard.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/responsive.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/beautycian.css') }}">
+    <style>
+        .bc-actions form { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .filter-group { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .search-input-wrap input { max-width: 100%; box-sizing: border-box; }
+        @media (max-width: 1200px) { .search-input-wrap input { width: 180px; } }
+        @media (max-width: 768px) { .search-input-wrap input { width: 150px; } }
+        @media (max-width: 430px) { .search-input-wrap input { width: 100%; } }
+    </style>
 </head>
 
 <body>

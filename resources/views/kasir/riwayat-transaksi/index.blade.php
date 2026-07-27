@@ -81,7 +81,7 @@
                                     <p class="text-[26px] font-bold text-gray-800 mt-1">{{ $totalTransaksi }}</p>
                                 </div>
                                 <div class="w-11 h-11 rounded-full bg-sky-100 flex items-center justify-center">
-                                    <i class="fa-regular fa-rectangle-list text-sky-500 text-lg"></i>
+                                    <i class="fa-solid fa-rectangle-list text-sky-500 text-lg"></i>
                                 </div>
                             </div>
                         </div>
@@ -172,7 +172,7 @@
                                                 $metodeIcon = match($t->metode_byr) {
                                                     'Tunai' => 'fa-solid fa-money-bill-wave text-emerald-500',
                                                     'Transfer' => 'fa-solid fa-building-columns text-purple-500',
-                                                    'Debit' => 'fa-regular fa-credit-card text-amber-500',
+                                                    'Debit' => 'fa-solid fa-credit-card text-amber-500',
                                                     'E-Wallet' => 'fa-solid fa-wallet text-pink-500',
                                                     default => 'fa-regular fa-circle text-gray-400',
                                                 };

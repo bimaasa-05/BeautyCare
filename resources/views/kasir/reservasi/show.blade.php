@@ -48,10 +48,10 @@
                     <div class="flex justify-between items-center mb-6">
                         <div>
                             <h3 class="text-[16px] font-bold text-gray-800">
-                                <i class="fa-regular fa-receipt text-pink-500 mr-2"></i>Detail Reservasi
+                                <i class="fa-solid fa-receipt text-pink-500 mr-2"></i>Detail Reservasi
                             </h3>
                             <p class="text-[12px] text-gray-400 mt-0.5">
-                                <i class="fa-regular fa-info-circle text-pink-300 mr-1"></i>Informasi lengkap reservasi
+                                <i class="fa-solid fa-circle-info text-pink-300 mr-1"></i>Informasi lengkap reservasi
                             </p>
                         </div>
                         <div class="flex gap-2">
@@ -106,7 +106,7 @@
                                 <tr>
                                     <td class="py-1.5 text-gray-400">Tanggal</td>
                                     <td class="py-1.5 font-medium text-gray-700">
-                                        <i class="fa-regular fa-calendar text-pink-300 mr-1"></i>
+                                        <i class="fa-solid fa-calendar text-pink-300 mr-1"></i>
                                         {{ \Carbon\Carbon::parse($reservasi->tanggal)->isoFormat('D MMMM YYYY') }}
                                     </td>
                                 </tr>
@@ -132,20 +132,20 @@
 
                         <div class="p-4 bg-gradient-to-br from-sky-50 to-white rounded-xl border border-sky-100">
                             <h4 class="text-[12px] font-semibold text-gray-500 uppercase tracking-wider mb-3">
-                                <i class="fa-regular fa-user text-sky-400 mr-1"></i>Pelanggan & Karyawan
+                                <i class="fa-solid fa-user text-sky-400 mr-1"></i>Pelanggan & Karyawan
                             </h4>
                             <table class="w-full text-[13px]">
                                 <tr>
                                     <td class="py-1.5 text-gray-400 w-28">Pelanggan</td>
                                     <td class="py-1.5 font-semibold text-gray-700">
-                                        <i class="fa-regular fa-user text-sky-300 mr-1"></i>
+                                        <i class="fa-solid fa-user text-sky-300 mr-1"></i>
                                         {{ $reservasi->pelanggan->nm_pelanggan ?? '-' }}
                                     </td>
                                 </tr>
                                 <tr>
                                     <td class="py-1.5 text-gray-400">No. HP</td>
                                     <td class="py-1.5 text-gray-700">
-                                        <i class="fa-regular fa-phone text-sky-300 mr-1"></i>
+                                        <i class="fa-solid fa-phone text-sky-300 mr-1"></i>
                                         {{ $reservasi->pelanggan->no_hp ?? '-' }}
                                     </td>
                                 </tr>
@@ -156,7 +156,7 @@
                                 <tr>
                                     <td class="py-1.5 text-gray-400 border-t border-sky-100/50 pt-2">Karyawan</td>
                                     <td class="py-1.5 font-semibold text-gray-700 border-t border-sky-100/50 pt-2">
-                                        <i class="fa-regular fa-user text-sky-300 mr-1"></i>
+                                        <i class="fa-solid fa-user text-sky-300 mr-1"></i>
                                         {{ $reservasi->karyawan->nama ?? '-' }}
                                     </td>
                                 </tr>
@@ -166,7 +166,7 @@
 
                     <div class="mt-6 p-4 bg-gradient-to-br from-emerald-50 to-white rounded-xl border border-emerald-100">
                         <h4 class="text-[12px] font-semibold text-gray-500 uppercase tracking-wider mb-3">
-                            <i class="fa-regular fa-list text-emerald-400 mr-1"></i>Detail Layanan
+                            <i class="fa-solid fa-list text-emerald-400 mr-1"></i>Detail Layanan
                         </h4>
                         <div class="overflow-x-auto">
                             <table class="w-full text-[13px]">

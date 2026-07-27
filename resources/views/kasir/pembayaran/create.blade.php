@@ -55,10 +55,10 @@
                     <div class="flex justify-between items-center mb-6">
                         <div>
                             <h3 class="text-[16px] font-bold text-gray-800">
-                                <i class="fa-regular fa-credit-card text-pink-500 mr-2"></i>Proses Pembayaran
+                                <i class="fa-solid fa-credit-card text-pink-500 mr-2"></i>Proses Pembayaran
                             </h3>
                             <p class="text-[12px] text-gray-400 mt-0.5">
-                                <i class="fa-regular fa-pen-to-square text-pink-300 mr-1"></i>Konfirmasi pembayaran reservasi
+                                <i class="fa-solid fa-pen-to-square text-pink-300 mr-1"></i>Konfirmasi pembayaran reservasi
                             </p>
                         </div>
                         <a href="{{ route('kasir.pembayaran.index') }}"
@@ -106,7 +106,7 @@
 
                         <div class="p-4 bg-gradient-to-br from-emerald-50 to-white rounded-xl border border-emerald-100">
                             <h4 class="text-[12px] font-semibold text-gray-500 uppercase tracking-wider mb-3">
-                                <i class="fa-regular fa-list text-emerald-400 mr-1"></i>Layanan
+                                <i class="fa-solid fa-list text-emerald-400 mr-1"></i>Layanan
                             </h4>
                             <table class="w-full text-[13px]">
                                 <thead>
@@ -144,7 +144,7 @@
 
                         <div class="mt-4 pt-4 border-t border-gray-100">
                             <h4 class="text-[14px] font-bold text-gray-700 mb-1">
-                                <i class="fa-regular fa-credit-card text-pink-500 mr-2"></i>Metode Pembayaran
+                                <i class="fa-solid fa-credit-card text-pink-500 mr-2"></i>Metode Pembayaran
                             </h4>
                             <p class="text-[12px] text-gray-400 mb-4">Pilih metode pembayaran</p>
 
@@ -200,7 +200,7 @@
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div class="form-group">
                                             <label class="form-label">
-                                                <i class="fa-regular fa-money-bill-1 text-pink-400 mr-1"></i>Jumlah Dibayar <span class="text-red-500">*</span>
+                                                <i class="fa-solid fa-money-bill-1 text-pink-400 mr-1"></i>Jumlah Dibayar <span class="text-red-500">*</span>
                                             </label>
                                             <input type="number" name="dibayar" id="dibayar"
                                                 class="form-input-custom @error('dibayar') border-red-400 @enderror"
@@ -211,7 +211,7 @@
                                         </div>
                                         <div class="form-group">
                                             <label class="form-label">
-                                                <i class="fa-regular fa-coins text-pink-400 mr-1"></i>Kembali
+                                                <i class="fa-solid fa-coins text-pink-400 mr-1"></i>Kembali
                                             </label>
                                             <input type="number" name="kembali" id="kembali"
                                                 class="form-input-custom @error('kembali') border-red-400 @enderror bg-green-50/50 font-bold text-green-700"
@@ -241,7 +241,7 @@
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div class="form-group">
                                             <label class="form-label">
-                                                <i class="fa-regular fa-wallet text-pink-400 mr-1"></i>Pilih E-Wallet <span class="text-red-500">*</span>
+                                                <i class="fa-solid fa-wallet text-pink-400 mr-1"></i>Pilih E-Wallet <span class="text-red-500">*</span>
                                             </label>
                                             <select name="ewallet_type" id="ewallet_type" class="form-input-custom @error('ewallet_type') border-red-400 @enderror">
                                                 <option value="">-- Pilih E-Wallet --</option>
@@ -256,7 +256,7 @@
                                         </div>
                                         <div class="form-group">
                                             <label class="form-label">
-                                                <i class="fa-regular fa-money-bill-1 text-pink-400 mr-1"></i>Jumlah Dibayar <span class="text-red-500">*</span>
+                                                <i class="fa-solid fa-money-bill-1 text-pink-400 mr-1"></i>Jumlah Dibayar <span class="text-red-500">*</span>
                                             </label>
                                             <input type="number" name="dibayar" id="dibayar_ewallet"
                                                 class="form-input-custom @error('dibayar') border-red-400 @enderror"
@@ -267,7 +267,7 @@
                                         </div>
                                         <div class="form-group">
                                             <label class="form-label">
-                                                <i class="fa-regular fa-coins text-pink-400 mr-1"></i>Kembali
+                                                <i class="fa-solid fa-coins text-pink-400 mr-1"></i>Kembali
                                             </label>
                                             <input type="number" name="kembali" id="kembali_ewallet"
                                                 class="form-input-custom @error('kembali') border-red-400 @enderror bg-green-50/50 font-bold text-green-700"
@@ -278,7 +278,7 @@
                                         </div>
                                         <div class="form-group">
                                             <label class="form-label">
-                                                <i class="fa-regular fa-user text-pink-400 mr-1"></i>Atas Nama
+                                                <i class="fa-solid fa-user text-pink-400 mr-1"></i>Atas Nama
                                             </label>
                                             <input type="text" name="atas_nama"
                                                 class="form-input-custom @error('atas_nama') border-red-400 @enderror"
@@ -289,7 +289,7 @@
                                         </div>
                                         <div class="form-group">
                                             <label class="form-label">
-                                                <i class="fa-regular fa-image text-pink-400 mr-1"></i>Upload Bukti Bayar
+                                                <i class="fa-solid fa-image text-pink-400 mr-1"></i>Upload Bukti Bayar
                                             </label>
                                             <input type="file" name="bukti_bayar"
                                                 class="form-input-custom @error('bukti_bayar') border-red-400 @enderror"
@@ -320,7 +320,7 @@
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div class="form-group">
                                             <label class="form-label">
-                                                <i class="fa-regular fa-money-bill-1 text-pink-400 mr-1"></i>Jumlah Dibayar <span class="text-red-500">*</span>
+                                                <i class="fa-solid fa-money-bill-1 text-pink-400 mr-1"></i>Jumlah Dibayar <span class="text-red-500">*</span>
                                             </label>
                                             <input type="number" name="dibayar" id="dibayar4"
                                                 class="form-input-custom @error('dibayar') border-red-400 @enderror"
@@ -331,7 +331,7 @@
                                         </div>
                                         <div class="form-group">
                                             <label class="form-label">
-                                                <i class="fa-regular fa-coins text-pink-400 mr-1"></i>Kembali
+                                                <i class="fa-solid fa-coins text-pink-400 mr-1"></i>Kembali
                                             </label>
                                             <input type="number" name="kembali" id="kembali4"
                                                 class="form-input-custom @error('kembali') border-red-400 @enderror bg-green-50/50 font-bold text-green-700"
@@ -342,7 +342,7 @@
                                         </div>
                                         <div class="form-group">
                                             <label class="form-label">
-                                                <i class="fa-regular fa-building-columns text-pink-400 mr-1"></i>Bank Asal
+                                                <i class="fa-solid fa-building-columns text-pink-400 mr-1"></i>Bank Asal
                                             </label>
                                             <select name="bank_asal" id="bank_asal"
                                                 class="form-input-custom @error('bank_asal') border-red-400 @enderror">
@@ -360,7 +360,7 @@
                                         </div>
                                         <div class="form-group">
                                             <label class="form-label">
-                                                <i class="fa-regular fa-arrow-right text-pink-400 mr-1"></i>Dari Rekening
+                                                <i class="fa-solid fa-arrow-right text-pink-400 mr-1"></i>Dari Rekening
                                             </label>
                                             <input type="text" name="dari_rekening"
                                                 class="form-input-custom @error('dari_rekening') border-red-400 @enderror"
@@ -371,7 +371,7 @@
                                         </div>
                                         <div class="form-group">
                                             <label class="form-label">
-                                                <i class="fa-regular fa-building-columns text-pink-400 mr-1"></i>Bank Tujuan <span class="text-red-500">*</span>
+                                                <i class="fa-solid fa-building-columns text-pink-400 mr-1"></i>Bank Tujuan <span class="text-red-500">*</span>
                                             </label>
                                             <select name="bank_tujuan" id="bank_tujuan"
                                                 class="form-input-custom @error('bank_tujuan') border-red-400 @enderror"
@@ -391,7 +391,7 @@
                                         </div>
                                         <div class="form-group">
                                             <label class="form-label">
-                                                <i class="fa-regular fa-arrow-left text-pink-400 mr-1"></i>Ke Rekening <span class="text-red-500">*</span>
+                                                <i class="fa-solid fa-arrow-left text-pink-400 mr-1"></i>Ke Rekening <span class="text-red-500">*</span>
                                             </label>
                                             <input type="text" name="ke_rekening" id="ke_rekening"
                                                 class="form-input-custom @error('ke_rekening') border-red-400 @enderror"
@@ -402,7 +402,7 @@
                                         </div>
                                         <div class="form-group">
                                             <label class="form-label">
-                                                <i class="fa-regular fa-user text-pink-400 mr-1"></i>Atas Nama
+                                                <i class="fa-solid fa-user text-pink-400 mr-1"></i>Atas Nama
                                             </label>
                                             <input type="text" name="atas_nama"
                                                 class="form-input-custom @error('atas_nama') border-red-400 @enderror"
@@ -413,7 +413,7 @@
                                         </div>
                                         <div class="form-group">
                                             <label class="form-label">
-                                                <i class="fa-regular fa-hashtag text-pink-400 mr-1"></i>No. Referensi
+                                                <i class="fa-solid fa-hashtag text-pink-400 mr-1"></i>No. Referensi
                                             </label>
                                             <input type="text" name="no_referensi" id="no_referensi"
                                                 class="form-input-custom @error('no_referensi') border-red-400 @enderror"
@@ -424,7 +424,7 @@
                                         </div>
                                         <div class="form-group">
                                             <label class="form-label">
-                                                <i class="fa-regular fa-image text-pink-400 mr-1"></i>Upload Bukti Pembayaran
+                                                <i class="fa-solid fa-image text-pink-400 mr-1"></i>Upload Bukti Pembayaran
                                             </label>
                                             <input type="file" name="bukti_bayar"
                                                 class="form-input-custom @error('bukti_bayar') border-red-400 @enderror"
@@ -441,7 +441,7 @@
 
                         <div class="form-group mt-4">
                             <label class="form-label">
-                                <i class="fa-regular fa-note-sticky text-pink-400 mr-1"></i>Catatan
+                                <i class="fa-solid fa-note-sticky text-pink-400 mr-1"></i>Catatan
                             </label>
                             <textarea name="catatan" rows="3" class="form-input-custom @error('catatan') border-red-400 @enderror"
                                 placeholder="Catatan tambahan (opsional)">{{ old('catatan') }}</textarea>

@@ -32,6 +32,9 @@ use App\Http\Controllers\AdminPengaturanController;
 use App\Http\Controllers\AdminRiwayatController;
 use App\Http\Controllers\BeatycianJadwalTreatmentController;
 use App\Http\Controllers\MembershipPelangganController;
+use App\Http\Controllers\BeautycianPelangganController;
+use App\Http\Controllers\BeautycianLaporanReservasiController;
+use App\Http\Controllers\BeautycianDashboardController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -249,9 +252,7 @@ Route::middleware('auth')->group(function () {
     //--------------------------------------------------
     //Route BeautyCian
     Route::middleware(['role:beautycian'])->group(function () {
-        Route::get('/beautycian/dashboard', function () {
-            return view('beautycian.dashboard');
-        })->name('beautycian.dashboard');
+        Route::get('/beautycian/dashboard', [BeautycianDashboardController::class, 'index'])->name('beautycian.dashboard');
 
         //Profile Beautycian
         Route::get('/beautycian/profile', function () {
@@ -277,6 +278,12 @@ Route::middleware('auth')->group(function () {
         Route::get('/beautycian/jadwal-treatment', [BeatycianJadwalTreatmentController::class, 'index'])->name('beautycian.jadwal-treatment.index');
         Route::post('/beautycian/jadwal-treatment', [BeatycianJadwalTreatmentController::class, 'updateStatus'])->name('beautycian.jadwal-treatment.update');
         
+        Route::get('/beautycian/pelanggan', [BeautycianPelangganController::class, 'index'])->name('beautycian.pelanggan.index');
+
+        Route::get('/beautycian/laporan-reservasi', [BeautycianLaporanReservasiController::class, 'index'])->name('beautycian.laporan-reservasi.index');
+        Route::get('/beautycian/laporan-reservasi/export-pdf', [BeautycianLaporanReservasiController::class, 'exportPDF'])->name('beautycian.laporan-reservasi.export-pdf');
+        Route::get('/beautycian/laporan-reservasi/export-excel', [BeautycianLaporanReservasiController::class, 'exportExcel'])->name('beautycian.laporan-reservasi.export-excel');
+        Route::get('/beautycian/laporan-reservasi/{id}', [BeautycianLaporanReservasiController::class, 'show'])->name('beautycian.laporan-reservasi.show')->where('id', '[0-9]+');
     });
     //--------------------------------------------------
     //Route Pelangggan

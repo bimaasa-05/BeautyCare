@@ -19,7 +19,7 @@
             $metodeIcon = match($t->metode_byr) {
                 'Tunai' => 'fa-solid fa-money-bill-wave text-emerald-500',
                 'Transfer' => 'fa-solid fa-building-columns text-purple-500',
-                'Debit' => 'fa-regular fa-credit-card text-amber-500',
+                'Debit' => 'fa-solid fa-credit-card text-amber-500',
                 'E-Wallet' => 'fa-solid fa-wallet text-pink-500',
                 default => 'fa-regular fa-circle text-gray-400',
             };
@@ -38,7 +38,7 @@
             $roleIcon = match($t->user->role ?? '') {
                 'admin' => 'fa-solid fa-shield-halved',
                 'kasir' => 'fa-solid fa-user-tie',
-                default => 'fa-regular fa-user',
+                default => 'fa-solid fa-user',
             };
         @endphp
         <div class="flex items-center gap-1.5">
@@ -66,7 +66,7 @@
                 title="Detail"><i class="fa-regular fa-eye text-xs"></i></a>
             <a href="{{ route('admin.transaksi.edit', $t->id_transaksi) }}"
                 class="w-7 h-7 text-amber-500 bg-amber-50 hover:bg-amber-100 rounded-md transition-colors flex items-center justify-center"
-                title="Edit"><i class="fa-regular fa-pen-to-square text-xs"></i></a>
+                title="Edit"><i class="fa-solid fa-pen-to-square text-xs"></i></a>
             <form action="{{ route('admin.transaksi.destroy', $t->id_transaksi) }}"
                 method="POST" class="inline"
                 onsubmit="return confirm('Yakin ingin menghapus transaksi {{ $t->no_invoice }}?')">
