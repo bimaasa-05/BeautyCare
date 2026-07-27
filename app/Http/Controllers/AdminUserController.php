@@ -53,7 +53,7 @@ class AdminUserController extends Controller
             'password' => 'required|string|min:6',
             'no_hp'    => 'nullable|string|max:20',
             'role'     => 'required|in:admin,kasir,beautycian,pelanggan',
-            'status'   => 'required|in:aktif,non_aktif',
+            'status'   => 'required|in:aktif,non_aktif,suspend',
             'foto'     => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
@@ -86,7 +86,7 @@ class AdminUserController extends Controller
             'password' => 'nullable|string|min:6',
             'no_hp'    => 'nullable|string|max:20',
             'role'     => 'required|in:admin,kasir,beautycian,pelanggan',
-            'status'   => 'required|in:aktif,non_aktif',
+            'status'   => 'required|in:aktif,non_aktif,suspend',
             'foto'     => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
@@ -125,5 +125,21 @@ class AdminUserController extends Controller
 
         return redirect()->route('admin.user.index')
             ->with('success', 'User berhasil dihapus.');
+    }
+
+    public function updateStatus(Request $request, User $user)
+    {
+        $request->validate([
+            'status' => 'required|in:aktif,non_aktif,suspend',
+        ]);
+
+        $user->status = $request->status;
+        $user->save();
+
+        $label = $request->status === 'aktif' ? 'diaktifkan' : ($request->status === 'suspend' ? 'disuspend' : 'dinonaktifkan');
+        buatNotif($user->id, 'Status Akun', 'Akun Anda telah ' . $label . ' oleh ' . auth()->user()->nama, 'Lainnya', route('admin.user.index'));
+
+        return redirect()->route('admin.user.index')
+            ->with('success', 'Status user berhasil diperbarui.');
     }
 }

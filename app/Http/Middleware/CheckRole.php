@@ -11,12 +11,25 @@ class CheckRole
 {
     public function handle(Request $request, Closure $next, ...$roles): Response
     {
-        // Cek apakah sudah login dan apakah rolenya ada di dalam daftar yang diizinkan
-        if (Auth::check() && in_array(Auth::user()->role, $roles)) {
-            return $next($request);
+        if (!Auth::check()) {
+            abort(403, 'Anda tidak memiliki hak akses ke halaman ini.');
         }
 
-        // Jika tidak punya akses, lempar ke halaman default atau error 403
-        abort(403, 'Anda tidak memiliki hak akses ke halaman ini.');
+        $user = Auth::user();
+
+        if (!in_array($user->role, $roles)) {
+            abort(403, 'Anda tidak memiliki hak akses ke halaman ini.');
+        }
+
+        if ($user->status !== 'aktif') {
+            Auth::guard('web')->logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+            return redirect()->route('login')->withErrors([
+                'email' => 'Akun Anda belum diaktifkan oleh admin. Silakan hubungi admin.',
+            ]);
+        }
+
+        return $next($request);
     }
 }

@@ -55,11 +55,6 @@
         }
     }
 
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-
-    body {
-        font-family: 'Inter', sans-serif;
-    }
 
     ::-webkit-scrollbar {
         width: 6px;
@@ -290,7 +285,7 @@
         border: 1.5px solid var(--border);
         background: #FAFAFA;
         font-size: 13px;
-        font-family: 'Inter', sans-serif;
+        font-family: 'Poppins', sans-serif;
         color: var(--dark);
         transition: all 0.2s ease;
         outline: none;
@@ -441,7 +436,7 @@
         align-items: center;
         justify-content: center;
         gap: 10px;
-        font-family: 'Inter', sans-serif;
+        font-family: 'Poppins', sans-serif;
     }
 
     .form-actions .btn-submit:hover {
@@ -468,7 +463,7 @@
         align-items: center;
         justify-content: center;
         gap: 8px;
-        font-family: 'Inter', sans-serif;
+        font-family: 'Poppins', sans-serif;
     }
 
     .form-actions .btn-cancel-form:hover {
@@ -611,8 +606,8 @@
                                     <select name="id_karyawan" class="fg-input" required>
                                         <option value="">— Pilih Terapis —</option>
                                         @foreach($karyawans as $karyawan)
-                                        <option value="{{ $karyawan->id_karyawan }}" {{ $booking->id_karyawan == $karyawan->id_karyawan ? 'selected' : '' }}>
-                                            {{ $karyawan->nama }} — {{ $karyawan->jabatan }}
+                                        <option value="{{ $karyawan->user->id }}" {{ $booking->id_karyawan == $karyawan->user->id ? 'selected' : '' }}>
+                                            {{ $karyawan->user->nama }} — {{ $karyawan->jabatan }}
                                         </option>
                                         @endforeach
                                     </select>
