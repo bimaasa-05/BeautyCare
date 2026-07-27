@@ -19,7 +19,7 @@ if (!isset($pageTitle)) {
         if ($last === 'dashboard') {
             $roleLabels = ['admin' => 'Admin', 'kasir' => 'Kasir', 'beautycian' => 'Beautycian', 'pelanggan' => 'Pelanggan'];
             $role = $parts[0] ?? '';
-            $pageTitle = 'Dashboard ' . ($roleLabels[$role] ?? Str::title($role));
+            $pageTitle = isset($roleLabels[$role]) ? 'Dashboard ' . $roleLabels[$role] : 'Dashboard';
         } elseif ($routeName === 'pelanggan.booking') {
             $pageTitle = 'Booking Saya';
         } elseif (isset($actionLabels[$last]) && count($parts) >= 2) {
@@ -46,7 +46,7 @@ if (!isset($pageTitle)) {
         </button>
         <div>
             <h2>{{ $pageTitle }}</h2>
-            <span class="page-title">Selamat datang, {{ auth()->user()->nama }}!</span>
+            <span class="page-title">Selamat datang, {{ auth()->user()->nama }}</span>
         </div>
     </div>
 

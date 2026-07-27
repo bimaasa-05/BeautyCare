@@ -55,11 +55,6 @@
         }
     }
 
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-
-    body {
-        font-family: 'Inter', sans-serif;
-    }
 
     ::-webkit-scrollbar {
         width: 6px;
@@ -201,7 +196,7 @@
         color: var(--gray);
         cursor: pointer;
         transition: all 0.2s ease;
-        font-family: 'Inter', sans-serif;
+        font-family: 'Poppins', sans-serif;
         display: inline-flex;
         align-items: center;
         gap: 6px;
@@ -301,7 +296,7 @@
         border: 1.5px solid var(--border);
         background: #FAFAFA;
         font-size: 12px;
-        font-family: 'Inter', sans-serif;
+        font-family: 'Poppins', sans-serif;
         color: var(--dark);
         width: 220px;
         transition: all 0.2s ease;
@@ -636,6 +631,22 @@
                                 <p>Lihat seluruh riwayat treatment yang pernah Anda lakukan</p>
                             </div>
                         </div>
+                        <div class="ph-stats">
+                            <div class="ph-stat-item">
+                                <div class="ph-stat-num">{{ $bookings->count() }}</div>
+                                <div class="ph-stat-label">Total</div>
+                            </div>
+                            <div class="ph-stat-divider"></div>
+                            <div class="ph-stat-item">
+                                <div class="ph-stat-num">{{ $bookings->where('status', 'selesai')->count() }}</div>
+                                <div class="ph-stat-label">Selesai</div>
+                            </div>
+                            <div class="ph-stat-divider"></div>
+                            <div class="ph-stat-item">
+                                <div class="ph-stat-num">{{ $bookings->where('status', 'menunggu')->count() }}</div>
+                                <div class="ph-stat-label">Menunggu</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -706,6 +717,38 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                @forelse($bookings as $booking)
+                                <tr>
+                                    <td><span class="treatment-id-badge"><i class="fa-regular fa-receipt" style="font-size:10px;"></i> #BK{{ str_pad($booking->id_booking, 3, '0', STR_PAD_LEFT) }}</span></td>
+                                    <td data-label="Tanggal">{{ \Carbon\Carbon::parse($booking->tanggal)->isoFormat('D MMM YYYY') }}</td>
+                                    <td data-label="Jam">{{ \Carbon\Carbon::parse($booking->jam)->format('H:i') }}</td>
+                                    <td data-label="Terapis">
+                                        <div class="therapist-cell">
+                                            <div class="th-avatar">{{ $booking->karyawan ? substr($booking->karyawan->nama, 0, 1) : '?' }}</div>
+                                            <span class="th-name">{{ $booking->karyawan ? $booking->karyawan->nama : 'Terapis #'.$booking->id_karyawan }}</span>
+                                        </div>
+                                    </td>
+                                    <td data-label="Layanan">
+                                        <div class="layanan-cell">
+                                            <span class="layanan-name">{{ $booking->detail->first() && $booking->detail->first()->layanan ? $booking->detail->first()->layanan->nm_layanan : '-' }}</span>
+                                            @if($booking->detail->first() && $booking->detail->first()->layanan)
+                                            <span class="layanan-price">Rp {{ number_format($booking->detail->first()->layanan->harga, 0, ',', '.') }}</span>
+                                            @endif
+                                        </div>
+                                    </td>
+                                    <td data-label="Harga" class="harga-cell">Rp {{ number_format($booking->detail->first()?->subtotal ?? 0, 0, ',', '.') }}</td>
+                                    <td data-label="Status">
+                                        <span class="status-badge {{ $booking->status }}">
+                                            <span class="sb-dot"></span>
+                                            {{ ucfirst($booking->status) }}
+                                        </span>
+                                    </td>
+                                    <td data-label="Aksi" style="text-align:center;">
+                                        <a href="#" class="action-btn detail" title="Detail booking"><i class="fa-regular fa-eye"></i></a>
+                                        <a href="#" class="action-btn print" title="Cetak"><i class="fa-regular fa-print"></i></a>
+                                    </td>
+                                </tr>
+                                @empty
                                 <tr>
                                     <td colspan="8">
                                         <div class="empty-state">
@@ -717,6 +760,7 @@
                                         </div>
                                     </td>
                                 </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
@@ -724,7 +768,7 @@
                     <div class="table-footer">
                         <div class="tf-info">
                             <span class="tf-dot"></span>
-                            Menampilkan 0 treatment
+                            Menampilkan {{ $bookings->count() }} treatment
                         </div>
                         <div class="tf-pagination">
                             <button class="page-btn active">1</button>
