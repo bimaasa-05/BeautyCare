@@ -241,7 +241,7 @@
                         <td>
                             <a href="{{ asset('storage/' . $transaksi->bukti_bayar) }}" target="_blank"
                                 class="text-blue-500 hover:underline font-medium">
-                                <i class="fa-regular fa-image mr-1"></i> Lihat Bukti
+                                <i class="fa-solid fa-image mr-1"></i> Lihat Bukti
                             </a>
                         </td>
                     </tr>

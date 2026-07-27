@@ -15,6 +15,8 @@ class KasirTransaksiController extends Controller
     public function index(Request $request)
     {
         $search = $request->keyword;
+        $status = $request->status;
+        $metode = $request->metode;
         $userId = auth()->id();
 
         $TotalTransaksi = Transaksi::where('id_user', $userId)->count();
@@ -23,7 +25,17 @@ class KasirTransaksiController extends Controller
             ->when($search, function ($query, $search) {
                 return $query->where('no_invoice', 'like', "%{$search}%")
                     ->orWhere('tanggal', 'like', "%{$search}%");
-            })->orderBy('id_transaksi', 'desc')->paginate(10);
+            })
+            ->when($status, function ($query, $status) {
+                return $query->where('status', $status);
+            })
+            ->when($metode, function ($query, $metode) {
+                if ($metode === 'non-tunai') {
+                    return $query->where('metode_byr', '!=', 'Tunai');
+                }
+                return $query->where('metode_byr', $metode);
+            })
+            ->orderBy('id_transaksi', 'desc')->paginate(10);
 
         return view('kasir.transaksi.index', compact('transaksi', 'TotalTransaksi'));
     }

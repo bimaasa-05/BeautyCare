@@ -69,23 +69,26 @@
                     </div>
 
                     @php
-                        $totalTunai = $transaksi->count(fn($t) => $t->metode_byr === 'Tunai');
-                        $totalNonTunai = $transaksi->count(fn($t) => $t->metode_byr !== 'Tunai');
-                        $totalSelesai = $transaksi->count(fn($t) => $t->status == 'Lunas');
+                        $userId = auth()->id();
+                        $totalAll = \App\Models\Transaksi::where('id_user', $userId)->count();
+                        $totalSelesai = \App\Models\Transaksi::where('id_user', $userId)->where('status', 'Lunas')->count();
+                        $totalTunai = \App\Models\Transaksi::where('id_user', $userId)->where('metode_byr', 'Tunai')->count();
                     @endphp
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
-                        <div class="stat-card-enhanced card-gradient-pink">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-3 mb-4">
+                        <a href="{{ route('kasir.transaksi.index') }}"
+                            class="stat-card-enhanced card-gradient-pink block transition-transform hover:scale-[1.02]">
                             <div class="flex items-center justify-between">
                                 <div>
                                     <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Total Transaksi</p>
-                                    <p class="text-[24px] font-bold text-gray-800 mt-1">{{ $TotalTransaksi }}</p>
+                                    <p class="text-[24px] font-bold text-gray-800 mt-1">{{ $totalAll }}</p>
                                 </div>
                                 <div class="w-10 h-10 rounded-full bg-pink-100 flex items-center justify-center">
-                                    <i class="fa-regular fa-receipt text-pink-500"></i>
+                                    <i class="fa-solid fa-receipt text-pink-500"></i>
                                 </div>
                             </div>
-                        </div>
-                        <div class="stat-card-enhanced card-gradient-green">
+                        </a>
+                        <a href="{{ route('kasir.transaksi.index') }}?status=Lunas"
+                            class="stat-card-enhanced card-gradient-green block transition-transform hover:scale-[1.02]">
                             <div class="flex items-center justify-between">
                                 <div>
                                     <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Selesai</p>
@@ -95,18 +98,31 @@
                                     <i class="fa-regular fa-circle-check text-green-500"></i>
                                 </div>
                             </div>
-                        </div>
-                        <div class="stat-card-enhanced card-gradient-blue">
+                        </a>
+                        <a href="{{ route('kasir.transaksi.index') }}?metode=Tunai"
+                            class="stat-card-enhanced card-gradient-blue block transition-transform hover:scale-[1.02]">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Tunai</p>
+                                    <p class="text-[24px] font-bold text-blue-600 mt-1">{{ $totalTunai }}</p>
+                                </div>
+                                <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+                                    <i class="fa-solid fa-money-bill-wave text-blue-500"></i>
+                                </div>
+                            </div>
+                        </a>
+                        <a href="{{ route('kasir.transaksi.index') }}?metode=non-tunai"
+                            class="stat-card-enhanced card-gradient-amber block transition-transform hover:scale-[1.02]">
                             <div class="flex items-center justify-between">
                                 <div>
                                     <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Non-Tunai</p>
-                                    <p class="text-[24px] font-bold text-blue-600 mt-1">{{ $totalNonTunai }}</p>
+                                    <p class="text-[24px] font-bold text-amber-600 mt-1">{{ $totalAll - $totalTunai }}</p>
                                 </div>
-                                <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
-                                    <i class="fa-solid fa-qrcode text-blue-500"></i>
+                                <div class="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center">
+                                    <i class="fa-solid fa-qrcode text-amber-500"></i>
                                 </div>
                             </div>
-                        </div>
+                        </a>
                     </div>
 
                     <form method="GET" action="" class="flex flex-wrap items-center justify-end gap-2 mb-4">
@@ -188,7 +204,7 @@
                                                  </a>
                                                  <a href="{{ route('kasir.transaksi.edit', $t->id_transaksi) }}"
                                                      class="action-btn action-btn-edit" title="Edit">
-                                                     <i class="fa-regular fa-pen-to-square"></i>
+                                                     <i class="fa-solid fa-pen-to-square"></i>
                                                  </a>
                                                  <form action="{{ route('kasir.transaksi.destroy', $t->id_transaksi) }}"
                                                      method="POST" class="inline"

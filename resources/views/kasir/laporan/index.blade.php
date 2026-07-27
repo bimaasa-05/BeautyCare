@@ -239,7 +239,7 @@
                                                         $metodeIcon = match($t->metode_byr) {
                                                             'Tunai' => 'fa-solid fa-money-bill-wave text-emerald-500',
                                                             'Transfer' => 'fa-solid fa-building-columns text-purple-500',
-                                                            'Debit' => 'fa-regular fa-credit-card text-amber-500',
+                                                            'Debit' => 'fa-solid fa-credit-card text-amber-500',
                                                             'E-Wallet' => 'fa-solid fa-wallet text-pink-500',
                                                             default => 'fa-regular fa-circle text-gray-400',
                                                         };

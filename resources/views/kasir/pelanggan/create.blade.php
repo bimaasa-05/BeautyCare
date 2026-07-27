@@ -99,7 +99,7 @@
                                 <i class="fa-solid fa-user-plus text-pink-500 mr-2"></i>Tambah Pelanggan
                             </h3>
                             <p class="text-[12px] text-gray-400 mt-0.5">
-                                <i class="fa-regular fa-pen-to-square text-pink-300 mr-1"></i>Isi data pelanggan baru
+                                <i class="fa-solid fa-pen-to-square text-pink-300 mr-1"></i>Isi data pelanggan baru
                             </p>
                         </div>
                         <a href="{{ route('kasir.pelanggan.index') }}"

@@ -523,7 +523,7 @@
                                                 <div class="flex items-center justify-center gap-2">
                                                     <a href="{{ route('admin.membership.edit', $item->id_member) }}"
                                                         class="w-7 h-7 inline-flex items-center justify-center text-amber-500 bg-amber-50 hover:bg-amber-100 rounded-md transition-colors"><i
-                                                            class="fa-regular fa-pen-to-square text-xs"></i>
+                                                            class="fa-solid fa-pen-to-square text-xs"></i>
                                                     </a>
                                                     <form action="{{ route('admin.membership.destroy', $item->id_member) }}"
                                                         method="POST"
