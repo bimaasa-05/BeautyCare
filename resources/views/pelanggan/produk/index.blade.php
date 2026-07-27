@@ -1292,7 +1292,9 @@
                 body: JSON.stringify({
                     nm_produk: nama,
                     qty: qty,
-                    metode: metode.value
+                    metode: metode.value,
+                    id_produk: currentProdukSlug,
+                    harga_satuan: hargaNumeric
                 })
             })
             .then(function(r) { return r.json(); })
