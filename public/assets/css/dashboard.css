@@ -1010,6 +1010,8 @@
   to { transform: rotate(360deg); }
 }
 
+
+
 /* ---- Enhanced Card Styles ---- */
 .card-gradient-pink {
   background: linear-gradient(135deg, #FFF8FA 0%, #FFFFFF 100%);
