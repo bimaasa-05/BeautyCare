@@ -1114,10 +1114,10 @@
 
     var kategoriIcons = {
         'Skincare': '<i class="fa-solid fa-spa"></i>',
-        'Haircare': '<i class="fa-solid fa-scissors"></i>',
-        'Bodycare': '<i class="fa-solid fa-hand-sparkles"></i>',
-        'Makeup': '<i class="fa-solid fa-palette"></i>',
-        'Nailcare': '<i class="fa-solid fa-hand"></i>'
+        'Hair Care': '<i class="fa-solid fa-scissors"></i>',
+        'Body Care': '<i class="fa-solid fa-hand-sparkles"></i>',
+        'Nail Care': '<i class="fa-solid fa-hand"></i>',
+        'Makeup': '<i class="fa-solid fa-palette"></i>'
     };
 
     function formatRupiah(angka) {
@@ -1136,7 +1136,7 @@
         hargaNumeric = parseInt(btn.getAttribute('data-harga-numeric')) || 0;
         currentProdukSlug = btn.getAttribute('data-produk') || '';
 
-        document.getElementById('modalBanner').className = 'bm-banner ' + kategori.toLowerCase();
+        document.getElementById('modalBanner').className = 'bm-banner ' + kategori.toLowerCase().replace(/\s+/g, '');
         document.getElementById('modalIcon').innerHTML = kategoriIcons[kategori] || '<i class="fa-solid fa-cube"></i>';
         document.getElementById('modalCategoryBadge').textContent = kategori;
         document.getElementById('modalNama').textContent = nama;
