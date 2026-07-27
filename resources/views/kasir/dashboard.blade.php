@@ -36,11 +36,13 @@
             background-color: #fff;
             cursor: pointer;
         }
+
         select.form-input-custom:focus {
             border-color: #FF4F87;
-            box-shadow: 0 0 0 3px rgba(255,79,135,0.12);
+            box-shadow: 0 0 0 3px rgba(255, 79, 135, 0.12);
             outline: none;
         }
+
         .sidebar-toggle {
             display: none;
             background: none;
@@ -95,6 +97,87 @@
 
         .status-dibatalkan {
             color: #EF4444;
+        }
+
+        .card-scroll {
+            max-height: 320px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .card-scroll::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .card-scroll::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .card-scroll::-webkit-scrollbar-thumb {
+            background: #FBCFE8;
+            border-radius: 10px;
+        }
+
+        .card-scroll::-webkit-scrollbar-thumb:hover {
+            background: #F9A8D4;
+        }
+
+        .dropdown-pink {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23EC4899' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 36px;
+            border: 1.5px solid #FCE7F3;
+            border-radius: 10px;
+            padding: 8px 14px;
+            font-size: 12px;
+            background-color: #fff;
+            cursor: pointer;
+            color: #EC4899;
+            font-weight: 500;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s;
+            min-width: 130px;
+        }
+
+        .dropdown-pink:focus {
+            border-color: #EC4899;
+            box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.12);
+            outline: none;
+        }
+
+        .chart-body {
+            position: relative;
+            width: 100%;
+            min-height: 280px;
+        }
+
+        .chart-body canvas {
+            width: 100% !important;
+            height: 280px !important;
+        }
+
+        .table-scroll {
+            max-height: 320px;
+            overflow-y: auto;
+        }
+
+        .table-scroll::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .table-scroll::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .table-scroll::-webkit-scrollbar-thumb {
+            background: #FBCFE8;
+            border-radius: 10px;
+        }
+
+        .table-scroll::-webkit-scrollbar-thumb:hover {
+            background: #F9A8D4;
         }
     </style>
 </head>
@@ -202,14 +285,15 @@
                     <div class="chart-card">
                         <div class="chart-header">
                             <h3>Grafik Penjualan
-                                {{ $periode == 'bulanini' ? 'Bulan Ini' : ($periode == 'tahunini' ? '1 Tahun' : ($periode == '30hari' ? '30 Hari' : '7 Hari')) }}
+                                {{ $periode == '30hari' ? '30 Hari' : ($periode == '3bulan' ? '3 Bulan' : ($periode == 'tahunini' ? '1 Tahun' : '7 Hari')) }}
                             </h3>
                             <div class="chart-actions">
-                                <select id="periodSelect" class="form-input-custom" onchange="changeSalesPeriod(this.value)">
+                                <select id="periodSelect" class="dropdown-pink"
+                                    onchange="changeSalesPeriod(this.value)">
                                     <option value="7hari" {{ $periode == '7hari' ? 'selected' : '' }}>7 Hari</option>
                                     <option value="30hari" {{ $periode == '30hari' ? 'selected' : '' }}>30 Hari
                                     </option>
-                                    <option value="bulanini" {{ $periode == 'bulanini' ? 'selected' : '' }}>Bulan Ini
+                                    <option value="3bulan" {{ $periode == '3bulan' ? 'selected' : '' }}>3 Bulan
                                     </option>
                                     <option value="tahunini" {{ $periode == 'tahunini' ? 'selected' : '' }}>1 Tahun
                                     </option>
@@ -217,7 +301,7 @@
                             </div>
                         </div>
                         <div class="chart-body">
-                            <canvas id="chartPendapatan" height="280"></canvas>
+                            <canvas id="chartPendapatan"></canvas>
                         </div>
                     </div>
 
@@ -226,25 +310,22 @@
                             <div class="mc-header">
                                 <h3>Metode Pembayaran</h3>
                                 <div class="chart-actions">
-                                <select id="paymentPeriodSelect" class="form-input-custom" onchange="changePaymentPeriod(this.value)">
+                                    <select id="paymentPeriodSelect" class="dropdown-pink"
+                                        onchange="changePaymentPeriod(this.value)">
                                         <option value="7hari" {{ $paymentPeriode == '7hari' ? 'selected' : '' }}>7
-                                            Hari
-                                        </option>
+                                            Hari</option>
                                         <option value="30hari" {{ $paymentPeriode == '30hari' ? 'selected' : '' }}>30
-                                            Hari
-                                        </option>
-                                        <option value="bulanini"
-                                            {{ $paymentPeriode == 'bulanini' ? 'selected' : '' }}>Bulan
-                                            Ini</option>
+                                            Hari</option>
+                                        <option value="3bulan" {{ $paymentPeriode == '3bulan' ? 'selected' : '' }}>3
+                                            Bulan</option>
                                         <option value="tahunini"
-                                            {{ $paymentPeriode == 'tahunini' ? 'selected' : '' }}>1 Tahun
-                                        </option>
+                                            {{ $paymentPeriode == 'tahunini' ? 'selected' : '' }}>1 Tahun</option>
                                     </select>
                                 </div>
                             </div>
                             <div class="mc-body"
-                                style="display:flex;justify-content:center;align-items:center;height:200px;position:relative;">
-                                <canvas id="chartPembayaran"></canvas>
+                                style="display:flex;justify-content:center;align-items:center;min-height:220px;">
+                                <canvas id="chartPembayaran" style="max-width:220px;max-height:220px;"></canvas>
                             </div>
                         </div>
 
@@ -253,7 +334,7 @@
                                 <h3>Transaksi Terbaru</h3>
                                 <span class="mc-total">{{ $transaksiTerbaru->count() }}</span>
                             </div>
-                            <div style="display:grid;gap:8px;">
+                            <div class="card-scroll" style="display:grid;gap:8px;">
                                 @forelse($transaksiTerbaru as $t)
                                     <div style="display:flex;align-items:center;gap:10px;font-size:13px;">
                                         <span
@@ -278,33 +359,36 @@
                             <h3>Produk & Layanan Terlaris</h3>
                             <a href="{{ route('kasir.transaksi.index') }}">Lihat Semua</a>
                         </div>
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>Item</th>
-                                    <th>Tipe</th>
-                                    <th>Terjual</th>
-                                    <th>Total</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse($produkTerlaris as $p)
+                        <div class="table-scroll">
+                            <table class="data-table">
+                                <thead>
                                     <tr>
-                                        <td>
-                                            <div class="td-flex">{{ $p->nm_item }}</div>
-                                        </td>
-                                        <td>{{ $p->jenis }}</td>
-                                        <td>{{ $p->total_qty }}</td>
-                                        <td>{{ $fmt($p->total_subtotal) }}</td>
+                                        <th>Item</th>
+                                        <th>Tipe</th>
+                                        <th>Terjual</th>
+                                        <th>Total</th>
                                     </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="4" style="text-align:center;padding:20px;color:var(--gray);">
-                                            Belum ada data penjualan</td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    @forelse($produkTerlaris as $p)
+                                        <tr>
+                                            <td>
+                                                <div class="td-flex">{{ $p->nm_item }}</div>
+                                            </td>
+                                            <td>{{ $p->jenis }}</td>
+                                            <td>{{ $p->total_qty }}</td>
+                                            <td>{{ $fmt($p->total_subtotal) }}</td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="4"
+                                                style="text-align:center;padding:20px;color:var(--gray);">
+                                                Belum ada data penjualan</td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
 
                     <div class="table-widget">
@@ -312,33 +396,36 @@
                             <h3>Rekap Pembayaran</h3>
                             <a href="{{ route('kasir.laporan.index') }}">Detail</a>
                         </div>
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>Metode</th>
-                                    <th>Jumlah</th>
-                                    <th>Total</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse($rekapPembayaran as $r)
+                        <div class="table-scroll">
+                            <table class="data-table">
+                                <thead>
                                     <tr>
-                                        <td>
-                                            <div class="td-flex">{{ $r->metode_byr }}</div>
-                                        </td>
-                                        <td>{{ $r->jumlah }}</td>
-                                        <td>{{ $fmt($r->total) }}</td>
-                                        <td><span class="badge badge-success">Aktif</span></td>
+                                        <th>Metode</th>
+                                        <th>Jumlah</th>
+                                        <th>Total</th>
+                                        <th>Status</th>
                                     </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="4" style="text-align:center;padding:20px;color:var(--gray);">
-                                            Belum ada pembayaran hari ini</td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    @forelse($rekapPembayaran as $r)
+                                        <tr>
+                                            <td>
+                                                <div class="td-flex">{{ $r->metode_byr }}</div>
+                                            </td>
+                                            <td>{{ $r->jumlah }}</td>
+                                            <td>{{ $fmt($r->total) }}</td>
+                                            <td><span class="badge badge-success">Aktif</span></td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="4"
+                                                style="text-align:center;padding:20px;color:var(--gray);">
+                                                Belum ada pembayaran hari ini</td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
 
@@ -349,7 +436,7 @@
                             <a href="{{ route('kasir.checkin.index') }}"
                                 style="font-size:13px;color:var(--primary);font-weight:500;">Proses</a>
                         </div>
-                        <div class="booking-list">
+                        <div class="booking-list card-scroll">
                             @forelse($checkinHariIni as $b)
                                 <div class="booking-item">
                                     <img src="https://ui-avatars.com/api/?name={{ urlencode($b->pelanggan->nm_pelanggan ?? 'Unknown') }}&background=FFE5EF&color=FF4F87&size=40"
@@ -376,7 +463,7 @@
                             <a href="{{ route('kasir.riwayat-transaksi.index') }}"
                                 style="font-size:13px;color:var(--primary);font-weight:500;">Lihat Semua</a>
                         </div>
-                        <div class="employee-grid">
+                        <div class="employee-grid card-scroll">
                             @forelse($riwayatTransaksi as $t)
                                 <div class="employee-card" style="grid-template-columns:36px 1fr auto;">
                                     <img src="https://ui-avatars.com/api/?name={{ urlencode($t->no_invoice) }}&background={{ $t->status == 'Lunas' ? 'E8F5E9&color=4CAF50' : ($t->status == 'Pending' ? 'FFF3E0&color=FF9800' : 'FFEBEE&color=F44336') }}&size=36"
@@ -386,7 +473,7 @@
                                         <p>{{ $t->metode_byr }} - {{ $fmt($t->total) }}</p>
                                     </div>
                                     <span
-                                        style="font-size:11px;color:var(--gray);">{{ $t->created_at ? \Carbon\Carbon::parse($t->created_at)->format('H:i') : '-' }}</span>
+                                        style="font-size:11px;color:var(--gray);">{{ $t->tanggal ? \Carbon\Carbon::parse($t->tanggal)->format('d/m') : '-' }}</span>
                                 </div>
                             @empty
                                 <div style="text-align:center;padding:24px;color:var(--gray);font-size:13px;">
@@ -396,12 +483,12 @@
                         </div>
                     </div>
 
-                    <div class="list-widget">
+                    <div class="list-widget" style="max-height:440px;display:flex;flex-direction:column;">
                         <div class="lw-header">
                             <h3>Notifikasi Stok</h3>
                             <a href="#" style="font-size:13px;color:var(--primary);font-weight:500;">Kelola</a>
                         </div>
-                        <div class="stock-grid">
+                        <div class="stock-grid card-scroll" style="flex:1;">
                             @forelse($stokMenipis as $p)
                                 @php
                                     $stok = (int) $p->stok;
@@ -535,6 +622,10 @@
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                animation: {
+                    duration: 2000,
+                    easing: 'easeOutQuart'
+                },
                 plugins: {
                     legend: {
                         display: false
@@ -601,7 +692,7 @@
                 },
                 options: {
                     responsive: true,
-                    maintainAspectRatio: true,
+                    maintainAspectRatio: false,
                     cutout: '65%',
                     animation: {
                         animateRotate: true,
