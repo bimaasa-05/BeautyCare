@@ -31,6 +31,7 @@ use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\AdminPengaturanController;
 use App\Http\Controllers\AdminRiwayatController;
 use App\Http\Controllers\BeatycianJadwalTreatmentController;
+use App\Http\Controllers\MembershipPelangganController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -463,9 +464,7 @@ Route::middleware('auth')->group(function () {
         })->name('pelanggan.promo');
 
         //Route Membership
-        Route::get('/pelanggan/membership', function () {
-            return view('pelanggan.membership.index');
-        })->name('pelanggan.membership');
+        Route::get('/pelanggan/membership', [MembershipPelangganController::class, 'index'])->name('pelanggan.membership');
 
         //Route Produk
         Route::get('/pelanggan/produk', function () {
