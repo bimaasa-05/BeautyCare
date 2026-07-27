@@ -1006,7 +1006,7 @@
                         </div>
                         <div class="ms-level">
                             <i class="fa-solid fa-crown"></i>
-                            Silver Member
+                            {{ $memberSaatIni ? $memberSaatIni->tingkat . ' Member' : 'Non Member' }}
                         </div>
                     </div>
                 </div>
@@ -1016,28 +1016,28 @@
                         <div class="sm-icon belanja">
                             <i class="fa-solid fa-wallet"></i>
                         </div>
-                        <div class="sm-value">Rp 2,5jt</div>
+                        <div class="sm-value">Rp {{ number_format($totalBelanja, 0, ',', '.') }}</div>
                         <div class="sm-label">Total Belanja</div>
                     </div>
                     <div class="stat-member-card">
                         <div class="sm-icon transaksi">
                             <i class="fa-solid fa-receipt"></i>
                         </div>
-                        <div class="sm-value">12</div>
+                        <div class="sm-value">{{ $totalTransaksi }}</div>
                         <div class="sm-label">Total Transaksi</div>
                     </div>
                     <div class="stat-member-card">
                         <div class="sm-icon diskon">
                             <i class="fa-solid fa-percent"></i>
                         </div>
-                        <div class="sm-value">5%</div>
+                        <div class="sm-value">{{ (int)$diskonMember }}%</div>
                         <div class="sm-label">Diskon Member</div>
                     </div>
                     <div class="stat-member-card">
                         <div class="sm-icon tier">
                             <i class="fa-solid fa-arrow-up"></i>
                         </div>
-                        <div class="sm-value">Gold</div>
+                        <div class="sm-value">{{ $nextTier->tingkat ?? ($memberSaatIni && $memberSaatIni->tingkat == 'Platinum' ? 'Max Tier' : '-') }}</div>
                         <div class="sm-label">Next Tier</div>
                     </div>
                 </div>
@@ -1047,97 +1047,119 @@
                 </div>
 
                 <div class="member-tier-grid">
-                    <div class="member-tier-card">
-                        <div class="mt-banner silver">
-                            <div class="mt-icon-big">
-                                <i class="fa-solid fa-medal"></i>
-                            </div>
-                            <span class="mt-badge active-tier">
-                                <i class="fa-regular fa-circle-check"></i> Aktif
-                            </span>
-                        </div>
-                        <div class="mt-body">
-                            <div class="mt-title">Silver</div>
-                            <div class="mt-subtitle">Untuk pemula yang baru bergabung</div>
-                            <div class="mt-benefits">
-                                <div class="mt-benefit-item">
-                                    <i class="fa-regular fa-circle-check"></i> Diskon 5% semua layanan
-                                </div>
-                                <div class="mt-benefit-item">
-                                    <i class="fa-regular fa-circle-check"></i> Gratis konsultasi 1x/bulan
-                                </div>
-                                <div class="mt-benefit-item disabled">
-                                    <i class="fa-regular fa-circle-xmark"></i> Prioritas booking
-                                </div>
-                                <div class="mt-benefit-item disabled">
-                                    <i class="fa-regular fa-circle-xmark"></i> Undangan event eksklusif
-                                </div>
-                            </div>
-                            <div class="mt-price">Min. 1x Transaksi</div>
-                            <div class="mt-price">Min. Rp 500.000 Pembelian</div>
-                            <button class="mt-btn current">
-                                <i class="fa-regular fa-circle-check"></i> Level Saat Ini
-                            </button>
-                        </div>
-                    </div>
+                    @php
+                        $tierIcons = [
+                            'Silver' => ['icon' => 'fa-solid fa-medal', 'banner' => 'silver'],
+                            'Gold' => ['icon' => 'fa-solid fa-trophy', 'banner' => 'gold'],
+                            'Platinum' => ['icon' => 'fa-solid fa-gem', 'banner' => 'platinum'],
+                        ];
+                        $tierSubtitles = [
+                            'Silver' => 'Untuk pemula yang baru bergabung',
+                            'Gold' => 'Untuk member setia dengan transaksi minimal 5x',
+                            'Platinum' => 'Untuk member VIP dengan transaksi minimal 15x',
+                        ];
+                        $tierBenefits = [
+                            'Silver' => [
+                                ['text' => 'Diskon 5% semua layanan', 'active' => true],
+                                ['text' => 'Gratis konsultasi 1x/bulan', 'active' => true],
+                                ['text' => 'Prioritas booking', 'active' => false],
+                                ['text' => 'Undangan event eksklusif', 'active' => false],
+                            ],
+                            'Gold' => [
+                                ['text' => 'Diskon 10% semua layanan', 'active' => true],
+                                ['text' => 'Gratis konsultasi 2x/bulan', 'active' => true],
+                                ['text' => 'Prioritas booking', 'active' => true],
+                                ['text' => 'Undangan event eksklusif', 'active' => false],
+                            ],
+                            'Platinum' => [
+                                ['text' => 'Diskon 20% semua layanan', 'active' => true],
+                                ['text' => 'Gratis konsultasi 4x/bulan', 'active' => true],
+                                ['text' => 'Prioritas booking', 'active' => true],
+                                ['text' => 'Undangan event eksklusif', 'active' => true],
+                            ],
+                        ];
+                    @endphp
 
-                    <div class="member-tier-card">
-                        <div class="mt-banner gold">
-                            <div class="mt-icon-big">
-                                <i class="fa-solid fa-trophy"></i>
+                    @foreach ($semuaMember as $member)
+                        @php
+                            $icon = $tierIcons[$member->tingkat] ?? ['icon' => 'fa-solid fa-medal', 'banner' => 'silver'];
+                            $subtitle = $tierSubtitles[$member->tingkat] ?? '';
+                            $benefits = $tierBenefits[$member->tingkat] ?? [];
+                            $isCurrent = $memberSaatIni && $memberSaatIni->id_member === $member->id_member;
+                            $meetsTransaksi = $totalTransaksi >= $member->min_transaksi;
+                            $meetsBelanja = $totalBelanja >= $member->min_pembelian;
+                            $canUpgrade = !$isCurrent && !$memberSaatIni;
+                            if ($memberSaatIni) {
+                                $levels = ['Silver', 'Gold', 'Platinum'];
+                                $currentIdx = array_search($memberSaatIni->tingkat, $levels);
+                                $thisIdx = array_search($member->tingkat, $levels);
+                                $canUpgrade = $thisIdx > $currentIdx;
+                            }
+                        @endphp
+                        <div class="member-tier-card">
+                            <div class="mt-banner {{ $icon['banner'] }}">
+                                <div class="mt-icon-big">
+                                    <i class="{{ $icon['icon'] }}"></i>
+                                </div>
+                                @if ($isCurrent)
+                                <span class="mt-badge active-tier">
+                                    <i class="fa-regular fa-circle-check"></i> Aktif
+                                </span>
+                                @endif
+                            </div>
+                            <div class="mt-body">
+                                <div class="mt-title">{{ $member->tingkat }}</div>
+                                <div class="mt-subtitle">{{ $subtitle }}</div>
+                                <div class="mt-benefits">
+                                    @foreach ($benefits as $benefit)
+                                    <div class="mt-benefit-item {{ $benefit['active'] ? '' : 'disabled' }}">
+                                        @if ($benefit['active'])
+                                        <i class="fa-regular fa-circle-check"></i>
+                                        @else
+                                        <i class="fa-regular fa-circle-xmark"></i>
+                                        @endif
+                                        {{ $benefit['text'] }}
+                                    </div>
+                                    @endforeach
+                                </div>
+                                <div class="mt-price">Min. {{ $member->min_transaksi }}x Transaksi
+                                    @if ($memberSaatIni && !$isCurrent)
+                                        @php $levels = ['Silver', 'Gold', 'Platinum']; $curIdx = array_search($memberSaatIni->tingkat, $levels); $thisIdx = array_search($member->tingkat, $levels); @endphp
+                                        @if ($thisIdx > $curIdx)
+                                            <span>({{ $meetsTransaksi ? 'Terpenuhi' : 'Kurang ' . ($member->min_transaksi - $totalTransaksi) . ' Transaksi' }})</span>
+                                        @endif
+                                    @elseif (!$memberSaatIni && !$isCurrent)
+                                        <span>({{ $meetsTransaksi ? 'Terpenuhi' : 'Kurang ' . ($member->min_transaksi - $totalTransaksi) . ' Transaksi' }})</span>
+                                    @endif
+                                </div>
+                                <div class="mt-price">Min. Rp {{ number_format($member->min_pembelian, 0, ',', '.') }} Pembelian
+                                    @if ($memberSaatIni && !$isCurrent)
+                                        @php $levels = ['Silver', 'Gold', 'Platinum']; $curIdx = array_search($memberSaatIni->tingkat, $levels); $thisIdx = array_search($member->tingkat, $levels); @endphp
+                                        @if ($thisIdx > $curIdx)
+                                            <span>({{ $meetsBelanja ? 'Terpenuhi' : 'Kurang Rp ' . number_format($member->min_pembelian - $totalBelanja, 0, ',', '.') }})</span>
+                                        @endif
+                                    @elseif (!$memberSaatIni && !$isCurrent)
+                                        <span>({{ $meetsBelanja ? 'Terpenuhi' : 'Kurang Rp ' . number_format($member->min_pembelian - $totalBelanja, 0, ',', '.') }})</span>
+                                    @endif
+                                </div>
+                                @if ($isCurrent)
+                                <button class="mt-btn current">
+                                    <i class="fa-regular fa-circle-check"></i> Level Saat Ini
+                                </button>
+                                @elseif ($meetsTransaksi && $meetsBelanja && $canUpgrade)
+                                <button class="mt-btn primary" data-tier="{{ strtolower($member->tingkat) }}" onclick="showUpgradeModal(this)">Upgrade ke {{ $member->tingkat }}</button>
+                                @elseif ($canUpgrade)
+                                <button class="mt-btn outline" disabled style="opacity:0.5;cursor:not-allowed;">
+                                    <i class="fa-solid fa-lock"></i> Belum Memenuhi Syarat
+                                </button>
+                                @else
+                                <button class="mt-btn outline" disabled style="opacity:0.5;cursor:not-allowed;">
+                                    <i class="fa-solid fa-lock"></i> Tidak Tersedia
+                                </button>
+                                @endif
                             </div>
                         </div>
-                        <div class="mt-body">
-                            <div class="mt-title">Gold</div>
-                            <div class="mt-subtitle">Untuk member setia dengan transaksi minimal 5x</div>
-                            <div class="mt-benefits">
-                                <div class="mt-benefit-item">
-                                    <i class="fa-regular fa-circle-check"></i> Diskon 10% semua layanan
-                                </div>
-                                <div class="mt-benefit-item">
-                                    <i class="fa-regular fa-circle-check"></i> Gratis konsultasi 2x/bulan
-                                </div>
-                                <div class="mt-benefit-item">
-                                    <i class="fa-regular fa-circle-check"></i> Prioritas booking
-                                </div>
-                                <div class="mt-benefit-item disabled">
-                                    <i class="fa-regular fa-circle-xmark"></i> Undangan event eksklusif
-                                </div>
-                            </div>
-                            <div class="mt-price">Min. 5x Transaksi</div>
-                            <div class="mt-price">Min. Rp 3.000.000 Pembelian</div>
-                            <button class="mt-btn primary" data-tier="gold" onclick="showUpgradeModal(this)">Upgrade ke Gold</button>
-                        </div>
-                    </div>
-
-                    <div class="member-tier-card">
-                        <div class="mt-banner platinum">
-                            <div class="mt-icon-big">
-                                <i class="fa-solid fa-gem"></i>
-                            </div>
-                        </div>
-                        <div class="mt-body">
-                            <div class="mt-title">Platinum</div>
-                            <div class="mt-subtitle">Untuk member VIP dengan transaksi minimal 15x</div>
-                            <div class="mt-benefits">
-                                <div class="mt-benefit-item">
-                                    <i class="fa-regular fa-circle-check"></i> Diskon 20% semua layanan
-                                </div>
-                                <div class="mt-benefit-item">
-                                    <i class="fa-regular fa-circle-check"></i> Gratis konsultasi 4x/bulan
-                                </div>
-                                <div class="mt-benefit-item">
-                                    <i class="fa-regular fa-circle-check"></i> Prioritas booking
-                                </div>
-                                <div class="mt-benefit-item">
-                                    <i class="fa-regular fa-circle-check"></i> Undangan event eksklusif
-                                </div>
-                            </div>
-                            <div class="mt-price">Min. 15x Transaksi</div>
-                            <div class="mt-price">Min. Rp 5.000.000 Pembelian</div>
-                            <button class="mt-btn outline" data-tier="platinum" onclick="showUpgradeModal(this)">Upgrade ke Platinum</button>
-                        </div>
-                    </div>
+                    @endforeach
                 </div>
 
                 <div class="benefit-section-title">
@@ -1277,37 +1299,30 @@
     var currentUpgradeTier = '';
 
     const tierData = {
-        gold: {
-            name: 'Gold',
-            bannerClass: 'gold',
-            icon: '<i class="fa-solid fa-trophy"></i>',
-            title: 'Gold Member',
-            desc: 'Tingkatkan pengalaman Anda dengan keuntungan eksklusif sebagai Gold Member.',
-            price: 'Rp 600.000 <span>/tahun</span>',
-            priceNumeric: 600000,
+        @foreach ($semuaMember as $member)
+        {{ strtolower($member->tingkat) }}: {
+            name: '{{ $member->tingkat }}',
+            bannerClass: '{{ strtolower($member->tingkat) }}',
+            icon: '<i class="fa-solid fa-' + '{{ $member->tingkat == "Silver" ? "medal" : ($member->tingkat == "Gold" ? "trophy" : "gem") }}' + '"></i>',
+            title: '{{ $member->tingkat }} Member',
+            desc: 'Tingkatkan pengalaman Anda dengan keuntungan eksklusif sebagai {{ $member->tingkat }} Member.',
+            price: 'Rp {{ number_format($member->min_pembelian, 0, ',', '.') }} <span>/tahun</span>',
+            priceNumeric: {{ $member->min_pembelian }},
             benefits: [
-                'Diskon 10% semua layanan',
-                'Gratis konsultasi 2x/bulan',
-                'Prioritas booking',
+                @php
+                    $benefitTexts = [
+                        'Silver' => ['Diskon 5% semua layanan', 'Gratis konsultasi 1x/bulan'],
+                        'Gold' => ['Diskon 10% semua layanan', 'Gratis konsultasi 2x/bulan', 'Prioritas booking'],
+                        'Platinum' => ['Diskon 20% semua layanan', 'Gratis konsultasi 4x/bulan', 'Prioritas booking', 'Undangan event eksklusif'],
+                    ];
+                @endphp
+                @foreach ($benefitTexts[$member->tingkat] ?? [] as $b)
+                '{{ $b }}',
+                @endforeach
             ],
-            eligible: true
+            eligible: {{ $totalTransaksi >= $member->min_transaksi && $totalBelanja >= $member->min_pembelian ? 'true' : 'false' }}
         },
-        platinum: {
-            name: 'Platinum',
-            bannerClass: 'platinum',
-            icon: '<i class="fa-solid fa-gem"></i>',
-            title: 'Platinum Member',
-            desc: 'Nikmati layanan VIP dengan benefit paling lengkap sebagai Platinum Member.',
-            price: 'Rp 900.000 <span>/tahun</span>',
-            priceNumeric: 900000,
-            benefits: [
-                'Diskon 20% semua layanan',
-                'Gratis konsultasi 4x/bulan',
-                'Prioritas booking',
-                'Undangan event eksklusif',
-            ],
-            eligible: false
-        }
+        @endforeach
     };
 
     function showUpgradeModal(btn) {
