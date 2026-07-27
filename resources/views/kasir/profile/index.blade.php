@@ -110,7 +110,7 @@
                 <div class="page-header-premium">
                     <div class="ph-content">
                         <div class="ph-left">
-                            <div class="ph-icon-wrap"><i class="fa-regular fa-user"></i></div>
+                            <div class="ph-icon-wrap"><i class="fa-solid fa-user"></i></div>
                             <div class="ph-text"><h3>Profile Saya</h3><p>Kelola data diri dan pengaturan akun Anda</p></div>
                         </div>
                     </div>
@@ -133,7 +133,7 @@
                     <div>
                         <div class="profile-card">
                             <div class="pc-header">
-                                <div class="pc-icon"><i class="fa-regular fa-image"></i></div>
+                                <div class="pc-icon"><i class="fa-solid fa-image"></i></div>
                                 <div class="pc-title">Foto Profil</div>
                             </div>
                             <div class="pc-body">
@@ -162,11 +162,11 @@
                                     <div class="ir-content"><div class="ir-label">Email</div><div class="ir-value">{{ auth()->user()->email }}</div></div>
                                 </div>
                                 <div class="info-row">
-                                    <div class="ir-icon phone"><i class="fa-regular fa-phone"></i></div>
+                                    <div class="ir-icon phone"><i class="fa-solid fa-phone"></i></div>
                                     <div class="ir-content"><div class="ir-label">No. Handphone</div><div class="ir-value">{{ auth()->user()->no_hp ?? '-' }}</div></div>
                                 </div>
                                 <div class="info-row">
-                                    <div class="ir-icon calendar"><i class="fa-regular fa-calendar"></i></div>
+                                    <div class="ir-icon calendar"><i class="fa-solid fa-calendar"></i></div>
                                     <div class="ir-content"><div class="ir-label">Bergabung</div><div class="ir-value">{{ auth()->user()->created_at ? \Carbon\Carbon::parse(auth()->user()->created_at)->isoFormat('D MMMM YYYY') : '-' }}</div></div>
                                 </div>
                             </div>
@@ -175,7 +175,7 @@
                     <div>
                         <div class="profile-card">
                             <div class="pc-header">
-                                <div class="pc-icon"><i class="fa-regular fa-pen-to-square"></i></div>
+                                <div class="pc-icon"><i class="fa-solid fa-pen-to-square"></i></div>
                                 <div class="pc-title">Edit Profil</div>
                             </div>
                             <div class="pc-body">
@@ -194,7 +194,7 @@
                                     </div>
                                     <div class="form-group">
                                         <label>No. Handphone</label>
-                                        <div class="input-icon-wrap"><i class="fa-regular fa-phone"></i>
+                                        <div class="input-icon-wrap"><i class="fa-solid fa-phone"></i>
                                         <input type="text" name="no_hp" class="form-control @error('no_hp') is-invalid @enderror" value="{{ old('no_hp', auth()->user()->no_hp) }}"></div>
                                         @error('no_hp') <span style="font-size:11px;color:#DC2626;margin-top:4px;display:block;">{{ $message }}</span> @enderror
                                     </div>
