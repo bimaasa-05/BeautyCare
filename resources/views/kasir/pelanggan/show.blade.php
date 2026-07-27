@@ -105,7 +105,7 @@
                         <div class="flex items-center gap-2">
                             <a href="{{ route('kasir.pelanggan.edit', $pelanggan->id_pelanggan) }}"
                                 class="flex items-center gap-2 bg-amber-50 text-amber-600 text-[12px] font-semibold px-4 py-2 rounded-full hover:bg-amber-100 transition-colors">
-                                <i class="fa-regular fa-pen-to-square"></i> Edit
+                                <i class="fa-solid fa-pen-to-square"></i> Edit
                             </a>
                             <a href="{{ route('kasir.pelanggan.index') }}"
                                 class="flex items-center gap-2 border border-gray-200 text-gray-600 text-[12px] font-medium px-4 py-2 rounded-full hover:bg-gray-50 transition-colors">
