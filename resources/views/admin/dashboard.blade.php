@@ -466,8 +466,8 @@
                     }
                 }
             }
-        }
-    });
+            }
+        });
 
     const donutCanvas = document.getElementById('chartBookingDonut');
     if (donutCanvas) {
