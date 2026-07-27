@@ -51,10 +51,10 @@
                     <div class="flex justify-between items-center mb-6">
                         <div>
                             <h3 class="text-[16px] font-bold text-gray-800">
-                                <i class="fa-regular fa-receipt text-pink-500 mr-2"></i>Detail Transaksi
+                                <i class="fa-solid fa-receipt text-pink-500 mr-2"></i>Detail Transaksi
                             </h3>
                             <p class="text-[12px] text-gray-400 mt-0.5">
-                                <i class="fa-regular fa-info-circle text-pink-300 mr-1"></i>
+                                <i class="fa-solid fa-circle-info text-pink-300 mr-1"></i>
                                 Invoice <span class="font-mono font-semibold text-pink-500">{{ $transaksi->no_invoice }}</span>
                             </p>
                         </div>
@@ -77,7 +77,7 @@
                                 <tr>
                                     <td class="py-1.5 text-gray-400">Tanggal</td>
                                     <td class="py-1.5 font-medium text-gray-700">
-                                        <i class="fa-regular fa-calendar text-pink-300 mr-1"></i>
+                                        <i class="fa-solid fa-calendar text-pink-300 mr-1"></i>
                                         {{ \Carbon\Carbon::parse($transaksi->tanggal)->isoFormat('D MMMM YYYY') }}
                                     </td>
                                 </tr>
@@ -106,7 +106,7 @@
 
                         <div class="p-4 bg-gradient-to-br from-sky-50 to-white rounded-xl border border-sky-100">
                             <h4 class="text-[12px] font-semibold text-gray-500 uppercase tracking-wider mb-3">
-                                <i class="fa-regular fa-user text-sky-400 mr-1"></i>Pelanggan & Kasir
+                                <i class="fa-solid fa-user text-sky-400 mr-1"></i>Pelanggan & Kasir
                             </h4>
                             <table class="w-full text-[13px]">
                                 <tr>
@@ -127,7 +127,7 @@
 
                     <div class="p-4 bg-gradient-to-br from-emerald-50 to-white rounded-xl border border-emerald-100 mb-6">
                         <h4 class="text-[12px] font-semibold text-gray-500 uppercase tracking-wider mb-3">
-                            <i class="fa-regular fa-money-bill-1 text-emerald-400 mr-1"></i>Rincian Pembayaran
+                            <i class="fa-solid fa-money-bill-1 text-emerald-400 mr-1"></i>Rincian Pembayaran
                         </h4>
                         <table class="w-full text-[13px]">
                             <tr>
@@ -160,7 +160,7 @@
                     @if ($transaksi->metode_byr == 'Transfer')
                     <div class="p-4 bg-gradient-to-br from-blue-50 to-white rounded-xl border border-blue-100">
                         <h4 class="text-[12px] font-semibold text-gray-500 uppercase tracking-wider mb-3">
-                            <i class="fa-regular fa-building-columns text-blue-400 mr-1"></i>Detail Pembayaran {{ $transaksi->metode_byr }}
+                            <i class="fa-solid fa-building-columns text-blue-400 mr-1"></i>Detail Pembayaran {{ $transaksi->metode_byr }}
                         </h4>
                         <table class="w-full text-[13px]">
                             @if ($transaksi->atas_nama)
@@ -205,7 +205,7 @@
                                 <td class="py-1.5">
                                     <a href="{{ asset('storage/' . $transaksi->bukti_bayar) }}" target="_blank"
                                         class="text-blue-500 hover:underline text-[12px] font-medium">
-                                        <i class="fa-regular fa-image mr-1"></i> Lihat Bukti
+                                        <i class="fa-solid fa-image mr-1"></i> Lihat Bukti
                                     </a>
                                 </td>
                             </tr>
