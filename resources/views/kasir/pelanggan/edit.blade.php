@@ -96,10 +96,10 @@
                     <div class="flex justify-between items-center mb-6">
                         <div>
                             <h3 class="text-[16px] font-bold text-gray-800">
-                                <i class="fa-regular fa-pen-to-square text-pink-500 mr-2"></i>Edit Pelanggan
+                                <i class="fa-solid fa-pen-to-square text-pink-500 mr-2"></i>Edit Pelanggan
                             </h3>
                             <p class="text-[12px] text-gray-400 mt-0.5">
-                                <i class="fa-regular fa-pen-to-square text-pink-300 mr-1"></i>Edit data pelanggan
+                                <i class="fa-solid fa-pen-to-square text-pink-300 mr-1"></i>Edit data pelanggan
                             </p>
                         </div>
                         <a href="{{ route('kasir.pelanggan.index') }}"
