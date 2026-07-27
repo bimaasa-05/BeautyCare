@@ -70,7 +70,7 @@
                             <i class="fa-solid fa-door-open text-pink-500 mr-2"></i>Check In Pelanggan
                         </h3>
                         <p class="text-[12px] text-gray-400 mt-0.5">
-                            <i class="fa-regular fa-calendar text-pink-300 mr-1"></i>
+                            <i class="fa-solid fa-calendar text-pink-300 mr-1"></i>
                             <span id="currentDate"></span> — <span class="text-pink-400 font-medium">{{ $TotalHariIni }} reservasi</span>
                         </p>
                     </div>
@@ -83,7 +83,7 @@
                                     <p class="text-[26px] font-bold text-gray-800 mt-1">{{ $TotalHariIni }}</p>
                                 </div>
                                 <div class="w-11 h-11 rounded-full bg-pink-100 flex items-center justify-center">
-                                    <i class="fa-regular fa-calendar text-pink-500 text-lg"></i>
+                                    <i class="fa-solid fa-calendar text-pink-500 text-lg"></i>
                                 </div>
                             </div>
                         </div>
