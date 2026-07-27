@@ -32,6 +32,7 @@ use App\Http\Controllers\AdminPengaturanController;
 use App\Http\Controllers\AdminRiwayatController;
 use App\Http\Controllers\BeatycianJadwalTreatmentController;
 use App\Http\Controllers\BeautycianPelangganController;
+use App\Http\Controllers\BeautycianLaporanReservasiController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -278,6 +279,11 @@ Route::middleware('auth')->group(function () {
         Route::post('/beautycian/jadwal-treatment', [BeatycianJadwalTreatmentController::class, 'updateStatus'])->name('beautycian.jadwal-treatment.update');
         
         Route::get('/beautycian/pelanggan', [BeautycianPelangganController::class, 'index'])->name('beautycian.pelanggan.index');
+
+        Route::get('/beautycian/laporan-reservasi', [BeautycianLaporanReservasiController::class, 'index'])->name('beautycian.laporan-reservasi.index');
+        Route::get('/beautycian/laporan-reservasi/export-pdf', [BeautycianLaporanReservasiController::class, 'exportPDF'])->name('beautycian.laporan-reservasi.export-pdf');
+        Route::get('/beautycian/laporan-reservasi/export-excel', [BeautycianLaporanReservasiController::class, 'exportExcel'])->name('beautycian.laporan-reservasi.export-excel');
+        Route::get('/beautycian/laporan-reservasi/{id}', [BeautycianLaporanReservasiController::class, 'show'])->name('beautycian.laporan-reservasi.show')->where('id', '[0-9]+');
     });
     //--------------------------------------------------
     //Route Pelangggan
