@@ -1708,7 +1708,10 @@
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': csrf
-                }
+                },
+                body: JSON.stringify({
+                    metode: metode.value
+                })
             })
             .then(function(r) { return r.json(); })
             .then(function(data) {
