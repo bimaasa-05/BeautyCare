@@ -33,6 +33,7 @@ use App\Http\Controllers\AdminRiwayatController;
 use App\Http\Controllers\BeatycianJadwalTreatmentController;
 use App\Http\Controllers\BeautycianPelangganController;
 use App\Http\Controllers\BeautycianLaporanReservasiController;
+use App\Http\Controllers\BeautycianDashboardController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -250,9 +251,7 @@ Route::middleware('auth')->group(function () {
     //--------------------------------------------------
     //Route BeautyCian
     Route::middleware(['role:beautycian'])->group(function () {
-        Route::get('/beautycian/dashboard', function () {
-            return view('beautycian.dashboard');
-        })->name('beautycian.dashboard');
+        Route::get('/beautycian/dashboard', [BeautycianDashboardController::class, 'index'])->name('beautycian.dashboard');
 
         //Profile Beautycian
         Route::get('/beautycian/profile', function () {
