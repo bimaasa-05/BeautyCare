@@ -31,6 +31,7 @@ use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\AdminPengaturanController;
 use App\Http\Controllers\AdminRiwayatController;
 use App\Http\Controllers\BeatycianJadwalTreatmentController;
+use App\Http\Controllers\BeautycianPelangganController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -276,6 +277,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/beautycian/jadwal-treatment', [BeatycianJadwalTreatmentController::class, 'index'])->name('beautycian.jadwal-treatment.index');
         Route::post('/beautycian/jadwal-treatment', [BeatycianJadwalTreatmentController::class, 'updateStatus'])->name('beautycian.jadwal-treatment.update');
         
+        Route::get('/beautycian/pelanggan', [BeautycianPelangganController::class, 'index'])->name('beautycian.pelanggan.index');
     });
     //--------------------------------------------------
     //Route Pelangggan
