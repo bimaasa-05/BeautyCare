@@ -700,12 +700,19 @@
                                         <i class="fa-regular fa-user fg-label-icon"></i>
                                         Pilih Terapis <span class="fg-required">*</span>
                                     </label>
-                                    <select name="id_karyawan" class="fg-input" required>
+                                    <select name="id_karyawan" id="id_karyawan" required style="display:none">
                                         <option value="">— Pilih Terapis —</option>
                                         @foreach($karyawans as $karyawan)
                                         <option value="{{ $karyawan->user->id }}">{{ $karyawan->user->nama }} — {{ $karyawan->jabatan }}</option>
                                         @endforeach
                                     </select>
+                                    <div class="custom-select-wrap" id="customTerapisWrap">
+                                        <div class="custom-select-trigger" id="customTerapisTrigger">
+                                            <span class="cst-placeholder">— Pilih Terapis —</span>
+                                            <span class="cst-arrow"><i class="fa-solid fa-chevron-down"></i></span>
+                                        </div>
+                                        <div class="custom-select-dropdown" id="customTerapisDropdown"></div>
+                                    </div>
                                 </div>
                             </div>
 
@@ -758,9 +765,9 @@
                                 <div class="fg-premium">
                                     <label class="fg-label">
                                         <i class="fa-regular fa-circle-down fg-label-icon"></i>
-                                        Diskon
+                                        Diskon Member <span id="diskonLabel">({{ $diskonMember }}%)</span>
                                     </label>
-                                    <input type="number" name="diskon" id="diskon" class="fg-input" value="0" min="0" oninput="updateSubtotal()" placeholder="0">
+                                    <input type="number" name="diskon" id="diskon" class="fg-input" value="0" min="0" readonly style="background:#F5F5F5;cursor:not-allowed;">
                                 </div>
                             </div>
 
@@ -822,23 +829,32 @@
     </div>
 
     <script>
+    var diskonPersen = {{ $diskonMember }};
+
     function formatRupiah(angka) {
         return 'Rp ' + angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    }
+
+    function hitungDiskon(harga) {
+        return Math.round(harga * diskonPersen / 100);
     }
 
     function updateHarga() {
         const select = document.getElementById('id_layanan');
         const selected = select.options[select.selectedIndex];
-        const harga = selected ? selected.getAttribute('data-harga') : 0;
+        const harga = selected ? parseInt(selected.getAttribute('data-harga')) : 0;
 
         const display = document.getElementById('harga_display');
-        display.value = harga ? formatRupiah(parseInt(harga)) : '';
+        display.value = harga ? formatRupiah(harga) : '';
         display.style.color = harga ? 'var(--dark)' : '#bbb';
         document.getElementById('harga').value = harga || 0;
 
+        const diskon = hitungDiskon(harga);
+        document.getElementById('diskon').value = diskon;
+
         const namaLayanan = selected && selected.value ? selected.text.split(' — ')[0] : '—';
         document.getElementById('summary_layanan').textContent = namaLayanan;
-        document.getElementById('summary_harga').textContent = formatRupiah(parseInt(harga || 0));
+        document.getElementById('summary_harga').textContent = formatRupiah(harga);
 
         updateSubtotal();
     }
@@ -853,11 +869,12 @@
     }
 
     // ─── Custom Select Dropdown ───
-    function initCustomSelect(selectId, wrapId, triggerId, dropdownId) {
+    function initCustomSelect(selectId, wrapId, triggerId, dropdownId, onChange) {
         const select = document.getElementById(selectId);
         const wrap = document.getElementById(wrapId);
         const trigger = document.getElementById(triggerId);
         const dropdown = document.getElementById(dropdownId);
+        const placeholder = trigger.querySelector('.cst-placeholder');
         if (!select || !wrap || !trigger || !dropdown) return;
 
         function buildList() {
@@ -887,9 +904,10 @@
                 const parts = opt.text.split(' — ');
                 trigger.innerHTML = '<span class="cst-text">' + (parts[0] || opt.text) + '</span><span class="cst-arrow"><i class="fa-solid fa-chevron-down"></i></span>';
             } else {
-                trigger.innerHTML = '<span class="cst-placeholder">— Pilih Layanan —</span><span class="cst-arrow"><i class="fa-solid fa-chevron-down"></i></span>';
+                const txt = placeholder ? placeholder.textContent : '— Pilih —';
+                trigger.innerHTML = '<span class="cst-placeholder">' + txt + '</span><span class="cst-arrow"><i class="fa-solid fa-chevron-down"></i></span>';
             }
-            updateHarga();
+            if (onChange) onChange();
 
             const items = dropdown.querySelectorAll('.csd-item');
             items.forEach(function(item) {
@@ -957,7 +975,8 @@
             jamInput.value = hours + ':' + minutes;
         }
 
-        initCustomSelect('id_layanan', 'customLayananWrap', 'customLayananTrigger', 'customLayananDropdown');
+        initCustomSelect('id_layanan', 'customLayananWrap', 'customLayananTrigger', 'customLayananDropdown', updateHarga);
+        initCustomSelect('id_karyawan', 'customTerapisWrap', 'customTerapisTrigger', 'customTerapisDropdown');
     });
 
     const now = new Date();
