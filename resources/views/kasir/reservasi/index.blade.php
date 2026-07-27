@@ -75,7 +75,7 @@
                                     <p class="text-[24px] font-bold text-gray-800 mt-1">{{ $TotalReservasi }}</p>
                                 </div>
                                 <div class="w-10 h-10 rounded-full bg-pink-100 flex items-center justify-center">
-                                    <i class="fa-regular fa-calendar-check text-pink-500"></i>
+                                    <i class="fa-solid fa-calendar-check text-pink-500"></i>
                                 </div>
                             </div>
                         </div>
@@ -189,7 +189,7 @@
                                                 </a>
                                                 <a href="{{ route('kasir.reservasi.edit', $r->id_booking) }}"
                                                     class="action-btn action-btn-edit" title="Edit">
-                                                    <i class="fa-regular fa-pen-to-square"></i>
+                                                    <i class="fa-solid fa-pen-to-square"></i>
                                                 </a>
                                                 <form action="{{ route('kasir.reservasi.destroy', $r->id_booking) }}"
                                                     method="POST" class="inline"
