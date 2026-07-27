@@ -7,6 +7,8 @@ use App\Models\Booking;
 use App\Models\DetailBooking;
 use App\Models\Layanan;
 use App\Models\Karyawan;
+use App\Models\Pelanggan;
+use App\Models\Membership;
 
 class PelangganController extends Controller
 {
@@ -64,7 +66,20 @@ class PelangganController extends Controller
             ->orderBy('id_user')
             ->get();
 
-        return view('pelanggan.booking.create', compact('layanans', 'karyawans'));
+        $user = auth()->user();
+        $diskonMember = 0;
+        $pelanggan = Pelanggan::where('email', $user->email)
+            ->orWhere('nm_pelanggan', $user->nama)
+            ->orWhere('id_user', $user->id)
+            ->first();
+        if ($pelanggan && $pelanggan->id_member) {
+            $member = Membership::find($pelanggan->id_member);
+            if ($member) {
+                $diskonMember = (int) $member->diskon;
+            }
+        }
+
+        return view('pelanggan.booking.create', compact('layanans', 'karyawans', 'diskonMember'));
     }
 
     public function store(Request $request)
@@ -125,7 +140,19 @@ class PelangganController extends Controller
             ->orderBy('id_user')
             ->get();
 
-        return view('pelanggan.booking.edit', compact('booking', 'detail', 'layanans', 'karyawans'));
+        $diskonMember = 0;
+        $pelanggan = Pelanggan::where('email', $user->email)
+            ->orWhere('nm_pelanggan', $user->nama)
+            ->orWhere('id_user', $user->id)
+            ->first();
+        if ($pelanggan && $pelanggan->id_member) {
+            $member = Membership::find($pelanggan->id_member);
+            if ($member) {
+                $diskonMember = (int) $member->diskon;
+            }
+        }
+
+        return view('pelanggan.booking.edit', compact('booking', 'detail', 'layanans', 'karyawans', 'diskonMember'));
     }
 
     public function update(Request $request, $id)
