@@ -151,7 +151,7 @@
                                         <td class="py-3 px-4 text-center">
                                             <a href="{{ route('kasir.pembayaran.create', $r->id_booking) }}"
                                                 class="inline-flex items-center gap-2 bg-[#FF4F87] text-white text-[12px] font-semibold px-4 py-2 rounded-full hover:bg-[#ff3a78] transition-all shadow-sm hover:shadow-md hover:shadow-pink-200">
-                                                <i class="fa-regular fa-credit-card"></i> Bayar
+                                                <i class="fa-solid fa-credit-card"></i> Bayar
                                             </a>
                                         </td>
                                     </tr>
