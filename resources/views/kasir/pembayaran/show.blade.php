@@ -60,7 +60,7 @@
                     <div class="flex justify-between items-center mb-6">
                         <div>
                             <h3 class="text-[16px] font-bold text-gray-800">
-                                <i class="fa-regular fa-credit-card text-pink-500 mr-2"></i>Detail Pembayaran
+                                <i class="fa-solid fa-credit-card text-pink-500 mr-2"></i>Detail Pembayaran
                             </h3>
                             <p class="text-[12px] text-gray-400 mt-0.5">
                                 <i class="fa-regular fa-file-lines text-pink-300 mr-1"></i>
@@ -83,7 +83,7 @@
                         <div class="lg:col-span-1">
                             <div class="flex flex-col items-center bg-gradient-to-br from-pink-50/80 to-white rounded-2xl p-6 border border-pink-100/50">
                                 <div class="w-20 h-20 rounded-full bg-pink-100 text-pink-500 flex items-center justify-center text-3xl mb-3 border-4 border-white shadow-sm">
-                                    <i class="fa-regular fa-credit-card"></i>
+                                    <i class="fa-solid fa-credit-card"></i>
                                 </div>
                                 <h4 class="text-[15px] font-bold text-gray-800">{{ $transaksi->no_invoice }}</h4>
                                 <p class="text-[12px] text-gray-400">{{ \Carbon\Carbon::parse($transaksi->tanggal)->format('d F Y') }}</p>
@@ -121,46 +121,46 @@
                         <div class="lg:col-span-2">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                                 <div class="info-box">
-                                    <p class="info-label"><i class="fa-regular fa-user mr-1 text-pink-300"></i> Pelanggan</p>
+                                    <p class="info-label"><i class="fa-solid fa-user mr-1 text-pink-300"></i> Pelanggan</p>
                                     <p class="info-value">{{ $transaksi->pelanggan->nm_pelanggan ?? '-' }}</p>
                                 </div>
                                 <div class="info-box">
-                                    <p class="info-label"><i class="fa-regular fa-hashtag mr-1 text-pink-300"></i> No. Invoice</p>
+                                    <p class="info-label"><i class="fa-solid fa-hashtag mr-1 text-pink-300"></i> No. Invoice</p>
                                     <p class="info-value">{{ $transaksi->no_invoice }}</p>
                                 </div>
                                 <div class="info-box">
-                                    <p class="info-label"><i class="fa-regular fa-calendar mr-1 text-pink-300"></i> Tanggal</p>
+                                    <p class="info-label"><i class="fa-solid fa-calendar mr-1 text-pink-300"></i> Tanggal</p>
                                     <p class="info-value">{{ \Carbon\Carbon::parse($transaksi->tanggal)->format('d/m/Y') }}</p>
                                 </div>
                                 <div class="info-box">
-                                    <p class="info-label"><i class="fa-regular fa-credit-card mr-1 text-pink-300"></i> Metode</p>
+                                    <p class="info-label"><i class="fa-solid fa-credit-card mr-1 text-pink-300"></i> Metode</p>
                                     <p class="info-value">{{ $transaksi->metode_byr }}</p>
                                 </div>
                                 <div class="info-box">
-                                    <p class="info-label"><i class="fa-regular fa-coins mr-1 text-pink-300"></i> Total</p>
+                                    <p class="info-label"><i class="fa-solid fa-coins mr-1 text-pink-300"></i> Total</p>
                                     <p class="info-value text-pink-500">Rp {{ number_format($transaksi->total, 0, ',', '.') }}</p>
                                 </div>
                                 <div class="info-box">
-                                    <p class="info-label"><i class="fa-regular fa-money-bill-1 mr-1 text-pink-300"></i> Dibayar</p>
+                                    <p class="info-label"><i class="fa-solid fa-money-bill-1 mr-1 text-pink-300"></i> Dibayar</p>
                                     <p class="info-value">Rp {{ number_format($transaksi->dibayar, 0, ',', '.') }}</p>
                                 </div>
                                 <div class="info-box">
-                                    <p class="info-label"><i class="fa-regular fa-coins mr-1 text-pink-300"></i> Kembali</p>
+                                    <p class="info-label"><i class="fa-solid fa-coins mr-1 text-pink-300"></i> Kembali</p>
                                     <p class="info-value text-green-600">Rp {{ number_format($transaksi->kembali, 0, ',', '.') }}</p>
                                 </div>
                                 <div class="info-box">
-                                    <p class="info-label"><i class="fa-regular fa-user mr-1 text-pink-300"></i> Kasir</p>
+                                    <p class="info-label"><i class="fa-solid fa-user mr-1 text-pink-300"></i> Kasir</p>
                                     <p class="info-value">{{ $transaksi->user->nama ?? '-' }}</p>
                                 </div>
                                 <div class="info-box md:col-span-2">
-                                    <p class="info-label"><i class="fa-regular fa-note-sticky mr-1 text-pink-300"></i> Catatan</p>
+                                    <p class="info-label"><i class="fa-solid fa-note-sticky mr-1 text-pink-300"></i> Catatan</p>
                                     <p class="info-value">{{ $transaksi->catatan ?: '-' }}</p>
                                 </div>
                             </div>
 
                             <div class="mt-4">
                                 <h4 class="text-[13px] font-bold text-gray-600 mb-3 flex items-center gap-2">
-                                    <i class="fa-regular fa-list text-pink-400"></i> Detail Layanan
+                                    <i class="fa-solid fa-list text-pink-400"></i> Detail Layanan
                                 </h4>
                                 <div class="overflow-x-auto">
                                     <table class="w-full text-[13px]">
@@ -200,7 +200,7 @@
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                                         @if ($transaksi->atas_nama)
                                             <div class="info-box bg-teal-50/30 border-teal-100/50">
-                                                <p class="info-label"><i class="fa-regular fa-user mr-1 text-teal-400"></i> Atas Nama</p>
+                                                <p class="info-label"><i class="fa-solid fa-user mr-1 text-teal-400"></i> Atas Nama</p>
                                                 <p class="info-value">{{ $transaksi->atas_nama }}</p>
                                             </div>
                                         @endif
@@ -220,37 +220,37 @@
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                                         @if ($transaksi->atas_nama)
                                             <div class="info-box bg-amber-50/30 border-amber-100/50">
-                                                <p class="info-label"><i class="fa-regular fa-user mr-1 text-amber-400"></i> Atas Nama</p>
+                                                <p class="info-label"><i class="fa-solid fa-user mr-1 text-amber-400"></i> Atas Nama</p>
                                                 <p class="info-value">{{ $transaksi->atas_nama }}</p>
                                             </div>
                                         @endif
                                         @if ($transaksi->bank_asal)
                                             <div class="info-box bg-amber-50/30 border-amber-100/50">
-                                                <p class="info-label"><i class="fa-regular fa-building-columns mr-1 text-amber-400"></i> Bank Asal</p>
+                                                <p class="info-label"><i class="fa-solid fa-building-columns mr-1 text-amber-400"></i> Bank Asal</p>
                                                 <p class="info-value">{{ $transaksi->bank_asal }}</p>
                                             </div>
                                         @endif
                                         @if ($transaksi->dari_rekening)
                                             <div class="info-box bg-amber-50/30 border-amber-100/50">
-                                                <p class="info-label"><i class="fa-regular fa-arrow-right mr-1 text-amber-400"></i> Dari Rekening</p>
+                                                <p class="info-label"><i class="fa-solid fa-arrow-right mr-1 text-amber-400"></i> Dari Rekening</p>
                                                 <p class="info-value">{{ $transaksi->dari_rekening }}</p>
                                             </div>
                                         @endif
                                         @if ($transaksi->bank_tujuan)
                                             <div class="info-box bg-amber-50/30 border-amber-100/50">
-                                                <p class="info-label"><i class="fa-regular fa-building-columns mr-1 text-amber-400"></i> Bank Tujuan</p>
+                                                <p class="info-label"><i class="fa-solid fa-building-columns mr-1 text-amber-400"></i> Bank Tujuan</p>
                                                 <p class="info-value">{{ $transaksi->bank_tujuan }}</p>
                                             </div>
                                         @endif
                                         @if ($transaksi->ke_rekening)
                                             <div class="info-box bg-amber-50/30 border-amber-100/50">
-                                                <p class="info-label"><i class="fa-regular fa-arrow-left mr-1 text-amber-400"></i> Ke Rekening</p>
+                                                <p class="info-label"><i class="fa-solid fa-arrow-left mr-1 text-amber-400"></i> Ke Rekening</p>
                                                 <p class="info-value">{{ $transaksi->ke_rekening }}</p>
                                             </div>
                                         @endif
                                         @if ($transaksi->no_referensi)
                                             <div class="info-box bg-amber-50/30 border-amber-100/50">
-                                                <p class="info-label"><i class="fa-regular fa-hashtag mr-1 text-amber-400"></i> No. Referensi</p>
+                                                <p class="info-label"><i class="fa-solid fa-hashtag mr-1 text-amber-400"></i> No. Referensi</p>
                                                 <p class="info-value">{{ $transaksi->no_referensi }}</p>
                                             </div>
                                         @endif
