@@ -325,6 +325,10 @@
         background: linear-gradient(135deg, #60A5FA, #93C5FD);
     }
 
+    .keranjang-card .kc-image .kc-img-placeholder.nailcare {
+        background: linear-gradient(135deg, #F43F5E, #FB7185);
+    }
+
     .keranjang-card .kc-image .kc-img-placeholder.makeup {
         background: linear-gradient(135deg, #A78BFA, #C4B5FD);
     }
@@ -739,6 +743,7 @@
     .detail-modal .dm-banner.skincare { background: linear-gradient(135deg, #F472B6, #F9A8D4); }
     .detail-modal .dm-banner.haircare { background: linear-gradient(135deg, #34D399, #6EE7B7); }
     .detail-modal .dm-banner.bodycare { background: linear-gradient(135deg, #60A5FA, #93C5FD); }
+    .detail-modal .dm-banner.nailcare { background: linear-gradient(135deg, #F43F5E, #FB7185); }
     .detail-modal .dm-banner.makeup { background: linear-gradient(135deg, #A78BFA, #C4B5FD); }
     .detail-modal .dm-banner.lainnya { background: linear-gradient(135deg, #94A3B8, #CBD5E1); }
 
@@ -1255,12 +1260,13 @@
                         @foreach($troli as $item)
                         <div class="keranjang-card" data-id="{{ $item->id }}">
                             <div class="kc-image">
-                                <div class="kc-img-placeholder {{ strtolower($item->kategori) }}">
+                                <div class="kc-img-placeholder {{ str_replace(' ', '', strtolower($item->kategori)) }}">
                                     @php
                                         $iconMap = [
                                             'Skincare' => 'fa-solid fa-spa',
-                                            'Haircare' => 'fa-solid fa-scissors',
-                                            'Bodycare' => 'fa-solid fa-hand-sparkles',
+                                            'Hair Care' => 'fa-solid fa-scissors',
+                                            'Body Care' => 'fa-solid fa-hand-sparkles',
+                                            'Nail Care' => 'fa-solid fa-hand',
                                             'Makeup' => 'fa-solid fa-palette',
                                         ];
                                         $icon = $iconMap[$item->kategori] ?? 'fa-solid fa-cube';
@@ -1440,8 +1446,9 @@
     <script>
     var kategoriIcons = {
         'Skincare': '<i class="fa-solid fa-spa"></i>',
-        'Haircare': '<i class="fa-solid fa-scissors"></i>',
-        'Bodycare': '<i class="fa-solid fa-hand-sparkles"></i>',
+        'Hair Care': '<i class="fa-solid fa-scissors"></i>',
+        'Body Care': '<i class="fa-solid fa-hand-sparkles"></i>',
+        'Nail Care': '<i class="fa-solid fa-hand"></i>',
         'Makeup': '<i class="fa-solid fa-palette"></i>'
     };
 
@@ -1459,7 +1466,7 @@
         var subtotal = document.getElementById('total-item-' + id).textContent;
 
         var banner = document.getElementById('dmBanner');
-        banner.className = 'dm-banner ' + kategori.toLowerCase();
+        banner.className = 'dm-banner ' + kategori.toLowerCase().replace(/\s+/g, '');
         document.getElementById('dmIcon').innerHTML = kategoriIcons[kategori] || '<i class="fa-solid fa-cube"></i>';
         document.getElementById('dmCategoryBadge').textContent = kategori;
         document.getElementById('dmNama').textContent = nama;
