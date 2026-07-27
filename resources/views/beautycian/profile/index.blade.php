@@ -60,6 +60,15 @@
         .info-row .ir-content .ir-label { font-size: 11px; color: var(--gray); font-weight: 500; text-transform: uppercase; letter-spacing: 0.3px; }
         .info-row .ir-content .ir-value { font-size: 14px; font-weight: 600; color: var(--dark); margin-top: 1px; }
         @media (max-width: 900px) { .profile-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 768px) {
+            .profile-card .pc-header { padding: 16px 18px; }
+            .profile-card .pc-body { padding: 16px 18px; }
+            .avatar-section .avatar-wrap { width: 100px; height: 100px; }
+        }
+        @media (max-width: 430px) {
+            .profile-card .pc-header { padding: 14px 16px; }
+            .profile-card .pc-body { padding: 14px 16px; }
+        }
     </style>
 </head>
 <body>

@@ -17,6 +17,24 @@
     <link rel="stylesheet" href="{{ asset('assets/css/dashboard.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/responsive.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/beautycian.css') }}">
+    <style>
+        .stock-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+        .booking-item { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid #f5f5f5; flex-wrap: wrap; }
+        .booking-item:last-child { border-bottom: none; }
+        .booking-item .booking-info { flex: 1; min-width: 0; }
+        .booking-item .booking-time { flex-shrink: 0; }
+        @media (max-width: 768px) {
+            .data-table thead { display: none; }
+            .data-table tbody tr { display: block; padding: 12px 0; border-bottom: 1px solid var(--border); }
+            .data-table tbody td { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border: none; font-size: 13px; text-align: right; }
+            .data-table tbody td::before { content: attr(data-label); font-weight: 600; color: var(--gray); font-size: 11px; text-transform: uppercase; }
+            .data-table tbody td:first-child { padding-left: 0; }
+            .data-table tbody td:last-child { padding-right: 0; }
+            .data-table .td-flex { justify-content: flex-end; }
+        }
+        .table-widget { overflow-x: auto; }
+        .table-widget .tw-header { flex-wrap: wrap; gap: 8px; }
+    </style>
 </head>
 
 <body>
@@ -202,34 +220,34 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td><div class="td-flex">Ani Wijaya</div></td>
-                                    <td>Facial Treatment</td>
-                                    <td>09:00 - 10:15</td>
-                                    <td><span class="badge badge-success">Selesai</span></td>
+                                    <td data-label="Pelanggan"><div class="td-flex">Ani Wijaya</div></td>
+                                    <td data-label="Layanan">Facial Treatment</td>
+                                    <td data-label="Waktu">09:00 - 10:15</td>
+                                    <td data-label="Status"><span class="badge badge-success">Selesai</span></td>
                                 </tr>
                                 <tr>
-                                    <td><div class="td-flex">Sinta Dewi</div></td>
-                                    <td>Body Massage</td>
-                                    <td>10:30 - 12:00</td>
-                                    <td><span class="badge badge-primary">Berjalan</span></td>
+                                    <td data-label="Pelanggan"><div class="td-flex">Sinta Dewi</div></td>
+                                    <td data-label="Layanan">Body Massage</td>
+                                    <td data-label="Waktu">10:30 - 12:00</td>
+                                    <td data-label="Status"><span class="badge badge-primary">Berjalan</span></td>
                                 </tr>
                                 <tr>
-                                    <td><div class="td-flex">Rudi Hartono</div></td>
-                                    <td>Haircut Premium</td>
-                                    <td>08:00 - 08:45</td>
-                                    <td><span class="badge badge-success">Selesai</span></td>
+                                    <td data-label="Pelanggan"><div class="td-flex">Rudi Hartono</div></td>
+                                    <td data-label="Layanan">Haircut Premium</td>
+                                    <td data-label="Waktu">08:00 - 08:45</td>
+                                    <td data-label="Status"><span class="badge badge-success">Selesai</span></td>
                                 </tr>
                                 <tr>
-                                    <td><div class="td-flex">Maya Anggraini</div></td>
-                                    <td>Nail Art Design</td>
-                                    <td>11:00 - 12:30</td>
-                                    <td><span class="badge badge-success">Selesai</span></td>
+                                    <td data-label="Pelanggan"><div class="td-flex">Maya Anggraini</div></td>
+                                    <td data-label="Layanan">Nail Art Design</td>
+                                    <td data-label="Waktu">11:00 - 12:30</td>
+                                    <td data-label="Status"><span class="badge badge-success">Selesai</span></td>
                                 </tr>
                                 <tr>
-                                    <td><div class="td-flex">Dewi Lestari</div></td>
-                                    <td>Hair Color</td>
-                                    <td>13:00 - 15:00</td>
-                                    <td><span class="badge badge-warning">Antri</span></td>
+                                    <td data-label="Pelanggan"><div class="td-flex">Dewi Lestari</div></td>
+                                    <td data-label="Layanan">Hair Color</td>
+                                    <td data-label="Waktu">13:00 - 15:00</td>
+                                    <td data-label="Status"><span class="badge badge-warning">Antri</span></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -252,34 +270,34 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td><div class="td-flex">Serum Vitamin C</div></td>
-                                    <td>Skincare</td>
-                                    <td>18 kali</td>
-                                    <td><span class="badge badge-success">Tersedia</span></td>
+                                    <td data-label="Produk"><div class="td-flex">Serum Vitamin C</div></td>
+                                    <td data-label="Kategori">Skincare</td>
+                                    <td data-label="Digunakan">18 kali</td>
+                                    <td data-label="Stok"><span class="badge badge-success">Tersedia</span></td>
                                 </tr>
                                 <tr>
-                                    <td><div class="td-flex">Moisturizer Cream</div></td>
-                                    <td>Skincare</td>
-                                    <td>14 kali</td>
-                                    <td><span class="badge badge-danger">Habis</span></td>
+                                    <td data-label="Produk"><div class="td-flex">Moisturizer Cream</div></td>
+                                    <td data-label="Kategori">Skincare</td>
+                                    <td data-label="Digunakan">14 kali</td>
+                                    <td data-label="Stok"><span class="badge badge-danger">Habis</span></td>
                                 </tr>
                                 <tr>
-                                    <td><div class="td-flex">Shampoo Premium</div></td>
-                                    <td>Hair Care</td>
-                                    <td>12 kali</td>
-                                    <td><span class="badge badge-warning">Limited</span></td>
+                                    <td data-label="Produk"><div class="td-flex">Shampoo Premium</div></td>
+                                    <td data-label="Kategori">Hair Care</td>
+                                    <td data-label="Digunakan">12 kali</td>
+                                    <td data-label="Stok"><span class="badge badge-warning">Limited</span></td>
                                 </tr>
                                 <tr>
-                                    <td><div class="td-flex">Hair Mask</div></td>
-                                    <td>Hair Care</td>
-                                    <td>10 kali</td>
-                                    <td><span class="badge badge-success">Tersedia</span></td>
+                                    <td data-label="Produk"><div class="td-flex">Hair Mask</div></td>
+                                    <td data-label="Kategori">Hair Care</td>
+                                    <td data-label="Digunakan">10 kali</td>
+                                    <td data-label="Stok"><span class="badge badge-success">Tersedia</span></td>
                                 </tr>
                                 <tr>
-                                    <td><div class="td-flex">Nail Polish Set</div></td>
-                                    <td>Nail Art</td>
-                                    <td>8 kali</td>
-                                    <td><span class="badge badge-success">Tersedia</span></td>
+                                    <td data-label="Produk"><div class="td-flex">Nail Polish Set</div></td>
+                                    <td data-label="Kategori">Nail Art</td>
+                                    <td data-label="Digunakan">8 kali</td>
+                                    <td data-label="Stok"><span class="badge badge-success">Tersedia</span></td>
                                 </tr>
                             </tbody>
                         </table>
