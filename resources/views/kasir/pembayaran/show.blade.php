@@ -165,7 +165,7 @@
                                 <div class="overflow-x-auto">
                                     <table class="w-full text-[13px]">
                                         <thead>
-                                            <tr class="border-b border-gray-100">
+                                            <tr class="b    order-b border-gray-100">
                                                 <th class="text-left py-2 text-[11px] font-semibold text-gray-400 uppercase">Layanan</th>
                                                 <th class="text-right py-2 text-[11px] font-semibold text-gray-400 uppercase">Harga</th>
                                                 <th class="text-right py-2 text-[11px] font-semibold text-gray-400 uppercase">Diskon</th>
