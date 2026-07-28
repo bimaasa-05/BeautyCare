@@ -304,7 +304,6 @@ Route::middleware('auth')->group(function () {
         $userId = auth()->id();
         $user = auth()->user();
 
-        $totalBooking = \App\Models\Booking::where('id_pelanggan', $userId)->count();
         $bookingAktif = \App\Models\Booking::where('id_pelanggan', $userId)
             ->whereIn('status', ['menunggu', 'dikonfirmasi', 'diproses'])
             ->count();
@@ -400,6 +399,7 @@ Route::middleware('auth')->group(function () {
                 'id_member' => 1,
             ]);
         }
+        $totalBooking = $pelanggan->total_booking ?? 0;
         $memberTingkat = null;
         $memberList = collect();
         if ($pelanggan && $pelanggan->id_member) {
