@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Booking;
+use App\Models\DetailBooking;
+use Illuminate\Support\Facades\DB;
 
 class BeautycianLaporanReservasiController extends Controller
 {
@@ -41,9 +43,51 @@ class BeautycianLaporanReservasiController extends Controller
         $selesai      = Booking::where('id_karyawan', $id_karyawan)->where('status', 'selesai')->count();
         $dibatalkan   = Booking::where('id_karyawan', $id_karyawan)->where('status', 'dibatalkan')->count();
 
+        $total_pendapatan = DetailBooking::whereHas('booking', function ($q) use ($id_karyawan) {
+                $q->where('id_karyawan', $id_karyawan)->where('status', 'selesai');
+            })->sum('subtotal');
+
+        $pendapatan_bulan_ini = DetailBooking::whereHas('booking', function ($q) use ($id_karyawan) {
+                $q->where('id_karyawan', $id_karyawan)
+                  ->where('status', 'selesai')
+                  ->whereMonth('tanggal', now()->month)
+                  ->whereYear('tanggal', now()->year);
+            })->sum('subtotal');
+
+        $chartBulan = [];
+        $chartSelesai = [];
+        for ($i = 1; $i <= 12; $i++) {
+            $chartBulan[] = \Carbon\Carbon::create()->month($i)->isoFormat('MMM');
+            $chartSelesai[] = Booking::where('id_karyawan', $id_karyawan)
+                ->where('status', 'selesai')
+                ->whereMonth('tanggal', $i)
+                ->whereYear('tanggal', now()->year)
+                ->count();
+        }
+
+        $layananTerpopuler = DetailBooking::select('id_layanan', DB::raw('COUNT(*) as total'))
+            ->whereHas('booking', function ($q) use ($id_karyawan) {
+                $q->where('id_karyawan', $id_karyawan);
+            })
+            ->groupBy('id_layanan')
+            ->orderBy('total', 'desc')
+            ->with('layanan')
+            ->limit(5)
+            ->get();
+
+        $pelanggan_setia = Booking::where('id_karyawan', $id_karyawan)
+            ->select('id_pelanggan', DB::raw('COUNT(*) as total'))
+            ->groupBy('id_pelanggan')
+            ->orderBy('total', 'desc')
+            ->with('pelanggan')
+            ->limit(5)
+            ->get();
+
         return view('beautycian.laporan-reservasi.index', compact(
             'reservasi', 'search',
-            'total_reservasi', 'dikonfirmasi', 'diproses', 'selesai', 'dibatalkan'
+            'total_reservasi', 'dikonfirmasi', 'diproses', 'selesai', 'dibatalkan',
+            'total_pendapatan', 'pendapatan_bulan_ini',
+            'chartBulan', 'chartSelesai', 'layananTerpopuler', 'pelanggan_setia'
         ));
     }
 
