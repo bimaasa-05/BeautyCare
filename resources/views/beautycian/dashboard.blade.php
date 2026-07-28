@@ -40,7 +40,7 @@
 <body>
     <!-- Page Loader -->
     <div class="dashboard-layout">
-        @include('layouts.sidebar')
+        @include('layouts.sidebar-beautycian')
 
         <main class="main-content">
             @include('layouts.header2')
@@ -60,9 +60,8 @@
                                     <line x1="3" y1="10" x2="21" y2="10" />
                                 </svg>
                             </div>
-                            <span class="stat-change up">+4%</span>
                         </div>
-                        <div class="stat-value">6</div>
+                        <div class="stat-value">{{ $jadwal_hari_ini }}</div>
                         <div class="stat-label">Jadwal Hari Ini</div>
                     </div>
 
@@ -76,9 +75,8 @@
                                     <polyline points="17 11 19 13 23 9" />
                                 </svg>
                             </div>
-                            <span class="stat-change up">+10%</span>
                         </div>
-                        <div class="stat-value">12</div>
+                        <div class="stat-value">{{ $pelanggan_ditangani }}</div>
                         <div class="stat-label">Pelanggan Ditangani</div>
                     </div>
 
@@ -90,9 +88,8 @@
                                     <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
                                 </svg>
                             </div>
-                            <span class="stat-change up">+8%</span>
                         </div>
-                        <div class="stat-value">24</div>
+                        <div class="stat-value">{{ $layanan_selesai }}</div>
                         <div class="stat-label">Layanan Selesai</div>
                     </div>
 
@@ -104,7 +101,6 @@
                                     <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
                                 </svg>
                             </div>
-                            <span class="stat-change up">+2%</span>
                         </div>
                         <div class="stat-value">4,9</div>
                         <div class="stat-label">Rating Rata-rata</div>
@@ -119,7 +115,6 @@
                                     <polyline points="12 6 12 12 16 14" />
                                 </svg>
                             </div>
-                            <span class="stat-change up">+6%</span>
                         </div>
                         <div class="stat-value">7,5 jam</div>
                         <div class="stat-label">Jam Kerja</div>
@@ -207,48 +202,42 @@
                     <div class="table-widget">
                         <div class="tw-header">
                             <h3>Riwayat Treatment</h3>
-                            <a href="#">Lihat Semua</a>
+                            <a href="{{ route('beautycian.riwayat-treatment.index') }}">Lihat Semua</a>
                         </div>
                         <table class="data-table">
                             <thead>
                                 <tr>
                                     <th>Pelanggan</th>
                                     <th>Layanan</th>
-                                    <th>Waktu</th>
-                                    <th>Status</th>
+                                    <th>Tanggal</th>
+                                    <th>Dokumen</th>
                                 </tr>
                             </thead>
                             <tbody>
+                                @forelse($riwayat_terbaru as $item)
                                 <tr>
-                                    <td data-label="Pelanggan"><div class="td-flex">Ani Wijaya</div></td>
-                                    <td data-label="Layanan">Facial Treatment</td>
-                                    <td data-label="Waktu">09:00 - 10:15</td>
-                                    <td data-label="Status"><span class="badge badge-success">Selesai</span></td>
+                                    <td data-label="Pelanggan"><div class="td-flex">{{ $item->pelanggan->nm_pelanggan ?? '-' }}</div></td>
+                                    <td data-label="Layanan">
+                                        @if($item->detail && $item->detail->isNotEmpty())
+                                            @foreach($item->detail as $dt){{ $dt->layanan->nm_layanan ?? '-' }}@if(!$loop->last), @endif @endforeach
+                                        @else - @endif
+                                    </td>
+                                    <td data-label="Tanggal">{{ \Carbon\Carbon::parse($item->tanggal)->isoFormat('D MMM') }}</td>
+                                    <td data-label="Dokumen">
+                                        @if($item->riwayatTreatment)
+                                        <span class="badge badge-success">Ada</span>
+                                        @else
+                                        <span class="badge badge-warning">Tidak</span>
+                                        @endif
+                                    </td>
                                 </tr>
+                                @empty
                                 <tr>
-                                    <td data-label="Pelanggan"><div class="td-flex">Sinta Dewi</div></td>
-                                    <td data-label="Layanan">Body Massage</td>
-                                    <td data-label="Waktu">10:30 - 12:00</td>
-                                    <td data-label="Status"><span class="badge badge-primary">Berjalan</span></td>
+                                    <td colspan="4" style="text-align:center;padding:30px;color:var(--gray);font-size:13px;">
+                                        Belum ada riwayat treatment.
+                                    </td>
                                 </tr>
-                                <tr>
-                                    <td data-label="Pelanggan"><div class="td-flex">Rudi Hartono</div></td>
-                                    <td data-label="Layanan">Haircut Premium</td>
-                                    <td data-label="Waktu">08:00 - 08:45</td>
-                                    <td data-label="Status"><span class="badge badge-success">Selesai</span></td>
-                                </tr>
-                                <tr>
-                                    <td data-label="Pelanggan"><div class="td-flex">Maya Anggraini</div></td>
-                                    <td data-label="Layanan">Nail Art Design</td>
-                                    <td data-label="Waktu">11:00 - 12:30</td>
-                                    <td data-label="Status"><span class="badge badge-success">Selesai</span></td>
-                                </tr>
-                                <tr>
-                                    <td data-label="Pelanggan"><div class="td-flex">Dewi Lestari</div></td>
-                                    <td data-label="Layanan">Hair Color</td>
-                                    <td data-label="Waktu">13:00 - 15:00</td>
-                                    <td data-label="Status"><span class="badge badge-warning">Antri</span></td>
-                                </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
@@ -422,49 +411,27 @@
                     <div class="list-widget">
                         <div class="lw-header">
                             <h3>Booking Mendatang</h3>
-                            <a href="#" style="font-size:13px;color:var(--primary);font-weight:500;">Atur</a>
+                            <a href="{{ route('beautycian.jadwal-treatment.index') }}" style="font-size:13px;color:var(--primary);font-weight:500;">Lihat Semua</a>
                         </div>
                         <div class="booking-list">
+                            @forelse($booking_mendatang as $item)
                             <div class="booking-item">
-                                <img src="https://ui-avatars.com/api/?name=Nina+Zahra&background=FFE5EF&color=FF4F87&size=40" alt="Nina">
+                                <img src="https://ui-avatars.com/api/?name={{ urlencode($item->pelanggan->nm_pelanggan ?? '?') }}&background=FFE5EF&color=FF4F87&size=40" alt="{{ $item->pelanggan->nm_pelanggan ?? '?' }}">
                                 <div class="booking-info">
-                                    <h4>Nina Zahra</h4>
-                                    <p>Facial Treatment</p>
+                                    <h4>{{ $item->pelanggan->nm_pelanggan ?? '#' . $item->id_pelanggan }}</h4>
+                                    <p>
+                                        @if($item->detail && $item->detail->isNotEmpty())
+                                            @foreach($item->detail as $dt){{ $dt->layanan->nm_layanan ?? '-' }}@if(!$loop->last), @endif @endforeach
+                                        @else - @endif
+                                    </p>
                                 </div>
-                                <span class="booking-time">Besok 09:00</span>
+                                <span class="booking-time">{{ \Carbon\Carbon::parse($item->tanggal)->isoFormat('D MMM') }} {{ \Carbon\Carbon::parse($item->jam)->format('H:i') }}</span>
                             </div>
-                            <div class="booking-item">
-                                <img src="https://ui-avatars.com/api/?name=Dian+Sari&background=FFE5EF&color=FF4F87&size=40" alt="Dian">
-                                <div class="booking-info">
-                                    <h4>Dian Sari</h4>
-                                    <p>Body Massage + Sauna</p>
-                                </div>
-                                <span class="booking-time">Besok 10:30</span>
+                            @empty
+                            <div style="padding:30px;text-align:center;color:var(--gray);font-size:13px;">
+                                Tidak ada booking mendatang.
                             </div>
-                            <div class="booking-item">
-                                <img src="https://ui-avatars.com/api/?name=Adi+Santoso&background=FFE5EF&color=FF4F87&size=40" alt="Adi">
-                                <div class="booking-info">
-                                    <h4>Adi Santoso</h4>
-                                    <p>Haircut & Beard Trim</p>
-                                </div>
-                                <span class="booking-time">Besok 13:00</span>
-                            </div>
-                            <div class="booking-item">
-                                <img src="https://ui-avatars.com/api/?name=Rina+Melati&background=FFE5EF&color=FF4F87&size=40" alt="Rina">
-                                <div class="booking-info">
-                                    <h4>Rina Melati</h4>
-                                    <p>Nail Art Design</p>
-                                </div>
-                                <span class="booking-time">Lusa 11:00</span>
-                            </div>
-                            <div class="booking-item">
-                                <img src="https://ui-avatars.com/api/?name=Fajar+Alam&background=FFE5EF&color=FF4F87&size=40" alt="Fajar">
-                                <div class="booking-info">
-                                    <h4>Fajar Alam</h4>
-                                    <p>Hair Color Premium</p>
-                                </div>
-                                <span class="booking-time">Lusa 14:00</span>
-                            </div>
+                            @endforelse
                         </div>
                     </div>
                 </div>
