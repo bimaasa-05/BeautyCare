@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Data Pelanggan - BeautyCare</title>
+    <title>Riwayat Pelanggan - BeautyCare</title>
     @include('partials.head-meta')
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -92,9 +92,26 @@
             background: #fff;
             box-shadow: 0 0 0 3px rgba(255, 79, 135, 0.1);
         }
-        @media (max-width: 1200px) {
-            .search-input-plg { width: 180px; }
-        }
+        .mini-list-card { background: #fff; border-radius: 16px; border: 1px solid var(--border); padding: 20px; }
+        .mini-list-card .ml-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+        .mini-list-card .ml-header h4 { font-size: 13px; font-weight: 700; color: var(--dark); display: flex; align-items: center; gap: 8px; }
+        .mini-list-card .ml-header h4 svg { width: 16px; height: 16px; color: var(--primary); }
+        .ml-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid #f5f5f5; }
+        .ml-item:last-child { border-bottom: none; }
+        .ml-item .ml-rank { width: 22px; height: 22px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; flex-shrink: 0; }
+        .ml-item .ml-rank.gold { background: #FEF3C7; color: #D97706; }
+        .ml-item .ml-rank.silver { background: #F1F5F9; color: #64748B; }
+        .ml-item .ml-rank.bronze { background: #FDE8E8; color: #DC2626; }
+        .ml-item .ml-rank.normal { background: #F8F9FC; color: #94A3B8; }
+        .ml-item .ml-info { flex: 1; min-width: 0; }
+        .ml-item .ml-info .ml-name { font-size: 12px; font-weight: 600; color: var(--dark); }
+        .ml-item .ml-info .ml-count { font-size: 11px; color: var(--gray); }
+        .ml-item .ml-value { font-size: 12px; font-weight: 700; color: var(--primary); }
+
+        .dashboard-grid-plg { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 24px; }
+        @media (max-width: 900px) { .dashboard-grid-plg { grid-template-columns: 1fr; } }
+
+        @media (max-width: 1200px) { .search-input-plg { width: 180px; } }
         @media (max-width: 768px) {
             .stats-row-plg { gap: 12px; }
             .stats-row-plg .stat-card { padding: 14px; }
@@ -123,7 +140,7 @@
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><polyline points="17 11 19 13 23 9"/></svg>
                             </div>
                             <div class="ph-text">
-                                <h3>Data Pelanggan</h3>
+                                <h3>Riwayat Pelanggan</h3>
                                 <p>Informasi lengkap pelanggan yang pernah ditangani</p>
                             </div>
                         </div>
@@ -162,6 +179,28 @@
                         </div>
                         <div class="stat-value">{{ $total_non_member }}</div>
                         <div class="stat-label">Non Member</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon info">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                            </div>
+                            <span class="stat-change up">+{{ $pelanggan_baru_bulan_ini }}</span>
+                        </div>
+                        <div class="stat-value">{{ $pelanggan_baru_bulan_ini }}</div>
+                        <div class="stat-label">Pelanggan Baru</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon success">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                            </div>
+                            <span class="stat-change up">+{{ $total_treatment_selesai }}</span>
+                        </div>
+                        <div class="stat-value">{{ $total_treatment_selesai }}</div>
+                        <div class="stat-label">Treatment Selesai</div>
                     </div>
                 </div>
 
@@ -211,7 +250,87 @@
                     </div>
                 </div>
 
-                <div class="booking-card-premium">
+                <div class="dashboard-grid-plg">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3>Grafik Pelanggan per Bulan</h3>
+                            <div class="chart-actions">
+                                <span style="font-size:11px;color:var(--gray);">Tahun {{ now()->year }}</span>
+                            </div>
+                        </div>
+                        <div class="chart-body">
+                            <canvas id="chartPelanggan" height="260"></canvas>
+                        </div>
+                    </div>
+                    <div class="mini-charts">
+                        <div class="mini-list-card">
+                            <div class="ml-header">
+                                <h4>
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                                    Layanan Favorit
+                                </h4>
+                            </div>
+                            <div>
+                                @forelse($layananFavorit as $i => $item)
+                                <div class="ml-item">
+                                    <div class="ml-rank {{ $i == 0 ? 'gold' : ($i == 1 ? 'silver' : ($i == 2 ? 'bronze' : 'normal')) }}">#{{ $i + 1 }}</div>
+                                    <div class="ml-info">
+                                        <div class="ml-name">{{ $item->layanan->nm_layanan ?? '-' }}</div>
+                                        <div class="ml-count">{{ $item->total }} kali dipesan</div>
+                                    </div>
+                                    <div class="ml-value">{{ $item->total }}x</div>
+                                </div>
+                                @empty
+                                <div style="padding:20px;text-align:center;color:var(--gray);font-size:12px;">Belum ada data</div>
+                                @endforelse
+                            </div>
+                        </div>
+                        <div class="mini-list-card" style="margin-top:16px;">
+                            <div class="ml-header">
+                                <h4>
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/></svg>
+                                    Status Pelanggan
+                                </h4>
+                            </div>
+                            <div>
+                                <div class="ml-item">
+                                    <div class="ml-rank gold">#1</div>
+                                    <div class="ml-info">
+                                        <div class="ml-name">Terjadwal</div>
+                                        <div class="ml-count">Menunggu treatment</div>
+                                    </div>
+                                    <div class="ml-value">{{ $total_terjadwal }}</div>
+                                </div>
+                                <div class="ml-item">
+                                    <div class="ml-rank silver">#2</div>
+                                    <div class="ml-info">
+                                        <div class="ml-name">Diproses</div>
+                                        <div class="ml-count">Sedang dalam perawatan</div>
+                                    </div>
+                                    <div class="ml-value">{{ $total_diproses }}</div>
+                                </div>
+                                <div class="ml-item">
+                                    <div class="ml-rank bronz">#3</div>
+                                    <div class="ml-info">
+                                        <div class="ml-name">Selesai</div>
+                                        <div class="ml-count">Treatment selesai</div>
+                                    </div>
+                                    <div class="ml-value">{{ $total_selesai }}</div>
+                                </div>
+                                <div class="ml-item">
+                                    <div class="ml-rank normal">#4</div>
+                                    <div class="ml-info">
+                                        <div class="ml-name">Dibatalkan</div>
+                                        <div class="ml-count">Dibatalkan</div>
+                                    </div>
+                                    <div class="ml-value">{{ $total_dibatalkan }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="booking-card-premium" style="margin-top:24px;">
                     <div class="bc-header">
                         <div class="bc-title-wrap">
                             <div class="bc-title-icon">
@@ -383,6 +502,62 @@
         </main>
     </div>
 
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var canvas = document.getElementById('chartPelanggan');
+        if (!canvas) return;
+        var ctx = canvas.getContext('2d');
+        var dpr = window.devicePixelRatio || 1;
+        var rect = canvas.getBoundingClientRect();
+        canvas.width = rect.width * dpr;
+        canvas.height = rect.height * dpr;
+        ctx.scale(dpr, dpr);
+
+        var w = rect.width, h = rect.height;
+        var pad = { top: 20, bottom: 25, left: 30, right: 10 };
+        var cw = w - pad.left - pad.right, ch = h - pad.top - pad.bottom;
+
+        var labels = @json($chartBulan);
+        var data = @json($chartPelanggan);
+        var maxVal = Math.max(...data, 1) * 1.2;
+        var barW = cw / labels.length * 0.55;
+        var gap = cw / labels.length;
+
+        for (var i = 0; i <= 4; i++) {
+            var y = pad.top + ch - (ch / 4) * i;
+            ctx.strokeStyle = '#ECECEC';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(pad.left, y);
+            ctx.lineTo(w - pad.right, y);
+            ctx.stroke();
+        }
+
+        labels.forEach(function(label, i) {
+            var x = pad.left + gap * i + (gap - barW) / 2;
+            var barH = (data[i] / maxVal) * ch;
+            var y = pad.top + ch - barH;
+            ctx.beginPath();
+            var r = 4;
+            ctx.moveTo(x, y + r);
+            ctx.arcTo(x, y, x + r, y, r);
+            ctx.lineTo(x + barW - r, y);
+            ctx.arcTo(x + barW, y, x + barW, y + r, r);
+            ctx.lineTo(x + barW, pad.top + ch);
+            ctx.lineTo(x, pad.top + ch);
+            ctx.closePath();
+            ctx.fillStyle = '#FF4F87';
+            ctx.globalAlpha = 0.85;
+            ctx.fill();
+            ctx.globalAlpha = 1;
+
+            ctx.fillStyle = '#999';
+            ctx.font = '10px Poppins, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(label, x + barW / 2, h - pad.bottom + 16);
+        });
+    });
+    </script>
     <script src="{{ asset('assets/js/beautycian.js') }}"></script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
 </body>
