@@ -115,6 +115,11 @@ class PelangganController extends Controller
             'subtotal' => $subtotal,
         ]);
 
+        \Illuminate\Support\Facades\DB::table('log_booking')->insert([
+            'id_pelanggan' => auth()->id(),
+            'tanggal' => $request->tanggal,
+        ]);
+
         $pelanggan = Pelanggan::where('id_user', auth()->id())->first();
         if ($pelanggan) {
             $pelanggan->increment('total_booking');
