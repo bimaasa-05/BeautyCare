@@ -251,7 +251,42 @@ Route::middleware('auth')->group(function () {
     //Route BeautyCian
     Route::middleware(['role:beautycian'])->group(function () {
         Route::get('/beautycian/dashboard', function () {
-            return view('beautycian.dashboard');
+            $id_karyawan = auth()->id();
+            $today = now()->toDateString();
+
+            $jadwal_hari_ini = \App\Models\Booking::where('id_karyawan', $id_karyawan)
+                ->whereDate('tanggal', $today)
+                ->count();
+
+            $pelanggan_ditangani = \App\Models\Booking::where('id_karyawan', $id_karyawan)
+                ->distinct('id_pelanggan')
+                ->count('id_pelanggan');
+
+            $layanan_selesai = \App\Models\Booking::where('id_karyawan', $id_karyawan)
+                ->where('status', 'selesai')
+                ->count();
+
+            $riwayat_terbaru = \App\Models\Booking::with(['detail.layanan', 'pelanggan', 'riwayatTreatment'])
+                ->where('id_karyawan', $id_karyawan)
+                ->where('status', 'selesai')
+                ->orderBy('tanggal', 'desc')
+                ->orderBy('jam', 'desc')
+                ->limit(5)
+                ->get();
+
+            $booking_mendatang = \App\Models\Booking::with(['detail.layanan', 'pelanggan'])
+                ->where('id_karyawan', $id_karyawan)
+                ->where('status', 'dikonfirmasi')
+                ->whereDate('tanggal', '>=', $today)
+                ->orderBy('tanggal')
+                ->orderBy('jam')
+                ->limit(5)
+                ->get();
+
+            return view('beautycian.dashboard', compact(
+                'jadwal_hari_ini', 'pelanggan_ditangani', 'layanan_selesai',
+                'riwayat_terbaru', 'booking_mendatang'
+            ));
         })->name('beautycian.dashboard');
 
         //Profile Beautycian
@@ -261,23 +296,32 @@ Route::middleware('auth')->group(function () {
         Route::post('/beautycian/profile/update-foto', function (\Illuminate\Http\Request $req) {
             $req->validate(['foto' => 'required|image|mimes:jpeg,png,jpg|max:2048']);
             auth()->user()->update(['foto' => $req->file('foto')->store('profile-beautycian', 'public')]);
-            return back()->with('success', 'Foto profil berhasil diperbarui!');
+            return back()->with('message', 'Foto profil berhasil diperbarui!');
         })->name('beautycian.profile.update-foto');
         Route::post('/beautycian/profile/update', function (\Illuminate\Http\Request $req) {
             $req->validate(['nama' => 'required|string|max:255', 'email' => 'required|email|max:255|unique:users,email,' . auth()->id(), 'no_hp' => 'required|string|max:20']);
             auth()->user()->update($req->only(['nama', 'email', 'no_hp']));
-            return back()->with('success', 'Profil berhasil diperbarui!');
+            return back()->with('message', 'Profil berhasil diperbarui!');
         })->name('beautycian.profile.update');
         Route::post('/beautycian/profile/update-password', function (\Illuminate\Http\Request $req) {
             $req->validate(['current_password' => 'required|current_password', 'new_password' => 'required|string|min:8|confirmed']);
             auth()->user()->update(['password' => bcrypt($req->new_password)]);
-            return back()->with('success', 'Password berhasil diperbarui!');
+            return back()->with('message', 'Password berhasil diperbarui!');
         })->name('beautycian.profile.update-password');
 
         //Route Jadwal Treatment
         Route::get('/beautycian/jadwal-treatment', [BeatycianJadwalTreatmentController::class, 'index'])->name('beautycian.jadwal-treatment.index');
         Route::post('/beautycian/jadwal-treatment', [BeatycianJadwalTreatmentController::class, 'updateStatus'])->name('beautycian.jadwal-treatment.update');
-        
+
+        //Route Status Treatment (Kanban)
+        Route::get('/beautycian/status-treatment', [BeatycianJadwalTreatmentController::class, 'statusTreatment'])->name('beautycian.status-treatment.index');
+        Route::post('/beautycian/status-treatment/complete', [BeatycianJadwalTreatmentController::class, 'completeWithDoc'])->name('beautycian.status-treatment.complete');
+
+        //Route Riwayat Treatment
+        Route::get('/beautycian/riwayat-treatment', [BeatycianJadwalTreatmentController::class, 'riwayatTreatment'])->name('beautycian.riwayat-treatment.index');
+        Route::get('/beautycian/riwayat-treatment/{id}', [BeatycianJadwalTreatmentController::class, 'showRiwayat'])->name('beautycian.riwayat-treatment.show');
+        Route::post('/beautycian/riwayat-treatment/dokumentasi', [BeatycianJadwalTreatmentController::class, 'storeDokumentasi'])->name('beautycian.riwayat-treatment.dokumentasi');
+
         Route::get('/beautycian/pelanggan', [BeautycianPelangganController::class, 'index'])->name('beautycian.pelanggan.index');
 
         Route::get('/beautycian/laporan-reservasi', [BeautycianLaporanReservasiController::class, 'index'])->name('beautycian.laporan-reservasi.index');
