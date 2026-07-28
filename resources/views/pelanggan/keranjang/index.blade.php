@@ -1386,10 +1386,34 @@
                         @endforeach
                     </div>
                     <div class="cm-divider"></div>
+                    @if(isset($claimedPromos) && $claimedPromos->isNotEmpty())
+                    <div class="cm-payment" style="padding:12px 28px 8px;">
+                        <div class="cmp-title"><i class="fa-regular fa-tag"></i> Promo Saya</div>
+                        <select id="checkoutPromo" style="width:100%;padding:10px 14px;border-radius:12px;border:1.5px solid var(--border);font-size:12px;font-family:'Poppins',sans-serif;background:#FAFAFA;outline:none;">
+                            <option value="" data-jenis="" data-nilai="0">— Tanpa Promo —</option>
+                            @foreach($claimedPromos as $cp)
+                            <option value="{{ $cp->id_promo }}" data-jenis="{{ $cp->promo->jenis_promo }}" data-nilai="{{ $cp->promo->nilai }}" data-label="{{ $cp->promo->nm_promo }}">
+                                {{ $cp->promo->nm_promo }} ({{ $cp->promo->jenis_promo == 'Diskon' ? $cp->promo->nilai.'%' : 'Rp '.number_format($cp->promo->nilai,0,',','.') }})
+                            </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="cm-divider"></div>
+                    @endif
                     <div class="cm-total">
                         <div class="cmt-label">Total Belanja</div>
                         <div class="cmt-nominal" id="grandTotalModal">Rp {{ number_format($total, 0, ',', '.') }}</div>
                     </div>
+                    @if(isset($claimedPromos) && $claimedPromos->isNotEmpty())
+                    <div class="cm-total" style="padding-top:0;">
+                        <div class="cmt-label">Diskon Promo</div>
+                        <div class="cmt-nominal" id="promoDiskonModal" style="font-size:15px;color:#059669;">Rp 0</div>
+                    </div>
+                    <div class="cm-total" style="padding-top:0;">
+                        <div class="cmt-label" style="font-weight:800;">Total Setelah Diskon</div>
+                        <div class="cmt-nominal" id="totalAfterPromo" style="font-size:24px;">Rp {{ number_format($total, 0, ',', '.') }}</div>
+                    </div>
+                    @endif
                     <div class="cm-divider"></div>
                     <div class="cm-payment">
                         <div class="cmp-title"><i class="fa-solid fa-wallet"></i> Metode Pembayaran</div>
@@ -1705,10 +1729,44 @@
         setTimeout(function() { el.classList.remove('show'); }, 3000);
     }
 
+    function hitungPromoDiskon() {
+        var select = document.getElementById('checkoutPromo');
+        if (!select || !select.value) {
+            document.getElementById('promoDiskonModal').textContent = 'Rp 0';
+            document.getElementById('totalAfterPromo').textContent = document.getElementById('grandTotalModal').textContent;
+            return 0;
+        }
+        var selected = select.options[select.selectedIndex];
+        var jenis = selected.getAttribute('data-jenis');
+        var nilai = parseFloat(selected.getAttribute('data-nilai'));
+        var total = parseInt('{{ $total }}');
+        var diskon = 0;
+        if (jenis === 'Diskon') {
+            diskon = Math.round(total * nilai / 100);
+        } else {
+            diskon = Math.round(Math.min(nilai, total));
+        }
+        document.getElementById('promoDiskonModal').textContent = 'Rp ' + formatAngka(diskon);
+        document.getElementById('totalAfterPromo').textContent = 'Rp ' + formatAngka(total - diskon);
+        return diskon;
+    }
+
+    var checkoutPromo = document.getElementById('checkoutPromo');
+    if (checkoutPromo) {
+        checkoutPromo.addEventListener('change', hitungPromoDiskon);
+    }
+
     function bayarSekarang() {
         var metode = document.querySelector('input[name="metode_bayar"]:checked');
         if (metode) {
             var csrf = document.querySelector('meta[name="csrf-token"]').content;
+            var promoSelect = document.getElementById('checkoutPromo');
+            var bodyData = {
+                metode: metode.value
+            };
+            if (promoSelect && promoSelect.value) {
+                bodyData.id_promo = promoSelect.value;
+            }
 
             fetch('/pelanggan/checkout-notif', {
                 method: 'POST',
@@ -1716,9 +1774,7 @@
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': csrf
                 },
-                body: JSON.stringify({
-                    metode: metode.value
-                })
+                body: JSON.stringify(bodyData)
             })
             .then(function(r) { return r.json(); })
             .then(function(data) {

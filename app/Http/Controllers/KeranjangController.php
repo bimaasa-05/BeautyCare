@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\DetailTransaksi;
 use App\Models\Pelanggan;
 use App\Models\Produk;
+use App\Models\PromoKlaim;
 use App\Models\Transaksi;
 use App\Models\Troli;
 use Illuminate\Http\Request;
@@ -23,7 +24,15 @@ class KeranjangController extends Controller
             ]);
         }
 
-        return view('pelanggan.keranjang.index', compact('troli', 'total'));
+        $claimedPromos = PromoKlaim::with('promo')
+            ->where('id_user', auth()->id())
+            ->where('status', 'tersedia')
+            ->get()
+            ->filter(function ($klaim) {
+                return $klaim->promo && $klaim->promo->jenis_promo !== 'Paket';
+            });
+
+        return view('pelanggan.keranjang.index', compact('troli', 'total', 'claimedPromos'));
     }
 
     public function store(Request $request)
@@ -194,7 +203,33 @@ class KeranjangController extends Controller
         }
 
         $subtotal = collect($items)->sum('subtotal');
-        $total = $subtotal;
+        $idPromo = $request->id_promo;
+        $promoDiskon = 0;
+
+        if ($idPromo) {
+            $promoKlaim = PromoKlaim::with('promo')
+                ->where('id_user', $user->id)
+                ->where('id_promo', $idPromo)
+                ->where('status', 'tersedia')
+                ->first();
+            if ($promoKlaim) {
+                $promo = $promoKlaim->promo;
+                if ($promo->jenis_promo === 'Paket') {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Promo ' . $promo->nm_promo . ' (Paket) hanya berlaku untuk layanan, bukan produk',
+                    ], 400);
+                }
+                if ($promo->jenis_promo === 'Diskon') {
+                    $promoDiskon = (int) round($subtotal * $promo->nilai / 100);
+                } else {
+                    $promoDiskon = (int) round(min($promo->nilai, $subtotal));
+                }
+                $promoKlaim->update(['status' => 'digunakan']);
+            }
+        }
+
+        $total = $subtotal - $promoDiskon;
 
         $transaksi = Transaksi::create([
             'id_pelanggan' => $pelanggan->id_pelanggan,
@@ -202,7 +237,7 @@ class KeranjangController extends Controller
             'no_invoice' => $no_invoice,
             'tanggal' => now()->toDateString(),
             'subtotal' => $subtotal,
-            'diskon' => 0,
+            'diskon' => $promoDiskon,
             'pajak' => 0,
             'total' => $total,
             'metode_byr' => $metode,
@@ -213,6 +248,13 @@ class KeranjangController extends Controller
         ]);
 
         foreach ($items as $item) {
+            $itemSubtotal = $item['subtotal'];
+            $itemDiskon = 0;
+            $itemIdPromo = null;
+            if ($idPromo && $subtotal > 0) {
+                $itemDiskon = (int) round($promoDiskon * $itemSubtotal / $subtotal);
+                $itemIdPromo = $idPromo;
+            }
             DetailTransaksi::create([
                 'id_transaksi' => $transaksi->id_transaksi,
                 'jenis' => $item['jenis'],
@@ -220,8 +262,9 @@ class KeranjangController extends Controller
                 'nm_item' => $item['nm_item'],
                 'qty' => $item['qty'],
                 'harga' => $item['harga'],
-                'diskon' => 0,
-                'subtotal' => $item['subtotal'],
+                'diskon' => $itemDiskon,
+                'subtotal' => $itemSubtotal - $itemDiskon,
+                'id_promo' => $itemIdPromo,
             ]);
 
             if ($item['jenis'] === 'Produk' && $item['id_item'] > 0) {
