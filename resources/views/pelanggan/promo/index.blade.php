@@ -341,7 +341,19 @@
         background: #D1FAE5;
         color: #059669;
         box-shadow: none;
-        cursor: default;
+        cursor: pointer;
+    }
+
+    .promo-btn-claim.disabled {
+        background: #E5E7EB;
+        color: #9CA3AF;
+        box-shadow: none;
+        cursor: not-allowed;
+    }
+
+    .promo-btn-claim.disabled:hover {
+        transform: none;
+        box-shadow: none;
     }
 
     .promo-section-title {
@@ -497,6 +509,8 @@
                 <div class="promo-grid">
                     @forelse($promos as $promo)
                     @php
+                        $isClaimed = in_array($promo->id_promo, $claimedIds ?? []);
+                        $isUsed = in_array($promo->id_promo, $usedIds ?? []);
                         $bgClass = match($promo->jenis_promo) {
                             'Diskon' => 'diskon',
                             'Buy 1 Get 1' => 'bogo',
@@ -513,8 +527,13 @@
                         $icon = $icons[$promo->jenis_promo] ?? 'fa-solid fa-tag';
                         $badgeText = $promo->jenis_promo == 'Diskon' ? $promo->nilai . '% OFF' : $promo->jenis_promo;
                         $opacity = $promo->status == 'Tersedia' ? '' : 'opacity:0.6;';
+                        $berlaku = match($promo->jenis_promo) {
+                            'Buy 1 Get 1' => 'Khusus Produk',
+                            'Paket' => 'Khusus Layanan',
+                            default => 'Produk & Layanan',
+                        };
                     @endphp
-                    <div class="promo-card" style="{{ $opacity }}">
+                    <div class="promo-card" data-id="{{ $promo->id_promo }}" style="{{ $opacity }}">
                         <div class="promo-banner">
                             <div class="promo-bg {{ $bgClass }}"></div>
                             <div class="promo-deco"></div>
@@ -530,12 +549,15 @@
                             <div class="promo-meta">
                                 <span class="pm-item"><i class="fa-regular fa-calendar"></i> {{ \Carbon\Carbon::parse($promo->mulai)->format('d M Y') }} - {{ \Carbon\Carbon::parse($promo->selesai)->format('d M Y') }}</span>
                                 <span class="pm-item"><i class="fa-regular fa-user"></i> Semua Pelanggan</span>
+                                <span class="pm-item"><i class="fa-solid fa-tag"></i> {{ $berlaku }}</span>
                             </div>
                             <div class="promo-divider"></div>
                             <div class="promo-footer">
                                 <span class="promo-code"><i class="fa-regular fa-ticket"></i> {{ strtoupper(str_replace(' ', '', substr($promo->nm_promo, 0, 8))) }}</span>
                                 @if($promo->status == 'Tersedia')
-                                <button class="promo-btn-claim">Klaim Now</button>
+                                <button class="promo-btn-claim @if($isClaimed) claimed @endif @if($isUsed) disabled @endif" data-id="{{ $promo->id_promo }}" @if($isUsed) disabled="disabled" @endif>
+                                    @if($isClaimed)<i class="fa-regular fa-circle-check"></i> @endif{{ $isClaimed ? 'Claimed' : 'Klaim Now' }}
+                                </button>
                                 @else
                                 <button class="promo-btn-claim claimed"><i class="fa-regular fa-circle-check"></i> {{ $promo->status }}</button>
                                 @endif
@@ -580,6 +602,38 @@
     };
     const dateEl = document.getElementById('currentDate');
     if (dateEl) dateEl.textContent = now.toLocaleDateString('id-ID', options);
+
+    document.querySelectorAll('.promo-btn-claim[data-id]:not([disabled])').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const id = this.dataset.id;
+            const card = this.closest('.promo-card');
+            fetch('{{ route("pelanggan.promo.claim") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                },
+                body: JSON.stringify({ id_promo: id }),
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    if (data.action === 'claimed') {
+                        this.classList.add('claimed');
+                        this.innerHTML = '<i class="fa-regular fa-circle-check"></i> Claimed';
+                    } else {
+                        this.classList.remove('claimed');
+                        this.textContent = 'Klaim Now';
+                    }
+                } else if (data.action === 'used') {
+                    alert('Promo ini sudah pernah digunakan');
+                } else {
+                    alert(data.message || 'Gagal memproses promo');
+                }
+            })
+            .catch(() => alert('Terjadi kesalahan'));
+        });
+    });
     </script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
 </body>
