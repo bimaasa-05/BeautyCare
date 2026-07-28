@@ -101,6 +101,41 @@
                         @csrf
                         @method('PUT')
 
+                        @php $isWalkin = is_null($pelanggan->id_user); @endphp
+
+                        <div class="mb-5">
+                            <label class="text-[13px] font-semibold text-gray-700 block mb-2">Tipe Pelanggan</label>
+                            @if ($isWalkin)
+                                <div class="flex items-center gap-4">
+                                    <span class="text-amber-500 bg-amber-50 px-3 py-1 rounded-full text-[12px] font-semibold">Walk-in</span>
+                                    <label class="flex items-center gap-2 text-[13px] text-gray-700 cursor-pointer">
+                                        <input type="checkbox" name="konversi_online" value="1" onchange="toggleKonversi()">
+                                        Konversi ke Online (Buat Akun)
+                                    </label>
+                                </div>
+                                <div id="konversiFields" class="hidden mt-3 grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Password</label>
+                                        <input type="password" name="password"
+                                            class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('password') border-red-300 @enderror"
+                                            placeholder="Minimal 8 karakter">
+                                        @error('password')
+                                            <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+                                    <div>
+                                        <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Konfirmasi Password</label>
+                                        <input type="password" name="password_confirmation"
+                                            class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400"
+                                            placeholder="Ulangi password">
+                                    </div>
+                                </div>
+                            @else
+                                <span class="text-blue-500 bg-blue-50 px-3 py-1 rounded-full text-[12px] font-semibold">Online</span>
+                                <input type="hidden" name="tipe" value="online">
+                            @endif
+                        </div>
+
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                             <div>
                                 <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Nama Lengkap</label>
@@ -142,14 +177,17 @@
                                 @enderror
                             </div>
 
-                            <div>
+                            <div id="memberField" @if($isWalkin) class="opacity-40 pointer-events-none" @endif>
                                 <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Member ID</label>
                                 <input type="number" name="id_member" value="{{ old('id_member', $pelanggan->id_member) }}"
                                     class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('id_member') border-red-300 @enderror"
-                                    placeholder="Masukkan ID member (opsional)">
+                                    placeholder="{{ $isWalkin ? 'Tidak tersedia untuk Walk-in' : 'Masukkan ID member (opsional)' }}" {{ $isWalkin ? 'disabled' : '' }}>
                                 @error('id_member')
                                     <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
                                 @enderror
+                                @if($isWalkin)
+                                    <p class="text-[11px] text-amber-500 mt-1">* Walk-in tidak bisa memiliki membership</p>
+                                @endif
                             </div>
 
                             <div>
@@ -192,6 +230,11 @@
     </div>
 
     <script>
+        function toggleKonversi() {
+            const checked = document.querySelector('input[name="konversi_online"]')?.checked;
+            document.getElementById('konversiFields')?.classList.toggle('hidden', !checked);
+        }
+
         const now = new Date();
         const options = {
             weekday: 'long',
