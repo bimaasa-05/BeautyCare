@@ -38,6 +38,11 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        \Illuminate\Support\Facades\DB::table('log_kunjungan')->insert([
+            'id_user' => $user->id,
+            'tanggal' => now()->toDateString(),
+        ]);
+
         $base = $request->root();
 
         if ($user->role === 'admin') {

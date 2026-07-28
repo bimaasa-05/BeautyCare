@@ -18,4 +18,21 @@ class Promo extends Model
         'selesai',
         'status',
     ];
+
+    public function klaim()
+    {
+        return $this->hasMany(PromoKlaim::class, 'id_promo', 'id_promo');
+    }
+
+    public function promoLayanan()
+    {
+        return $this->hasMany(PromoLayanan::class, 'id_promo', 'id_promo');
+    }
+
+    public function promoProduk()
+    {
+        return $this->hasMany(PromoProduk::class, 'id_promo', 'id_promo');
+    }
+
+
 }

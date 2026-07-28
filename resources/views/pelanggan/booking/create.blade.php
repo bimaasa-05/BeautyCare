@@ -771,6 +771,34 @@
                                 </div>
                             </div>
 
+                            @if($claimedPromos->isNotEmpty())
+                            <div class="fcp-divider"></div>
+                            <div class="fcp-section-title">
+                                <span class="fcp-st-icon"><i class="fa-regular fa-tag"></i></span>
+                                Promo
+                            </div>
+                            <div class="fcp-section-sub">Gunakan promo yang sudah Anda klaim</div>
+                            <div class="fcp-grid">
+                                <div class="fg-premium">
+                                    <select name="id_promo" id="id_promo" style="display:none">
+                                        <option value="">— Tanpa Promo —</option>
+                                        @foreach($claimedPromos as $cp)
+                                        <option value="{{ $cp->id_promo }}" data-jenis="{{ $cp->promo->jenis_promo }}" data-nilai="{{ $cp->promo->nilai }}" data-label="{{ $cp->promo->nm_promo }} ({{ $cp->promo->jenis_promo == 'Diskon' ? $cp->promo->nilai.'%' : 'Rp '.number_format($cp->promo->nilai,0,',','.') }})">
+                                            {{ $cp->promo->nm_promo }} ({{ $cp->promo->jenis_promo == 'Diskon' ? $cp->promo->nilai.'%' : 'Rp '.number_format($cp->promo->nilai,0,',','.') }})
+                                        </option>
+                                        @endforeach
+                                    </select>
+                                    <div class="custom-select-wrap" id="customPromoWrap">
+                                        <div class="custom-select-trigger" id="customPromoTrigger">
+                                            <span class="cst-placeholder">— Tanpa Promo —</span>
+                                            <span class="cst-arrow"><i class="fa-solid fa-chevron-down"></i></span>
+                                        </div>
+                                        <div class="custom-select-dropdown" id="customPromoDropdown"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            @endif
+
                             <div class="fg-premium" style="margin-top:20px;">
                                 <label class="fg-label">
                                     <i class="fa-regular fa-note-sticky fg-label-icon"></i>
@@ -836,7 +864,29 @@
     }
 
     function hitungDiskon(harga) {
+        const promoSelect = document.getElementById('id_promo');
+        if (promoSelect && promoSelect.value) {
+            const selected = promoSelect.options[promoSelect.selectedIndex];
+            const jenis = selected.getAttribute('data-jenis');
+            const nilai = parseFloat(selected.getAttribute('data-nilai'));
+            if (jenis === 'Diskon') {
+                return Math.round(harga * nilai / 100);
+            }
+            return Math.round(Math.min(nilai, harga));
+        }
         return Math.round(harga * diskonPersen / 100);
+    }
+
+    function updateDiskonLabel() {
+        const label = document.getElementById('diskonLabel');
+        const promoSelect = document.getElementById('id_promo');
+        if (promoSelect && promoSelect.value) {
+            const selected = promoSelect.options[promoSelect.selectedIndex];
+            const labelText = selected.getAttribute('data-label') || 'Promo';
+            label.textContent = '(' + labelText + ')';
+        } else {
+            label.textContent = '(' + diskonPersen + '%)';
+        }
     }
 
     function updateHarga() {
@@ -977,6 +1027,19 @@
 
         initCustomSelect('id_layanan', 'customLayananWrap', 'customLayananTrigger', 'customLayananDropdown', updateHarga);
         initCustomSelect('id_karyawan', 'customTerapisWrap', 'customTerapisTrigger', 'customTerapisDropdown');
+
+        const promoSelect = document.getElementById('id_promo');
+        if (promoSelect) {
+            initCustomSelect('id_promo', 'customPromoWrap', 'customPromoTrigger', 'customPromoDropdown', function() {
+                const harga = parseInt(document.getElementById('harga').value || 0);
+                if (harga > 0) {
+                    const diskon = hitungDiskon(harga);
+                    document.getElementById('diskon').value = diskon;
+                    updateDiskonLabel();
+                    updateSubtotal();
+                }
+            });
+        }
     });
 
     const now = new Date();
