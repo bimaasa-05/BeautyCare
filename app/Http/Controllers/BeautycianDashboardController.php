@@ -31,6 +31,14 @@ class BeautycianDashboardController extends Controller
             ->where('status', 'selesai')
             ->count();
 
+        $pendapatan_hari_ini = DetailBooking::whereHas('booking', function ($q) use ($id_karyawan, $today) {
+                $q->where('id_karyawan', $id_karyawan)->where('status', 'selesai')->where('tanggal', $today);
+            })->sum('subtotal');
+
+        $reservasi_aktif = Booking::where('id_karyawan', $id_karyawan)
+            ->where('status', 'diproses')
+            ->count();
+
         $jam_kerja_today = DetailBooking::select(DB::raw('COALESCE(SUM(layanan.durasi), 0) as total_durasi'))
             ->join('booking', 'booking.id_booking', '=', 'detail_booking.id_booking')
             ->join('layanan', 'layanan.id_layanan', '=', 'detail_booking.id_layanan')
@@ -207,6 +215,8 @@ class BeautycianDashboardController extends Controller
             'pelanggan_ditangani',
             'layanan_selesai',
             'jam_kerja',
+            'pendapatan_hari_ini',
+            'reservasi_aktif',
             'riwayat_treatment',
             'jadwal_hari_ini_list',
             'booking_mendatang',
