@@ -8,7 +8,6 @@ document.addEventListener('DOMContentLoaded', function() {
   initPageLoader();
   initSidebar();
   initCharts();
-  initNotifications();
 });
 
 /* ---- Page Loader ---- */
