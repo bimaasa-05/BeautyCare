@@ -76,12 +76,16 @@
         }
 
         @media (max-width: 768px) {
-            .admin-table thead { display: none; }
+            .admin-table thead {
+                display: none;
+            }
+
             .admin-table tbody tr {
                 display: block;
                 padding: 16px;
                 border-bottom: 1px solid #f0f0f0;
             }
+
             .admin-table tbody td {
                 display: flex;
                 justify-content: space-between;
@@ -91,6 +95,7 @@
                 font-size: 13px;
                 text-align: right;
             }
+
             .admin-table tbody td::before {
                 content: attr(data-label);
                 font-weight: 600;
@@ -98,8 +103,89 @@
                 font-size: 11px;
                 text-transform: uppercase;
             }
-            .admin-table tbody td:first-child { padding-left: 0; }
-            .admin-table tbody td:last-child { padding-right: 0; }
+
+            .admin-table tbody td:first-child {
+                padding-left: 0;
+            }
+
+            .admin-table tbody td:last-child {
+                padding-right: 0;
+            }
+        }
+
+        .page-header-premium {
+            background: linear-gradient(135deg, #FFF5F8 0%, #FFE5EF 50%, #FFD6E6 100%);
+            border-radius: 20px;
+            padding: 28px 32px;
+            margin-bottom: 24px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 79, 135, 0.08);
+        }
+
+        .page-header-premium::before {
+            content: '';
+            position: absolute;
+            top: -60px;
+            right: -60px;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 79, 135, 0.12) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .page-header-premium::after {
+            content: '';
+            position: absolute;
+            bottom: -40px;
+            left: 30%;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 79, 135, 0.08) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .page-header-premium .ph-content {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .page-header-premium .ph-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .page-header-premium .ph-icon-wrap {
+            width: 52px;
+            height: 52px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, var(--primary), #FF7BA6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 22px;
+            box-shadow: 0 6px 20px rgba(255, 79, 135, 0.3);
+            flex-shrink: 0;
+        }
+
+        .page-header-premium .ph-text h3 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--dark);
+            margin: 0;
+        }
+
+        .page-header-premium .ph-text p {
+            font-size: 13px;
+            color: var(--gray);
+            margin: 2px 0 0;
         }
     </style>
 </head>
@@ -114,6 +200,27 @@
 
             <!-- Dashboard Content -->
             <div class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+
+                <div class="page-header-premium">
+                    <div class="ph-content">
+                        <div class="ph-left">
+                            <div class="ph-icon-wrap">
+                                <span class="nav-icon">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                                        <circle cx="8.5" cy="7" r="4" />
+                                        <polyline points="17 11 19 13 23 9" />
+                                    </svg>
+                                </span>
+                            </div>
+                            <div class="ph-text">
+                                <h3>Data Pelanggan</h3>
+                                <p>Selamat datang di Pusat Data Pelanggan! Di sini, Anda memiliki kendali penuh untuk mengelola informasi pelanggan kita agar tetap up-to-date. Anda dapat dengan mudah memperbarui profil mereka, memantau status akun, atau membantu menyelesaikan kendala data hanya dalam beberapa klik. Mari pastikan setiap informasi tercatat dengan rapi agar kita bisa selalu memberikan pelayanan yang terbaik!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 <div
                     class="bg-white rounded-2xl p-6 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] flex flex-col h-full min-h-[580px] justify-between">
@@ -139,32 +246,41 @@
                                     </button>
                                     <div id="filterPelangganPanel"
                                         class="hidden absolute right-0 mt-2 w-52 bg-white rounded-xl shadow-lg border border-gray-100 p-4 z-50">
-                                        <p class="text-[11px] font-semibold text-gray-500 mb-2 uppercase tracking-wider">Urutkan</p>
+                                        <p
+                                            class="text-[11px] font-semibold text-gray-500 mb-2 uppercase tracking-wider">
+                                            Urutkan</p>
                                         <div class="space-y-2 mb-3">
-                                            <label class="flex items-center gap-2 text-[12px] text-gray-700 cursor-pointer">
+                                            <label
+                                                class="flex items-center gap-2 text-[12px] text-gray-700 cursor-pointer">
                                                 <input type="radio" name="filter_sort" value="desc" checked
                                                     onchange="applyFilterPelanggan()">
                                                 Terbaru
                                             </label>
-                                            <label class="flex items-center gap-2 text-[12px] text-gray-700 cursor-pointer">
+                                            <label
+                                                class="flex items-center gap-2 text-[12px] text-gray-700 cursor-pointer">
                                                 <input type="radio" name="filter_sort" value="asc"
                                                     onchange="applyFilterPelanggan()">
                                                 Terlama
                                             </label>
                                         </div>
-                                        <p class="text-[11px] font-semibold text-gray-500 mb-2 uppercase tracking-wider">Member</p>
+                                        <p
+                                            class="text-[11px] font-semibold text-gray-500 mb-2 uppercase tracking-wider">
+                                            Member</p>
                                         <div class="space-y-2">
-                                            <label class="flex items-center gap-2 text-[12px] text-gray-700 cursor-pointer">
+                                            <label
+                                                class="flex items-center gap-2 text-[12px] text-gray-700 cursor-pointer">
                                                 <input type="radio" name="filter_member" value="" checked
                                                     onchange="applyFilterPelanggan()">
                                                 Semua
                                             </label>
-                                            <label class="flex items-center gap-2 text-[12px] text-gray-700 cursor-pointer">
+                                            <label
+                                                class="flex items-center gap-2 text-[12px] text-gray-700 cursor-pointer">
                                                 <input type="radio" name="filter_member" value="yes"
                                                     onchange="applyFilterPelanggan()">
                                                 Punya Member
                                             </label>
-                                            <label class="flex items-center gap-2 text-[12px] text-gray-700 cursor-pointer">
+                                            <label
+                                                class="flex items-center gap-2 text-[12px] text-gray-700 cursor-pointer">
                                                 <input type="radio" name="filter_member" value="no"
                                                     onchange="applyFilterPelanggan()">
                                                 Tanpa Member
@@ -197,7 +313,8 @@
                                         <th class="py-3 px-4 text-center">Aksi</th>
                                     </tr>
                                 </thead>
-                                <tbody id="pelangganTableBody" class="text-[13px] text-gray-700 divide-y divide-gray-50">
+                                <tbody id="pelangganTableBody"
+                                    class="text-[13px] text-gray-700 divide-y divide-gray-50">
                                     @include('admin.pelanggan.partials.table')
                                 </tbody>
                             </table>
@@ -226,11 +343,11 @@
             fetch('{{ route('admin.pelanggan.index') }}?' + getFilterParamsPelanggan(), {
                 headers: { 'X-Requested-With': 'XMLHttpRequest' }
             })
-            .then(res => res.text())
-            .then(html => {
-                document.getElementById('pelangganTableBody').innerHTML = html;
-            })
-            .catch(() => location.reload());
+                .then(res => res.text())
+                .then(html => {
+                    document.getElementById('pelangganTableBody').innerHTML = html;
+                })
+                .catch(() => location.reload());
         }
 
         function toggleFilterPelanggan() {
@@ -242,7 +359,7 @@
             fetchPelanggan();
         }
 
-        document.addEventListener('click', function(e) {
+        document.addEventListener('click', function (e) {
             const panel = document.getElementById('filterPelangganPanel');
             if (panel && !panel.classList.contains('hidden')) {
                 const btn = document.querySelector('.filter-pelanggan');
@@ -253,7 +370,7 @@
         });
 
         let searchTimer;
-        document.getElementById('searchPelanggan').addEventListener('input', function() {
+        document.getElementById('searchPelanggan').addEventListener('input', function () {
             clearTimeout(searchTimer);
             searchTimer = setTimeout(fetchPelanggan, 400);
         });
