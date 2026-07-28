@@ -79,7 +79,15 @@ class PelangganController extends Controller
             }
         }
 
-        return view('pelanggan.booking.create', compact('layanans', 'karyawans', 'diskonMember'));
+        $claimedPromos = \App\Models\PromoKlaim::with('promo')
+            ->where('id_user', auth()->id())
+            ->where('status', 'tersedia')
+            ->get()
+            ->filter(function ($klaim) {
+                return $klaim->promo && $klaim->promo->jenis_promo !== 'Buy 1 Get 1';
+            });
+
+        return view('pelanggan.booking.create', compact('layanans', 'karyawans', 'diskonMember', 'claimedPromos'));
     }
 
     public function store(Request $request)
@@ -92,11 +100,31 @@ class PelangganController extends Controller
             'harga' => 'required|numeric',
             'diskon' => 'nullable|numeric|min:0',
             'catatan' => 'nullable|string',
+            'id_promo' => 'nullable|integer|exists:promo,id_promo',
         ]);
 
         $diskon = (float) ($request->diskon ?? 0);
         $harga = (float) $request->harga;
         $subtotal = $harga - $diskon;
+        $idPromo = $request->id_promo;
+
+        if ($idPromo) {
+            $promoKlaim = \App\Models\PromoKlaim::with('promo')
+                ->where('id_user', auth()->id())
+                ->where('id_promo', $idPromo)
+                ->where('status', 'tersedia')
+                ->first();
+
+            if (!$promoKlaim) {
+                return redirect()->back()->withErrors('Promo tidak tersedia atau sudah digunakan');
+            }
+
+            if ($promoKlaim->promo->jenis_promo === 'Buy 1 Get 1') {
+                return redirect()->back()->withErrors('Promo ' . $promoKlaim->promo->nm_promo . ' (Buy 1 Get 1) hanya berlaku untuk produk, bukan layanan');
+            }
+
+            $promoKlaim->update(['status' => 'digunakan']);
+        }
 
         $booking = Booking::create([
             'id_pelanggan' => auth()->id(),
@@ -113,6 +141,7 @@ class PelangganController extends Controller
             'harga' => $harga,
             'diskon' => $diskon,
             'subtotal' => $subtotal,
+            'id_promo' => $idPromo,
         ]);
 
         \Illuminate\Support\Facades\DB::table('log_booking')->insert([
