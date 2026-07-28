@@ -131,15 +131,6 @@
                     </div>
                 </div>
 
-                @if(session('success'))
-                <div class="alert-premium success">
-                    <div class="alert-icon">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-                    </div>
-                    {{ session('success') }}
-                </div>
-                @endif
-
                 <div class="booking-card-premium">
                     <div class="bc-header">
                         <div class="bc-title-wrap">
@@ -157,9 +148,6 @@
                                     <select name="filter_status" onchange="this.form.submit()">
                                         <option value="">Semua Status</option>
                                         <option value="dikonfirmasi" {{ request('filter_status') == 'dikonfirmasi' ? 'selected' : '' }}>Terjadwal</option>
-                                        <option value="diproses" {{ request('filter_status') == 'diproses' ? 'selected' : '' }}>Diproses</option>
-                                        <option value="selesai" {{ request('filter_status') == 'selesai' ? 'selected' : '' }}>Selesai</option>
-                                        <option value="dibatalkan" {{ request('filter_status') == 'dibatalkan' ? 'selected' : '' }}>Dibatalkan</option>
                                     </select>
                                     <div class="search-input-wrap" style="display:inline-block;">
                                         <svg class="si-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
@@ -181,7 +169,6 @@
                                     <th>Layanan</th>
                                     <th>Status</th>
                                     <th>Catatan</th>
-                                    <th style="text-align:center;">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -233,32 +220,10 @@
                                             {{ $item->catatan ?: 'Tidak ada catatan' }}
                                         </span>
                                     </td>
-                                    <td data-label="Aksi" style="text-align:center;">
-                                        <div style="display:flex;align-items:center;justify-content:center;gap:6px;">
-                                            @if($item->status == 'dikonfirmasi')
-                                            <form action="{{ route('beautycian.jadwal-treatment.index') }}" method="POST" style="display:inline;" onsubmit="return confirm('Mulai proses treatment ini?')">
-                                                @csrf
-                                                <input type="hidden" name="id_booking" value="{{ $item->id_booking }}">
-                                                <button type="submit" class="action-btn process" title="Mulai proses">
-                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3" /></svg>
-                                                </button>
-                                            </form>
-                                            @endif
-                                            @if($item->status == 'diproses')
-                                            <form action="{{ route('beautycian.jadwal-treatment.index') }}" method="POST" style="display:inline;" onsubmit="return confirm('Selesaikan treatment ini?')">
-                                                @csrf
-                                                <input type="hidden" name="id_booking" value="{{ $item->id_booking }}">
-                                                <button type="submit" class="action-btn edit" title="Selesaikan treatment">
-                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
-                                                </button>
-                                            </form>
-                                            @endif
-                                        </div>
-                                    </td>
                                 </tr>
                                 @empty
                                 <tr>
-                                    <td colspan="8">
+                                    <td colspan="7">
                                         <div class="empty-state">
                                             <div class="es-illustration">
                                                 <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="10" y1="14" x2="14" y2="18"/><line x1="14" y1="14" x2="10" y2="18"/></svg>
