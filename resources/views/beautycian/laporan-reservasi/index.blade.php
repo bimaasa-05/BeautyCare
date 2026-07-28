@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Laporan Reservasi - BeautyCare</title>
+    <title>Riwayat Reservasi - BeautyCare</title>
     @include('partials.head-meta')
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -20,10 +20,26 @@
         .bc-actions form { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
         .filter-group { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
         .search-input-wrap input { max-width: 100%; box-sizing: border-box; }
-        .report-summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-top: 16px; }
-        .rs-item { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; text-align: center; }
-        .rs-item .rs-value { font-size: 24px; font-weight: 700; color: var(--text-primary); }
-        .rs-item .rs-label { font-size: 12px; color: var(--gray); margin-top: 4px; }
+
+        .mini-list-card { background: #fff; border-radius: 16px; border: 1px solid var(--border); padding: 20px; }
+        .mini-list-card .ml-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+        .mini-list-card .ml-header h4 { font-size: 13px; font-weight: 700; color: var(--dark); display: flex; align-items: center; gap: 8px; }
+        .mini-list-card .ml-header h4 svg { width: 16px; height: 16px; color: var(--primary); }
+        .ml-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid #f5f5f5; }
+        .ml-item:last-child { border-bottom: none; }
+        .ml-item .ml-rank { width: 22px; height: 22px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; flex-shrink: 0; }
+        .ml-item .ml-rank.gold { background: #FEF3C7; color: #D97706; }
+        .ml-item .ml-rank.silver { background: #F1F5F9; color: #64748B; }
+        .ml-item .ml-rank.bronze { background: #FDE8E8; color: #DC2626; }
+        .ml-item .ml-rank.normal { background: #F8F9FC; color: #94A3B8; }
+        .ml-item .ml-info { flex: 1; min-width: 0; }
+        .ml-item .ml-info .ml-name { font-size: 12px; font-weight: 600; color: var(--dark); }
+        .ml-item .ml-info .ml-count { font-size: 11px; color: var(--gray); }
+        .ml-item .ml-value { font-size: 12px; font-weight: 700; color: var(--primary); }
+
+        .dashboard-bottom-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 24px; }
+        @media (max-width: 900px) { .dashboard-bottom-grid { grid-template-columns: 1fr; } }
+
         @media (max-width: 1200px) { .search-input-wrap input { width: 180px; } }
         @media (max-width: 768px) { .search-input-wrap input { width: 150px; } }
         @media (max-width: 430px) { .search-input-wrap input { width: 100%; } }
@@ -45,7 +61,7 @@
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
                             </div>
                             <div class="ph-text">
-                                <h3>Laporan Reservasi</h3>
+                                <h3>Riwayat Reservasi</h3>
                                 <p>Rekap seluruh reservasi dan treatment yang telah ditangani</p>
                             </div>
                         </div>
@@ -126,16 +142,141 @@
                     </div>
                 </div>
 
-                @if(session('success'))
-                <div class="alert-premium success">
-                    <div class="alert-icon">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                <div class="stats-row">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon success">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+                                </svg>
+                            </div>
+                            <span class="stat-change up">+{{ number_format($total_pendapatan, 0, ',', '.') }}</span>
+                        </div>
+                        <div class="stat-value">Rp {{ number_format($total_pendapatan, 0, ',', '.') }}</div>
+                        <div class="stat-label">Total Pendapatan</div>
                     </div>
-                    {{ session('success') }}
-                </div>
-                @endif
 
-                <div class="booking-card-premium">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon info">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10" />
+                                    <polyline points="12 6 12 12 16 14" />
+                                </svg>
+                            </div>
+                            <span class="stat-change up">+{{ number_format($pendapatan_bulan_ini, 0, ',', '.') }}</span>
+                        </div>
+                        <div class="stat-value">Rp {{ number_format($pendapatan_bulan_ini, 0, ',', '.') }}</div>
+                        <div class="stat-label">Pendapatan Bulan Ini</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon primary">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                                    <circle cx="12" cy="7" r="4" />
+                                </svg>
+                            </div>
+                            <span class="stat-change up">+{{ $pelanggan_setia->count() }}</span>
+                        </div>
+                        <div class="stat-value">{{ $pelanggan_setia->count() }}</div>
+                        <div class="stat-label">Pelanggan Setia</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon warning">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                                    <line x1="16" y1="2" x2="16" y2="6" />
+                                    <line x1="8" y1="2" x2="8" y2="6" />
+                                    <line x1="3" y1="10" x2="21" y2="10" />
+                                </svg>
+                            </div>
+                            <span class="stat-change up">+{{ $selesai }}</span>
+                        </div>
+                        <div class="stat-value">{{ $selesai }}</div>
+                        <div class="stat-label">Treatment Selesai</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon danger">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10" />
+                                    <line x1="12" y1="8" x2="12" y2="12" />
+                                    <line x1="12" y1="16" x2="12.01" y2="16" />
+                                </svg>
+                            </div>
+                            <span class="stat-change up">+{{ round($selesai > 0 ? $total_pendapatan / $selesai : 0) }}</span>
+                        </div>
+                        <div class="stat-value">Rp {{ number_format($selesai > 0 ? $total_pendapatan / $selesai : 0, 0, ',', '.') }}</div>
+                        <div class="stat-label">Rata-rata/Transaksi</div>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid" style="margin-top:24px;">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3>Grafik Treatment Selesai per Bulan</h3>
+                            <div class="chart-actions">
+                                <span style="font-size:11px;color:var(--gray);">Tahun {{ now()->year }}</span>
+                            </div>
+                        </div>
+                        <div class="chart-body">
+                            <canvas id="chartReservasi" height="260"></canvas>
+                        </div>
+                    </div>
+                    <div class="mini-charts">
+                        <div class="mini-list-card">
+                            <div class="ml-header">
+                                <h4>
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                                    Layanan Terpopuler
+                                </h4>
+                            </div>
+                            <div>
+                                @forelse($layananTerpopuler as $i => $item)
+                                <div class="ml-item">
+                                    <div class="ml-rank {{ $i == 0 ? 'gold' : ($i == 1 ? 'silver' : ($i == 2 ? 'bronze' : 'normal')) }}">#{{ $i + 1 }}</div>
+                                    <div class="ml-info">
+                                        <div class="ml-name">{{ $item->layanan->nm_layanan ?? '-' }}</div>
+                                        <div class="ml-count">{{ $item->total }} kali digunakan</div>
+                                    </div>
+                                    <div class="ml-value">{{ $item->total }}x</div>
+                                </div>
+                                @empty
+                                <div style="padding:20px;text-align:center;color:var(--gray);font-size:12px;">Belum ada data</div>
+                                @endforelse
+                            </div>
+                        </div>
+                        <div class="mini-list-card" style="margin-top:16px;">
+                            <div class="ml-header">
+                                <h4>
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/></svg>
+                                    Pelanggan Setia
+                                </h4>
+                            </div>
+                            <div>
+                                @forelse($pelanggan_setia as $i => $item)
+                                <div class="ml-item">
+                                    <div class="ml-rank {{ $i == 0 ? 'gold' : ($i == 1 ? 'silver' : ($i == 2 ? 'bronze' : 'normal')) }}">#{{ $i + 1 }}</div>
+                                    <div class="ml-info">
+                                        <div class="ml-name">{{ $item->pelanggan->nm_pelanggan ?? '#' . $item->id_pelanggan }}</div>
+                                        <div class="ml-count">{{ $item->total }} kali reservasi</div>
+                                    </div>
+                                    <div class="ml-value">{{ $item->total }}x</div>
+                                </div>
+                                @empty
+                                <div style="padding:20px;text-align:center;color:var(--gray);font-size:12px;">Belum ada data</div>
+                                @endforelse
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="booking-card-premium" style="margin-top:24px;">
                     <div class="bc-header">
                         <div class="bc-title-wrap">
                             <div class="bc-title-icon">
@@ -295,6 +436,62 @@
         </main>
     </div>
 
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var canvas = document.getElementById('chartReservasi');
+        if (!canvas) return;
+        var ctx = canvas.getContext('2d');
+        var dpr = window.devicePixelRatio || 1;
+        var rect = canvas.getBoundingClientRect();
+        canvas.width = rect.width * dpr;
+        canvas.height = rect.height * dpr;
+        ctx.scale(dpr, dpr);
+
+        var w = rect.width, h = rect.height;
+        var pad = { top: 20, bottom: 25, left: 30, right: 10 };
+        var cw = w - pad.left - pad.right, ch = h - pad.top - pad.bottom;
+
+        var labels = @json($chartBulan);
+        var data = @json($chartSelesai);
+        var maxVal = Math.max(...data, 1) * 1.2;
+        var barW = cw / labels.length * 0.55;
+        var gap = cw / labels.length;
+
+        for (var i = 0; i <= 4; i++) {
+            var y = pad.top + ch - (ch / 4) * i;
+            ctx.strokeStyle = '#ECECEC';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(pad.left, y);
+            ctx.lineTo(w - pad.right, y);
+            ctx.stroke();
+        }
+
+        labels.forEach(function(label, i) {
+            var x = pad.left + gap * i + (gap - barW) / 2;
+            var barH = (data[i] / maxVal) * ch;
+            var y = pad.top + ch - barH;
+            ctx.beginPath();
+            var r = 4;
+            ctx.moveTo(x, y + r);
+            ctx.arcTo(x, y, x + r, y, r);
+            ctx.lineTo(x + barW - r, y);
+            ctx.arcTo(x + barW, y, x + barW, y + r, r);
+            ctx.lineTo(x + barW, pad.top + ch);
+            ctx.lineTo(x, pad.top + ch);
+            ctx.closePath();
+            ctx.fillStyle = '#10B981';
+            ctx.globalAlpha = 0.85;
+            ctx.fill();
+            ctx.globalAlpha = 1;
+
+            ctx.fillStyle = '#999';
+            ctx.font = '10px Poppins, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(label, x + barW / 2, h - pad.bottom + 16);
+        });
+    });
+    </script>
     <script src="{{ asset('assets/js/beautycian.js') }}"></script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
 </body>
