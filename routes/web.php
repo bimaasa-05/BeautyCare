@@ -412,7 +412,8 @@ Route::middleware('auth')->group(function () {
         $chartCounts = [];
         for ($i = 11; $i >= 0; $i--) {
             $date = now()->subMonths($i);
-            $count = \App\Models\Booking::where('id_pelanggan', $userId)
+            $count = \Illuminate\Support\Facades\DB::table('log_booking')
+                ->where('id_pelanggan', $userId)
                 ->whereYear('tanggal', $date->year)
                 ->whereMonth('tanggal', $date->month)
                 ->count();
