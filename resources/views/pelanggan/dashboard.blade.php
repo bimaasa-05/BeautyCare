@@ -430,7 +430,7 @@
                     <!-- Rekomendasi -->
                     <div class="list-widget">
                         <div class="lw-header">
-                            <h3>Produk Terlaris</h3>
+                            <h3>Produk Yang Sering Dibeli</h3>
                             <a href="{{ route('pelanggan.produk') }}" style="font-size:13px;color:var(--primary);font-weight:500;">Lihat Semua</a>
                         </div>
                         <div class="stock-grid">
