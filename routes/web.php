@@ -454,10 +454,8 @@ Route::middleware('auth')->group(function () {
         })->name('pelanggan.treatment');
 
         //Route Promo
-        Route::get('/pelanggan/promo', function () {
-            $promos = \App\Models\Promo::orderBy('id_promo', 'desc')->get();
-            return view('pelanggan.promo.index', compact('promos'));
-        })->name('pelanggan.promo');
+        Route::get('/pelanggan/promo', [App\Http\Controllers\PelangganPromoController::class, 'index'])->name('pelanggan.promo');
+        Route::post('/pelanggan/promo/claim', [App\Http\Controllers\PelangganPromoController::class, 'claim'])->name('pelanggan.promo.claim');
 
         //Route Membership
         Route::get('/pelanggan/membership', [MembershipPelangganController::class, 'index'])->name('pelanggan.membership');
