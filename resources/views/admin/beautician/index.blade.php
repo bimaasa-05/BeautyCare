@@ -54,6 +54,81 @@
                 align-items: center;
             }
         }
+
+        .page-header-premium {
+            background: linear-gradient(135deg, #FFF5F8 0%, #FFE5EF 50%, #FFD6E6 100%);
+            border-radius: 20px;
+            padding: 28px 32px;
+            margin-bottom: 24px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 79, 135, 0.08);
+        }
+
+        .page-header-premium::before {
+            content: '';
+            position: absolute;
+            top: -60px;
+            right: -60px;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 79, 135, 0.12) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .page-header-premium::after {
+            content: '';
+            position: absolute;
+            bottom: -40px;
+            left: 30%;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 79, 135, 0.08) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .page-header-premium .ph-content {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .page-header-premium .ph-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .page-header-premium .ph-icon-wrap {
+            width: 52px;
+            height: 52px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, var(--primary), #FF7BA6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 22px;
+            box-shadow: 0 6px 20px rgba(255, 79, 135, 0.3);
+            flex-shrink: 0;
+        }
+
+        .page-header-premium .ph-text h3 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--dark);
+            margin: 0;
+        }
+
+        .page-header-premium .ph-text p {
+            font-size: 13px;
+            color: var(--gray);
+            margin: 2px 0 0;
+        }
     </style>
 
     <style>
@@ -88,7 +163,27 @@
             <!-- Dashboard Content -->
             <main class="flex-1 flex flex-col overflow-hidden relative">
                 <div class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
-
+                    <div class="page-header-premium">
+                        <div class="ph-content">
+                            <div class="ph-left">
+                                <div class="ph-icon-wrap">
+                                    <span class="nav-icon">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                            stroke-linejoin="round">
+                                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                                            <circle cx="12" cy="7" r="4" />
+                                            <path d="M19 7l1 2 2 1-2 1-1 2-1-2-2-1 2-1 1-2z" />
+                                        </svg>
+                                    </span>
+                                </div>
+                                <div class="ph-text">
+                                    <h3>Data Beautician</h3>
+                                    <p>Pusat pengelolaan tim dan administrasi karyawan! Di halaman ini, Anda memiliki akses penuh untuk memastikan data setiap anggota tim tercatat dengan baik. Anda bisa dengan mudah memperbarui informasi staf, mengatur rincian gaji, hingga mencatat bonus performa mereka. Mari kelola administrasi tim dengan rapi dan aman, agar hak karyawan selalu terpenuhi tepat waktu!</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <div class="flex justify-between items-center mb-6 flex-wrap gap-3">
                         <p class="text-[13px] font-medium text-gray-400">{{ $beautician->count() }} beautician terdaftar
                         </p>
@@ -107,7 +202,8 @@
                                 </button>
                                 <div id="filterBeauticianPanel"
                                     class="hidden absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-100 p-4 z-50">
-                                    <p class="text-[11px] font-semibold text-gray-500 mb-2 uppercase tracking-wider">Status</p>
+                                    <p class="text-[11px] font-semibold text-gray-500 mb-2 uppercase tracking-wider">
+                                        Status</p>
                                     <div class="space-y-2">
                                         <label class="flex items-center gap-2 text-[12px] text-gray-700 cursor-pointer">
                                             <input type="radio" name="filter_status" value="" checked
@@ -115,19 +211,19 @@
                                             Semua
                                         </label>
                                         <label class="flex items-center gap-2 text-[12px] text-gray-700 cursor-pointer">
-                                             <input type="radio" name="filter_status" value="Tersedia"
-                                                 onchange="applyFilterBeautician()">
-                                             Tersedia
-                                         </label>
-                                         <label class="flex items-center gap-2 text-[12px] text-gray-700 cursor-pointer">
-                                             <input type="radio" name="filter_status" value="Sibuk"
-                                                 onchange="applyFilterBeautician()">
-                                             Sibuk
-                                         </label>
-                                         <label class="flex items-center gap-2 text-[12px] text-gray-700 cursor-pointer">
-                                             <input type="radio" name="filter_status" value="Libur"
-                                                 onchange="applyFilterBeautician()">
-                                             Libur
+                                            <input type="radio" name="filter_status" value="Tersedia"
+                                                onchange="applyFilterBeautician()">
+                                            Tersedia
+                                        </label>
+                                        <label class="flex items-center gap-2 text-[12px] text-gray-700 cursor-pointer">
+                                            <input type="radio" name="filter_status" value="Sibuk"
+                                                onchange="applyFilterBeautician()">
+                                            Sibuk
+                                        </label>
+                                        <label class="flex items-center gap-2 text-[12px] text-gray-700 cursor-pointer">
+                                            <input type="radio" name="filter_status" value="Libur"
+                                                onchange="applyFilterBeautician()">
+                                            Libur
                                         </label>
                                     </div>
                                 </div>
@@ -162,11 +258,11 @@
             fetch('{{ route('admin.beautician.index') }}?' + getFilterParamsBeautician(), {
                 headers: { 'X-Requested-With': 'XMLHttpRequest' }
             })
-            .then(res => res.text())
-            .then(html => {
-                document.getElementById('beauticianGrid').innerHTML = html;
-            })
-            .catch(() => location.reload());
+                .then(res => res.text())
+                .then(html => {
+                    document.getElementById('beauticianGrid').innerHTML = html;
+                })
+                .catch(() => location.reload());
         }
 
         function toggleFilterBeautician() {
@@ -178,7 +274,7 @@
             fetchBeautician();
         }
 
-        document.addEventListener('click', function(e) {
+        document.addEventListener('click', function (e) {
             const panel = document.getElementById('filterBeauticianPanel');
             if (panel && !panel.classList.contains('hidden')) {
                 const btn = document.querySelector('.filter-beautician');
@@ -189,7 +285,7 @@
         });
 
         let searchTimer;
-        document.getElementById('searchBeautician').addEventListener('input', function() {
+        document.getElementById('searchBeautician').addEventListener('input', function () {
             clearTimeout(searchTimer);
             searchTimer = setTimeout(fetchBeautician, 400);
         });

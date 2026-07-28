@@ -7,6 +7,8 @@ use App\Models\Booking;
 use App\Models\DetailBooking;
 use App\Models\Layanan;
 use App\Models\Karyawan;
+use App\Models\Pelanggan;
+use App\Models\Membership;
 
 class PelangganController extends Controller
 {
@@ -64,7 +66,20 @@ class PelangganController extends Controller
             ->orderBy('id_user')
             ->get();
 
-        return view('pelanggan.booking.create', compact('layanans', 'karyawans'));
+        $user = auth()->user();
+        $diskonMember = 0;
+        $pelanggan = Pelanggan::where('email', $user->email)
+            ->orWhere('nm_pelanggan', $user->nama)
+            ->orWhere('id_user', $user->id)
+            ->first();
+        if ($pelanggan && $pelanggan->id_member) {
+            $member = Membership::find($pelanggan->id_member);
+            if ($member) {
+                $diskonMember = (int) $member->diskon;
+            }
+        }
+
+        return view('pelanggan.booking.create', compact('layanans', 'karyawans', 'diskonMember'));
     }
 
     public function store(Request $request)
@@ -125,7 +140,19 @@ class PelangganController extends Controller
             ->orderBy('id_user')
             ->get();
 
-        return view('pelanggan.booking.edit', compact('booking', 'detail', 'layanans', 'karyawans'));
+        $diskonMember = 0;
+        $pelanggan = Pelanggan::where('email', $user->email)
+            ->orWhere('nm_pelanggan', $user->nama)
+            ->orWhere('id_user', $user->id)
+            ->first();
+        if ($pelanggan && $pelanggan->id_member) {
+            $member = Membership::find($pelanggan->id_member);
+            if ($member) {
+                $diskonMember = (int) $member->diskon;
+            }
+        }
+
+        return view('pelanggan.booking.edit', compact('booking', 'detail', 'layanans', 'karyawans', 'diskonMember'));
     }
 
     public function update(Request $request, $id)
@@ -182,5 +209,29 @@ class PelangganController extends Controller
         buatNotif(auth()->id(), 'Booking Dihapus', 'Booking treatment berhasil dihapus', 'Booking', route('pelanggan.booking'));
 
         return redirect()->route('pelanggan.booking')->with('success', 'Booking berhasil dihapus!');
+    }
+
+    public function batchDestroy(Request $request)
+    {
+        $ids = $request->input('ids', []);
+        if (!is_array($ids) || empty($ids)) {
+            return response()->json(['success' => false, 'message' => 'Tidak ada booking yang dipilih.']);
+        }
+
+        $bookings = Booking::whereIn('id_booking', $ids)
+            ->where('id_pelanggan', auth()->id())
+            ->get();
+
+        foreach ($bookings as $booking) {
+            DetailBooking::where('id_booking', $booking->id_booking)->delete();
+            $booking->delete();
+        }
+
+        buatNotif(auth()->id(), 'Booking Dihapus', count($ids) . ' booking berhasil dihapus', 'Booking', route('pelanggan.booking'));
+
+        return response()->json([
+            'success' => true,
+            'message' => count($ids) . ' booking berhasil dihapus!',
+        ]);
     }
 }

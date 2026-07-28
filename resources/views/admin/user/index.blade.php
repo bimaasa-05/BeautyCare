@@ -76,12 +76,16 @@
         }
 
         @media (max-width: 768px) {
-            .admin-table thead { display: none; }
+            .admin-table thead {
+                display: none;
+            }
+
             .admin-table tbody tr {
                 display: block;
                 padding: 16px;
                 border-bottom: 1px solid #f0f0f0;
             }
+
             .admin-table tbody td {
                 display: flex;
                 justify-content: space-between;
@@ -91,6 +95,7 @@
                 font-size: 13px;
                 text-align: right;
             }
+
             .admin-table tbody td::before {
                 content: attr(data-label);
                 font-weight: 600;
@@ -98,8 +103,89 @@
                 font-size: 11px;
                 text-transform: uppercase;
             }
-            .admin-table tbody td:first-child { padding-left: 0; }
-            .admin-table tbody td:last-child { padding-right: 0; }
+
+            .admin-table tbody td:first-child {
+                padding-left: 0;
+            }
+
+            .admin-table tbody td:last-child {
+                padding-right: 0;
+            }
+        }
+
+        .page-header-premium {
+            background: linear-gradient(135deg, #FFF5F8 0%, #FFE5EF 50%, #FFD6E6 100%);
+            border-radius: 20px;
+            padding: 28px 32px;
+            margin-bottom: 24px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 79, 135, 0.08);
+        }
+
+        .page-header-premium::before {
+            content: '';
+            position: absolute;
+            top: -60px;
+            right: -60px;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 79, 135, 0.12) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .page-header-premium::after {
+            content: '';
+            position: absolute;
+            bottom: -40px;
+            left: 30%;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 79, 135, 0.08) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .page-header-premium .ph-content {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .page-header-premium .ph-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .page-header-premium .ph-icon-wrap {
+            width: 52px;
+            height: 52px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, var(--primary), #FF7BA6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 22px;
+            box-shadow: 0 6px 20px rgba(255, 79, 135, 0.3);
+            flex-shrink: 0;
+        }
+
+        .page-header-premium .ph-text h3 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--dark);
+            margin: 0;
+        }
+
+        .page-header-premium .ph-text p {
+            font-size: 13px;
+            color: var(--gray);
+            margin: 2px 0 0;
         }
     </style>
 </head>
@@ -114,7 +200,30 @@
 
             <!-- Dashboard Content -->
             <div class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
-
+                <div class="page-header-premium">
+                    <div class="ph-content">
+                        <div class="ph-left">
+                            <div class="ph-icon-wrap">
+                                <span class="nav-icon">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                                        <circle cx="9" cy="7" r="4" />
+                                        <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                                        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                                    </svg>
+                                </span>
+                            </div>
+                            <div class="ph-text">
+                                <h3>Data User</h3>
+                                <p>Selamat datang di Panel Manajemen User. Di sini, Anda memegang kendali penuh atas
+                                    komunitas pengguna kita! Anda bisa dengan mudah mengundang anggota baru, mengedit
+                                    informasi profil, atau mengubah izin akses mereka hanya dengan beberapa klik. Jaga
+                                    agar data pengguna tetap rapi dan sistem kita selalu aman.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div
                     class="bg-white rounded-2xl p-6 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] flex flex-col h-full min-h-[580px] justify-between">
                     <div>
@@ -138,52 +247,65 @@
                                     </button>
                                     <div id="filterUserPanel"
                                         class="hidden absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-100 p-4 z-50">
-                                        <p class="text-[11px] font-semibold text-gray-500 mb-2 uppercase tracking-wider">Role</p>
+                                        <p
+                                            class="text-[11px] font-semibold text-gray-500 mb-2 uppercase tracking-wider">
+                                            Role</p>
                                         <div class="space-y-2 mb-3">
-                                            <label class="flex items-center gap-2 text-[12px] text-gray-700 cursor-pointer">
+                                            <label
+                                                class="flex items-center gap-2 text-[12px] text-gray-700 cursor-pointer">
                                                 <input type="radio" name="filter_role" value="" checked
                                                     onchange="applyFilterUser()">
                                                 Semua
                                             </label>
-                                            <label class="flex items-center gap-2 text-[12px] text-gray-700 cursor-pointer">
+                                            <label
+                                                class="flex items-center gap-2 text-[12px] text-gray-700 cursor-pointer">
                                                 <input type="radio" name="filter_role" value="admin"
                                                     onchange="applyFilterUser()">
                                                 Admin
                                             </label>
-                                            <label class="flex items-center gap-2 text-[12px] text-gray-700 cursor-pointer">
+                                            <label
+                                                class="flex items-center gap-2 text-[12px] text-gray-700 cursor-pointer">
                                                 <input type="radio" name="filter_role" value="kasir"
                                                     onchange="applyFilterUser()">
                                                 Kasir
                                             </label>
-                                            <label class="flex items-center gap-2 text-[12px] text-gray-700 cursor-pointer">
+                                            <label
+                                                class="flex items-center gap-2 text-[12px] text-gray-700 cursor-pointer">
                                                 <input type="radio" name="filter_role" value="beautycian"
                                                     onchange="applyFilterUser()">
                                                 Beautycian
                                             </label>
-                                            <label class="flex items-center gap-2 text-[12px] text-gray-700 cursor-pointer">
+                                            <label
+                                                class="flex items-center gap-2 text-[12px] text-gray-700 cursor-pointer">
                                                 <input type="radio" name="filter_role" value="pelanggan"
                                                     onchange="applyFilterUser()">
                                                 Pelanggan
                                             </label>
                                         </div>
-                                        <p class="text-[11px] font-semibold text-gray-500 mb-2 uppercase tracking-wider">Status</p>
+                                        <p
+                                            class="text-[11px] font-semibold text-gray-500 mb-2 uppercase tracking-wider">
+                                            Status</p>
                                         <div class="space-y-2">
-                                            <label class="flex items-center gap-2 text-[12px] text-gray-700 cursor-pointer">
+                                            <label
+                                                class="flex items-center gap-2 text-[12px] text-gray-700 cursor-pointer">
                                                 <input type="radio" name="filter_status" value="" checked
                                                     onchange="applyFilterUser()">
                                                 Semua
                                             </label>
-                                            <label class="flex items-center gap-2 text-[12px] text-gray-700 cursor-pointer">
+                                            <label
+                                                class="flex items-center gap-2 text-[12px] text-gray-700 cursor-pointer">
                                                 <input type="radio" name="filter_status" value="aktif"
                                                     onchange="applyFilterUser()">
                                                 Aktif
                                             </label>
-                                            <label class="flex items-center gap-2 text-[12px] text-gray-700 cursor-pointer">
+                                            <label
+                                                class="flex items-center gap-2 text-[12px] text-gray-700 cursor-pointer">
                                                 <input type="radio" name="filter_status" value="non_aktif"
                                                     onchange="applyFilterUser()">
                                                 Non Aktif
                                             </label>
-                                            <label class="flex items-center gap-2 text-[12px] text-gray-700 cursor-pointer">
+                                            <label
+                                                class="flex items-center gap-2 text-[12px] text-gray-700 cursor-pointer">
                                                 <input type="radio" name="filter_status" value="suspend"
                                                     onchange="applyFilterUser()">
                                                 Suspend
@@ -242,11 +364,11 @@
             fetch('{{ route('admin.user.index') }}?' + getFilterParamsUser(), {
                 headers: { 'X-Requested-With': 'XMLHttpRequest' }
             })
-            .then(res => res.text())
-            .then(html => {
-                document.getElementById('userTableBody').innerHTML = html;
-            })
-            .catch(() => location.reload());
+                .then(res => res.text())
+                .then(html => {
+                    document.getElementById('userTableBody').innerHTML = html;
+                })
+                .catch(() => location.reload());
         }
 
         function toggleFilterUser() {
@@ -258,7 +380,7 @@
             fetchUser();
         }
 
-        document.addEventListener('click', function(e) {
+        document.addEventListener('click', function (e) {
             const panel = document.getElementById('filterUserPanel');
             if (panel && !panel.classList.contains('hidden')) {
                 const btn = document.querySelector('.filter-user');
@@ -269,7 +391,7 @@
         });
 
         let searchTimer;
-        document.getElementById('searchUser').addEventListener('input', function() {
+        document.getElementById('searchUser').addEventListener('input', function () {
             clearTimeout(searchTimer);
             searchTimer = setTimeout(fetchUser, 400);
         });

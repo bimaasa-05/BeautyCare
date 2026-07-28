@@ -31,8 +31,10 @@ use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\AdminPengaturanController;
 use App\Http\Controllers\AdminRiwayatController;
 use App\Http\Controllers\BeatycianJadwalTreatmentController;
+use App\Http\Controllers\MembershipPelangganController;
 use App\Http\Controllers\BeautycianPelangganController;
 use App\Http\Controllers\BeautycianLaporanReservasiController;
+use App\Http\Controllers\BeautycianDashboardController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -250,44 +252,7 @@ Route::middleware('auth')->group(function () {
     //--------------------------------------------------
     //Route BeautyCian
     Route::middleware(['role:beautycian'])->group(function () {
-        Route::get('/beautycian/dashboard', function () {
-            $id_karyawan = auth()->id();
-            $today = now()->toDateString();
-
-            $jadwal_hari_ini = \App\Models\Booking::where('id_karyawan', $id_karyawan)
-                ->whereDate('tanggal', $today)
-                ->count();
-
-            $pelanggan_ditangani = \App\Models\Booking::where('id_karyawan', $id_karyawan)
-                ->distinct('id_pelanggan')
-                ->count('id_pelanggan');
-
-            $layanan_selesai = \App\Models\Booking::where('id_karyawan', $id_karyawan)
-                ->where('status', 'selesai')
-                ->count();
-
-            $riwayat_terbaru = \App\Models\Booking::with(['detail.layanan', 'pelanggan', 'riwayatTreatment'])
-                ->where('id_karyawan', $id_karyawan)
-                ->where('status', 'selesai')
-                ->orderBy('tanggal', 'desc')
-                ->orderBy('jam', 'desc')
-                ->limit(5)
-                ->get();
-
-            $booking_mendatang = \App\Models\Booking::with(['detail.layanan', 'pelanggan'])
-                ->where('id_karyawan', $id_karyawan)
-                ->where('status', 'dikonfirmasi')
-                ->whereDate('tanggal', '>=', $today)
-                ->orderBy('tanggal')
-                ->orderBy('jam')
-                ->limit(5)
-                ->get();
-
-            return view('beautycian.dashboard', compact(
-                'jadwal_hari_ini', 'pelanggan_ditangani', 'layanan_selesai',
-                'riwayat_terbaru', 'booking_mendatang'
-            ));
-        })->name('beautycian.dashboard');
+        Route::get('/beautycian/dashboard', [BeautycianDashboardController::class, 'index'])->name('beautycian.dashboard');
 
         //Profile Beautycian
         Route::get('/beautycian/profile', function () {
@@ -481,6 +446,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/pelanggan/booking', [PelangganController::class, 'store'])->name('pelanggan.booking.store');
         Route::get('/pelanggan/booking/{id}/edit', [PelangganController::class, 'edit'])->name('pelanggan.booking.edit');
         Route::put('/pelanggan/booking/{id}', [PelangganController::class, 'update'])->name('pelanggan.booking.update');
+        Route::delete('/pelanggan/booking/batch', [PelangganController::class, 'batchDestroy'])->name('pelanggan.booking.batch');
         Route::delete('/pelanggan/booking/{id}', [PelangganController::class, 'destroy'])->name('pelanggan.booking.destroy');
 
         //Route Reservasi
@@ -514,9 +480,7 @@ Route::middleware('auth')->group(function () {
         })->name('pelanggan.promo');
 
         //Route Membership
-        Route::get('/pelanggan/membership', function () {
-            return view('pelanggan.membership.index');
-        })->name('pelanggan.membership');
+        Route::get('/pelanggan/membership', [MembershipPelangganController::class, 'index'])->name('pelanggan.membership');
 
         //Route Produk
         Route::get('/pelanggan/produk', function () {
@@ -533,6 +497,7 @@ Route::middleware('auth')->group(function () {
         Route::put('/pelanggan/keranjang/{id}', [App\Http\Controllers\KeranjangController::class, 'update'])->name('pelanggan.keranjang.update');
         Route::delete('/pelanggan/keranjang/batch', [App\Http\Controllers\KeranjangController::class, 'batchDestroy'])->name('pelanggan.keranjang.batch');
         Route::delete('/pelanggan/keranjang/{id}', [App\Http\Controllers\KeranjangController::class, 'destroy'])->name('pelanggan.keranjang.destroy')->whereNumber('id');
+        Route::post('/pelanggan/checkout-notif', [App\Http\Controllers\KeranjangController::class, 'checkoutNotif'])->name('pelanggan.checkout.notif');
 
         //Route Profile
         Route::get('/pelanggan/profile', function () {
