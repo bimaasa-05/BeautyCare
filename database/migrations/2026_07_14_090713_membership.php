@@ -6,27 +6,23 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        //
         Schema::create('membership', function (Blueprint $table) {
             $table->id('id_member');
             $table->string('nm_member', 100);
-            $table->enum('tingkat', ['Silver', 'Gold', 'Platinum']);
+            $table->string('tingkat', 50);
             $table->decimal('diskon')->default(0);
+            $table->integer('min_transaksi')->default(0);
+            $table->decimal('min_pembelian', 12)->default(0);
+            $table->text('deskripsi')->nullable();
             $table->bigInteger('masa_berlaku');
             $table->enum('status', ['aktif', 'non_aktif', 'suspend'])->default('non_aktif');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        //
+        Schema::dropIfExists('membership');
     }
 };
