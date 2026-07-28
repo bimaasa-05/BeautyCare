@@ -16,6 +16,7 @@ class Pelanggan extends Model
         'email',
         'alamat',
         'id_member',
+        'tgl_mulai_member',
         'catatan_alergi',
         'foto',
         'id_user',
