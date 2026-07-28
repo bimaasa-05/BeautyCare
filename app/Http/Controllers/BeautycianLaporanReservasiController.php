@@ -4,8 +4,12 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Booking;
+<<<<<<< HEAD
 use App\Models\DetailBooking;
 use Illuminate\Support\Facades\DB;
+=======
+use App\Models\Pelanggan;
+>>>>>>> 526faabee5535342635ab806dc920bd02bd6fa96
 
 class BeautycianLaporanReservasiController extends Controller
 {
@@ -33,8 +37,9 @@ class BeautycianLaporanReservasiController extends Controller
             $query->where('status', $filterStatus);
         }
 
-        $reservasi = $query->orderBy('tanggal', 'desc')
-            ->orderBy('jam', 'desc')
+        $reservasi = $query->orderByDesc(Pelanggan::select('created_at')
+            ->whereColumn('id_pelanggan', 'booking.id_pelanggan')
+            ->limit(1))
             ->paginate(10)->withQueryString();
 
         $total_reservasi = Booking::where('id_karyawan', $id_karyawan)->count();

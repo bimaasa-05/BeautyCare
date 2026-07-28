@@ -132,9 +132,9 @@ class KasirSeeder extends Seeder
     private function membership(): void
     {
         $data = [
-            ['nm_member' => 'Silver Member', 'tingkat' => 'Silver', 'diskon' => 5.00, 'masa_berlaku' => 365, 'status' => 'aktif'],
-            ['nm_member' => 'Gold Member', 'tingkat' => 'Gold', 'diskon' => 10.00, 'masa_berlaku' => 365, 'status' => 'aktif'],
-            ['nm_member' => 'Platinum Member', 'tingkat' => 'Platinum', 'diskon' => 15.00, 'masa_berlaku' => 365, 'status' => 'aktif'],
+            ['nm_member' => 'Silver Member', 'tingkat' => 'Silver', 'diskon' => 5.00, 'min_transaksi' => 1, 'min_pembelian' => 500000, 'masa_berlaku' => 365, 'status' => 'aktif'],
+            ['nm_member' => 'Gold Member', 'tingkat' => 'Gold', 'diskon' => 10.00, 'min_transaksi' => 5, 'min_pembelian' => 3000000, 'masa_berlaku' => 365, 'status' => 'aktif'],
+            ['nm_member' => 'Platinum Member', 'tingkat' => 'Platinum', 'diskon' => 20.00, 'min_transaksi' => 15, 'min_pembelian' => 5000000, 'masa_berlaku' => 365, 'status' => 'aktif'],
         ];
         foreach ($data as $d) {
             Membership::create($d);

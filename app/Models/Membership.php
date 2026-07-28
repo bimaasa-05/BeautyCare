@@ -14,7 +14,10 @@ class Membership extends Model
         'nm_member',
         'tingkat',
         'diskon',
+        'min_transaksi',
+        'min_pembelian',
         'masa_berlaku',
+        'deskripsi',
         'status',
     ];
 }
