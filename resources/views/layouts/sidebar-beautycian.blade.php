@@ -57,7 +57,7 @@
                 </span>
                 Jadwal Treatment
             </a>
-            <a href="#" class="nav-item" title="Update status treatment pelanggan">
+            <a href="{{ route('beautycian.status-treatment.index') }}" class="nav-item {{ request()->routeIs('beautycian.status-treatment.index') ? 'active' : '' }}" title="Update status treatment pelanggan">
                 <span class="nav-icon">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -67,7 +67,7 @@
                 </span>
                 Status Treatment
             </a>
-            <a href="#" class="nav-item" title="Riwayat treatment yang telah selesai">
+            <a href="{{ route('beautycian.riwayat-treatment.index') }}" class="nav-item {{ request()->routeIs('beautycian.riwayat-treatment.*') ? 'active' : '' }}" title="Riwayat treatment yang telah selesai">
                 <span class="nav-icon">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
