@@ -313,7 +313,6 @@ Route::middleware('auth')->group(function () {
         $userId = auth()->id();
         $user = auth()->user();
 
-        $totalBooking = \App\Models\Booking::where('id_pelanggan', $userId)->count();
         $bookingAktif = \App\Models\Booking::where('id_pelanggan', $userId)
             ->whereIn('status', ['menunggu', 'dikonfirmasi', 'diproses'])
             ->count();
@@ -377,23 +376,11 @@ Route::middleware('auth')->group(function () {
                 ->get();
             $produkTerlaris->each(fn($p) => $p->total_terjual = 0);
         }
-        // Kunjungan Bulan Ini — distinct days with any activity (booking, session)
-        $kunjunganBulanIni = \App\Models\Booking::where('id_pelanggan', $userId)
+        $kunjunganBulanIni = \Illuminate\Support\Facades\DB::table('log_kunjungan')
+            ->where('id_user', $userId)
             ->whereYear('tanggal', now()->year)
             ->whereMonth('tanggal', now()->month)
-            ->distinct('tanggal')
-            ->count('tanggal');
-        try {
-            $sessionsDates = \Illuminate\Support\Facades\DB::table('sessions')
-                ->where('user_id', $userId)
-                ->get()
-                ->pluck('last_activity')
-                ->map(fn($ts) => date('Y-m-d', $ts))
-                ->filter(fn($d) => substr($d, 0, 7) === now()->format('Y-m'))
-                ->unique()
-                ->count();
-            $kunjunganBulanIni = max($kunjunganBulanIni, $sessionsDates);
-        } catch (\Exception $e) {}
+            ->count();
 
         $pelanggan = \App\Models\Pelanggan::where('email', $user->email)->first();
         if (!$pelanggan) {
@@ -409,6 +396,7 @@ Route::middleware('auth')->group(function () {
                 'id_member' => 1,
             ]);
         }
+        $totalBooking = $pelanggan->total_booking ?? 0;
         $memberTingkat = null;
         $memberList = collect();
         if ($pelanggan && $pelanggan->id_member) {
@@ -421,7 +409,8 @@ Route::middleware('auth')->group(function () {
         $chartCounts = [];
         for ($i = 11; $i >= 0; $i--) {
             $date = now()->subMonths($i);
-            $count = \App\Models\Booking::where('id_pelanggan', $userId)
+            $count = \Illuminate\Support\Facades\DB::table('log_booking')
+                ->where('id_pelanggan', $userId)
                 ->whereYear('tanggal', $date->year)
                 ->whereMonth('tanggal', $date->month)
                 ->count();
@@ -474,10 +463,8 @@ Route::middleware('auth')->group(function () {
         })->name('pelanggan.treatment');
 
         //Route Promo
-        Route::get('/pelanggan/promo', function () {
-            $promos = \App\Models\Promo::orderBy('id_promo', 'desc')->get();
-            return view('pelanggan.promo.index', compact('promos'));
-        })->name('pelanggan.promo');
+        Route::get('/pelanggan/promo', [App\Http\Controllers\PelangganPromoController::class, 'index'])->name('pelanggan.promo');
+        Route::post('/pelanggan/promo/claim', [App\Http\Controllers\PelangganPromoController::class, 'claim'])->name('pelanggan.promo.claim');
 
         //Route Membership
         Route::get('/pelanggan/membership', [MembershipPelangganController::class, 'index'])->name('pelanggan.membership');

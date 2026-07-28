@@ -19,6 +19,7 @@ class DetailTransaksi extends Model
         'harga',
         'diskon',
         'subtotal',
+        'id_promo',
     ];
 
     public function transaksi()
