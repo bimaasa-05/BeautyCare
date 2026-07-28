@@ -17,6 +17,7 @@ class Membership extends Model
         'min_transaksi',
         'min_pembelian',
         'masa_berlaku',
+        'deskripsi',
         'status',
     ];
 }

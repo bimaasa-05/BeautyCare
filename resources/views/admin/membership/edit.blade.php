@@ -86,10 +86,10 @@
 
             <div class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
                 <div class="bg-white rounded-2xl p-6 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)]">
-                    <div class="flex justify-between items-center mb-6">
+                            <div class="flex justify-between items-center mb-6">
                         <div>
-                            <h3 class="text-[16px] font-bold text-gray-800">Edit Membership</h3>
-                            <p class="text-[12px] text-gray-400 mt-0.5">Ubah data membership</p>
+                            <h3 class="text-[16px] font-bold text-gray-800">Edit Paket Membership</h3>
+                            <p class="text-[12px] text-gray-400 mt-0.5">Ubah paket membership</p>
                         </div>
                         <a href="{{ route('admin.membership.index') }}"
                             class="flex items-center gap-2 border border-gray-200 text-gray-600 text-[12px] font-medium px-4 py-2 rounded-full hover:bg-gray-50 transition-colors">
@@ -97,34 +97,41 @@
                         </a>
                     </div>
 
-                    <form action="{{ route('admin.membership.update', $membership->id_member) }}" method="POST">
+                    <form id="membershipForm" action="{{ route('admin.membership.update', $membership->id_member) }}" method="POST">
                         @csrf
                         @method('PUT')
 
                         <div class="space-y-5">
                             <div>
-                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Nama Member</label>
-                                <select name="nm_member"
-                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all @error('nm_member') border-red-300 @enderror">
-                                    <option value="" disabled>Pilih member</option>
-                                    @foreach ($pelanggan as $p)
-                                        <option value="{{ $p->nama }}" {{ old('nm_member', $membership->nm_member) == $p->nama ? 'selected' : '' }}>{{ $p->nama }}</option>
-                                    @endforeach
-                                </select>
+                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Nama Paket</label>
+                                <input type="text" name="nm_member" value="{{ old('nm_member', $membership->nm_member) }}"
+                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('nm_member') border-red-300 @enderror"
+                                    placeholder="Masukkan nama paket">
                                 @error('nm_member')
                                     <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
 
+                            @php
+                                $defaultTiers = ['Silver', 'Gold', 'Platinum'];
+                                $allTiers = collect($defaultTiers)->merge($semuaTingkat ?? collect())->unique()->values();
+                                $currentTingkat = old('tingkat', $membership->tingkat);
+                            @endphp
                             <div>
                                 <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Tingkat</label>
-                                <select name="tingkat"
+                                <select name="tingkat" id="tingkatSelect"
                                     class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all @error('tingkat') border-red-300 @enderror">
-                                    <option value="" disabled>Pilih tingkat</option>
-                                    <option value="Silver" {{ old('tingkat', $membership->tingkat) == 'Silver' ? 'selected' : '' }}>Silver</option>
-                                    <option value="Gold" {{ old('tingkat', $membership->tingkat) == 'Gold' ? 'selected' : '' }}>Gold</option>
-                                    <option value="Platinum" {{ old('tingkat', $membership->tingkat) == 'Platinum' ? 'selected' : '' }}>Platinum</option>
+                                    <option value="">-- Pilih Tingkat --</option>
+                                    @foreach ($allTiers as $tier)
+                                        <option value="{{ $tier }}" {{ $currentTingkat == $tier ? 'selected' : '' }}>{{ $tier }}</option>
+                                    @endforeach
+                                    <option value="__tambah_baru__" {{ !$allTiers->contains($currentTingkat) && $currentTingkat ? 'selected' : '' }}>+ Tambah Baru...</option>
                                 </select>
+                                <div id="tierBaruWrapper" class="mt-2 {{ !$allTiers->contains($currentTingkat) && $currentTingkat ? '' : 'hidden' }}">
+                                    <input type="text" name="tingkat_baru" id="tingkatBaru" value="{{ !$allTiers->contains($currentTingkat) ? $currentTingkat : '' }}"
+                                        class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400"
+                                        placeholder="Masukkan tier baru">
+                                </div>
                                 @error('tingkat')
                                     <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
                                 @enderror
@@ -132,10 +139,30 @@
 
                             <div>
                                 <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Diskon (%)</label>
-                                <input type="number" name="diskon" value="{{ old('diskon', $membership->diskon) }}" step="0.01" min="0"
+                                <input type="number" name="diskon" value="{{ old('diskon', $membership->diskon) }}" step="0.01" min="0" max="100"
                                     class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('diskon') border-red-300 @enderror"
                                     placeholder="Masukkan diskon">
                                 @error('diskon')
+                                    <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div>
+                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Min. Transaksi</label>
+                                <input type="number" name="min_transaksi" value="{{ old('min_transaksi', $membership->min_transaksi) }}" min="0"
+                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('min_transaksi') border-red-300 @enderror"
+                                    placeholder="Minimal jumlah transaksi">
+                                @error('min_transaksi')
+                                    <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div>
+                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Min. Pembelian (Rp)</label>
+                                <input type="number" name="min_pembelian" value="{{ old('min_pembelian', $membership->min_pembelian) }}" min="0"
+                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('min_pembelian') border-red-300 @enderror"
+                                    placeholder="Minimal total pembelian">
+                                @error('min_pembelian')
                                     <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
@@ -151,17 +178,21 @@
                             </div>
 
                             <div>
-                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Status</label>
-                                <select name="status"
-                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all @error('status') border-red-300 @enderror">
-                                    <option value="" disabled>Pilih status</option>
-                                    <option value="aktif" {{ old('status', $membership->status) == 'aktif' ? 'selected' : '' }}>Aktif</option>
-                                    <option value="non_aktif" {{ old('status', $membership->status) == 'non_aktif' ? 'selected' : '' }}>Non Aktif</option>
-                                    <option value="suspend" {{ old('status', $membership->status) == 'suspend' ? 'selected' : '' }}>Suspend</option>
-                                </select>
-                                @error('status')
+                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Deskripsi</label>
+                                <textarea name="deskripsi" rows="3"
+                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('deskripsi') border-red-300 @enderror"
+                                    placeholder="Deskripsi paket membership">{{ old('deskripsi', $membership->deskripsi) }}</textarea>
+                                @error('deskripsi')
                                     <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
                                 @enderror
+                            </div>
+
+                            <div class="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                                <p class="text-[12px] text-gray-500 flex items-center gap-2">
+                                    <i class="fa-solid fa-info-circle text-pink-400"></i>
+                                    Status saat ini: <strong>{{ $membership->status === 'aktif' ? 'Aktif' : ($membership->status === 'suspend' ? 'Suspend' : 'Non Aktif') }}</strong>.
+                                    Status akan otomatis berubah saat masa berlaku diperbarui (&gt; 0 = Aktif, 0 = Non Aktif).
+                                </p>
                             </div>
                         </div>
 
@@ -182,6 +213,26 @@
     </div>
 
     <script>
+        document.getElementById('tingkatSelect').addEventListener('change', function() {
+            const wrapper = document.getElementById('tierBaruWrapper');
+            const input = document.getElementById('tingkatBaru');
+            if (this.value === '__tambah_baru__') {
+                wrapper.classList.remove('hidden');
+                input.focus();
+            } else {
+                wrapper.classList.add('hidden');
+                input.value = '';
+            }
+        });
+        document.getElementById('membershipForm').addEventListener('submit', function(e) {
+            const select = document.getElementById('tingkatSelect');
+            const inputBaru = document.getElementById('tingkatBaru');
+            if (select.value === '__tambah_baru__') {
+                select.name = '';
+                inputBaru.name = 'tingkat';
+            }
+        });
+
         const now = new Date();
         const options = {
             weekday: 'long',
