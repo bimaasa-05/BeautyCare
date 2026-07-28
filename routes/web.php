@@ -367,23 +367,11 @@ Route::middleware('auth')->group(function () {
                 ->get();
             $produkTerlaris->each(fn($p) => $p->total_terjual = 0);
         }
-        // Kunjungan Bulan Ini — distinct days with any activity (booking, session)
-        $kunjunganBulanIni = \App\Models\Booking::where('id_pelanggan', $userId)
+        $kunjunganBulanIni = \Illuminate\Support\Facades\DB::table('log_kunjungan')
+            ->where('id_user', $userId)
             ->whereYear('tanggal', now()->year)
             ->whereMonth('tanggal', now()->month)
-            ->distinct('tanggal')
-            ->count('tanggal');
-        try {
-            $sessionsDates = \Illuminate\Support\Facades\DB::table('sessions')
-                ->where('user_id', $userId)
-                ->get()
-                ->pluck('last_activity')
-                ->map(fn($ts) => date('Y-m-d', $ts))
-                ->filter(fn($d) => substr($d, 0, 7) === now()->format('Y-m'))
-                ->unique()
-                ->count();
-            $kunjunganBulanIni = max($kunjunganBulanIni, $sessionsDates);
-        } catch (\Exception $e) {}
+            ->count();
 
         $pelanggan = \App\Models\Pelanggan::where('email', $user->email)->first();
         if (!$pelanggan) {
