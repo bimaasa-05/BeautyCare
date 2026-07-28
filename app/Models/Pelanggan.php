@@ -35,4 +35,9 @@ class Pelanggan extends Model
     {
         return $this->hasMany(Transaksi::class, 'id_pelanggan', 'id_pelanggan');
     }
+
+    public function booking()
+    {
+        return $this->hasMany(Booking::class, 'id_pelanggan', 'id_pelanggan');
+    }
 }
