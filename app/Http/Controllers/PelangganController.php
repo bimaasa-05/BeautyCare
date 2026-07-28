@@ -115,6 +115,11 @@ class PelangganController extends Controller
             'subtotal' => $subtotal,
         ]);
 
+        $pelanggan = Pelanggan::where('id_user', auth()->id())->first();
+        if ($pelanggan) {
+            $pelanggan->increment('total_booking');
+        }
+
         buatNotif(auth()->id(), 'Booking Baru', 'Booking treatment berhasil dibuat', 'Booking', route('pelanggan.booking'));
 
         $admins = \App\Models\User::where('role', 'admin')->get();
