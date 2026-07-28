@@ -33,4 +33,14 @@ class Booking extends Model
     {
         return $this->hasMany(DetailBooking::class, 'id_booking', 'id_booking');
     }
+
+    public function riwayatTreatment()
+    {
+        return $this->hasOne(RiwayatTreatment::class, 'id_booking', 'id_booking');
+    }
+
+    public function transaksi()
+    {
+        return $this->hasOne(Transaksi::class, 'id_booking', 'id_booking');
+    }
 }
