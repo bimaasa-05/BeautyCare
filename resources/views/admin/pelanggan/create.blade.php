@@ -102,20 +102,6 @@
                     <form action="{{ route('admin.pelanggan.store') }}" method="POST" enctype="multipart/form-data">
                         @csrf
 
-                        <div class="mb-5">
-                            <label class="text-[13px] font-semibold text-gray-700 block mb-2">Tipe Pelanggan</label>
-                            <div class="flex items-center gap-4">
-                                <label class="flex items-center gap-2 text-[13px] text-gray-700 cursor-pointer">
-                                    <input type="radio" name="tipe" value="walkin" checked onchange="toggleTipePelanggan()">
-                                    Walk-in (Tanpa Akun)
-                                </label>
-                                <label class="flex items-center gap-2 text-[13px] text-gray-700 cursor-pointer">
-                                    <input type="radio" name="tipe" value="online" onchange="toggleTipePelanggan()">
-                                    Online (Dengan Akun)
-                                </label>
-                            </div>
-                        </div>
-
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                             <div>
                                 <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Nama Lengkap</label>
@@ -137,23 +123,6 @@
                                 @enderror
                             </div>
 
-                            <div id="passwordField" class="hidden">
-                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Password</label>
-                                <input type="password" name="password"
-                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('password') border-red-300 @enderror"
-                                    placeholder="Minimal 8 karakter">
-                                @error('password')
-                                    <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <div id="passwordConfirmField" class="hidden">
-                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Konfirmasi Password</label>
-                                <input type="password" name="password_confirmation"
-                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400"
-                                    placeholder="Ulangi password">
-                            </div>
-
                             <div>
                                 <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">No HP</label>
                                 <input type="number" name="no_hp" value="{{ old('no_hp') }}"
@@ -170,16 +139,6 @@
                                     class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('alamat') border-red-300 @enderror"
                                     placeholder="Masukkan alamat">
                                 @error('alamat')
-                                    <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <div>
-                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Member ID</label>
-                                <input type="number" name="id_member" value="{{ old('id_member') }}"
-                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('id_member') border-red-300 @enderror"
-                                    placeholder="Masukkan ID member (opsional)">
-                                @error('id_member')
                                     <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
@@ -221,13 +180,6 @@
     </div>
 
     <script>
-        function toggleTipePelanggan() {
-            const isOnline = document.querySelector('input[name="tipe"]:checked').value === 'online';
-            document.getElementById('passwordField').classList.toggle('hidden', !isOnline);
-            document.getElementById('passwordConfirmField').classList.toggle('hidden', !isOnline);
-        }
-
-        // Set current date
         const now = new Date();
         const options = {
             weekday: 'long',
