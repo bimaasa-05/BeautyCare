@@ -40,7 +40,7 @@ class AdminBeautycianController extends Controller
 
     public function create()
     {
-        $users = User::whereDoesntHave('karyawan')->get();
+        $users = User::whereIn('role', ['admin', 'kasir', 'beautycian'])->whereDoesntHave('karyawan')->get();
         return view('admin.beautician.create', compact('users'));
     }
 
