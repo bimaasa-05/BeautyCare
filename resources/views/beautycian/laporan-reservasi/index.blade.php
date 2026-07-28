@@ -16,6 +16,7 @@
     <link rel="stylesheet" href="{{ asset('assets/css/dashboard.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/responsive.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/beautycian.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         .bc-actions form { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
         .filter-group { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
@@ -39,7 +40,6 @@
 
         .dashboard-bottom-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 24px; }
         @media (max-width: 900px) { .dashboard-bottom-grid { grid-template-columns: 1fr; } }
-
         @media (max-width: 1200px) { .search-input-wrap input { width: 180px; } }
         @media (max-width: 768px) { .search-input-wrap input { width: 150px; } }
         @media (max-width: 430px) { .search-input-wrap input { width: 100%; } }
@@ -79,7 +79,6 @@
                                     <line x1="3" y1="10" x2="21" y2="10" />
                                 </svg>
                             </div>
-                            <span class="stat-change up">+{{ $total_reservasi }}</span>
                         </div>
                         <div class="stat-value">{{ $total_reservasi }}</div>
                         <div class="stat-label">Total Reservasi</div>
@@ -93,7 +92,6 @@
                                     <polyline points="22 4 12 14.01 9 11.01" />
                                 </svg>
                             </div>
-                            <span class="stat-change up">+{{ $selesai }}</span>
                         </div>
                         <div class="stat-value">{{ $selesai }}</div>
                         <div class="stat-label">Selesai</div>
@@ -101,56 +99,11 @@
 
                     <div class="stat-card">
                         <div class="stat-header">
-                            <div class="stat-icon info">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-                                </svg>
-                            </div>
-                            <span class="stat-change up">+{{ $dikonfirmasi }}</span>
-                        </div>
-                        <div class="stat-value">{{ $dikonfirmasi }}</div>
-                        <div class="stat-label">Dikonfirmasi</div>
-                    </div>
-
-                    <div class="stat-card">
-                        <div class="stat-header">
                             <div class="stat-icon warning">
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <circle cx="12" cy="12" r="10" />
-                                    <polyline points="12 6 12 12 16 14" />
-                                </svg>
-                            </div>
-                            <span class="stat-change up">+{{ $diproses }}</span>
-                        </div>
-                        <div class="stat-value">{{ $diproses }}</div>
-                        <div class="stat-label">Diproses</div>
-                    </div>
-
-                    <div class="stat-card">
-                        <div class="stat-header">
-                            <div class="stat-icon danger">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <circle cx="12" cy="12" r="10" />
-                                    <line x1="15" y1="9" x2="9" y2="15" />
-                                    <line x1="9" y1="9" x2="15" y2="15" />
-                                </svg>
-                            </div>
-                            <span class="stat-change down">-{{ $dibatalkan }}</span>
-                        </div>
-                        <div class="stat-value">{{ $dibatalkan }}</div>
-                        <div class="stat-label">Dibatalkan</div>
-                    </div>
-                </div>
-
-                <div class="stats-row">
-                    <div class="stat-card">
-                        <div class="stat-header">
-                            <div class="stat-icon success">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
                                 </svg>
                             </div>
-                            <span class="stat-change up">+{{ number_format($total_pendapatan, 0, ',', '.') }}</span>
                         </div>
                         <div class="stat-value">Rp {{ number_format($total_pendapatan, 0, ',', '.') }}</div>
                         <div class="stat-label">Total Pendapatan</div>
@@ -164,7 +117,6 @@
                                     <polyline points="12 6 12 12 16 14" />
                                 </svg>
                             </div>
-                            <span class="stat-change up">+{{ number_format($pendapatan_bulan_ini, 0, ',', '.') }}</span>
                         </div>
                         <div class="stat-value">Rp {{ number_format($pendapatan_bulan_ini, 0, ',', '.') }}</div>
                         <div class="stat-label">Pendapatan Bulan Ini</div>
@@ -173,59 +125,37 @@
                     <div class="stat-card">
                         <div class="stat-header">
                             <div class="stat-icon primary">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                                    <circle cx="12" cy="7" r="4" />
-                                </svg>
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                             </div>
-                            <span class="stat-change up">+{{ $pelanggan_setia->count() }}</span>
                         </div>
-                        <div class="stat-value">{{ $pelanggan_setia->count() }}</div>
-                        <div class="stat-label">Pelanggan Setia</div>
+                        <div class="stat-value">Rp {{ number_format($rata_rata_transaksi, 0, ',', '.') }}</div>
+                        <div class="stat-label">Rata-rata/Transaksi</div>
                     </div>
 
                     <div class="stat-card">
                         <div class="stat-header">
                             <div class="stat-icon warning">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-                                    <line x1="16" y1="2" x2="16" y2="6" />
-                                    <line x1="8" y1="2" x2="8" y2="6" />
-                                    <line x1="3" y1="10" x2="21" y2="10" />
-                                </svg>
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                             </div>
-                            <span class="stat-change up">+{{ $selesai }}</span>
                         </div>
-                        <div class="stat-value">{{ $selesai }}</div>
-                        <div class="stat-label">Treatment Selesai</div>
-                    </div>
-
-                    <div class="stat-card">
-                        <div class="stat-header">
-                            <div class="stat-icon danger">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <circle cx="12" cy="12" r="10" />
-                                    <line x1="12" y1="8" x2="12" y2="12" />
-                                    <line x1="12" y1="16" x2="12.01" y2="16" />
-                                </svg>
-                            </div>
-                            <span class="stat-change up">+{{ round($selesai > 0 ? $total_pendapatan / $selesai : 0) }}</span>
-                        </div>
-                        <div class="stat-value">Rp {{ number_format($selesai > 0 ? $total_pendapatan / $selesai : 0, 0, ',', '.') }}</div>
-                        <div class="stat-label">Rata-rata/Transaksi</div>
+                        <div class="stat-value">{{ $booking_hari_ini }}</div>
+                        <div class="stat-label">Booking Hari Ini</div>
                     </div>
                 </div>
 
                 <div class="dashboard-grid" style="margin-top:24px;">
                     <div class="chart-card">
                         <div class="chart-header">
-                            <h3>Grafik Treatment Selesai per Bulan</h3>
+                            <h3>Grafik Treatment Selesai</h3>
                             <div class="chart-actions">
-                                <span style="font-size:11px;color:var(--gray);">Tahun {{ now()->year }}</span>
+                                <select id="chartPeriod" onchange="switchChartPeriod()">
+                                    <option value="month" {{ request('chart_period') == 'month' ? 'selected' : '' }}>Bulan Ini</option>
+                                    <option value="year" {{ request('chart_period') != 'month' ? 'selected' : '' }}>Tahun Ini</option>
+                                </select>
                             </div>
                         </div>
                         <div class="chart-body">
-                            <canvas id="chartReservasi" height="260"></canvas>
+                            <canvas id="chartReservasi" height="280"></canvas>
                         </div>
                     </div>
                     <div class="mini-charts">
@@ -306,7 +236,7 @@
                         </div>
                     </div>
 
-                    <div class="overflow-x-auto">
+                    <div style="overflow-x:auto;">
                         <table class="booking-table">
                             <thead>
                                 <tr>
@@ -437,59 +367,99 @@
     </div>
 
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        var canvas = document.getElementById('chartReservasi');
-        if (!canvas) return;
-        var ctx = canvas.getContext('2d');
-        var dpr = window.devicePixelRatio || 1;
-        var rect = canvas.getBoundingClientRect();
-        canvas.width = rect.width * dpr;
-        canvas.height = rect.height * dpr;
-        ctx.scale(dpr, dpr);
+    var monthLabels = @json($chartBulan);
+    var monthData = @json($chartSelesai);
+    var dailyData = @json($chartDailyData);
 
-        var w = rect.width, h = rect.height;
-        var pad = { top: 20, bottom: 25, left: 30, right: 10 };
-        var cw = w - pad.left - pad.right, ch = h - pad.top - pad.bottom;
+    var chartCtx = document.getElementById('chartReservasi').getContext('2d');
+    var chartInstance;
 
-        var labels = @json($chartBulan);
-        var data = @json($chartSelesai);
-        var maxVal = Math.max(...data, 1) * 1.2;
-        var barW = cw / labels.length * 0.55;
-        var gap = cw / labels.length;
+    var animOpts = {
+        duration: 1200,
+        easing: 'easeOutQuart'
+    };
 
-        for (var i = 0; i <= 4; i++) {
-            var y = pad.top + ch - (ch / 4) * i;
-            ctx.strokeStyle = '#ECECEC';
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(pad.left, y);
-            ctx.lineTo(w - pad.right, y);
-            ctx.stroke();
+    function initChart(period) {
+        var labels, values;
+
+        if (period === 'month') {
+            labels = [];
+            for (var d = 1; d <= dailyData.length; d++) {
+                labels.push(d);
+            }
+            values = dailyData;
+        } else {
+            labels = monthLabels;
+            values = monthData;
         }
 
-        labels.forEach(function(label, i) {
-            var x = pad.left + gap * i + (gap - barW) / 2;
-            var barH = (data[i] / maxVal) * ch;
-            var y = pad.top + ch - barH;
-            ctx.beginPath();
-            var r = 4;
-            ctx.moveTo(x, y + r);
-            ctx.arcTo(x, y, x + r, y, r);
-            ctx.lineTo(x + barW - r, y);
-            ctx.arcTo(x + barW, y, x + barW, y + r, r);
-            ctx.lineTo(x + barW, pad.top + ch);
-            ctx.lineTo(x, pad.top + ch);
-            ctx.closePath();
-            ctx.fillStyle = '#10B981';
-            ctx.globalAlpha = 0.85;
-            ctx.fill();
-            ctx.globalAlpha = 1;
+        if (chartInstance) chartInstance.destroy();
 
-            ctx.fillStyle = '#999';
-            ctx.font = '10px Poppins, sans-serif';
-            ctx.textAlign = 'center';
-            ctx.fillText(label, x + barW / 2, h - pad.bottom + 16);
+        var gradient = chartCtx.createLinearGradient(0, 0, 0, 280);
+        gradient.addColorStop(0, 'rgba(16, 185, 129, 0.25)');
+        gradient.addColorStop(1, 'rgba(16, 185, 129, 0.01)');
+
+        chartInstance = new Chart(chartCtx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Treatment Selesai',
+                    data: values,
+                    borderColor: '#10B981',
+                    backgroundColor: gradient,
+                    borderWidth: 2.5,
+                    tension: 0.4,
+                    fill: true,
+                    pointBackgroundColor: '#fff',
+                    pointBorderColor: '#10B981',
+                    pointBorderWidth: 2,
+                    pointRadius: 3,
+                    pointHoverRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: animOpts,
+                onClick: function() {
+                    this.reset();
+                    this.update();
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#fff',
+                        titleColor: '#1F2937',
+                        bodyColor: '#4B5563',
+                        borderColor: '#D1FAE5',
+                        borderWidth: 1,
+                        padding: 10,
+                        cornerRadius: 8,
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false, drawBorder: false },
+                        ticks: { maxTicksLimit: 12 }
+                    },
+                    y: {
+                        border: { display: false },
+                        grid: { color: '#ECFDF5', borderDash: [3, 3] },
+                        ticks: { maxTicksLimit: 6, stepSize: 1 }
+                    }
+                }
+            }
         });
+    }
+
+    function switchChartPeriod() {
+        var period = document.getElementById('chartPeriod').value;
+        initChart(period);
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        initChart('{{ request('chart_period', 'year') }}');
     });
     </script>
     <script src="{{ asset('assets/js/beautycian.js') }}"></script>
