@@ -308,6 +308,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/pelanggan/booking', [PelangganBookingController::class, 'index'])->name('pelanggan.booking');
         Route::get('/pelanggan/booking/create', [PelangganBookingController::class, 'create'])->name('pelanggan.booking.create');
         Route::post('/pelanggan/booking', [PelangganBookingController::class, 'store'])->name('pelanggan.booking.store');
+        Route::get('/pelanggan/booking/{id}/detail', [PelangganBookingController::class, 'show'])->name('pelanggan.booking.detail');
         Route::get('/pelanggan/booking/{id}/edit', [PelangganBookingController::class, 'edit'])->name('pelanggan.booking.edit');
         Route::put('/pelanggan/booking/{id}', [PelangganBookingController::class, 'update'])->name('pelanggan.booking.update');
         Route::delete('/pelanggan/booking/batch', [PelangganBookingController::class, 'batchDestroy'])->name('pelanggan.booking.batch');
