@@ -160,7 +160,7 @@
 
                             <div>
                                 <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Status</label>
-                                <select name="status"
+                                <select name="status" id="statusSelect"
                                     class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all @error('status') border-red-300 @enderror">
                                     <option value="" disabled selected>Pilih status</option>
                                     <option value="aktif" {{ old('status') == 'aktif' ? 'selected' : '' }}>Aktif</option>
@@ -168,6 +168,15 @@
                                     <option value="suspend" {{ old('status') == 'suspend' ? 'selected' : '' }}>Suspend</option>
                                 </select>
                                 @error('status')
+                                    <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div id="suspendUntilField" class="hidden">
+                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Suspend Sampai <span class="text-gray-400 font-normal">(WIB)</span></label>
+                                <input type="datetime-local" name="suspend_until" id="suspendUntil" value="{{ old('suspend_until') }}"
+                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all @error('suspend_until') border-red-300 @enderror">
+                                @error('suspend_until')
                                     <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
@@ -199,13 +208,32 @@
     </div>
 
     <script>
-        // Set current date
+        document.getElementById('statusSelect').addEventListener('change', function () {
+            const field = document.getElementById('suspendUntilField');
+            field.classList.toggle('hidden', this.value !== 'suspend');
+            if (this.value === 'suspend') setDefaultSuspendUntil();
+        });
+        if (document.getElementById('statusSelect').value === 'suspend') {
+            document.getElementById('suspendUntilField').classList.remove('hidden');
+            setDefaultSuspendUntil();
+        }
+
+        function setDefaultSuspendUntil() {
+            const input = document.getElementById('suspendUntil');
+            if (!input.value) {
+                const now = new Date();
+                now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+                input.min = now.toISOString().slice(0, 16);
+            }
+        }
+
         const now = new Date();
         const options = {
             weekday: 'long',
             year: 'numeric',
             month: 'long',
-            day: 'numeric'
+            day: 'numeric',
+            timeZone: 'Asia/Jakarta',
         };
         const dateEl = document.getElementById('currentDate');
         if (dateEl) dateEl.textContent = now.toLocaleDateString('id-ID', options);
