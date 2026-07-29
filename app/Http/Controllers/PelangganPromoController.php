@@ -36,8 +36,7 @@ class PelangganPromoController extends Controller
 
         if ($existing) {
             if ($existing->status === 'tersedia') {
-                $existing->delete();
-                return response()->json(['success' => true, 'action' => 'unclaimed']);
+                return response()->json(['success' => true, 'action' => 'already_claimed']);
             }
             return response()->json(['success' => false, 'message' => 'Promo sudah digunakan', 'action' => 'used']);
         }

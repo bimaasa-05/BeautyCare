@@ -1383,10 +1383,53 @@
 
     function prosesBayarUpgrade() {
         var metode = document.querySelector('input[name="pm_metode"]:checked');
-        if (metode) {
-            closePaymentModal();
-            showNotif('Pembayaran via ' + metode.value + ' sedang diproses!', 'success');
+        if (!metode) {
+            showNotif('Pilih metode pembayaran terlebih dahulu!', 'error');
+            return;
         }
+
+        var btn = document.querySelector('.pm-bayar');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Memproses...';
+
+        var data = tierData[currentUpgradeTier];
+        if (!data) {
+            showNotif('Data tier tidak ditemukan!', 'error');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-check-circle"></i> Bayar Sekarang';
+            return;
+        }
+
+        fetch('{{ route("pelanggan.membership.upgrade") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'Accept': 'application/json',
+            },
+            body: JSON.stringify({
+                tingkat: data.name,
+                metode: metode.value,
+            }),
+        })
+        .then(function(res) { return res.json(); })
+        .then(function(result) {
+            closePaymentModal();
+            if (result.success) {
+                showNotif(result.message, 'success', 5000);
+                setTimeout(function() { location.reload(); }, 2000);
+            } else {
+                showNotif(result.message, 'error', 5000);
+            }
+        })
+        .catch(function() {
+            closePaymentModal();
+            showNotif('Terjadi kesalahan jaringan. Silakan coba lagi.', 'error', 5000);
+        })
+        .finally(function() {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-check-circle"></i> Bayar Sekarang';
+        });
     }
 
     function showNotif(msg, type, duration) {

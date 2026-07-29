@@ -49,7 +49,7 @@
     </td>
     <td class="py-3.5 px-4 text-center" data-label="Aksi">
         <div class="flex items-center justify-center gap-2">
-            @if ($p->id_pelanggan)
+            @if ($p->sumber === 'Walk-in')
             <a href="{{ route('admin.pelanggan.edit', $p->id_pelanggan) }}"
                 class="w-7 h-7 inline-flex items-center justify-center text-amber-500 bg-amber-50 hover:bg-amber-100 rounded-md transition-colors"><i
                     class="fa-solid fa-pen-to-square text-xs"></i>
@@ -67,7 +67,7 @@
                 </button>
             </form>
             @else
-            <span class="text-gray-400 text-[11px]">(via User)</span>
+            <span class="text-gray-400 text-[11px]">Akun Online</span>
             @endif
         </div>
     </td>
