@@ -44,6 +44,10 @@ class AdminLayananController extends Controller
 
     public function store(Request $request)
     {
+        $request->merge([
+            'harga' => (int) str_replace('.', '', $request->harga),
+        ]);
+
         $request->validate([
             'id_kategori'  => 'required|integer|max:100',
             'nm_layanan'         => 'required|string|max:20',
@@ -76,6 +80,10 @@ class AdminLayananController extends Controller
 
     public function update(Request $request, Layanan $layanan)
     {
+        $request->merge([
+            'harga' => (int) str_replace('.', '', $request->harga),
+        ]);
+
         $request->validate([
             'nm_layanan'  => 'sometimes|required|string|max:20',
             'id_kategori' => 'sometimes|required|integer|max:100',
