@@ -744,8 +744,8 @@
                                         </span>
                                     </td>
                                     <td data-label="Aksi" style="text-align:center;">
-                                        <a href="#" class="action-btn detail" title="Detail booking"><i class="fa-regular fa-eye"></i></a>
-                                        <a href="#" class="action-btn print" title="Cetak"><i class="fa-regular fa-print"></i></a>
+                                        <a href="{{ route('pelanggan.treatment.detail', ['id' => $booking->id_booking, 'status' => request('status')]) }}" class="action-btn detail" title="Detail booking"><i class="fa-regular fa-eye"></i></a>
+                                        <a href="{{ route('pelanggan.treatment.detail', ['id' => $booking->id_booking, 'status' => request('status')]) }}" class="action-btn print" title="Cetak" onclick="window.open(this.href,'_blank','width=900,height=650');return false;"><i class="fa-regular fa-print"></i></a>
                                     </td>
                                 </tr>
                                 @empty

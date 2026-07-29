@@ -352,9 +352,12 @@
                                         <div class="md:col-span-3">
                                             <label
                                                 class="text-[11px] font-medium text-gray-500 mb-1 block">Harga</label>
-                                            <input type="text" name="harga[]"
-                                                class="form-input-custom harga-input" placeholder="0"
-                                                value="{{ number_format((int) $d->harga, 0, ',', '.') }}" readonly>
+                                            <div class="relative">
+                                                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[13px] font-medium pointer-events-none">Rp</span>
+                                                <input type="text" name="harga[]"
+                                                    class="form-input-custom harga-input pl-10" placeholder="0"
+                                                    value="{{ number_format((int) $d->harga, 0, ',', '.') }}" readonly>
+                                            </div>
                                         </div>
                                         <div class="md:col-span-3">
                                             <label
@@ -405,8 +408,11 @@
                                         <div class="md:col-span-3">
                                             <label
                                                 class="text-[11px] font-medium text-gray-500 mb-1 block">Harga</label>
-                                            <input type="text" name="harga[]"
-                                                class="form-input-custom harga-input" placeholder="0" readonly>
+                                            <div class="relative">
+                                                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[13px] font-medium pointer-events-none">Rp</span>
+                                                <input type="text" name="harga[]"
+                                                    class="form-input-custom harga-input pl-10" placeholder="0" readonly>
+                                            </div>
                                         </div>
                                         <div class="md:col-span-3">
                                             <label
@@ -694,6 +700,24 @@
                     infoText.textContent = 'Member ' + tingkat + ' — Diskon ' + diskonPct + '%';
                 }
             }
+
+            document.querySelectorAll('.layanan-row').forEach(function(row) {
+                const select = row.querySelector('.layanan-select');
+                if (select) {
+                    const selected = select.options[select.selectedIndex];
+                    if (selected) {
+                        const harga = selected.getAttribute('data-harga') || 0;
+                        row.querySelector('.harga-input').value = parseInt(harga).toLocaleString('id-ID');
+                        hitungSubtotal(row.querySelector('.diskon-input') || row.querySelector('.harga-input'));
+                    }
+                }
+            });
+        });
+
+        document.querySelector('form').addEventListener('submit', function() {
+            document.querySelectorAll('.harga-input, .diskon-input').forEach(function(input) {
+                input.value = input.value.replace(/[^0-9]/g, '');
+            });
         });
     </script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>

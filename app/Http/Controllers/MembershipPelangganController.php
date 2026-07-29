@@ -7,6 +7,8 @@ use App\Models\Pelanggan;
 use App\Models\Transaksi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class MembershipPelangganController extends Controller
 {
@@ -27,7 +29,7 @@ class MembershipPelangganController extends Controller
                 'alamat' => '',
                 'catatan_alergi' => '',
                 'id_user' => $user->id,
-                'id_member' => 1,
+                'id_member' => null,
             ]);
         }
 
@@ -79,5 +81,103 @@ class MembershipPelangganController extends Controller
             'nextTier',
             'pelanggan'
         ));
+    }
+
+    public function upgrade(Request $request)
+    {
+        $request->validate([
+            'tingkat' => 'required|string|in:Silver,Gold,Platinum',
+            'metode' => 'required|string',
+        ]);
+
+        $user = Auth::user();
+        $pelanggan = Pelanggan::with('membership')
+            ->where('email', $user->email)
+            ->orWhere('nm_pelanggan', $user->nama)
+            ->first();
+
+        if (!$pelanggan) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Data pelanggan tidak ditemukan.',
+            ], 404);
+        }
+
+        $targetTier = Membership::where('tingkat', $request->tingkat)
+            ->where('status', 'aktif')
+            ->first();
+
+        if (!$targetTier) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Level membership tidak tersedia.',
+            ], 404);
+        }
+
+        $totalTransaksi = Transaksi::where('id_pelanggan', $pelanggan->id_pelanggan)
+            ->where('status', 'Lunas')
+            ->count();
+
+        $totalBelanja = Transaksi::where('id_pelanggan', $pelanggan->id_pelanggan)
+            ->where('status', 'Lunas')
+            ->sum('total');
+
+        if ($totalTransaksi < $targetTier->min_transaksi || $totalBelanja < $targetTier->min_pembelian) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Anda belum memenuhi syarat untuk upgrade ke ' . $request->tingkat . '.',
+            ], 400);
+        }
+
+        $levels = ['Silver', 'Gold', 'Platinum'];
+        $currentTingkat = $pelanggan->membership ? $pelanggan->membership->tingkat : null;
+
+        if ($currentTingkat) {
+            $currentIdx = array_search($currentTingkat, $levels);
+            $targetIdx = array_search($request->tingkat, $levels);
+            if ($targetIdx <= $currentIdx) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Tidak dapat upgrade ke level yang sama atau lebih rendah.',
+                ], 400);
+            }
+        }
+
+        try {
+            DB::beginTransaction();
+
+            $pelanggan->id_member = $targetTier->id_member;
+            $pelanggan->tgl_mulai_member = now();
+            $pelanggan->save();
+
+            buatNotif(
+                $user->id,
+                'Upgrade Membership Berhasil',
+                'Selamat! Membership Anda telah di-upgrade ke level ' . $request->tingkat . '. Nikmati semua keuntungannya!',
+                'Membership',
+                route('pelanggan.membership'),
+                $user->id
+            );
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Selamat! Membership Anda berhasil di-upgrade ke ' . $request->tingkat . '!',
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            Log::error('Membership upgrade gagal: ' . $e->getMessage(), [
+                'user_id' => $user->id,
+                'pelanggan_id' => $pelanggan->id_pelanggan,
+                'target_tier' => $request->tingkat,
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan saat upgrade membership.',
+            ], 500);
+        }
     }
 }

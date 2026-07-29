@@ -393,7 +393,7 @@ Route::middleware('auth')->group(function () {
                 'no_hp' => $user->no_hp ?? '',
                 'alamat' => '',
                 'catatan_alergi' => '',
-                'id_member' => 1,
+                'id_member' => null,
             ]);
         }
         $totalBooking = $pelanggan->total_booking ?? 0;
@@ -446,7 +446,7 @@ Route::middleware('auth')->group(function () {
         //Route Treatment
         Route::get('/pelanggan/treatment', function () {
             $userId = auth()->id();
-            $status = request('status', 'selesai');
+            $status = request('status');
 
             $query = \App\Models\Booking::with(['detail.layanan', 'karyawan'])
                 ->where('id_pelanggan', $userId);
@@ -462,12 +462,22 @@ Route::middleware('auth')->group(function () {
             return view('pelanggan.treatment.index', compact('bookings'));
         })->name('pelanggan.treatment');
 
+        Route::get('/pelanggan/treatment/{id}', function ($id) {
+            $booking = \App\Models\Booking::with(['detail.layanan', 'karyawan', 'transaksi', 'pelanggan', 'riwayatTreatment'])
+                ->where('id_booking', $id)
+                ->where('id_pelanggan', auth()->id())
+                ->firstOrFail();
+
+            return view('pelanggan.treatment.detail', compact('booking'));
+        })->name('pelanggan.treatment.detail');
+
         //Route Promo
         Route::get('/pelanggan/promo', [App\Http\Controllers\PelangganPromoController::class, 'index'])->name('pelanggan.promo');
         Route::post('/pelanggan/promo/claim', [App\Http\Controllers\PelangganPromoController::class, 'claim'])->name('pelanggan.promo.claim');
 
         //Route Membership
         Route::get('/pelanggan/membership', [MembershipPelangganController::class, 'index'])->name('pelanggan.membership');
+        Route::post('/pelanggan/membership/upgrade', [MembershipPelangganController::class, 'upgrade'])->name('pelanggan.membership.upgrade');
 
         //Route Produk
         Route::get('/pelanggan/produk', function () {

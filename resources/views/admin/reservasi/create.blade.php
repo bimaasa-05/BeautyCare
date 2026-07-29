@@ -46,7 +46,7 @@
     </style>
 </head>
 
-<body>
+git<body>
     <div class="page-loader">
         <div class="loader-spinner"></div>
     </div>
@@ -183,7 +183,10 @@
                                     </div>
                                     <div class="md:col-span-3">
                                         <label class="text-[11px] font-medium text-gray-500 mb-1 block">Harga</label>
-                                        <input type="text" name="harga[]" class="form-input-custom harga-input" placeholder="0" readonly>
+                                        <div class="relative">
+                                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[13px] font-medium pointer-events-none">Rp</span>
+                                            <input type="text" name="harga[]" class="form-input-custom harga-input pl-10" placeholder="0" readonly>
+                                        </div>
                                     </div>
                                     <div class="md:col-span-3">
                                         <label class="text-[11px] font-medium text-gray-500 mb-1 block">Diskon</label>
@@ -444,6 +447,12 @@
             initCustomSelects();
             const pelangganSelect = document.getElementById('id_pelanggan');
             onPelangganChange(pelangganSelect);
+        });
+
+        document.querySelector('form').addEventListener('submit', function() {
+            document.querySelectorAll('.harga-input, .diskon-input').forEach(function(input) {
+                input.value = input.value.replace(/[^0-9]/g, '');
+            });
         });
     </script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
