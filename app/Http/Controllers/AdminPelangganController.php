@@ -132,11 +132,20 @@ class AdminPelangganController extends Controller
 
     public function edit(Pelanggan $pelanggan)
     {
+        if (!is_null($pelanggan->id_user)) {
+            return redirect()->route('admin.pelanggan.index')
+                ->with('error', 'Pelanggan dari akun online tidak dapat diedit.');
+        }
         return view('admin.pelanggan.edit', compact('pelanggan'));
     }
 
     public function update(Request $request, Pelanggan $pelanggan)
     {
+        if (!is_null($pelanggan->id_user)) {
+            return redirect()->route('admin.pelanggan.index')
+                ->with('error', 'Pelanggan dari akun online tidak dapat diedit.');
+        }
+
         $rules = [
             'nm_pelanggan'  => 'required|string|max:100',
             'no_hp'         => 'nullable|string|max:20',
@@ -202,6 +211,11 @@ class AdminPelangganController extends Controller
 
     public function destroy(Pelanggan $pelanggan)
     {
+        if (!is_null($pelanggan->id_user)) {
+            return redirect()->route('admin.pelanggan.index')
+                ->with('error', 'Pelanggan dari akun online tidak dapat dihapus.');
+        }
+
         if ($pelanggan->foto) {
             Storage::disk('public')->delete($pelanggan->foto);
         }
