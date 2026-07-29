@@ -4,12 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Booking;
-<<<<<<< HEAD
 use App\Models\DetailBooking;
-use Illuminate\Support\Facades\DB;
-=======
 use App\Models\Pelanggan;
->>>>>>> 526faabee5535342635ab806dc920bd02bd6fa96
+use Illuminate\Support\Facades\DB;
 
 class BeautycianLaporanReservasiController extends Controller
 {
