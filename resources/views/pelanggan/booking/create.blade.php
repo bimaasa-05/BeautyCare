@@ -675,28 +675,6 @@
                             <div class="fcp-grid">
                                 <div class="fg-premium">
                                     <label class="fg-label">
-                                        <i class="fa-regular fa-spa fg-label-icon"></i>
-                                        Layanan Treatment <span class="fg-required">*</span>
-                                    </label>
-                                    <select name="id_layanan" id="id_layanan" required style="display:none">
-                                        <option value="">— Pilih Layanan —</option>
-                                        @foreach($layanans as $layanan)
-                                        <option value="{{ $layanan->id_layanan }}" data-harga="{{ $layanan->harga }}">
-                                            {{ $layanan->nm_layanan }} — Rp {{ number_format($layanan->harga, 0, ',', '.') }}
-                                        </option>
-                                        @endforeach
-                                    </select>
-                                    <div class="custom-select-wrap" id="customLayananWrap">
-                                        <div class="custom-select-trigger" id="customLayananTrigger">
-                                            <span class="cst-placeholder">— Pilih Layanan —</span>
-                                            <span class="cst-arrow"><i class="fa-solid fa-chevron-down"></i></span>
-                                        </div>
-                                        <div class="custom-select-dropdown" id="customLayananDropdown"></div>
-                                    </div>
-                                </div>
-
-                                <div class="fg-premium">
-                                    <label class="fg-label">
                                         <i class="fa-regular fa-user fg-label-icon"></i>
                                         Pilih Terapis <span class="fg-required">*</span>
                                     </label>
@@ -714,7 +692,62 @@
                                         <div class="custom-select-dropdown" id="customTerapisDropdown"></div>
                                     </div>
                                 </div>
+
+                                <div class="fg-premium">
+                                    <label class="fg-label">
+                                        <i class="fa-regular fa-spa fg-label-icon"></i>
+                                        Tambah Layanan <span class="fg-required">*</span>
+                                    </label>
+                                    <div style="display:flex;gap:8px;align-items:flex-start;">
+                                        <div style="flex:1;">
+                                            <select id="id_layanan_picker" style="display:none">
+                                                <option value="">— Pilih Layanan —</option>
+                                                @foreach($layanans as $layanan)
+                                                <option value="{{ $layanan->id_layanan }}" data-harga="{{ $layanan->harga }}">
+                                                    {{ $layanan->nm_layanan }} — Rp {{ number_format($layanan->harga, 0, ',', '.') }}
+                                                </option>
+                                                @endforeach
+                                            </select>
+                                            <div class="custom-select-wrap" id="customLayananWrap">
+                                                <div class="custom-select-trigger" id="customLayananTrigger">
+                                                    <span class="cst-placeholder">— Pilih Layanan —</span>
+                                                    <span class="cst-arrow"><i class="fa-solid fa-chevron-down"></i></span>
+                                                </div>
+                                                <div class="custom-select-dropdown" id="customLayananDropdown"></div>
+                                            </div>
+                                        </div>
+                                        <button type="button" id="btnTambahLayanan" class="fg-premium" style="padding:11px 18px;border-radius:12px;border:1.5px solid var(--primary);background:var(--primary);color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif;display:flex;align-items:center;gap:6px;white-space:nowrap;flex-shrink:0;margin-top:0;">
+                                            <i class="fa-solid fa-plus"></i> Tambah
+                                        </button>
+                                    </div>
+                                    <div style="margin-top:8px;">
+                                        <span style="font-size:11px;color:var(--gray);"><i class="fa-regular fa-circle-info"></i> Pilih layanan lalu klik <strong>Tambah</strong> untuk menambahkan ke daftar</span>
+                                    </div>
+                                </div>
                             </div>
+
+                            <!-- Daftar Layanan Terpilih -->
+                            <div id="selectedServicesWrap" style="margin-top:16px;display:none;">
+                                <table class="services-table" style="width:100%;border-collapse:collapse;">
+                                    <thead>
+                                        <tr style="background:#FFF7FA;">
+                                            <th style="text-align:left;padding:10px 14px;font-size:12px;font-weight:700;color:var(--gray);text-transform:uppercase;border-bottom:1px solid var(--border);">No</th>
+                                            <th style="text-align:left;padding:10px 14px;font-size:12px;font-weight:700;color:var(--gray);text-transform:uppercase;border-bottom:1px solid var(--border);">Layanan</th>
+                                            <th style="text-align:right;padding:10px 14px;font-size:12px;font-weight:700;color:var(--gray);text-transform:uppercase;border-bottom:1px solid var(--border);">Harga</th>
+                                            <th style="text-align:right;padding:10px 14px;font-size:12px;font-weight:700;color:var(--gray);text-transform:uppercase;border-bottom:1px solid var(--border);">Diskon</th>
+                                            <th style="text-align:right;padding:10px 14px;font-size:12px;font-weight:700;color:var(--gray);text-transform:uppercase;border-bottom:1px solid var(--border);">Subtotal</th>
+                                            <th style="text-align:center;padding:10px 14px;font-size:12px;font-weight:700;color:var(--gray);text-transform:uppercase;border-bottom:1px solid var(--border);">Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="selectedServicesBody"></tbody>
+                                </table>
+                            </div>
+                            <div id="noServicesMsg" style="margin-top:12px;padding:20px;text-align:center;background:#FAFAFA;border-radius:12px;border:1px dashed var(--border);">
+                                <i class="fa-regular fa-spa" style="font-size:24px;color:#ddd;display:block;margin-bottom:8px;"></i>
+                                <span style="font-size:13px;color:var(--gray);">Belum ada layanan dipilih. Pilih layanan di atas lalu klik <strong>Tambah</strong>.</span>
+                            </div>
+
+                            <div id="layananHiddenInputs"></div>
 
                             <div class="fcp-divider"></div>
 
@@ -740,34 +773,6 @@
                                         Jam <span class="fg-required">*</span>
                                     </label>
                                     <input type="time" name="jam" class="fg-input" required>
-                                </div>
-                            </div>
-
-                            <div class="fcp-divider"></div>
-
-                            <!-- Section 3: Harga & Catatan -->
-                            <div class="fcp-section-title">
-                                <span class="fcp-st-icon"><i class="fa-regular fa-receipt"></i></span>
-                                Harga & Catatan
-                            </div>
-                            <div class="fcp-section-sub">Informasi harga dan pesan tambahan untuk terapis</div>
-
-                            <div class="fcp-grid">
-                                <div class="fg-premium">
-                                    <label class="fg-label">
-                                        <i class="fa-regular fa-tag fg-label-icon"></i>
-                                        Harga
-                                    </label>
-                                    <input type="text" id="harga_display" class="fg-input" readonly placeholder="Pilih layanan terlebih dahulu" style="background:#F5F5F5;">
-                                    <input type="hidden" name="harga" id="harga">
-                                </div>
-
-                                <div class="fg-premium">
-                                    <label class="fg-label">
-                                        <i class="fa-regular fa-circle-down fg-label-icon"></i>
-                                        Diskon Member <span id="diskonLabel">({{ $diskonMember }}%)</span>
-                                    </label>
-                                    <input type="number" name="diskon" id="diskon" class="fg-input" value="0" min="0" readonly style="background:#F5F5F5;cursor:not-allowed;">
                                 </div>
                             </div>
 
@@ -816,21 +821,21 @@
                                 <div class="sc-row">
                                     <span class="sc-label">
                                         <span class="sc-dot"></span>
-                                        Layanan
+                                        Jumlah Layanan
                                     </span>
-                                    <span class="sc-value" id="summary_layanan" style="font-weight:500;color:var(--gray);">—</span>
+                                    <span class="sc-value" id="summary_jumlah" style="font-weight:500;color:var(--gray);">0</span>
                                 </div>
                                 <div class="sc-row">
                                     <span class="sc-label">
                                         <span class="sc-dot"></span>
-                                        Harga
+                                        Total Harga
                                     </span>
                                     <span class="sc-value" id="summary_harga">Rp 0</span>
                                 </div>
                                 <div class="sc-row">
                                     <span class="sc-label">
                                         <span class="sc-dot"></span>
-                                        Diskon
+                                        Total Diskon
                                     </span>
                                     <span class="sc-value" id="summary_diskon">Rp 0</span>
                                 </div>
@@ -858,6 +863,7 @@
 
     <script>
     var diskonPersen = {{ $diskonMember }};
+    var selectedServices = [];
 
     function formatRupiah(angka) {
         return 'Rp ' + angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
@@ -877,45 +883,114 @@
         return Math.round(harga * diskonPersen / 100);
     }
 
-    function updateDiskonLabel() {
-        const label = document.getElementById('diskonLabel');
-        const promoSelect = document.getElementById('id_promo');
-        if (promoSelect && promoSelect.value) {
-            const selected = promoSelect.options[promoSelect.selectedIndex];
-            const labelText = selected.getAttribute('data-label') || 'Promo';
-            label.textContent = '(' + labelText + ')';
-        } else {
-            label.textContent = '(' + diskonPersen + '%)';
+    function tambahLayanan() {
+        const select = document.getElementById('id_layanan_picker');
+        if (!select.value) {
+            alert('Silakan pilih layanan terlebih dahulu.');
+            return;
         }
+        const opt = select.options[select.selectedIndex];
+        const id = parseInt(select.value);
+        const nama = opt.text.split(' — ')[0];
+        const harga = parseInt(opt.getAttribute('data-harga'));
+
+        if (selectedServices.some(s => s.id_layanan === id)) {
+            alert('Layanan "' + nama + '" sudah ditambahkan.');
+            return;
+        }
+
+        selectedServices.push({ id_layanan: id, nama: nama, harga: harga });
+        renderSelectedServices();
+        updateSummary();
+        resetLayananPicker();
     }
 
-    function updateHarga() {
-        const select = document.getElementById('id_layanan');
-        const selected = select.options[select.selectedIndex];
-        const harga = selected ? parseInt(selected.getAttribute('data-harga')) : 0;
-
-        const display = document.getElementById('harga_display');
-        display.value = harga ? formatRupiah(harga) : '';
-        display.style.color = harga ? 'var(--dark)' : '#bbb';
-        document.getElementById('harga').value = harga || 0;
-
-        const diskon = hitungDiskon(harga);
-        document.getElementById('diskon').value = diskon;
-
-        const namaLayanan = selected && selected.value ? selected.text.split(' — ')[0] : '—';
-        document.getElementById('summary_layanan').textContent = namaLayanan;
-        document.getElementById('summary_harga').textContent = formatRupiah(harga);
-
-        updateSubtotal();
+    function hapusLayanan(index) {
+        selectedServices.splice(index, 1);
+        renderSelectedServices();
+        updateSummary();
     }
 
-    function updateSubtotal() {
-        const harga = parseInt(document.getElementById('harga').value || 0);
-        const diskon = parseInt(document.getElementById('diskon').value || 0);
-        const total = Math.max(0, harga - diskon);
+    function renderSelectedServices() {
+        const tbody = document.getElementById('selectedServicesBody');
+        const wrap = document.getElementById('selectedServicesWrap');
+        const noMsg = document.getElementById('noServicesMsg');
+        const hiddenContainer = document.getElementById('layananHiddenInputs');
 
-        document.getElementById('summary_diskon').textContent = formatRupiah(diskon);
-        document.getElementById('summary_total').textContent = formatRupiah(total);
+        tbody.innerHTML = '';
+        hiddenContainer.innerHTML = '';
+
+        if (selectedServices.length === 0) {
+            wrap.style.display = 'none';
+            noMsg.style.display = 'block';
+            return;
+        }
+
+        wrap.style.display = 'block';
+        noMsg.style.display = 'none';
+
+        selectedServices.forEach(function(svc, i) {
+            const diskon = hitungDiskon(svc.harga);
+            const subtotal = svc.harga - diskon;
+
+            var row = document.createElement('tr');
+            row.style.borderBottom = '1px solid var(--border)';
+            row.innerHTML =
+                '<td style="padding:10px 14px;font-size:13px;color:var(--gray);">' + (i + 1) + '</td>' +
+                '<td style="padding:10px 14px;font-size:13px;font-weight:600;color:var(--dark);">' + svc.nama + '</td>' +
+                '<td style="padding:10px 14px;font-size:13px;text-align:right;color:var(--dark);">' + formatRupiah(svc.harga) + '</td>' +
+                '<td style="padding:10px 14px;font-size:13px;text-align:right;color:#DC2626;">- ' + formatRupiah(diskon) + '</td>' +
+                '<td style="padding:10px 14px;font-size:13px;text-align:right;font-weight:600;color:var(--dark);">' + formatRupiah(subtotal) + '</td>' +
+                '<td style="padding:10px 14px;text-align:center;"><button type="button" onclick="hapusLayanan(' + i + ')" style="background:none;border:none;color:#EF4444;cursor:pointer;font-size:15px;padding:4px;" title="Hapus"><i class="fa-regular fa-trash-can"></i></button></td>';
+            tbody.appendChild(row);
+
+            // Hidden inputs
+            var inpId = document.createElement('input');
+            inpId.type = 'hidden';
+            inpId.name = 'id_layanan[]';
+            inpId.value = svc.id_layanan;
+            hiddenContainer.appendChild(inpId);
+
+            var inpHarga = document.createElement('input');
+            inpHarga.type = 'hidden';
+            inpHarga.name = 'harga[]';
+            inpHarga.value = svc.harga;
+            hiddenContainer.appendChild(inpHarga);
+
+            var inpDiskon = document.createElement('input');
+            inpDiskon.type = 'hidden';
+            inpDiskon.name = 'diskon[]';
+            inpDiskon.value = diskon;
+            hiddenContainer.appendChild(inpDiskon);
+        });
+    }
+
+    function updateSummary() {
+        var totalHarga = 0;
+        var totalDiskon = 0;
+
+        selectedServices.forEach(function(svc) {
+            var diskon = hitungDiskon(svc.harga);
+            totalHarga += svc.harga;
+            totalDiskon += diskon;
+        });
+
+        var totalBayar = Math.max(0, totalHarga - totalDiskon);
+
+        document.getElementById('summary_jumlah').textContent = selectedServices.length + ' layanan';
+        document.getElementById('summary_harga').textContent = formatRupiah(totalHarga);
+        document.getElementById('summary_diskon').textContent = formatRupiah(totalDiskon);
+        document.getElementById('summary_total').textContent = formatRupiah(totalBayar);
+    }
+
+    function resetLayananPicker() {
+        const select = document.getElementById('id_layanan_picker');
+        select.value = '';
+        const trigger = document.getElementById('customLayananTrigger');
+        var ph = trigger.querySelector('.cst-placeholder');
+        if (ph) {
+            trigger.innerHTML = '<span class="cst-placeholder">— Pilih Layanan —</span><span class="cst-arrow"><i class="fa-solid fa-chevron-down"></i></span>';
+        }
     }
 
     // ─── Custom Select Dropdown ───
@@ -1025,21 +1100,27 @@
             jamInput.value = hours + ':' + minutes;
         }
 
-        initCustomSelect('id_layanan', 'customLayananWrap', 'customLayananTrigger', 'customLayananDropdown', updateHarga);
+        initCustomSelect('id_layanan_picker', 'customLayananWrap', 'customLayananTrigger', 'customLayananDropdown');
         initCustomSelect('id_karyawan', 'customTerapisWrap', 'customTerapisTrigger', 'customTerapisDropdown');
+
+        // Tambah Layanan button
+        document.getElementById('btnTambahLayanan').addEventListener('click', tambahLayanan);
 
         const promoSelect = document.getElementById('id_promo');
         if (promoSelect) {
             initCustomSelect('id_promo', 'customPromoWrap', 'customPromoTrigger', 'customPromoDropdown', function() {
-                const harga = parseInt(document.getElementById('harga').value || 0);
-                if (harga > 0) {
-                    const diskon = hitungDiskon(harga);
-                    document.getElementById('diskon').value = diskon;
-                    updateDiskonLabel();
-                    updateSubtotal();
-                }
+                renderSelectedServices();
+                updateSummary();
             });
         }
+
+        // Form submit validation
+        document.getElementById('bookingForm').addEventListener('submit', function(e) {
+            if (selectedServices.length === 0) {
+                e.preventDefault();
+                alert('Silakan tambah minimal 1 layanan.');
+            }
+        });
     });
 
     const now = new Date();
