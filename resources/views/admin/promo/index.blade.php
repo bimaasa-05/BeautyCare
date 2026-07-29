@@ -87,7 +87,7 @@
 
             <!-- Dashboard Content -->
 
-            <main class="flex-1 overflow-y-auto p-5">
+            <div class="flex-1 overflow-y-auto p-5">
                 <div class="space-y-4">
 
                     @if(session('success'))
@@ -191,7 +191,9 @@
                         @endforelse
                     </div>
                 </div>
-            </main>
+            </div>
+        </main>
+    </div>
 
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
 </body>
