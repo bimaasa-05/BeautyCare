@@ -19,9 +19,7 @@ class PelangganTreatmentController extends Controller
             $query->where('status', $status);
         }
 
-        $bookings = $query->orderBy('tanggal', 'desc')
-            ->orderBy('jam', 'desc')
-            ->get();
+        $bookings = $query->orderBy('id_booking', 'desc')->get();
 
         return view('pelanggan.treatment.index', compact('bookings'));
     }
