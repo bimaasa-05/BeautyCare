@@ -78,7 +78,7 @@
                             'dibatalkan' => 'bg-red-100 text-red-700',
                             default => 'bg-gray-100 text-gray-600',
                         };
-                        $grandTotal = $reservasi->detail->sum(fn($d) => ($d->harga ?? 0) - ($d->diskon ?? 0));
+                        $grandTotal = $reservasi->detail->sum(fn($d) => (int)($d->layanan->harga ?? 0) - (int)($d->diskon ?? 0));
                     @endphp
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -136,9 +136,9 @@
                                     <tr class="border-t border-gray-100">
                                         <td class="px-4 py-3 text-[13px] text-gray-500 font-mono">{{ $i + 1 }}</td>
                                         <td class="px-4 py-3 text-[13px] font-semibold text-gray-700">{{ $d->layanan->nm_layanan ?? '-' }}</td>
-                                        <td class="px-4 py-3 text-[13px] text-gray-600 text-right">Rp {{ number_format($d->harga ?? 0, 0, ',', '.') }}</td>
+                                        <td class="px-4 py-3 text-[13px] text-gray-600 text-right">Rp {{ number_format((int)($d->layanan->harga ?? 0), 0, ',', '.') }}</td>
                                         <td class="px-4 py-3 text-[13px] text-gray-600 text-right">{{ $d->diskon ? 'Rp ' . number_format($d->diskon, 0, ',', '.') : '-' }}</td>
-                                        <td class="px-4 py-3 text-[13px] font-bold text-gray-800 text-right">Rp {{ number_format(($d->harga ?? 0) - ($d->diskon ?? 0), 0, ',', '.') }}</td>
+                                        <td class="px-4 py-3 text-[13px] font-bold text-gray-800 text-right">Rp {{ number_format((int)($d->layanan->harga ?? 0) - (int)($d->diskon ?? 0), 0, ',', '.') }}</td>
                                     </tr>
                                     @empty
                                     <tr>
