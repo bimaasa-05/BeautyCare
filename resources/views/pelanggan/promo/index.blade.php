@@ -341,7 +341,7 @@
         background: #D1FAE5;
         color: #059669;
         box-shadow: none;
-        cursor: pointer;
+        cursor: default;
     }
 
     .promo-btn-claim.disabled {
@@ -555,7 +555,7 @@
                             <div class="promo-footer">
                                 <span class="promo-code"><i class="fa-regular fa-ticket"></i> {{ strtoupper(str_replace(' ', '', substr($promo->nm_promo, 0, 8))) }}</span>
                                 @if($promo->status == 'Tersedia')
-                                <button class="promo-btn-claim @if($isClaimed) claimed @endif @if($isUsed) disabled @endif" data-id="{{ $promo->id_promo }}" @if($isUsed) disabled="disabled" @endif>
+                                <button class="promo-btn-claim @if($isClaimed) claimed @endif @if($isUsed) disabled @endif" data-id="{{ $promo->id_promo }}" @if($isClaimed || $isUsed) disabled="disabled" @endif>
                                     @if($isClaimed)<i class="fa-regular fa-circle-check"></i> @endif{{ $isClaimed ? 'Claimed' : 'Klaim Now' }}
                                 </button>
                                 @else
@@ -607,6 +607,9 @@
         btn.addEventListener('click', function() {
             const id = this.dataset.id;
             const card = this.closest('.promo-card');
+            const originalText = this.innerHTML;
+            this.disabled = true;
+            this.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
             fetch('{{ route("pelanggan.promo.claim") }}', {
                 method: 'POST',
                 headers: {
@@ -621,17 +624,22 @@
                     if (data.action === 'claimed') {
                         this.classList.add('claimed');
                         this.innerHTML = '<i class="fa-regular fa-circle-check"></i> Claimed';
-                    } else {
-                        this.classList.remove('claimed');
-                        this.textContent = 'Klaim Now';
                     }
                 } else if (data.action === 'used') {
                     alert('Promo ini sudah pernah digunakan');
+                    this.disabled = false;
+                    this.innerHTML = originalText;
                 } else {
                     alert(data.message || 'Gagal memproses promo');
+                    this.disabled = false;
+                    this.innerHTML = originalText;
                 }
             })
-            .catch(() => alert('Terjadi kesalahan'));
+            .catch(() => {
+                alert('Terjadi kesalahan');
+                this.disabled = false;
+                this.innerHTML = originalText;
+            });
         });
     });
     </script>
