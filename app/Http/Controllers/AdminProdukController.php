@@ -24,6 +24,11 @@ class AdminProdukController extends Controller
 
     public function store(Request $request)
     {
+        $request->merge([
+            'harga_beli' => (int) str_replace('.', '', $request->harga_beli),
+            'harga_jual' => (int) str_replace('.', '', $request->harga_jual),
+        ]);
+
         $request->validate([
             'id_kategori_produk' => 'required|integer|exists:kategori_produk,id_kategori_produk',
             'id_supplier'        => 'required|integer|exists:supplier,id_supplier',
@@ -58,6 +63,11 @@ class AdminProdukController extends Controller
 
     public function update(Request $request, Produk $produk)
     {
+        $request->merge([
+            'harga_beli' => (int) str_replace('.', '', $request->harga_beli),
+            'harga_jual' => (int) str_replace('.', '', $request->harga_jual),
+        ]);
+
         $request->validate([
             'id_kategori_produk' => 'required|integer|exists:kategori_produk,id_kategori_produk',
             'id_supplier'        => 'required|integer|exists:supplier,id_supplier',
