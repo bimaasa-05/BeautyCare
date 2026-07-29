@@ -27,6 +27,10 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();
         $user = Auth::user();
 
+        if ($user->status === 'suspend' && $user->suspend_until && now()->greaterThanOrEqualTo($user->suspend_until)) {
+            $user->update(['status' => 'aktif', 'suspend_until' => null]);
+        }
+
         if ($user->status !== 'aktif') {
             Auth::guard('web')->logout();
             $request->session()->invalidate();
