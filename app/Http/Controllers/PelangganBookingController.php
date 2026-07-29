@@ -21,6 +21,7 @@ class PelangganBookingController extends Controller
 
         $bookings = Booking::with(['detail.layanan', 'karyawan'])
             ->where('id_pelanggan', $id_pelanggan)
+            ->orderBy('id_booking', 'desc')
             ->get();
 
         $total_booking = $bookings->count();
@@ -36,7 +37,7 @@ class PelangganBookingController extends Controller
                 $keyword = strtolower($search);
                 $idBooking = '#' . str_pad($b->id_booking, 3, '0', STR_PAD_LEFT);
                 $namaKaryawan = $b->karyawan ? strtolower($b->karyawan->nama) : '';
-                $nmLayanan = $b->detail->first() && $b->detail->first()->layanan ? strtolower($b->detail->first()->layanan->nm_layanan) : '';
+                $nmLayanan = $b->detail->filter(fn($d) => $d->layanan)->pluck('layanan.nm_layanan')->implode(' ');
 
                 return str_contains(strtolower($b->status), $keyword)
                     || str_contains(strtolower($b->tanggal), $keyword)
@@ -95,19 +96,19 @@ class PelangganBookingController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'id_layanan' => 'required|integer|exists:layanan,id_layanan',
+            'id_layanan' => 'required|array',
+            'id_layanan.*' => 'integer|exists:layanan,id_layanan',
             'id_karyawan' => 'required|integer',
             'tanggal' => 'required|date',
             'jam' => 'required',
-            'harga' => 'required|numeric',
-            'diskon' => 'nullable|numeric|min:0',
+            'harga' => 'required|array',
+            'harga.*' => 'numeric',
+            'diskon' => 'nullable|array',
+            'diskon.*' => 'numeric|min:0',
             'catatan' => 'nullable|string',
             'id_promo' => 'nullable|integer|exists:promo,id_promo',
         ]);
 
-        $diskon = (float) ($request->diskon ?? 0);
-        $harga = (float) $request->harga;
-        $subtotal = $harga - $diskon;
         $idPromo = $request->id_promo;
 
         if ($idPromo) {
@@ -137,14 +138,24 @@ class PelangganBookingController extends Controller
             'catatan' => $request->catatan ?? '',
         ]);
 
-        DetailBooking::create([
-            'id_booking' => $booking->id_booking,
-            'id_layanan' => $request->id_layanan,
-            'harga' => $harga,
-            'diskon' => $diskon,
-            'subtotal' => $subtotal,
-            'id_promo' => $idPromo,
-        ]);
+        $idLayanans = $request->id_layanan;
+        $hargas = $request->harga;
+        $diskons = $request->diskon ?? [];
+
+        foreach ($idLayanans as $i => $idLayanan) {
+            $harga = (float) ($hargas[$i] ?? 0);
+            $diskon = (float) ($diskons[$i] ?? 0);
+            $subtotal = $harga - $diskon;
+
+            DetailBooking::create([
+                'id_booking' => $booking->id_booking,
+                'id_layanan' => $idLayanan,
+                'harga' => $harga,
+                'diskon' => $diskon,
+                'subtotal' => $subtotal,
+                'id_promo' => $idPromo,
+            ]);
+        }
 
         DB::table('log_booking')->insert([
             'id_pelanggan' => auth()->id(),
@@ -164,6 +175,17 @@ class PelangganBookingController extends Controller
         }
 
         return redirect()->route('pelanggan.booking')->with('success', 'Booking berhasil dibuat!');
+    }
+
+    public function show($id)
+    {
+        $user = auth()->user();
+        $booking = Booking::with(['detail.layanan', 'karyawan'])
+            ->where('id_booking', $id)
+            ->where('id_pelanggan', $user->id)
+            ->firstOrFail();
+
+        return view('pelanggan.booking.detail', compact('booking'));
     }
 
     public function edit($id)
