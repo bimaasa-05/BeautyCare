@@ -101,6 +101,82 @@
             .admin-table tbody td:first-child { padding-left: 0; }
             .admin-table tbody td:last-child { padding-right: 0; }
         }
+
+        .page-header-premium {
+            background: linear-gradient(135deg, #FFF5F8 0%, #FFE5EF 50%, #FFD6E6 100%);
+            border-radius: 20px;
+            padding: 28px 32px;
+            margin-bottom: 24px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 79, 135, 0.08);
+        }
+
+        .page-header-premium::before {
+            content: '';
+            position: absolute;
+            top: -60px;
+            right: -60px;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 79, 135, 0.12) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .page-header-premium::after {
+            content: '';
+            position: absolute;
+            bottom: -40px;
+            left: 30%;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 79, 135, 0.08) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .page-header-premium .ph-content {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .page-header-premium .ph-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .page-header-premium .ph-icon-wrap {
+            width: 52px;
+            height: 52px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, var(--primary), #FF7BA6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 22px;
+            box-shadow: 0 6px 20px rgba(255, 79, 135, 0.3);
+            flex-shrink: 0;
+        }
+
+        .page-header-premium .ph-text h3 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--dark);
+            margin: 0;
+        }
+
+        .page-header-premium .ph-text p {
+            font-size: 13px;
+            color: var(--gray);
+            margin: 2px 0 0;
+        }
+
     </style>
 </head>
 
@@ -111,7 +187,27 @@
         <main class="main-content">
             @include('layouts.header2')
 
+
             <div class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+
+            <div class="page-header-premium">
+                <div class="ph-content">
+                    <div class="ph-left">
+                        <div class="ph-icon-wrap">
+                            <span class="nav-icon">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+                                    <line x1="7" y1="7" x2="7.01" y2="7"></line>
+                                </svg>
+                            </span>
+                        </div>
+                        <div class="ph-text">
+                            <h3>Data Kategori</h3>
+                            <p>Atur kategori layanan dan produk untuk memudahkan pengelompokan.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
                 @if (session('success'))
                     <div class="mb-4 flex items-center gap-2 bg-emerald-50 border border-emerald-200 text-emerald-700 text-[13px] px-4 py-3 rounded-xl">
                         <i class="fa-solid fa-check-circle text-emerald-500"></i>
