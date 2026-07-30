@@ -74,6 +74,81 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #94a3b8;
         }
+
+        .page-header-premium {
+            background: linear-gradient(135deg, #FFF5F8 0%, #FFE5EF 50%, #FFD6E6 100%);
+            border-radius: 20px;
+            padding: 28px 32px;
+            margin-bottom: 24px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 79, 135, 0.08);
+        }
+
+        .page-header-premium::before {
+            content: '';
+            position: absolute;
+            top: -60px;
+            right: -60px;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 79, 135, 0.12) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .page-header-premium::after {
+            content: '';
+            position: absolute;
+            bottom: -40px;
+            left: 30%;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 79, 135, 0.08) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .page-header-premium .ph-content {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .page-header-premium .ph-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .page-header-premium .ph-icon-wrap {
+            width: 52px;
+            height: 52px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, var(--primary), #FF7BA6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 22px;
+            box-shadow: 0 6px 20px rgba(255, 79, 135, 0.3);
+            flex-shrink: 0;
+        }
+
+        .page-header-premium .ph-text h3 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--dark);
+            margin: 0;
+        }
+
+        .page-header-premium .ph-text p {
+            font-size: 13px;
+            color: var(--gray);
+            margin: 2px 0 0;
+        }
     </style>
 </head>
 
@@ -85,8 +160,25 @@
         <main class="main-content">
             @include('layouts.header2')
 
+
             <!-- Dashboard Content -->
             <div class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+
+            <div class="page-header-premium">
+                <div class="ph-content">
+                    <div class="ph-left">
+                        <div class="ph-icon-wrap">
+                            <span class="nav-icon">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.912 5.813a2 2 0 0 0 1.9 1.375h5.813l-4.7 3.413a2 2 0 0 0-.726 2.236l1.912 5.812-4.7-3.412a2 2 0 0 0-2.35 0l-4.7 3.412 1.912-5.812a2 2 0 0 0-.726-2.236L2.375 10.19h5.813a2 2 0 0 0 1.9-1.375z"></path></svg>
+                            </span>
+                        </div>
+                        <div class="ph-text">
+                            <h3>Edit Layanan</h3>
+                            <p>Ubah informasi layanan kecantikan.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
                 <div class="bg-white rounded-2xl p-6 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)]">
                     <div class="flex justify-between items-center mb-6">
                         <div>

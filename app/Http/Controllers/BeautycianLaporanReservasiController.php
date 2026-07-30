@@ -24,9 +24,9 @@ class BeautycianLaporanReservasiController extends Controller
         if ($search) {
             $query->where(function ($q) use ($search) {
                 $q->where('tanggal', 'like', "%{$search}%")
-                  ->orWhereHas('pelanggan', function ($q2) use ($search) {
-                      $q2->where('nm_pelanggan', 'like', "%{$search}%");
-                  });
+                    ->orWhereHas('pelanggan', function ($q2) use ($search) {
+                        $q2->where('nm_pelanggan', 'like', "%{$search}%");
+                    });
             });
         }
 
@@ -46,15 +46,21 @@ class BeautycianLaporanReservasiController extends Controller
         $dibatalkan   = Booking::where('id_karyawan', $id_karyawan)->where('status', 'dibatalkan')->count();
 
         $total_pendapatan = DetailBooking::whereHas('booking', function ($q) use ($id_karyawan) {
-                $q->where('id_karyawan', $id_karyawan)->where('status', 'selesai');
-            })->sum('subtotal');
+            $q->where('id_karyawan', $id_karyawan)->where('status', 'selesai');
+        })->sum('subtotal');
 
         $pendapatan_bulan_ini = DetailBooking::whereHas('booking', function ($q) use ($id_karyawan) {
-                $q->where('id_karyawan', $id_karyawan)
-                  ->where('status', 'selesai')
-                  ->whereMonth('tanggal', now()->month)
-                  ->whereYear('tanggal', now()->year);
-            })->sum('subtotal');
+            $q->where('id_karyawan', $id_karyawan)
+                ->where('status', 'selesai')
+                ->whereMonth('tanggal', now()->month)
+                ->whereYear('tanggal', now()->year);
+        })->sum('subtotal');
+
+        $rata_rata_transaksi = $selesai > 0 ? round($total_pendapatan / $selesai) : 0;
+
+        $booking_hari_ini = Booking::where('id_karyawan', $id_karyawan)
+            ->where('tanggal', now()->toDateString())
+            ->count();
 
         $chartBulan = [];
         $chartSelesai = [];
@@ -63,6 +69,17 @@ class BeautycianLaporanReservasiController extends Controller
             $chartSelesai[] = Booking::where('id_karyawan', $id_karyawan)
                 ->where('status', 'selesai')
                 ->whereMonth('tanggal', $i)
+                ->whereYear('tanggal', now()->year)
+                ->count();
+        }
+
+        $chartDailyData = [];
+        $daysInMonth = now()->daysInMonth;
+        for ($d = 1; $d <= $daysInMonth; $d++) {
+            $chartDailyData[] = Booking::where('id_karyawan', $id_karyawan)
+                ->where('status', 'selesai')
+                ->whereDay('tanggal', $d)
+                ->whereMonth('tanggal', now()->month)
                 ->whereYear('tanggal', now()->year)
                 ->count();
         }
@@ -86,10 +103,22 @@ class BeautycianLaporanReservasiController extends Controller
             ->get();
 
         return view('beautycian.laporan-reservasi.index', compact(
-            'reservasi', 'search',
-            'total_reservasi', 'dikonfirmasi', 'diproses', 'selesai', 'dibatalkan',
-            'total_pendapatan', 'pendapatan_bulan_ini',
-            'chartBulan', 'chartSelesai', 'layananTerpopuler', 'pelanggan_setia'
+            'reservasi',
+            'search',
+            'total_reservasi',
+            'dikonfirmasi',
+            'diproses',
+            'selesai',
+            'dibatalkan',
+            'total_pendapatan',
+            'pendapatan_bulan_ini',
+            'rata_rata_transaksi',
+            'booking_hari_ini',
+            'chartBulan',
+            'chartSelesai',
+            'chartDailyData',
+            'layananTerpopuler',
+            'pelanggan_setia'
         ));
     }
 

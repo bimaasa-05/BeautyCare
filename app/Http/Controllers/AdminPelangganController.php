@@ -24,6 +24,7 @@ class AdminPelangganController extends Controller
                 'users.no_hp',
                 'users.foto',
                 'users.status',
+                'users.suspend_until',
                 'users.created_at',
                 'pelanggan.id_pelanggan',
                 'pelanggan.nm_pelanggan',
@@ -33,6 +34,7 @@ class AdminPelangganController extends Controller
             );
 
         $walkinQuery = Pelanggan::whereNull('id_user')
+            ->whereRaw('email NOT IN (SELECT email FROM users WHERE role = ? AND email IS NOT NULL)', ['pelanggan'])
             ->select(
                 DB::raw('NULL as user_id'),
                 DB::raw('NULL as nama'),
@@ -78,7 +80,15 @@ class AdminPelangganController extends Controller
         $online = $onlineQuery->get()->each(fn($item) => $item->sumber = 'Online');
         $walkin = $walkinQuery->get()->each(fn($item) => $item->sumber = 'Walk-in');
 
-        $pelanggan = $online->concat($walkin);
+        $filterSumber = $request->filter_sumber;
+        if ($filterSumber === 'online') {
+            $pelanggan = $online;
+        } elseif ($filterSumber === 'walkin') {
+            $pelanggan = $walkin;
+        } else {
+            $pelanggan = $online->concat($walkin);
+        }
+
         $pelanggan = $sortOrder === 'asc'
             ? $pelanggan->sortBy('created_at')
             : $pelanggan->sortByDesc('created_at');
@@ -98,50 +108,16 @@ class AdminPelangganController extends Controller
 
     public function store(Request $request)
     {
-        $rules = [
+        $request->validate([
             'nm_pelanggan'  => 'required|string|max:100',
             'no_hp'         => 'nullable|string|max:20',
             'email'         => 'required|email|max:100',
             'alamat'        => 'required|string',
-            'id_member'     => 'nullable|integer',
             'catatan_alergi'=> 'required|string',
             'foto'          => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-            'tipe'          => 'required|in:walkin,online',
-        ];
+        ]);
 
-        if ($request->tipe === 'online') {
-            $rules['password'] = 'required|string|min:8|confirmed';
-            $rules['email'] = 'required|email|max:100|unique:users,email';
-        }
-
-        $request->validate($rules);
-
-        if ($request->tipe === 'online') {
-            $user = User::create([
-                'nama'     => $request->nm_pelanggan,
-                'email'    => $request->email,
-                'no_hp'    => $request->no_hp,
-                'password' => Hash::make($request->password),
-                'role'     => 'pelanggan',
-                'status'   => 'aktif',
-            ]);
-
-            $data = $request->only(['nm_pelanggan', 'no_hp', 'email', 'alamat', 'id_member', 'catatan_alergi']);
-            $data['id_user'] = $user->id;
-
-            if ($request->hasFile('foto')) {
-                $data['foto'] = $request->file('foto')->store('pelanggan', 'public');
-            }
-
-            Pelanggan::create($data);
-
-            buatNotif(auth()->id(), 'Pelanggan Ditambahkan', 'Pelanggan ' . $request->nm_pelanggan . ' berhasil ditambahkan (Online)', 'Lainnya', route('admin.pelanggan.index'));
-
-            return redirect()->route('admin.pelanggan.index')
-                ->with('success', 'Pelanggan online berhasil ditambahkan.');
-        }
-
-        $data = $request->only(['nm_pelanggan', 'no_hp', 'email', 'alamat', 'id_member', 'catatan_alergi']);
+        $data = $request->only(['nm_pelanggan', 'no_hp', 'email', 'alamat', 'catatan_alergi']);
 
         if ($request->hasFile('foto')) {
             $data['foto'] = $request->file('foto')->store('pelanggan', 'public');
@@ -157,28 +133,65 @@ class AdminPelangganController extends Controller
 
     public function edit(Pelanggan $pelanggan)
     {
+        if (!is_null($pelanggan->id_user)) {
+            return redirect()->route('admin.pelanggan.index')
+                ->with('error', 'Pelanggan dari akun online tidak dapat diedit.');
+        }
         return view('admin.pelanggan.edit', compact('pelanggan'));
     }
 
     public function update(Request $request, Pelanggan $pelanggan)
     {
-        $request->validate([
+        if (!is_null($pelanggan->id_user)) {
+            return redirect()->route('admin.pelanggan.index')
+                ->with('error', 'Pelanggan dari akun online tidak dapat diedit.');
+        }
+
+        $rules = [
             'nm_pelanggan'  => 'required|string|max:100',
             'no_hp'         => 'nullable|string|max:20',
             'email'         => 'required|email|max:100',
             'alamat'        => 'required|string',
-            'id_member'     => 'nullable|integer',
             'catatan_alergi'=> 'required|string',
             'foto'          => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-        ]);
+        ];
 
-        $data = $request->only(['nm_pelanggan', 'no_hp', 'email', 'alamat', 'id_member', 'catatan_alergi']);
+        $isWalkin = is_null($pelanggan->id_user);
+
+        if ($isWalkin) {
+            if ($request->boolean('konversi_online')) {
+                $rules['password'] = 'required|string|min:8|confirmed';
+                $rules['email'] = 'required|email|max:100|unique:users,email';
+            }
+        } else {
+            $rules['id_member'] = 'nullable|integer';
+        }
+
+        $request->validate($rules);
+
+        $data = $request->only(['nm_pelanggan', 'no_hp', 'email', 'alamat', 'catatan_alergi']);
+
+        if (!$isWalkin) {
+            $data['id_member'] = $request->id_member;
+        }
 
         if ($request->hasFile('foto')) {
             if ($pelanggan->foto) {
                 Storage::disk('public')->delete($pelanggan->foto);
             }
             $data['foto'] = $request->file('foto')->store('pelanggan', 'public');
+        }
+
+        if ($isWalkin && $request->boolean('konversi_online')) {
+            $user = User::create([
+                'nama'     => $request->nm_pelanggan,
+                'email'    => $request->email,
+                'no_hp'    => $request->no_hp,
+                'password' => Hash::make($request->password),
+                'role'     => 'pelanggan',
+                'status'   => 'aktif',
+            ]);
+            $data['id_user'] = $user->id;
         }
 
         $pelanggan->update($data);
@@ -199,6 +212,11 @@ class AdminPelangganController extends Controller
 
     public function destroy(Pelanggan $pelanggan)
     {
+        if (!is_null($pelanggan->id_user)) {
+            return redirect()->route('admin.pelanggan.index')
+                ->with('error', 'Pelanggan dari akun online tidak dapat dihapus.');
+        }
+
         if ($pelanggan->foto) {
             Storage::disk('public')->delete($pelanggan->foto);
         }
@@ -221,8 +239,10 @@ class AdminPelangganController extends Controller
     {
         if ($user->status === 'suspend' || $user->status === 'non_aktif') {
             $user->status = 'aktif';
+            $user->suspend_until = null;
         } else {
             $user->status = 'non_aktif';
+            $user->suspend_until = null;
         }
         $user->save();
 
