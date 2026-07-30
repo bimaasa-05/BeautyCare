@@ -259,18 +259,18 @@
                                             <td class="py-3 px-3" data-label="Aksi">
                                                 <div class="flex items-center justify-center gap-2">
                                                     <a href="{{ route('admin.kategori.edit', ['id' => $item->id_kategori_layanan, 'type' => 'layanan']) }}"
-                                                        class="w-7 h-7 flex items-center justify-center rounded-lg bg-sky-50 text-sky-500 border border-sky-200 hover:bg-sky-100 transition-colors"
+                                                        class="w-7 h-7 flex items-center justify-center rounded-lg bg-amber-50 text-amber-500 border border-amber-200 hover:bg-amber-100 transition-colors"
                                                         title="Edit">
-                                                        <i class="fa-solid fa-pen text-[11px]"></i>
+                                                        <i class="fa-regular fa-pen-to-square text-[11px]"></i>
                                                     </a>
-                                                    <form action="{{ route('admin.kategori.destroy', ['id' => $item->id_kategori_layanan, 'type' => 'layanan']) }}" method="POST"
-                                                        onsubmit="return confirm('Yakin ingin menghapus kategori ini?')">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit"
-                                                            class="w-7 h-7 flex items-center justify-center rounded-lg bg-rose-50 text-rose-500 border border-rose-200 hover:bg-rose-100 transition-colors"
+<form action="{{ route('admin.kategori.destroy', ['id' => $item->id_kategori_layanan, 'type' => 'layanan']) }}" method="POST"
+                                                         onsubmit="return confirm('Yakin ingin menghapus kategori ini?')">
+                                                         @csrf
+                                                         @method('DELETE')
+                                                         <button type="submit"
+                                                            class="w-7 h-7 flex items-center justify-center rounded-lg bg-red-50 text-red-500 border border-red-200 hover:bg-red-100 transition-colors"
                                                             title="Hapus">
-                                                            <i class="fa-solid fa-trash text-[11px]"></i>
+                                                            <i class="fa-regular fa-trash-can text-[11px]"></i>
                                                         </button>
                                                     </form>
                                                 </div>
@@ -332,18 +332,18 @@
                                             <td class="py-3 px-3" data-label="Aksi">
                                                 <div class="flex items-center justify-center gap-2">
                                                     <a href="{{ route('admin.kategori.edit', ['id' => $item->id_kategori_produk, 'type' => 'produk']) }}"
-                                                        class="w-7 h-7 flex items-center justify-center rounded-lg bg-sky-50 text-sky-500 border border-sky-200 hover:bg-sky-100 transition-colors"
+                                                        class="w-7 h-7 flex items-center justify-center rounded-lg bg-amber-50 text-amber-500 border border-amber-200 hover:bg-amber-100 transition-colors"
                                                         title="Edit">
-                                                        <i class="fa-solid fa-pen text-[11px]"></i>
+                                                        <i class="fa-regular fa-pen-to-square text-[11px]"></i>
                                                     </a>
                                                     <form action="{{ route('admin.kategori.destroy', ['id' => $item->id_kategori_produk, 'type' => 'produk']) }}" method="POST"
                                                         onsubmit="return confirm('Yakin ingin menghapus kategori ini?')">
                                                         @csrf
                                                         @method('DELETE')
                                                         <button type="submit"
-                                                            class="w-7 h-7 flex items-center justify-center rounded-lg bg-rose-50 text-rose-500 border border-rose-200 hover:bg-rose-100 transition-colors"
+                                                            class="w-7 h-7 flex items-center justify-center rounded-lg bg-red-50 text-red-500 border border-red-200 hover:bg-red-100 transition-colors"
                                                             title="Hapus">
-                                                            <i class="fa-solid fa-trash text-[11px]"></i>
+                                                            <i class="fa-regular fa-trash-can text-[11px]"></i>
                                                         </button>
                                                     </form>
                                                 </div>
