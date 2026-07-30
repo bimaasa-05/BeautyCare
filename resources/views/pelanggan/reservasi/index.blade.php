@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Riwayat Reservasi - BeautyCare</title>
+    <title>Riwayat Booking - BeautyCare</title>
     @include('partials.head-meta')
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -627,8 +627,24 @@
                                 <i class="fa-regular fa-clock"></i>
                             </div>
                             <div class="ph-text">
-                                <h3>Riwayat Reservasi</h3>
-                                <p>Lihat seluruh riwayat reservasi treatment Anda</p>
+                                <h3>Riwayat Booking</h3>
+                                <p>Lihat seluruh riwayat booking treatment Anda</p>
+                            </div>
+                        </div>
+                        <div class="ph-stats">
+                            <div class="ph-stat-item">
+                                <div class="ph-stat-num">{{ $bookings->count() }}</div>
+                                <div class="ph-stat-label">Total</div>
+                            </div>
+                            <div class="ph-stat-divider"></div>
+                            <div class="ph-stat-item">
+                                <div class="ph-stat-num">{{ $bookings->where('status', 'selesai')->count() }}</div>
+                                <div class="ph-stat-label">Selesai</div>
+                            </div>
+                            <div class="ph-stat-divider"></div>
+                            <div class="ph-stat-item">
+                                <div class="ph-stat-num">{{ $bookings->where('status', 'menunggu')->count() }}</div>
+                                <div class="ph-stat-label">Menunggu</div>
                             </div>
                         </div>
                     </div>
@@ -674,8 +690,8 @@
                                 <i class="fa-regular fa-receipt"></i>
                             </div>
                             <div>
-                                <div class="rc-title">Daftar Reservasi</div>
-                                <div class="rc-subtitle">Semua riwayat reservasi treatment Anda</div>
+                                <div class="rc-title">Daftar Booking</div>
+                                <div class="rc-subtitle">Semua riwayat booking treatment Anda</div>
                             </div>
                         </div>
                         <div class="rc-actions">
@@ -685,7 +701,7 @@
                                 @endif
                                 <div class="search-input-wrap">
                                     <i class="fa-solid fa-search si-icon"></i>
-                                    <input type="text" name="search" placeholder="Cari reservasi..." value="{{ request('search') }}">
+                                    <input type="text" name="search" placeholder="Cari booking..." value="{{ request('search') }}">
                                 </div>
                             </form>
                         </div>
@@ -695,7 +711,7 @@
                         <table class="reservasi-table">
                             <thead>
                                 <tr>
-                                    <th>ID Reservasi</th>
+                                    <th>ID Booking</th>
                                     <th>Tanggal</th>
                                     <th>Jam</th>
                                     <th>Terapis</th>
@@ -706,53 +722,53 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse($reservasis ?? [] as $reservasi)
+                                @forelse($bookings as $booking)
                                 <tr>
                                     <td>
                                         <span class="reservasi-id-badge">
                                             <i class="fa-regular fa-receipt" style="font-size:10px;"></i>
-                                            #RS{{ str_pad($reservasi->id_booking, 3, '0', STR_PAD_LEFT) }}
+                                            #BK{{ str_pad($booking->id_booking, 3, '0', STR_PAD_LEFT) }}
                                         </span>
                                     </td>
                                     <td data-label="Tanggal">
                                         <div class="flex items-center gap-1.5">
                                             <i class="fa-regular fa-calendar text-gray-300 text-[11px]"></i>
-                                            <span>{{ \Carbon\Carbon::parse($reservasi->tanggal)->isoFormat('D MMM YYYY') }}</span>
+                                            <span>{{ \Carbon\Carbon::parse($booking->tanggal)->isoFormat('D MMM YYYY') }}</span>
                                         </div>
                                     </td>
                                     <td data-label="Jam">
                                         <div class="flex items-center gap-1.5">
                                             <i class="fa-regular fa-clock text-gray-300 text-[11px]"></i>
-                                            <span>{{ \Carbon\Carbon::parse($reservasi->jam)->format('H:i') }}</span>
+                                            <span>{{ \Carbon\Carbon::parse($booking->jam)->format('H:i') }}</span>
                                         </div>
                                     </td>
                                     <td data-label="Terapis">
                                         <div class="therapist-cell">
-                                            <div class="th-avatar">{{ $reservasi->karyawan ? substr($reservasi->karyawan->nama, 0, 1) : '?' }}</div>
-                                            <span class="th-name">{{ $reservasi->karyawan ? $reservasi->karyawan->nama : 'Terapis #'.$reservasi->id_karyawan }}</span>
+                                            <div class="th-avatar">{{ $booking->karyawan ? substr($booking->karyawan->nama, 0, 1) : '?' }}</div>
+                                            <span class="th-name">{{ $booking->karyawan ? $booking->karyawan->nama : 'Terapis #'.$booking->id_karyawan }}</span>
                                         </div>
                                     </td>
                                     <td data-label="Layanan">
                                         <div class="layanan-cell">
-                                            <span class="layanan-name">{{ $reservasi->detail->first() && $reservasi->detail->first()->layanan ? $reservasi->detail->first()->layanan->nm_layanan : '-' }}</span>
+                                            <span class="layanan-name">{{ $booking->detail->first() && $booking->detail->first()->layanan ? $booking->detail->first()->layanan->nm_layanan : '-' }}</span>
                                         </div>
                                     </td>
                                     <td data-label="Harga">
-                                        <span class="harga-cell">Rp {{ number_format($reservasi->detail->first()->subtotal ?? 0, 0, ',', '.') }}</span>
+                                        <span class="harga-cell">Rp {{ number_format($booking->detail->first()->subtotal ?? 0, 0, ',', '.') }}</span>
                                     </td>
                                     <td data-label="Status">
-                                        <span class="status-badge {{ $reservasi->status }}">
+                                        <span class="status-badge {{ $booking->status }}">
                                             <span class="sb-dot"></span>
-                                            {{ ucfirst($reservasi->status) }}
+                                            {{ ucfirst($booking->status) }}
                                         </span>
                                     </td>
                                     <td data-label="Aksi" style="text-align:center;">
                                         <div class="flex items-center justify-center gap-1.5">
-                                            <a href="#" class="action-btn detail" title="Detail reservasi">
+                                            <a href="{{ route('pelanggan.booking.detail', $booking->id_booking) }}" class="action-btn detail" title="Detail booking">
                                                 <i class="fa-regular fa-eye"></i>
                                             </a>
-                                            <a href="#" class="action-btn print" title="Cetak invoice">
-                                                <i class="fa-regular fa-print"></i>
+                                            <a href="{{ route('pelanggan.booking.detail', $booking->id_booking) }}" class="action-btn print" title="Cetak" onclick="window.open(this.href+'?print=1','_blank','width=900,height=650');return false;">
+                                                <i class="fa-solid fa-print"></i>
                                             </a>
                                         </div>
                                     </td>
@@ -764,8 +780,8 @@
                                             <div class="es-illustration">
                                                 <i class="fa-regular fa-calendar-xmark"></i>
                                             </div>
-                                            <h4>Belum Ada Reservasi</h4>
-                                            <p>Anda belum memiliki riwayat reservasi treatment.</p>
+                                            <h4>Belum Ada Booking</h4>
+                                            <p>Anda belum memiliki riwayat booking treatment.</p>
                                         </div>
                                     </td>
                                 </tr>
@@ -777,7 +793,7 @@
                     <div class="table-footer">
                         <div class="tf-info">
                             <span class="tf-dot"></span>
-                            Menampilkan {{ ($reservasis ?? collect())->count() }} reservasi
+                            Menampilkan {{ $bookings->count() }} booking
                         </div>
                     </div>
                 </div>
