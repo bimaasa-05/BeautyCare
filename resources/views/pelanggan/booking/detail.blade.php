@@ -315,6 +315,49 @@
         border-color: #ddd;
     }
 
+    .btn-print-detail {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 11px 24px;
+        border-radius: 12px;
+        border: 1.5px solid var(--border);
+        background: #F3E8FF;
+        color: #9333EA;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        font-family: 'Poppins', sans-serif;
+        border: none;
+    }
+
+    .btn-print-detail:hover {
+        background: #E9D5FF;
+        box-shadow: 0 4px 12px rgba(147, 51, 234, 0.2);
+    }
+
+    .action-bar-bottom {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-top: 28px;
+        padding-top: 24px;
+        border-top: 1px solid var(--border);
+    }
+
+    @media print {
+        .sidebar-toggle, .sidebar-overlay, .no-print { display: none !important; }
+        .sidebar { display: none !important; }
+        .main-content { margin-left: 0 !important; padding: 0 !important; }
+        .dashboard-layout { display: block !important; }
+        .dashboard-content { padding: 20px !important; }
+        .detail-card { box-shadow: none; border: 1px solid #ddd; }
+        body { background: white; }
+        header, .navbar-top, .main-content > .header2, .dashboard-content > .header-back-detail, .action-bar-bottom { display: none !important; }
+    }
+
     .header-back-detail {
         display: flex;
         align-items: center;
@@ -487,10 +530,13 @@
                         <p style="font-size:13px;color:var(--dark);margin:0;">{{ $booking->catatan }}</p>
                         @endif
 
-                        <div style="margin-top:28px;padding-top:24px;border-top:1px solid var(--border);">
+                        <div class="action-bar-bottom no-print">
                             <a href="{{ route('pelanggan.booking') }}" class="btn-back-detail">
                                 <i class="fa-solid fa-arrow-left"></i> Kembali
                             </a>
+                            <button onclick="window.print()" class="btn-print-detail">
+                                <i class="fa-solid fa-print"></i> Cetak
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -508,6 +554,11 @@
     };
     const dateEl = document.getElementById('currentDate');
     if (dateEl) dateEl.textContent = now.toLocaleDateString('id-ID', options);
+
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('print') === '1') {
+        window.print();
+    }
     </script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
 </body>
