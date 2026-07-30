@@ -337,35 +337,37 @@
                     <div class="table-widget">
                         <div class="tw-header">
                             <h3>Produk Yang Tersedia</h3>
-                            <a href="#">Lihat Semua</a>
+                            <a href="{{ route('pelanggan.produk') }}">Lihat Semua</a>
                         </div>
-                        <div class="table-scroll">
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>Produk</th>
-                                    <th>Kategori</th>
-                                    <th>Stok</th>
-                                    <th>Harga</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse($produks as $produk)
-                                <tr>
-                                    <td><div class="td-flex">{{ $produk->nm_produk }}</div></td>
-                                    <td>{{ $produk->kategori?->nm_produk ?? 'Umum' }}</td>
-                                    <td>{{ $produk->stok }} {{ $produk->satuan }}</td>
-                                    <td>Rp {{ number_format($produk->harga_jual, 0, ',', '.') }}</td>
-                                </tr>
-                                @empty
-                                <tr>
-                                    <td colspan="4" style="text-align:center;padding:20px;color:var(--gray);font-size:13px;">
-                                        Belum ada produk tersedia.
-                                    </td>
-                                </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
+                        <div class="table-scroll" style="max-height:242px;overflow-y:auto;">
+                            <div style="display:block;width:100%;">
+                            <table class="data-table" style="width:100%;">
+                                <thead>
+                                    <tr>
+                                        <th>Produk</th>
+                                        <th>Kategori</th>
+                                        <th>Stok</th>
+                                        <th>Harga</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse($produks as $produk)
+                                    <tr>
+                                        <td><div class="td-flex">{{ $produk->nm_produk }}</div></td>
+                                        <td>{{ $produk->kategori?->nm_produk ?? 'Umum' }}</td>
+                                        <td>{{ $produk->stok }} {{ $produk->satuan }}</td>
+                                        <td>Rp {{ number_format($produk->harga_jual, 0, ',', '.') }}</td>
+                                    </tr>
+                                    @empty
+                                    <tr>
+                                        <td colspan="4" style="text-align:center;padding:20px;color:var(--gray);font-size:13px;">
+                                            Belum ada produk tersedia.
+                                        </td>
+                                    </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                            </div>
                         </div>
                     </div>
                 </div>
