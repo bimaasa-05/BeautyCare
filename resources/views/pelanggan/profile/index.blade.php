@@ -320,8 +320,32 @@
         font-size: 14px;
     }
 
+    .form-group .input-icon-wrap .toggle-pw {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: #bbb;
+        font-size: 16px;
+        padding: 4px;
+        transition: color 0.2s ease;
+        line-height: 1;
+    }
+
+    .form-group .input-icon-wrap .toggle-pw:hover {
+        color: var(--primary);
+    }
+
     .form-group .input-icon-wrap .form-control {
         padding-left: 40px;
+    }
+
+    .form-group .input-icon-wrap input[type="password"] ~ .toggle-pw,
+    .form-group .input-icon-wrap input[type="text"] ~ .toggle-pw {
+        display: block;
     }
 
     .btn-primary-full {
@@ -635,6 +659,7 @@
                                         <div class="input-icon-wrap">
                                             <i class="fa-regular fa-lock"></i>
                                             <input type="password" name="current_password" class="form-control @error('current_password') is-invalid @enderror" placeholder="Masukkan password saat ini">
+                                            <button type="button" class="toggle-pw" onclick="togglePassword(this)" tabindex="-1"><i class="fa-regular fa-eye"></i></button>
                                         </div>
                                         @error('current_password') <span style="font-size:11px;color:#DC2626;margin-top:4px;display:block;">{{ $message }}</span> @enderror
                                     </div>
@@ -643,6 +668,7 @@
                                         <div class="input-icon-wrap">
                                             <i class="fa-regular fa-lock"></i>
                                             <input type="password" name="new_password" class="form-control @error('new_password') is-invalid @enderror" placeholder="Masukkan password baru">
+                                            <button type="button" class="toggle-pw" onclick="togglePassword(this)" tabindex="-1"><i class="fa-regular fa-eye"></i></button>
                                         </div>
                                         @error('new_password') <span style="font-size:11px;color:#DC2626;margin-top:4px;display:block;">{{ $message }}</span> @enderror
                                     </div>
@@ -651,6 +677,7 @@
                                         <div class="input-icon-wrap">
                                             <i class="fa-regular fa-lock"></i>
                                             <input type="password" name="new_password_confirmation" class="form-control" placeholder="Konfirmasi password baru">
+                                            <button type="button" class="toggle-pw" onclick="togglePassword(this)" tabindex="-1"><i class="fa-regular fa-eye"></i></button>
                                         </div>
                                     </div>
                                     <button type="submit" class="btn-primary-full">
@@ -674,6 +701,18 @@
             };
             reader.readAsDataURL(input.files[0]);
             document.getElementById('fotoForm').submit();
+        }
+    }
+
+    function togglePassword(btn) {
+        const input = btn.parentElement.querySelector('input');
+        const icon = btn.querySelector('i');
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.className = 'fa-regular fa-eye-slash';
+        } else {
+            input.type = 'password';
+            icon.className = 'fa-regular fa-eye';
         }
     }
 
