@@ -116,7 +116,7 @@ class PelangganDashboardController extends Controller
                 'id_member' => null,
             ]);
         }
-        $totalBooking = $pelanggan->total_booking ?? 0;
+        $totalBooking = DB::table('log_booking')->where('id_pelanggan', $userId)->count();
         $memberTingkat = null;
         $memberList = collect();
         if ($pelanggan && $pelanggan->id_member) {
