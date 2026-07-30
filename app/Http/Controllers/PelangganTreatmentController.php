@@ -33,4 +33,5 @@ class PelangganTreatmentController extends Controller
 
         return view('pelanggan.treatment.detail', compact('booking'));
     }
+
 }
