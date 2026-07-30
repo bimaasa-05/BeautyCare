@@ -43,10 +43,85 @@
         .custom-select-option:last-child { border-bottom: none; }
         .custom-select-option:hover { background: #FFF0F5; }
         .custom-select-option.selected { background: #FFE4EC; color: #FF4F87; font-weight: 500; }
+
+        .page-header-premium {
+            background: linear-gradient(135deg, #FFF5F8 0%, #FFE5EF 50%, #FFD6E6 100%);
+            border-radius: 20px;
+            padding: 28px 32px;
+            margin-bottom: 24px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 79, 135, 0.08);
+        }
+
+        .page-header-premium::before {
+            content: '';
+            position: absolute;
+            top: -60px;
+            right: -60px;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 79, 135, 0.12) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .page-header-premium::after {
+            content: '';
+            position: absolute;
+            bottom: -40px;
+            left: 30%;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 79, 135, 0.08) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .page-header-premium .ph-content {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .page-header-premium .ph-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .page-header-premium .ph-icon-wrap {
+            width: 52px;
+            height: 52px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, var(--primary), #FF7BA6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 22px;
+            box-shadow: 0 6px 20px rgba(255, 79, 135, 0.3);
+            flex-shrink: 0;
+        }
+
+        .page-header-premium .ph-text h3 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--dark);
+            margin: 0;
+        }
+
+        .page-header-premium .ph-text p {
+            font-size: 13px;
+            color: var(--gray);
+            margin: 2px 0 0;
+        }
     </style>
 </head>
 
-<body>
+git<body>
     <div class="page-loader">
         <div class="loader-spinner"></div>
     </div>
@@ -57,7 +132,24 @@
         <main class="main-content">
             @include('layouts.header2')
 
+
             <div class="flex-1 overflow-y-auto p-8">
+
+            <div class="page-header-premium">
+                <div class="ph-content">
+                    <div class="ph-left">
+                        <div class="ph-icon-wrap">
+                            <span class="nav-icon">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                            </span>
+                        </div>
+                        <div class="ph-text">
+                            <h3>Buat Reservasi</h3>
+                            <p>Buat reservasi baru untuk pelanggan.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
                 <div class="bg-white rounded-2xl p-6 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] relative overflow-hidden">
 
                     <div class="flex justify-between items-center mb-6">
@@ -183,7 +275,10 @@
                                     </div>
                                     <div class="md:col-span-3">
                                         <label class="text-[11px] font-medium text-gray-500 mb-1 block">Harga</label>
-                                        <input type="text" name="harga[]" class="form-input-custom harga-input" placeholder="0" readonly>
+                                        <div class="relative">
+                                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[13px] font-medium pointer-events-none">Rp</span>
+                                            <input type="text" name="harga[]" class="form-input-custom harga-input pl-10" placeholder="0" readonly>
+                                        </div>
                                     </div>
                                     <div class="md:col-span-3">
                                         <label class="text-[11px] font-medium text-gray-500 mb-1 block">Diskon</label>
@@ -444,6 +539,12 @@
             initCustomSelects();
             const pelangganSelect = document.getElementById('id_pelanggan');
             onPelangganChange(pelangganSelect);
+        });
+
+        document.querySelector('form').addEventListener('submit', function() {
+            document.querySelectorAll('.harga-input, .diskon-input').forEach(function(input) {
+                input.value = input.value.replace(/[^0-9]/g, '');
+            });
         });
     </script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>

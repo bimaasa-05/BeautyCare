@@ -32,6 +32,81 @@
         .role-kasir { background: #DBEAFE; color: #2563EB; }
         .role-beautycian { background: #D1FAE5; color: #059669; }
         .role-pelanggan { background: #FEF3C7; color: #D97706; }
+
+        .page-header-premium {
+            background: linear-gradient(135deg, #FFF5F8 0%, #FFE5EF 50%, #FFD6E6 100%);
+            border-radius: 20px;
+            padding: 28px 32px;
+            margin-bottom: 24px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 79, 135, 0.08);
+        }
+
+        .page-header-premium::before {
+            content: '';
+            position: absolute;
+            top: -60px;
+            right: -60px;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 79, 135, 0.12) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .page-header-premium::after {
+            content: '';
+            position: absolute;
+            bottom: -40px;
+            left: 30%;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 79, 135, 0.08) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .page-header-premium .ph-content {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .page-header-premium .ph-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .page-header-premium .ph-icon-wrap {
+            width: 52px;
+            height: 52px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, var(--primary), #FF7BA6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 22px;
+            box-shadow: 0 6px 20px rgba(255, 79, 135, 0.3);
+            flex-shrink: 0;
+        }
+
+        .page-header-premium .ph-text h3 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--dark);
+            margin: 0;
+        }
+
+        .page-header-premium .ph-text p {
+            font-size: 13px;
+            color: var(--gray);
+            margin: 2px 0 0;
+        }
     </style>
 </head>
 
@@ -42,7 +117,24 @@
         <main class="main-content">
             @include('layouts.header2')
 
+
             <div class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 space-y-4 sm:space-y-6">
+
+            <div class="page-header-premium">
+                <div class="ph-content">
+                    <div class="ph-left">
+                        <div class="ph-icon-wrap">
+                            <span class="nav-icon">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                            </span>
+                        </div>
+                        <div class="ph-text">
+                            <h3>Detail Riwayat</h3>
+                            <p>Lihat detail riwayat aktivitas.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
                 <div class="max-w-4xl mx-auto">
                     <a href="{{ route('admin.riwayat.index') }}" class="inline-flex items-center gap-2 text-pink-500 hover:text-pink-600 text-[13px] font-medium mb-4 transition-colors">
                         <i class="fa-solid fa-arrow-left"></i> Kembali ke Riwayat
