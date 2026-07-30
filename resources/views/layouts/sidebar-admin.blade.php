@@ -32,8 +32,8 @@
                 class="nav-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}"
                 title="Overview bisnis dan statistik utama">
                 <span class="nav-icon">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
                         <rect x="3" y="3" width="7" height="7" />
                         <rect x="14" y="3" width="7" height="7" />
                         <rect x="14" y="14" width="7" height="7" />
@@ -50,8 +50,8 @@
                 class="nav-item {{ request()->routeIs('admin.user.index') ? 'active' : '' }}"
                 title="Kelola seluruh data pengguna sistem">
                 <span class="nav-icon">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
                         <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
                         <circle cx="9" cy="7" r="4" />
                         <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
@@ -64,8 +64,8 @@
                 class="nav-item {{ request()->routeIs('admin.pelanggan.index') ? 'active' : '' }}" class="nav-item"
                 title="Kelola data pelanggan yang terdaftar">
                 <span class="nav-icon">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
                         <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
                         <circle cx="8.5" cy="7" r="4" />
                         <polyline points="17 11 19 13 23 9" />
@@ -77,8 +77,8 @@
                 class="nav-item {{ request()->routeIs('admin.beautician.index') ? 'active' : '' }}" class="nav-item"
                 title="Kelola data beautician / terapis">
                 <span class="nav-icon">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
                         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                         <circle cx="12" cy="7" r="4" />
                         <path d="M19 7l1 2 2 1-2 1-1 2-1-2-2-1 2-1 1-2z" />
@@ -90,8 +90,8 @@
                 class="nav-item {{ request()->routeIs('admin.supplier.index') ? 'active' : '' }}" class="nav-item"
                 title="Kelola data supplier">
                 <span class="nav-icon">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
                         <path
                             d="M5 18H19M5 18C3.89543 18 3 17.1046 3 16V8C3 6.89543 3.89543 6 5 6H19C20.1046 6 21 6.89543 21 8V16C21 17.1046 20.1046 18 19 18M5 18L5 20M19 18L19 20" />
                         <circle cx="7" cy="14" r="1.5" fill="currentColor" />
@@ -109,8 +109,8 @@
                 class="nav-item {{ request()->routeIs('admin.layanan.index') ? 'active' : '' }}" class="nav-item"
                 title="Kelola daftar layanan yang tersedia">
                 <span class="nav-icon">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
                         <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
                         <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
                     </svg>
@@ -121,8 +121,8 @@
                 class="nav-item {{ request()->routeIs('admin.kategori.index') ? 'active' : '' }}"
                 title="Kelola kategori layanan dan produk">
                 <span class="nav-icon">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
                         <line x1="4" y1="21" x2="20" y2="21" />
                         <line x1="4" y1="21" x2="4" y2="9" />
                         <line x1="20" y1="21" x2="20" y2="9" />
@@ -137,8 +137,8 @@
                 class="nav-item {{ request()->routeIs('admin.produk.index') ? 'active' : '' }}" class="nav-item"
                 title="Kelola stok dan data produk">
                 <span class="nav-icon">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
                         <path
                             d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
                         <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
@@ -154,8 +154,8 @@
                 class="nav-item {{ request()->routeIs('admin.membership.index') ? 'active' : '' }}"
                 title="Kelola membership dan loyalitas pelanggan">
                 <span class="nav-icon">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
                         <path
                             d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
                     </svg>
@@ -166,8 +166,8 @@
                 class="nav-item {{ request()->routeIs('admin.promo.index') ? 'active' : '' }}"
                 title="Kelola promo dan diskon">
                 <span class="nav-icon">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
                         <polyline points="20 12 20 22 4 22 4 12" />
                         <rect x="2" y="7" width="20" height="5" />
                         <line x1="12" y1="22" x2="12" y2="7" />
@@ -181,10 +181,12 @@
 
         <div class="nav-section">
             <div class="nav-section-title">Operasional</div>
-            <a href="{{ route('admin.reservasi.index') }}" class="nav-item {{ request()->routeIs('admin.reservasi.index') ? 'active' : '' }}" title="Kelola semua reservasi / booking">
+            <a href="{{ route('admin.reservasi.index') }}"
+                class="nav-item {{ request()->routeIs('admin.reservasi.index') ? 'active' : '' }}"
+                title="Kelola semua reservasi / booking">
                 <span class="nav-icon">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
                         <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
                         <line x1="16" y1="2" x2="16" y2="6" />
                         <line x1="8" y1="2" x2="8" y2="6" />
@@ -193,12 +195,17 @@
                 </span>
                 Data Reservasi
             </a>
-            <a href="{{ route('admin.transaksi.index') }}" class="nav-item {{ request()->routeIs('admin.transaksi.index') ? 'active' : '' }}" title="Kelola semua data transaksi">
+            <a href="{{ route('admin.transaksi.index') }}"
+                class="nav-item {{ request()->routeIs('admin.transaksi.index') ? 'active' : '' }}"
+                title="Kelola semua data transaksi">
                 <span class="nav-icon">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="12" y1="1" x2="12" y2="23" />
-                        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                        <polyline points="10 9 9 9 8 9"></polyline>
                     </svg>
                 </span>
                 Data Transaksi
@@ -207,20 +214,24 @@
 
         <div class="nav-section">
             <div class="nav-section-title">Laporan</div>
-            <a href="{{ route('admin.laporan.index') }}" class="nav-item {{ request()->routeIs('admin.laporan.index') ? 'active' : '' }}" title="Lihat laporan pendapatan bisnis">
+            <a href="{{ route('admin.laporan.index') }}"
+                class="nav-item {{ request()->routeIs('admin.laporan.index') ? 'active' : '' }}"
+                title="Lihat laporan pendapatan bisnis">
                 <span class="nav-icon">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
                         <line x1="12" y1="1" x2="12" y2="23" />
                         <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
                     </svg>
                 </span>
                 Laporan Pendapatan
             </a>
-            <a href="{{ route('admin.laporan-pelanggan.index') }}" class="nav-item {{ request()->routeIs('admin.laporan-pelanggan.*') ? 'active' : '' }}" title="Laporan data pelanggan">
+            <a href="{{ route('admin.laporan-pelanggan.index') }}"
+                class="nav-item {{ request()->routeIs('admin.laporan-pelanggan.*') ? 'active' : '' }}"
+                title="Laporan data pelanggan">
                 <span class="nav-icon">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
                         <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
                     </svg>
                 </span>
@@ -230,10 +241,12 @@
 
         <div class="nav-section">
             <div class="nav-section-title">Monitoring</div>
-            <a href="{{ route('admin.riwayat.index') }}" class="nav-item {{ request()->routeIs('admin.riwayat.*') ? 'active' : '' }}" title="Lihat riwayat aktivitas semua pengguna">
+            <a href="{{ route('admin.riwayat.index') }}"
+                class="nav-item {{ request()->routeIs('admin.riwayat.*') ? 'active' : '' }}"
+                title="Lihat riwayat aktivitas semua pengguna">
                 <span class="nav-icon">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
                         <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                 </span>
@@ -256,16 +269,16 @@
         if (o) o.classList.remove('active');
     }
 
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         var overlay = document.getElementById('sidebarOverlay');
         if (overlay) {
-            overlay.addEventListener('click', function() {
+            overlay.addEventListener('click', function () {
                 closeSidebar();
             });
         }
 
-        document.querySelectorAll('#sidebar .nav-item').forEach(function(item) {
-            item.addEventListener('click', function() {
+        document.querySelectorAll('#sidebar .nav-item').forEach(function (item) {
+            item.addEventListener('click', function () {
                 if (window.innerWidth <= 768) {
                     closeSidebar();
                 }
