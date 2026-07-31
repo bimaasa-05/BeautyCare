@@ -462,6 +462,15 @@
             align-items: flex-start;
             gap: 12px;
         }
+
+        .page-header-premium { padding: 22px 20px; }
+        .promo-banner-cta .cta-content { flex-direction: column; align-items: flex-start; gap: 14px; }
+    }
+
+    @media (max-width: 576px) {
+        .page-header-premium .ph-text h3 { font-size: 17px; }
+        .page-header-premium .ph-icon-wrap { width: 44px; height: 44px; border-radius: 13px; font-size: 18px; }
+        .promo-banner-cta .cta-content .cta-text h3 { font-size: 15px; }
     }
     </style>
 </head>
