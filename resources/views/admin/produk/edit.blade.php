@@ -232,7 +232,7 @@
 
                             <div>
                                 <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Harga Beli <span class="text-red-400">*</span></label>
-                                <input type="number" step="0.01" name="harga_beli" value="{{ old('harga_beli', $produk->harga_beli) }}"
+                                <input type="number" step="0.01" name="harga_beli" value="{{ old('harga_beli', $produk->harga_beli !== null ? rtrim(rtrim(number_format((float) $produk->harga_beli, 2, '.', ''), '0'), '.') : '') }}"
                                     class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('harga_beli') border-red-300 @enderror"
                                     placeholder="Masukkan harga beli">
                                 @error('harga_beli')
@@ -242,7 +242,7 @@
 
                             <div>
                                 <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Harga Jual <span class="text-red-400">*</span></label>
-                                <input type="number" step="0.01" name="harga_jual" value="{{ old('harga_jual', $produk->harga_jual) }}"
+                                <input type="number" step="0.01" name="harga_jual" value="{{ old('harga_jual', $produk->harga_jual !== null ? rtrim(rtrim(number_format((float) $produk->harga_jual, 2, '.', ''), '0'), '.') : '') }}"
                                     class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('harga_jual') border-red-300 @enderror"
                                     placeholder="Masukkan harga jual">
                                 @error('harga_jual')

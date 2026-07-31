@@ -18,8 +18,8 @@ return new class extends Migration
             $table->integer('id_supplier');
             $table->string('nm_produk', 50);
             $table->string('satuan', 50);
-            $table->decimal('harga_beli', 12);
-            $table->decimal('harga_jual', 12);
+            $table->decimal('harga_beli', 15, 2);
+            $table->decimal('harga_jual', 15, 2);
             $table->integer('stok');
             $table->string('foto');
             $table->enum('status', ['Tersedia', 'Habis', 'Belum Restok']);
