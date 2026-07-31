@@ -92,7 +92,7 @@ class KasirSeeder extends Seeder
     {
         $data = [
             ['nm_produk' => 'Skincare', 'status' => 'tersedia'],
-            ['nm_produk' => 'Hair Care', 'status' => 'tersedia'],
+            ['nm_produk' => 'HairCare', 'status' => 'tersedia'],
             ['nm_produk' => 'Body Care', 'status' => 'tersedia'],
             ['nm_produk' => 'Nail Care', 'status' => 'tersedia'],
             ['nm_produk' => 'Makeup', 'status' => 'tersedia'],
