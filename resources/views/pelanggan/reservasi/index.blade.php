@@ -695,15 +695,10 @@
                             </div>
                         </div>
                         <div class="rc-actions">
-                            <form action="{{ route('pelanggan.reservasi') }}" method="GET">
-                                @if(request('status'))
-                                <input type="hidden" name="status" value="{{ request('status') }}">
-                                @endif
-                                <div class="search-input-wrap">
-                                    <i class="fa-solid fa-search si-icon"></i>
-                                    <input type="text" name="search" placeholder="Cari booking..." value="{{ request('search') }}">
-                                </div>
-                            </form>
+                            <div class="search-input-wrap">
+                                <i class="fa-solid fa-search si-icon"></i>
+                                <input type="text" id="searchInput" placeholder="Cari booking..." value="{{ request('search') }}">
+                            </div>
                         </div>
                     </div>
 
@@ -793,7 +788,7 @@
                     <div class="table-footer">
                         <div class="tf-info">
                             <span class="tf-dot"></span>
-                            Menampilkan {{ $bookings->count() }} booking
+                            Menampilkan <span id="bookingCount">{{ $bookings->count() }}</span> booking
                         </div>
                     </div>
                 </div>
@@ -802,6 +797,24 @@
     </div>
 
     <script>
+    function cariReservasi() {
+        var keyword = document.getElementById('searchInput').value.toLowerCase().trim();
+        var rows = document.querySelectorAll('.reservasi-table tbody tr');
+        var visible = 0;
+
+        rows.forEach(function(row) {
+            if (row.querySelector('.empty-state')) return;
+            var match = row.textContent.toLowerCase().includes(keyword);
+            row.style.display = match ? '' : 'none';
+            if (match) visible++;
+        });
+
+        var countEl = document.getElementById('bookingCount');
+        if (countEl) countEl.textContent = visible;
+    }
+
+    document.getElementById('searchInput').addEventListener('input', cariReservasi);
+
     const now = new Date();
     const options = {
         weekday: 'long',

@@ -697,7 +697,7 @@
                         <div class="tc-actions">
                             <div class="search-input-wrap">
                                 <i class="fa-solid fa-search si-icon"></i>
-                                <input type="text" placeholder="Cari treatment..." value="">
+                                <input type="text" id="searchInput" placeholder="Cari treatment..." value="">
                             </div>
                         </div>
                     </div>
@@ -768,7 +768,7 @@
                     <div class="table-footer">
                         <div class="tf-info">
                             <span class="tf-dot"></span>
-                            Menampilkan {{ $bookings->count() }} treatment
+                            Menampilkan <span id="treatmentCount">{{ $bookings->count() }}</span> treatment
                         </div>
                         <div class="tf-pagination">
                             <button class="page-btn active">1</button>
@@ -780,6 +780,24 @@
     </div>
 
     <script>
+    function cariTreatment() {
+        var keyword = document.getElementById('searchInput').value.toLowerCase().trim();
+        var rows = document.querySelectorAll('.treatment-table tbody tr');
+        var visible = 0;
+
+        rows.forEach(function(row) {
+            if (row.querySelector('.empty-state')) return;
+            var match = row.textContent.toLowerCase().includes(keyword);
+            row.style.display = match ? '' : 'none';
+            if (match) visible++;
+        });
+
+        var countEl = document.getElementById('treatmentCount');
+        if (countEl) countEl.textContent = visible;
+    }
+
+    document.getElementById('searchInput').addEventListener('input', cariTreatment);
+
     const now = new Date();
     const options = {
         weekday: 'long',
