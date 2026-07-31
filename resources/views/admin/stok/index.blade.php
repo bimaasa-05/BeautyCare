@@ -75,6 +75,33 @@
             background: #94a3b8;
         }
 
+        @media (max-width: 768px) {
+            .admin-table thead { display: none; }
+            .admin-table tbody tr {
+                display: block;
+                padding: 16px;
+                border-bottom: 1px solid #f0f0f0;
+            }
+            .admin-table tbody td {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 8px 0;
+                border: none;
+                font-size: 13px;
+                text-align: right;
+            }
+            .admin-table tbody td::before {
+                content: attr(data-label);
+                font-weight: 600;
+                color: #9ca3af;
+                font-size: 11px;
+                text-transform: uppercase;
+            }
+            .admin-table tbody td:first-child { padding-left: 0; }
+            .admin-table tbody td:last-child { padding-right: 0; }
+        }
+
         .page-header-premium {
             background: linear-gradient(135deg, #FFF5F8 0%, #FFE5EF 50%, #FFD6E6 100%);
             border-radius: 20px;
@@ -321,7 +348,7 @@
                                             };
                                         @endphp
                                         <tr class="border-t border-pink-50 hover:bg-pink-50/30 transition-colors">
-                                            <td class="px-5 py-4 text-sm text-gray-600">{{ $loop->iteration }}</td>
+                                            <td class="px-5 py-4 text-sm text-gray-600" data-label="#">#{{ $loop->iteration }}</td>
                                             <td class="px-5 py-4 text-sm text-gray-600" data-label="Tanggal">
                                                 {{ \Carbon\Carbon::parse($s->tanggal)->format('d M Y') }}</td>
                                             <td class="px-5 py-4" data-label="Produk">
@@ -342,7 +369,7 @@
                                                 {{ $s->stok_sebelum }}</td>
                                             <td class="px-5 py-4 text-sm text-gray-600" data-label="Stok Sesudah">
                                                 {{ $s->stok_sesudah }}</td>
-                                            <td class="px-5 py-4 text-sm text-gray-600 max-w-[200px] truncate"
+                                            <td class="px-5 py-4 text-sm text-gray-600 sm:max-w-[200px] sm:truncate"
                                                 data-label="Keterangan">{{ $s->keterangan }}</td>
                                         </tr>
                                     @empty
