@@ -20,3 +20,26 @@ if (!function_exists('buatNotif')) {
         }
     }
 }
+
+if (!function_exists('catatStok')) {
+    function catatStok($idProduk, $type, $jumlah, $stokSebelum, $stokSesudah, $keterangan = '', $idSupplier = null, $refId = null, $refType = null)
+    {
+        try {
+            return \App\Models\Stok::create([
+                'id_produk'    => $idProduk,
+                'id_supplier'  => $idSupplier,
+                'tanggal'      => now()->toDateString(),
+                'type'         => $type,
+                'jumlah'       => $jumlah,
+                'stok_sebelum' => $stokSebelum,
+                'stok_sesudah' => $stokSesudah,
+                'keterangan'   => $keterangan,
+                'ref_id'       => $refId,
+                'ref_type'     => $refType,
+                'status'       => 1,
+            ]);
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+}
