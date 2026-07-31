@@ -506,7 +506,7 @@
                             <p>Dapatkan berbagai diskon dan penawaran menarik. Cek sekarang sebelum kehabisan!</p>
                         </div>
                         <span style="display:inline-flex;align-items:center;gap:8px;padding:10px 24px;border-radius:12px;background:rgba(255,255,255,0.2);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.15);color:#fff;font-size:13px;font-weight:600;white-space:nowrap;">
-                            <i class="fa-regular fa-clock"></i> Berakhir 31 Jul 2026
+                            <i class="fa-regular fa-clock"></i> Limited Edition
                         </span>
                     </div>
                 </div>
