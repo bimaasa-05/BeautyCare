@@ -1388,7 +1388,7 @@
                     <div class="cm-divider"></div>
                     @if(isset($claimedPromos) && $claimedPromos->isNotEmpty())
                     <div class="cm-payment" style="padding:12px 28px 8px;">
-                        <div class="cmp-title"><i class="fa-regular fa-tag"></i> Promo Saya</div>
+                        <div class="cmp-title"><i class="fa-solid fa-tag"></i> Promo Saya</div>
                         <select id="checkoutPromo" style="width:100%;padding:10px 14px;border-radius:12px;border:1.5px solid var(--border);font-size:12px;font-family:'Poppins',sans-serif;background:#FAFAFA;outline:none;">
                             <option value="" data-jenis="" data-nilai="0">— Tanpa Promo —</option>
                             @foreach($claimedPromos as $cp)
