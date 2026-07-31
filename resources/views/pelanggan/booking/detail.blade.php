@@ -468,7 +468,7 @@
 
                         <!-- Layanan -->
                         <div class="dc-section-title">
-                            <span class="dc-st-icon"><i class="fa-regular fa-spa"></i></span>
+                            <span class="dc-st-icon"><i class="fa-solid fa-spa"></i></span>
                             Layanan Treatment
                         </div>
                         <div class="dc-section-sub">Daftar layanan yang akan dilakukan</div>
