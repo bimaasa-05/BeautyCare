@@ -128,7 +128,7 @@ class PelangganDashboardController extends Controller
         $chartMonths = [];
         $chartCounts = [];
         for ($i = 11; $i >= 0; $i--) {
-            $date = now()->subMonths($i);
+            $date = now()->startOfMonth()->subMonths($i);
             $count = DB::table('log_booking')
                 ->where('id_pelanggan', $userId)
                 ->whereYear('tanggal', $date->year)
