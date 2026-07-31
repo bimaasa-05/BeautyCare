@@ -1196,7 +1196,7 @@
                     </div>
                     <div class="benefit-card">
                         <div class="bc-icon event">
-                            <i class="fa-solid fa-calendar-star"></i>
+                            <i class="fa-solid fa-calendar-days"></i>
                         </div>
                         <div class="bc-text">
                             <h4>Event Eksklusif</h4>

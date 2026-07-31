@@ -977,7 +977,7 @@
                     @forelse($produks as $produk)
                     @php
                         $nmKategori = $produk->kategori?->nm_produk ?? 'Lainnya';
-                        $kategoriLower = strtolower($nmKategori);
+                        $kategoriLower = strtolower(str_replace(' ', '', $nmKategori));
                         $classMap = ['skincare' => 'skincare', 'haircare' => 'haircare', 'bodycare' => 'bodycare', 'makeup' => 'makeup', 'nailcare' => 'nailcare'];
                         $iconMap = ['skincare' => 'fa-spa', 'haircare' => 'fa-scissors', 'bodycare' => 'fa-hand-sparkles', 'makeup' => 'fa-palette', 'nailcare' => 'fa-hand'];
                         $class = $classMap[$kategoriLower] ?? 'lainnya';
@@ -1229,10 +1229,11 @@
     function applyFilters() {
         var searchTerm = document.querySelector('.search-input-wrap input').value.toLowerCase();
         document.querySelectorAll('.produk-card').forEach(function(card) {
-            var cardKategori = card.querySelector('.pc-category').textContent.trim();
+            var cardKategori = card.querySelector('.pc-category').textContent.trim().replace(/\s+/g, '').toLowerCase();
             var nama = card.querySelector('.pc-name').textContent.toLowerCase();
+            var current = currentKategori.replace(/\s+/g, '').toLowerCase();
 
-            var matchKategori = (currentKategori === 'semua' || cardKategori === currentKategori);
+            var matchKategori = (currentKategori === 'semua' || cardKategori === current);
             var matchSearch = nama.includes(searchTerm);
 
             card.style.display = (matchKategori && matchSearch) ? '' : 'none';
