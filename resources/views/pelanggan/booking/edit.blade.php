@@ -667,7 +667,7 @@
                 <!-- ═══ Info Banner ═══ -->
                 <div class="info-banner">
                     <div class="ib-icon">
-                        <i class="fa-regular fa-circle-info"></i>
+                        <i class="fa-solid fa-circle-info"></i>
                     </div>
                     <div class="ib-text">
                         <strong>Informasi:</strong> Anda hanya dapat mengubah terapis, jadwal, dan catatan booking. Untuk perubahan layanan, silakan hubungi kami.
@@ -678,7 +678,7 @@
                 @if($errors->any())
                 <div class="alert-error-premium">
                     <div class="ae-icon">
-                        <i class="fa-regular fa-circle-exclamation"></i>
+                        <i class="fa-solid fa-circle-exclamation"></i>
                     </div>
                     <span>{{ $errors->first() }}</span>
                 </div>
@@ -693,7 +693,7 @@
                         <div class="fcp-body">
                             <!-- Section 1: Layanan & Terapis -->
                             <div class="fcp-section-title">
-                                <span class="fcp-st-icon"><i class="fa-regular fa-spa"></i></span>
+                                <span class="fcp-st-icon"><i class="fa-solid fa-spa"></i></span>
                                 Layanan & Terapis
                             </div>
                             <div class="fcp-section-sub">Pilih treatment dan beauty therapist favorit Anda</div>
@@ -701,7 +701,7 @@
                             <div class="fcp-grid">
                                 <div class="fg-premium">
                                     <label class="fg-label">
-                                        <i class="fa-regular fa-spa fg-label-icon"></i>
+                                        <i class="fa-solid fa-spa fg-label-icon"></i>
                                         Layanan Treatment <span class="fg-required">*</span>
                                     </label>
                                     <select name="id_layanan" id="id_layanan" required style="display:none">
@@ -777,7 +777,7 @@
 
                             <!-- Section 3: Harga & Catatan -->
                             <div class="fcp-section-title">
-                                <span class="fcp-st-icon"><i class="fa-regular fa-receipt"></i></span>
+                                <span class="fcp-st-icon"><i class="fa-solid fa-receipt"></i></span>
                                 Harga & Catatan
                             </div>
                             <div class="fcp-section-sub">Informasi harga dan pesan tambahan untuk terapis</div>
@@ -785,7 +785,7 @@
                             <div class="fcp-grid">
                                 <div class="fg-premium">
                                     <label class="fg-label">
-                                        <i class="fa-regular fa-tag fg-label-icon"></i>
+                                        <i class="fa-solid fa-tag fg-label-icon"></i>
                                         Harga
                                     </label>
                                     <input type="text" id="harga_display" class="fg-input" readonly
@@ -815,7 +815,7 @@
                             <!-- ═══ Summary Card ═══ -->
                             <div class="summary-card-premium">
                                 <div class="sc-title">
-                                    <i class="fa-regular fa-receipt"></i>
+                                    <i class="fa-solid fa-receipt"></i>
                                     Ringkasan Booking
                                 </div>
                                 <div class="sc-row">

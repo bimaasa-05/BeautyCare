@@ -54,10 +54,11 @@ class AdminUserController extends Controller
             'no_hp'    => 'nullable|string|max:20',
             'role'     => 'required|in:admin,kasir,beautycian,pelanggan',
             'status'   => 'required|in:aktif,non_aktif,suspend',
+            'suspend_until' => 'nullable|date|after:now',
             'foto'     => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
-        $data = $request->only(['nama', 'email', 'no_hp', 'role', 'status']);
+        $data = $request->only(['nama', 'email', 'no_hp', 'role', 'status', 'suspend_until']);
         $data['password'] = Hash::make($request->password);
 
         if ($request->hasFile('foto')) {
@@ -87,10 +88,11 @@ class AdminUserController extends Controller
             'no_hp'    => 'nullable|string|max:20',
             'role'     => 'required|in:admin,kasir,beautycian,pelanggan',
             'status'   => 'required|in:aktif,non_aktif,suspend',
+            'suspend_until' => 'nullable|date|after:now',
             'foto'     => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
-        $data = $request->only(['nama', 'email', 'no_hp', 'role', 'status']);
+        $data = $request->only(['nama', 'email', 'no_hp', 'role', 'status', 'suspend_until']);
 
         if ($request->filled('password')) {
             $data['password'] = Hash::make($request->password);
@@ -131,9 +133,11 @@ class AdminUserController extends Controller
     {
         $request->validate([
             'status' => 'required|in:aktif,non_aktif,suspend',
+            'suspend_until' => 'nullable|date|after:now',
         ]);
 
         $user->status = $request->status;
+        $user->suspend_until = ($request->status === 'suspend' && $request->suspend_until) ? $request->suspend_until : null;
         $user->save();
 
         $label = $request->status === 'aktif' ? 'diaktifkan' : ($request->status === 'suspend' ? 'disuspend' : 'dinonaktifkan');

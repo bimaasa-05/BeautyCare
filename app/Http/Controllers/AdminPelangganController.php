@@ -24,6 +24,7 @@ class AdminPelangganController extends Controller
                 'users.no_hp',
                 'users.foto',
                 'users.status',
+                'users.suspend_until',
                 'users.created_at',
                 'pelanggan.id_pelanggan',
                 'pelanggan.nm_pelanggan',
@@ -238,8 +239,10 @@ class AdminPelangganController extends Controller
     {
         if ($user->status === 'suspend' || $user->status === 'non_aktif') {
             $user->status = 'aktif';
+            $user->suspend_until = null;
         } else {
             $user->status = 'non_aktif';
+            $user->suspend_until = null;
         }
         $user->save();
 
