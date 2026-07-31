@@ -129,6 +129,17 @@
         .detail-grid {
             grid-template-columns: 1fr;
         }
+        .detail-card .dc-body { padding: 20px; }
+        .detail-card .dc-section-sub { margin-left: 0; }
+        .header-back-detail { align-items: flex-start; }
+        .action-bar-bottom { flex-wrap: wrap; }
+    }
+
+    @media (max-width: 576px) {
+        .detail-card .dc-body { padding: 16px; }
+        .header-back-detail .hbd-text h3 { font-size: 17px; }
+        .action-bar-bottom .btn-back-detail,
+        .action-bar-bottom .btn-print-detail { flex: 1; justify-content: center; }
     }
 
     .detail-item {
@@ -473,6 +484,7 @@
                         </div>
                         <div class="dc-section-sub">Daftar layanan yang akan dilakukan</div>
 
+                        <div style="overflow-x:auto;">
                         <table class="services-table">
                             <thead>
                                 <tr>
@@ -503,6 +515,7 @@
                                 @endforeach
                             </tbody>
                         </table>
+                        </div>
 
                         <!-- Price Summary -->
                         <div class="price-summary">

@@ -965,6 +965,18 @@
         .payment-modal .pmp-group {
             grid-template-columns: 1fr;
         }
+
+        .page-header-premium { padding: 22px 20px; }
+        .member-status-card { padding: 22px 20px; }
+    }
+
+    @media (max-width: 576px) {
+        .page-header-premium .ph-text h3 { font-size: 17px; }
+        .page-header-premium .ph-icon-wrap { width: 44px; height: 44px; border-radius: 13px; font-size: 18px; }
+        .payment-modal .pm-header { padding: 16px 16px 0; }
+        .payment-modal .pm-info { margin: 12px 16px; padding: 12px 16px; }
+        .payment-modal .pm-divider { margin: 0 16px; }
+        .payment-modal .pm-payment { padding: 0 16px 16px; }
     }
     </style>
 </head>

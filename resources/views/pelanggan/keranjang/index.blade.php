@@ -19,6 +19,41 @@
     <link rel="stylesheet" href="{{ asset('assets/css/responsive.css') }}">
 
     <style>
+    .sidebar-toggle {
+        display: none;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 8px;
+    }
+
+    .sidebar-toggle svg {
+        width: 24px;
+        height: 24px;
+        color: var(--dark);
+    }
+
+    .sidebar-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.3);
+        z-index: 90;
+    }
+
+    .sidebar-overlay.active {
+        display: block;
+    }
+
+    @media (max-width: 768px) {
+        .sidebar-toggle {
+            display: flex;
+            align-items: center;
+        }
+    }
 
     ::-webkit-scrollbar {
         width: 6px;
@@ -1114,6 +1149,21 @@
         .checkout-modal .cmp-group {
             grid-template-columns: 1fr;
         }
+
+        .page-header-premium { padding: 22px 20px; }
+        .keranjang-card .kc-body { padding: 12px 14px 14px; }
+        .keranjang-tools .kt-actions { flex-wrap: wrap; gap: 8px; }
+    }
+
+    @media (max-width: 576px) {
+        .page-header-premium .ph-text h3 { font-size: 17px; }
+        .page-header-premium .ph-icon-wrap { width: 44px; height: 44px; border-radius: 13px; font-size: 18px; }
+        .keranjang-tools .kt-actions .btn-primary-rounded { flex: 1; justify-content: center; }
+        .checkout-modal .cm-header { padding: 16px 16px 0; }
+        .checkout-modal .cm-items { padding: 12px 16px; }
+        .checkout-modal .cm-total { padding: 12px 16px; }
+        .checkout-modal .cm-payment { padding: 0 16px 16px; }
+        .checkout-modal .cm-bayar { margin: 0 16px 16px; width: calc(100% - 32px); }
     }
 
     /* ─── Modal Premium ─── */

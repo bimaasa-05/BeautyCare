@@ -1002,6 +1002,12 @@
     }
 
     /* ─── Responsive Table ─── */
+    @media (max-width: 1024px) {
+        .bc-actions { flex-wrap: wrap; }
+        .search-input-wrap input,
+        .search-input-wrap input:focus { width: 180px; }
+    }
+
     @media (max-width: 768px) {
         .booking-table thead { display: none; }
         .booking-table tbody tr {
@@ -1026,7 +1032,10 @@
         }
         .booking-table tbody td:first-child { padding-left: 0; }
         .booking-table tbody td:last-child { padding-right: 0; }
-        .td-checkbox.show {
+        .booking-table tbody td.td-checkbox {
+            display: none;
+        }
+        .booking-table tbody td.td-checkbox.show {
             display: flex;
             justify-content: center;
             padding: 4px 0;
@@ -1034,6 +1043,22 @@
         .td-checkbox.show::before {
             content: none;
         }
+
+        .page-header-premium { padding: 22px 20px; }
+        .bc-header { padding: 16px; }
+        .bc-actions { flex-wrap: wrap; justify-content: flex-end; }
+        .search-input-wrap { flex: 1 1 100%; }
+        .search-input-wrap input,
+        .search-input-wrap input:focus { width: 100%; }
+        .table-footer { padding: 14px 16px; }
+    }
+
+    @media (max-width: 576px) {
+        .page-header-premium .ph-text h3 { font-size: 17px; }
+        .page-header-premium .ph-icon-wrap { width: 44px; height: 44px; border-radius: 13px; font-size: 18px; }
+        .select-all-wrap { width: 100%; justify-content: flex-end; }
+        .bc-actions .btn-hapus-sebagian { flex: 1; justify-content: center; }
+        .bc-actions .btn-primary-rounded { flex: 1; justify-content: center; }
     }
     </style>
 </head>

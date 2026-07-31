@@ -88,6 +88,19 @@
     .btn-action.btn-print { background: #F3E8FF; color: #9333EA; }
     .btn-action.btn-print:hover { background: #E9D5FF; box-shadow: 0 4px 12px rgba(147, 51, 234, 0.2); }
 
+    @media (max-width: 768px) {
+        .detail-card .dc-body { padding: 16px; }
+        .detail-section { padding: 16px; }
+        .photo-pair { grid-template-columns: 1fr; }
+        .photo-card img { height: 180px; }
+        .action-bar { flex-wrap: wrap; }
+    }
+
+    @media (max-width: 576px) {
+        .detail-card .dc-header { padding: 16px; }
+        .btn-action { flex: 1; justify-content: center; }
+    }
+
     @media print {
         .sidebar-toggle, .sidebar-overlay, .main-content .dashboard-content > .action-bar { display: none !important; }
         .no-print { display: none !important; }

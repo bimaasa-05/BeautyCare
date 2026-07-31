@@ -610,6 +610,17 @@
     @media (max-width: 768px) {
         .form-card-premium .fcp-body { padding: 20px; }
         .steps-indicator .step-item span { display: none; }
+        .header-back { flex-wrap: wrap; gap: 12px; }
+        .header-back .hb-text h3 { font-size: 17px; }
+        .form-card-premium .fcp-section-sub { margin-left: 0; }
+        .form-actions { flex-wrap: wrap; }
+        .form-actions .btn-cancel-form { flex: 1; min-width: 140px; }
+    }
+
+    @media (max-width: 576px) {
+        .form-card-premium .fcp-body { padding: 16px; }
+        .steps-indicator .step-item { padding: 8px 10px; }
+        .steps-indicator .step-num { width: 20px; height: 20px; font-size: 10px; }
     }
     </style>
 </head>
