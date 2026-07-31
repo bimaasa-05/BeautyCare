@@ -144,7 +144,9 @@ class AdminTransaksiController extends Controller
                     if (($item['jenis'] ?? 'Layanan') === 'Produk') {
                         $produk = Produk::find($item['id_item']);
                         if ($produk && $produk->stok >= ($item['qty'] ?? 1)) {
+                            $stokLama = $produk->stok;
                             $produk->decrement('stok', $item['qty'] ?? 1);
+                            catatStok($produk->id_produk, 'Keluar', $item['qty'] ?? 1, $stokLama, $produk->stok, 'Penjualan ' . $no_invoice, null, $transaksi->id_transaksi, 'Transaksi');
                         }
                     }
                 }
@@ -252,7 +254,9 @@ class AdminTransaksiController extends Controller
                 if ($old->jenis === 'Produk') {
                     $produk = Produk::find($old->id_item);
                     if ($produk) {
+                        $stokLama = $produk->stok;
                         $produk->increment('stok', $old->qty);
+                        catatStok($produk->id_produk, 'Masuk', $old->qty, $stokLama, $produk->stok, 'Pengembalian stok dari perubahan transaksi', null, $id, 'Transaksi');
                     }
                 }
             }
@@ -274,7 +278,9 @@ class AdminTransaksiController extends Controller
                     if (($item['jenis'] ?? 'Layanan') === 'Produk') {
                         $produk = Produk::find($item['id_item']);
                         if ($produk && $produk->stok >= ($item['qty'] ?? 1)) {
+                            $stokLama = $produk->stok;
                             $produk->decrement('stok', $item['qty'] ?? 1);
+                            catatStok($produk->id_produk, 'Keluar', $item['qty'] ?? 1, $stokLama, $produk->stok, 'Penjualan pada perubahan transaksi', null, $id, 'Transaksi');
                         }
                     }
                 }
@@ -372,7 +378,9 @@ class AdminTransaksiController extends Controller
             if ($detail->jenis === 'Produk') {
                 $produk = Produk::find($detail->id_item);
                 if ($produk) {
+                    $stokLama = $produk->stok;
                     $produk->increment('stok', $detail->qty);
+                    catatStok($produk->id_produk, 'Masuk', $detail->qty, $stokLama, $produk->stok, 'Pengembalian stok dari penghapusan transaksi', null, $transaksi->id_transaksi, 'Transaksi');
                 }
             }
         }
