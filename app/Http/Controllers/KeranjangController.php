@@ -270,7 +270,9 @@ class KeranjangController extends Controller
             if ($item['jenis'] === 'Produk' && $item['id_item'] > 0) {
                 $produk = Produk::find($item['id_item']);
                 if ($produk && $produk->stok >= $item['qty']) {
+                    $stokLama = $produk->stok;
                     $produk->decrement('stok', $item['qty']);
+                    catatStok($produk->id_produk, 'Keluar', $item['qty'], $stokLama, $produk->stok, 'Penjualan via checkout pelanggan', null, $transaksi->id_transaksi, 'Transaksi');
                 }
             }
         }
