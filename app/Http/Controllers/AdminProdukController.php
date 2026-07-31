@@ -3,23 +3,22 @@
 namespace App\Http\Controllers;
 
 use App\Models\Produk;
+use App\Models\Stok;
 use App\Models\KategoriProduk;
-use App\Models\Supplier;
 use Illuminate\Http\Request;
 
 class AdminProdukController extends Controller
 {
     public function index(Request $request)
     {
-        $produk = Produk::with('kategori', 'supplier')->orderBy('id_produk', 'desc')->get();
+        $produk = Produk::with('kategori')->orderBy('id_produk', 'desc')->get();
         return view('admin.produk.index', compact('produk'));
     }
 
     public function create()
     {
         $kategori = KategoriProduk::all();
-        $supplier = Supplier::all();
-        return view('admin.produk.create', compact('kategori', 'supplier'));
+        return view('admin.produk.create', compact('kategori'));
     }
 
     public function store(Request $request)
@@ -31,7 +30,6 @@ class AdminProdukController extends Controller
 
         $request->validate([
             'id_kategori_produk' => 'required|integer|exists:kategori_produk,id_kategori_produk',
-            'id_supplier'        => 'required|integer|exists:supplier,id_supplier',
             'nm_produk'          => 'required|string|max:50',
             'satuan'             => 'required|string|max:50',
             'harga_beli'         => 'required|numeric',
@@ -46,7 +44,23 @@ class AdminProdukController extends Controller
             $data['foto'] = $request->file('foto')->store('produk', 'public');
         }
 
-        Produk::create($data);
+        $produk = Produk::create($data);
+
+        if ($produk->stok > 0) {
+            Stok::create([
+                'id_produk'    => $produk->id_produk,
+                'id_supplier'  => null,
+                'tanggal'      => now()->toDateString(),
+                'type'         => 'Masuk',
+                'jumlah'       => $produk->stok,
+                'stok_sebelum' => 0,
+                'stok_sesudah' => $produk->stok,
+                'keterangan'   => 'Stok awal saat produk dibuat',
+                'ref_id'       => $produk->id_produk,
+                'ref_type'     => 'Produk',
+                'status'       => 1,
+            ]);
+        }
 
         buatNotif(auth()->id(), 'Produk Ditambahkan', 'Produk ' . $request->nm_produk . ' berhasil ditambahkan', 'Lainnya', route('admin.produk.index'));
 
@@ -57,8 +71,7 @@ class AdminProdukController extends Controller
     public function edit(Produk $produk)
     {
         $kategori = KategoriProduk::all();
-        $supplier = Supplier::all();
-        return view('admin.produk.edit', compact('produk', 'kategori', 'supplier'));
+        return view('admin.produk.edit', compact('produk', 'kategori'));
     }
 
     public function update(Request $request, Produk $produk)
@@ -70,7 +83,6 @@ class AdminProdukController extends Controller
 
         $request->validate([
             'id_kategori_produk' => 'required|integer|exists:kategori_produk,id_kategori_produk',
-            'id_supplier'        => 'required|integer|exists:supplier,id_supplier',
             'nm_produk'          => 'required|string|max:50',
             'satuan'             => 'required|string|max:50',
             'harga_beli'         => 'required|numeric',
@@ -85,7 +97,24 @@ class AdminProdukController extends Controller
             $data['foto'] = $request->file('foto')->store('produk', 'public');
         }
 
+        $stokLama = $produk->stok;
         $produk->update($data);
+
+        if ($produk->stok != $stokLama) {
+            Stok::create([
+                'id_produk'    => $produk->id_produk,
+                'id_supplier'  => null,
+                'tanggal'      => now()->toDateString(),
+                'type'         => 'Penyesuaian',
+                'jumlah'       => abs($produk->stok - $stokLama),
+                'stok_sebelum' => $stokLama,
+                'stok_sesudah' => $produk->stok,
+                'keterangan'   => 'Penyesuaian stok dari ' . $stokLama . ' menjadi ' . $produk->stok,
+                'ref_id'       => $produk->id_produk,
+                'ref_type'     => 'Produk',
+                'status'       => 1,
+            ]);
+        }
 
         buatNotif(auth()->id(), 'Produk Diperbarui', 'Produk ' . $produk->nm_produk . ' berhasil diperbarui', 'Lainnya', route('admin.produk.edit', $produk->id_produk));
 
