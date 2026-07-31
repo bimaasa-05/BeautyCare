@@ -15,4 +15,9 @@ class Supplier extends Model
         'no_hp',
         'alamat',
     ];
+
+    public function stoks()
+    {
+        return $this->hasMany(Stok::class, 'id_supplier', 'id_supplier');
+    }
 }
