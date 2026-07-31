@@ -67,8 +67,8 @@ class AdminReservasiController extends Controller
         ]);
 
         foreach ($request->id_layanan as $i => $id_layanan) {
-            $harga = $request->harga[$i] ?? 0;
-            $diskon = $request->diskon[$i] ?? 0;
+            $harga = (int) str_replace('.', '', $request->harga[$i] ?? '0');
+            $diskon = (int) str_replace('.', '', $request->diskon[$i] ?? '0');
             $subtotal = $harga - $diskon;
 
             DetailBooking::create([
@@ -134,8 +134,8 @@ class AdminReservasiController extends Controller
         DetailBooking::where('id_booking', $id)->delete();
 
         foreach ($request->id_layanan as $i => $id_layanan) {
-            $harga = $request->harga[$i] ?? 0;
-            $diskon = $request->diskon[$i] ?? 0;
+            $harga = (int) str_replace('.', '', $request->harga[$i] ?? '0');
+            $diskon = (int) str_replace('.', '', $request->diskon[$i] ?? '0');
             $subtotal = $harga - $diskon;
 
             DetailBooking::create([

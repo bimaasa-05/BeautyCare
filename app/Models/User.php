@@ -26,6 +26,7 @@ class User extends Authenticatable
         'role',
         'foto',
         'status',
+        'suspend_until',
     ];
 
     /**
@@ -48,6 +49,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'suspend_until' => 'datetime',
         ];
     }
 

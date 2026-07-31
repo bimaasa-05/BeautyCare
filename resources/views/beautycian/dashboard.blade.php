@@ -107,6 +107,26 @@
                         <div class="stat-value">{{ $jam_kerja }}</div>
                         <div class="stat-label">Jam Kerja Hari Ini</div>
                     </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon warning">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                            </div>
+                        </div>
+                        <div class="stat-value">Rp {{ number_format($pendapatan_hari_ini, 0, ',', '.') }}</div>
+                        <div class="stat-label">Pendapatan Hari Ini</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon info">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                            </div>
+                        </div>
+                        <div class="stat-value">{{ $reservasi_aktif }}</div>
+                        <div class="stat-label">Reservasi Aktif</div>
+                    </div>
                 </div>
 
                 <!-- Dashboard Grid: Charts -->
@@ -306,9 +326,18 @@
     const ctx = document.getElementById('chartLayanan').getContext('2d');
     let chartInstance;
 
+    const animOpts = {
+        duration: 1200,
+        easing: 'easeOutQuart'
+    };
+
     function initChart(period) {
         const data = allChartData[period];
         if (chartInstance) chartInstance.destroy();
+
+        var gradient = ctx.createLinearGradient(0, 0, 0, 280);
+        gradient.addColorStop(0, 'rgba(255, 79, 135, 0.25)');
+        gradient.addColorStop(1, 'rgba(255, 79, 135, 0.01)');
 
         chartInstance = new Chart(ctx, {
             type: 'line',
@@ -318,20 +347,25 @@
                     label: 'Layanan Selesai',
                     data: data.values,
                     borderColor: '#FF4F87',
-                    backgroundColor: 'rgba(255, 79, 135, 0.08)',
-                    borderWidth: 2,
+                    backgroundColor: gradient,
+                    borderWidth: 2.5,
                     tension: 0.4,
                     fill: true,
                     pointBackgroundColor: '#fff',
                     pointBorderColor: '#FF4F87',
                     pointBorderWidth: 2,
                     pointRadius: 3,
-                    pointHoverRadius: 5
+                    pointHoverRadius: 6
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                animation: animOpts,
+                onClick: function() {
+                    this.reset();
+                    this.update();
+                },
                 plugins: {
                     legend: { display: false },
                     tooltip: {

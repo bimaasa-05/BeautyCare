@@ -59,9 +59,9 @@ body {
 
 /* ---- Page Header Premium ---- */
 .page-header-premium {
-    background: linear-gradient(135deg, #FFF5F8 0%, #FFE5EF 50%, #FFD6E6 100%);
-    border-radius: 20px;
-    padding: 28px 32px;
+    background: linear-gradient(135deg, #FCE7F3 0%, #F3E8FF 100%);
+    border-radius: 12px;
+    padding: 16px 24px;
     margin-bottom: 24px;
     position: relative;
     overflow: hidden;
@@ -202,11 +202,11 @@ body {
 .booking-table thead th {
     padding: 14px 16px;
     font-size: 11px;
-    font-weight: 600;
-    color: var(--gray);
+    font-weight: 700;
+    color: #64748B;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    background: #FAFAFA;
+    background: #F8FAFC;
     border-bottom: 1px solid var(--border);
     white-space: nowrap;
     text-align: center;
@@ -276,6 +276,10 @@ body {
     font-size: 13px;
     font-weight: 500;
     color: var(--dark);
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 /* ---- Status Badge ---- */
@@ -283,9 +287,9 @@ body {
     display: inline-flex;
     align-items: center;
     gap: 5px;
-    padding: 5px 12px;
-    border-radius: 100px;
-    font-size: 11px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
     font-weight: 600;
     letter-spacing: 0.2px;
 }
@@ -302,13 +306,13 @@ body {
     50% { opacity: 0.4; }
 }
 
-.status-badge.dikonfirmasi { background: #DBEAFE; color: #2563EB; }
+.status-badge.dikonfirmasi { background: #EFF6FF; color: #2563EB; border: 1px solid #BFDBFE; }
 .status-badge.dikonfirmasi .sb-dot { background: #2563EB; }
-.status-badge.diproses { background: #F3E8FF; color: #9333EA; }
+.status-badge.diproses { background: #F3E8FF; color: #9333EA; border: 1px solid #E9D5FF; }
 .status-badge.diproses .sb-dot { background: #9333EA; }
-.status-badge.selesai { background: #D1FAE5; color: #059669; }
+.status-badge.selesai { background: #ECFDF5; color: #059669; border: 1px solid #A7F3D0; }
 .status-badge.selesai .sb-dot { background: #059669; }
-.status-badge.dibatalkan { background: #FEE2E2; color: #DC2626; }
+.status-badge.dibatalkan { background: #FEE2E2; color: #DC2626; border: 1px solid #FECACA; }
 .status-badge.dibatalkan .sb-dot { background: #DC2626; }
 
 /* ---- Action Buttons ---- */
@@ -599,6 +603,50 @@ body {
 @keyframes slideDown {
     from { opacity: 0; transform: translateY(-12px); }
     to { opacity: 1; transform: translateY(0); }
+}
+
+/* ---- Donut Chart Centering ---- */
+.donut-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 0;
+}
+
+.donut-wrap canvas {
+    display: block;
+    margin: 0 auto;
+}
+
+/* ---- Sidebar Profile Alignment ---- */
+.sidebar-profile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--border);
+}
+
+.sidebar-profile img {
+    flex-shrink: 0;
+}
+
+.sidebar-profile .sp-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-width: 0;
+}
+
+.sidebar-profile .sp-info h4 {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--dark);
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 /* ---- Responsive ---- */
