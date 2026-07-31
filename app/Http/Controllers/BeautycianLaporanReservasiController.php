@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Booking;
 use App\Models\DetailBooking;
-use Illuminate\Support\Facades\DB;
 use App\Models\Pelanggan;
+use Illuminate\Support\Facades\DB;
 
 class BeautycianLaporanReservasiController extends Controller
 {

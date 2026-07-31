@@ -36,6 +36,11 @@ use App\Http\Controllers\MembershipPelangganController;
 use App\Http\Controllers\BeautycianPelangganController;
 use App\Http\Controllers\BeautycianLaporanReservasiController;
 use App\Http\Controllers\BeautycianDashboardController;
+use App\Http\Controllers\PelangganDashboardController;
+use App\Http\Controllers\PelangganTreatmentController;
+use App\Http\Controllers\PelangganBookingController;
+use App\Http\Controllers\PelangganReservasiController;
+use App\Http\Controllers\PelangganProdukController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -301,180 +306,25 @@ Route::middleware('auth')->group(function () {
     });
     //--------------------------------------------------
     //Route Pelangggan
-    Route::get('/pelanggan/dashboard', function () {
-        $promos = \App\Models\Promo::where('status', 'Tersedia')
-            ->whereDate('selesai', '>=', now())
-            ->orderBy('id_promo', 'desc')
-            ->get();
-        $layanans = \App\Models\Layanan::where('status', 'Tersedia')
-            ->orderBy('id_layanan', 'asc')
-            ->get();
-        $kategoriLayanan = \App\Models\KategoriLayanan::where('status', 'tersedia')->get();
-        $produks = \App\Models\Produk::with('kategori')
-            ->where('status', 'Tersedia')
-            ->orderBy('id_produk', 'desc')
-            ->get();
-
-        $userId = auth()->id();
-        $user = auth()->user();
-
-        $bookingAktif = \App\Models\Booking::where('id_pelanggan', $userId)
-            ->whereIn('status', ['menunggu', 'dikonfirmasi', 'diproses'])
-            ->count();
-        $riwayatTreatment = \App\Models\Booking::where('id_pelanggan', $userId)
-            ->where('status', 'selesai')
-            ->count();
-
-        $riwayatTreatments = \App\Models\Booking::with(['detail.layanan', 'karyawan'])
-            ->where('id_pelanggan', $userId)
-            ->where('status', 'selesai')
-            ->orderBy('tanggal', 'desc')
-            ->orderBy('jam', 'desc')
-            ->take(5)
-            ->get();
-
-        $bookingMendatang = \App\Models\Booking::with(['detail.layanan', 'karyawan'])
-            ->where('id_pelanggan', $userId)
-            ->whereIn('status', ['menunggu', 'dikonfirmasi', 'diproses'])
-            ->whereDate('tanggal', '>=', now())
-            ->orderBy('tanggal', 'asc')
-            ->orderBy('jam', 'asc')
-            ->take(3)
-            ->get();
-
-        $favoritLayananIds = \App\Models\DetailBooking::select('id_layanan')
-            ->whereHas('booking', fn($q) => $q->where('id_pelanggan', $userId))
-            ->groupBy('id_layanan')
-            ->orderByRaw('COUNT(*) DESC')
-            ->limit(4)
-            ->pluck('id_layanan');
-
-        $layananFavorit = \App\Models\Layanan::whereIn('id_layanan', $favoritLayananIds)->get();
-        if ($layananFavorit->isEmpty()) {
-            $layananFavorit = \App\Models\Layanan::where('status', 'Tersedia')->inRandomOrder()->take(4)->get();
-        }
-
-        $produkTerlarisRaw = \Illuminate\Support\Facades\DB::table('detail_transaksi')
-            ->select('id_item', \Illuminate\Support\Facades\DB::raw('COALESCE(SUM(qty), 0) as total_terjual'))
-            ->where('jenis', 'Produk')
-            ->groupBy('id_item')
-            ->orderBy('total_terjual', 'desc')
-            ->limit(4)
-            ->get();
-
-        $produkTerlaris = collect();
-        if ($produkTerlarisRaw->isNotEmpty()) {
-            $ids = $produkTerlarisRaw->pluck('id_item');
-            $produks = \App\Models\Produk::with('kategori')->whereIn('id_produk', $ids)->get()->keyBy('id_produk');
-            foreach ($produkTerlarisRaw as $item) {
-                if ($p = $produks->get($item->id_item)) {
-                    $p->total_terjual = $item->total_terjual;
-                    $produkTerlaris->push($p);
-                }
-            }
-        }
-        if ($produkTerlaris->isEmpty()) {
-            $produkTerlaris = \App\Models\Produk::with('kategori')
-                ->where('status', 'Tersedia')
-                ->inRandomOrder()
-                ->take(4)
-                ->get();
-            $produkTerlaris->each(fn($p) => $p->total_terjual = 0);
-        }
-        $kunjunganBulanIni = \Illuminate\Support\Facades\DB::table('log_kunjungan')
-            ->where('id_user', $userId)
-            ->whereYear('tanggal', now()->year)
-            ->whereMonth('tanggal', now()->month)
-            ->count();
-
-        $pelanggan = \App\Models\Pelanggan::where('email', $user->email)->first();
-        if (!$pelanggan) {
-            $pelanggan = \App\Models\Pelanggan::where('nm_pelanggan', $user->nama)->first();
-        }
-        if (!$pelanggan) {
-            $pelanggan = \App\Models\Pelanggan::create([
-                'nm_pelanggan' => $user->nama,
-                'email' => $user->email,
-                'no_hp' => $user->no_hp ?? '',
-                'alamat' => '',
-                'catatan_alergi' => '',
-                'id_member' => null,
-            ]);
-        }
-        $totalBooking = $pelanggan->total_booking ?? 0;
-        $memberTingkat = null;
-        $memberList = collect();
-        if ($pelanggan && $pelanggan->id_member) {
-            $member = \App\Models\Membership::find($pelanggan->id_member);
-            $memberTingkat = $member ? $member->tingkat : null;
-            $memberList = \App\Models\Membership::where('status', 'aktif')->orderBy('id_member')->get();
-        }
-
-        $chartMonths = [];
-        $chartCounts = [];
-        for ($i = 11; $i >= 0; $i--) {
-            $date = now()->subMonths($i);
-            $count = \Illuminate\Support\Facades\DB::table('log_booking')
-                ->where('id_pelanggan', $userId)
-                ->whereYear('tanggal', $date->year)
-                ->whereMonth('tanggal', $date->month)
-                ->count();
-            $chartMonths[] = $date->format('M');
-            $chartCounts[] = $count;
-        }
-
-        return view('pelanggan.dashboard', compact(
-            'promos', 'layanans', 'kategoriLayanan', 'produks',
-            'totalBooking', 'bookingAktif', 'riwayatTreatment', 'kunjunganBulanIni',
-            'memberTingkat', 'memberList',
-            'chartMonths', 'chartCounts',
-            'riwayatTreatments', 'bookingMendatang',
-            'layananFavorit', 'produkTerlaris'
-        ));
-    })->middleware(['auth', 'verified'])->name('dashboard');
+    Route::get('/pelanggan/dashboard', [PelangganDashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
     Route::middleware(['role:pelanggan'])->group(function () {
 
         //Route Booking
-        Route::get('/pelanggan/booking', [PelangganController::class, 'index'])->name('pelanggan.booking');
-        Route::get('/pelanggan/booking/create', [PelangganController::class, 'create'])->name('pelanggan.booking.create');
-        Route::post('/pelanggan/booking', [PelangganController::class, 'store'])->name('pelanggan.booking.store');
-        Route::get('/pelanggan/booking/{id}/edit', [PelangganController::class, 'edit'])->name('pelanggan.booking.edit');
-        Route::put('/pelanggan/booking/{id}', [PelangganController::class, 'update'])->name('pelanggan.booking.update');
-        Route::delete('/pelanggan/booking/batch', [PelangganController::class, 'batchDestroy'])->name('pelanggan.booking.batch');
-        Route::delete('/pelanggan/booking/{id}', [PelangganController::class, 'destroy'])->name('pelanggan.booking.destroy');
+        Route::get('/pelanggan/booking', [PelangganBookingController::class, 'index'])->name('pelanggan.booking');
+        Route::get('/pelanggan/booking/create', [PelangganBookingController::class, 'create'])->name('pelanggan.booking.create');
+        Route::post('/pelanggan/booking', [PelangganBookingController::class, 'store'])->name('pelanggan.booking.store');
+        Route::get('/pelanggan/booking/{id}/detail', [PelangganBookingController::class, 'show'])->name('pelanggan.booking.detail');
+        Route::get('/pelanggan/booking/{id}/edit', [PelangganBookingController::class, 'edit'])->name('pelanggan.booking.edit');
+        Route::put('/pelanggan/booking/{id}', [PelangganBookingController::class, 'update'])->name('pelanggan.booking.update');
+        Route::delete('/pelanggan/booking/batch', [PelangganBookingController::class, 'batchDestroy'])->name('pelanggan.booking.batch');
+        Route::delete('/pelanggan/booking/{id}', [PelangganBookingController::class, 'destroy'])->name('pelanggan.booking.destroy');
 
         //Route Reservasi
-        Route::get('/pelanggan/reservasi', function () {
-            return view('pelanggan.reservasi.index');
-        })->name('pelanggan.reservasi');
+        Route::get('/pelanggan/reservasi', [PelangganReservasiController::class, 'index'])->name('pelanggan.reservasi');
 
         //Route Treatment
-        Route::get('/pelanggan/treatment', function () {
-            $userId = auth()->id();
-            $status = request('status');
-
-            $query = \App\Models\Booking::with(['detail.layanan', 'karyawan'])
-                ->where('id_pelanggan', $userId);
-
-            if ($status && in_array($status, ['menunggu', 'dikonfirmasi', 'diproses', 'selesai', 'dibatalkan'])) {
-                $query->where('status', $status);
-            }
-
-            $bookings = $query->orderBy('tanggal', 'desc')
-                ->orderBy('jam', 'desc')
-                ->get();
-
-            return view('pelanggan.treatment.index', compact('bookings'));
-        })->name('pelanggan.treatment');
-
-        Route::get('/pelanggan/treatment/{id}', function ($id) {
-            $booking = \App\Models\Booking::with(['detail.layanan', 'karyawan', 'transaksi', 'pelanggan', 'riwayatTreatment'])
-                ->where('id_booking', $id)
-                ->where('id_pelanggan', auth()->id())
-                ->firstOrFail();
-
-            return view('pelanggan.treatment.detail', compact('booking'));
-        })->name('pelanggan.treatment.detail');
+        Route::get('/pelanggan/treatment', [PelangganTreatmentController::class, 'index'])->name('pelanggan.treatment');
+        Route::get('/pelanggan/treatment/{id}', [PelangganTreatmentController::class, 'show'])->name('pelanggan.treatment.detail');
 
         //Route Promo
         Route::get('/pelanggan/promo', [App\Http\Controllers\PelangganPromoController::class, 'index'])->name('pelanggan.promo');
@@ -485,16 +335,11 @@ Route::middleware('auth')->group(function () {
         Route::post('/pelanggan/membership/upgrade', [MembershipPelangganController::class, 'upgrade'])->name('pelanggan.membership.upgrade');
 
         //Route Produk
-        Route::get('/pelanggan/produk', function () {
-            $produks = \App\Models\Produk::with('kategori')
-                ->where('status', 'Tersedia')
-                ->orderBy('id_produk', 'desc')
-                ->get();
-            return view('pelanggan.produk.index', compact('produks'));
-        })->name('pelanggan.produk');
+        Route::get('/pelanggan/produk', [PelangganProdukController::class, 'index'])->name('pelanggan.produk');
 
         //Route Keranjang
         Route::get('/pelanggan/keranjang', [App\Http\Controllers\KeranjangController::class, 'index'])->name('pelanggan.keranjang');
+        Route::get('/pelanggan/keranjang/history', [App\Http\Controllers\KeranjangController::class, 'history'])->name('pelanggan.keranjang.history');
         Route::post('/pelanggan/keranjang', [App\Http\Controllers\KeranjangController::class, 'store'])->name('pelanggan.keranjang.store');
         Route::put('/pelanggan/keranjang/{id}', [App\Http\Controllers\KeranjangController::class, 'update'])->name('pelanggan.keranjang.update');
         Route::delete('/pelanggan/keranjang/batch', [App\Http\Controllers\KeranjangController::class, 'batchDestroy'])->name('pelanggan.keranjang.batch');
@@ -512,6 +357,7 @@ Route::middleware('auth')->group(function () {
             $file = $req->file('foto');
             $path = $file->store('profile-pelanggan', 'public');
             $user->update(['foto' => $path]);
+            buatNotif($user->id, 'Foto Profil Diperbarui', 'Foto profil Anda berhasil diperbarui.', 'Lainnya', route('pelanggan.profile'));
             return back()->with('success', 'Foto profil berhasil diperbarui!');
         })->name('pelanggan.profile.update-foto');
 
@@ -522,6 +368,7 @@ Route::middleware('auth')->group(function () {
                 'no_hp' => 'required|string|max:20',
             ]);
             auth()->user()->update($req->only(['nama', 'email', 'no_hp']));
+            buatNotif(auth()->id(), 'Profil Diperbarui', 'Data profil Anda berhasil diperbarui.', 'Lainnya', route('pelanggan.profile'));
             return back()->with('success', 'Profil berhasil diperbarui!');
         })->name('pelanggan.profile.update');
 
@@ -531,6 +378,7 @@ Route::middleware('auth')->group(function () {
                 'new_password' => 'required|string|min:8|confirmed',
             ]);
             auth()->user()->update(['password' => bcrypt($req->new_password)]);
+            buatNotif(auth()->id(), 'Password Diperbarui', 'Password akun Anda berhasil diperbarui.', 'Lainnya', route('pelanggan.profile'));
             return back()->with('success', 'Password berhasil diperbarui!');
         })->name('pelanggan.profile.update-password');
     });

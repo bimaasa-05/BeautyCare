@@ -89,10 +89,15 @@
     .btn-action.btn-print:hover { background: #E9D5FF; box-shadow: 0 4px 12px rgba(147, 51, 234, 0.2); }
 
     @media print {
-        .sidebar-toggle, .sidebar-overlay, .main-content .dashboard-content > .action-bar { display: none; }
+        .sidebar-toggle, .sidebar-overlay, .main-content .dashboard-content > .action-bar { display: none !important; }
         .no-print { display: none !important; }
+        .sidebar { display: none !important; }
+        .main-content { margin-left: 0 !important; padding: 0 !important; }
+        .dashboard-layout { display: block !important; }
+        .dashboard-content { padding: 20px !important; }
         .detail-card { box-shadow: none; border: 1px solid #ddd; }
         body { background: white; }
+        header, .header2, .main-content > .header2, .dashboard-content > .page-header-premium { display: none !important; }
     }
     </style>
 </head>
@@ -109,7 +114,7 @@
                     <div class="dc-header">
                         <div class="dc-title-wrap">
                             <div class="dc-title-icon">
-                                <i class="fa-regular fa-receipt"></i>
+                                <i class="fa-solid fa-receipt"></i>
                             </div>
                             <div>
                                 <div class="dc-title">Detail Treatment</div>
@@ -285,7 +290,7 @@
                         <i class="fa-solid fa-arrow-left"></i> Kembali
                     </a>
                     <button onclick="window.print()" class="btn-action btn-print">
-                        <i class="fa-regular fa-print"></i> Cetak
+                        <i class="fa-solid fa-print"></i> Cetak
                     </button>
                 </div>
             </div>
@@ -297,6 +302,11 @@
     const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
     const dateEl = document.getElementById('currentDate');
     if (dateEl) dateEl.textContent = now.toLocaleDateString('id-ID', options);
+
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('print') === '1') {
+        window.print();
+    }
     </script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
 </body>

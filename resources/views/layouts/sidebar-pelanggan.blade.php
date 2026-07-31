@@ -54,7 +54,7 @@
                 </span>
                 Booking Treatment
             </a>
-            <a href="{{ route('pelanggan.reservasi') }}" class="nav-item {{ request()->routeIs('pelanggan.reservasi') ? 'active' : '' }}" title="Lihat riwayat reservasi Anda">
+            <a href="{{ route('pelanggan.reservasi') }}" class="nav-item {{ request()->routeIs('pelanggan.reservasi') ? 'active' : '' }}" title="Lihat riwayat booking Anda">
                 <span class="nav-icon">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -64,7 +64,7 @@
                         <line x1="3" y1="10" x2="21" y2="10" />
                     </svg>
                 </span>
-                Riwayat Reservasi
+                Riwayat Booking
             </a>
             <a href="{{ route('pelanggan.treatment') }}" class="nav-item {{ request()->routeIs('pelanggan.treatment') ? 'active' : '' }}" title="Lihat riwayat treatment Anda">
                 <span class="nav-icon">
@@ -121,7 +121,7 @@
                 </span>
                 Produk
             </a>
-            <a href="{{ route('pelanggan.keranjang') }}" class="nav-item {{ request()->routeIs('pelanggan.keranjang') ? 'active' : '' }}" title="Lihat keranjang belanja Anda">
+            <a href="{{ route('pelanggan.keranjang') }}" class="nav-item {{ request()->routeIs('pelanggan.keranjang*') ? 'active' : '' }}" title="Lihat keranjang belanja Anda">
                 <span class="nav-icon">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="9" cy="21" r="1" />

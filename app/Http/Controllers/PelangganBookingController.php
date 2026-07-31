@@ -1,0 +1,300 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Booking;
+use App\Models\DetailBooking;
+use App\Models\Layanan;
+use App\Models\Karyawan;
+use App\Models\Pelanggan;
+use App\Models\Membership;
+use App\Models\PromoKlaim;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+
+class PelangganBookingController extends Controller
+{
+    public function index(Request $request)
+    {
+        $user = auth()->user();
+        $id_pelanggan = $user->id;
+
+        $bookings = Booking::with(['detail.layanan', 'karyawan'])
+            ->where('id_pelanggan', $id_pelanggan)
+            ->orderBy('id_booking', 'desc')
+            ->get();
+
+        $total_booking = $bookings->count();
+        $menunggu = $bookings->where('status', 'menunggu')->count();
+        $dikonfirmasi = $bookings->where('status', 'dikonfirmasi')->count();
+        $selesai = $bookings->where('status', 'selesai')->count();
+        $dibatalkan = $bookings->where('status', 'dibatalkan')->count();
+
+        $search = $request->search;
+
+        if ($search) {
+            $bookings = $bookings->filter(function ($b) use ($search) {
+                $keyword = strtolower($search);
+                $idBooking = '#' . str_pad($b->id_booking, 3, '0', STR_PAD_LEFT);
+                $namaKaryawan = $b->karyawan ? strtolower($b->karyawan->nama) : '';
+                $nmLayanan = $b->detail->filter(fn($d) => $d->layanan)->pluck('layanan.nm_layanan')->implode(' ');
+
+                return str_contains(strtolower($b->status), $keyword)
+                    || str_contains(strtolower($b->tanggal), $keyword)
+                    || str_contains(strtolower($b->jam), $keyword)
+                    || str_contains(strtolower($b->catatan), $keyword)
+                    || str_contains($namaKaryawan, $keyword)
+                    || str_contains($nmLayanan, $keyword)
+                    || str_contains(strtolower($idBooking), $keyword);
+            });
+        }
+
+        return view('pelanggan.booking.index', compact(
+            'bookings',
+            'total_booking',
+            'menunggu',
+            'dikonfirmasi',
+            'selesai',
+            'dibatalkan',
+            'search'
+        ));
+    }
+
+    public function create()
+    {
+        $layanans = Layanan::where('status', 'Tersedia')->get();
+        $karyawans = Karyawan::with('user')
+            ->whereHas('user', fn($q) => $q->where('role', 'beautycian'))
+            ->where('status', 'Tersedia')
+            ->orderBy('id_user')
+            ->get();
+
+        $user = auth()->user();
+        $diskonMember = 0;
+        $pelanggan = Pelanggan::where('email', $user->email)
+            ->orWhere('nm_pelanggan', $user->nama)
+            ->orWhere('id_user', $user->id)
+            ->first();
+        if ($pelanggan && $pelanggan->id_member) {
+            $member = Membership::find($pelanggan->id_member);
+            if ($member) {
+                $diskonMember = (int) $member->diskon;
+            }
+        }
+
+        $claimedPromos = PromoKlaim::with('promo')
+            ->where('id_user', auth()->id())
+            ->where('status', 'tersedia')
+            ->get()
+            ->filter(function ($klaim) {
+                return $klaim->promo && $klaim->promo->jenis_promo !== 'Buy 1 Get 1';
+            });
+
+        return view('pelanggan.booking.create', compact('layanans', 'karyawans', 'diskonMember', 'claimedPromos'));
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'id_layanan' => 'required|array',
+            'id_layanan.*' => 'integer|exists:layanan,id_layanan',
+            'id_karyawan' => 'required|integer',
+            'tanggal' => 'required|date',
+            'jam' => 'required',
+            'harga' => 'required|array',
+            'harga.*' => 'numeric',
+            'diskon' => 'nullable|array',
+            'diskon.*' => 'numeric|min:0',
+            'catatan' => 'nullable|string',
+            'id_promo' => 'nullable|integer|exists:promo,id_promo',
+        ]);
+
+        $idPromo = $request->id_promo;
+
+        if ($idPromo) {
+            $promoKlaim = PromoKlaim::with('promo')
+                ->where('id_user', auth()->id())
+                ->where('id_promo', $idPromo)
+                ->where('status', 'tersedia')
+                ->first();
+
+            if (!$promoKlaim) {
+                return redirect()->back()->withErrors('Promo tidak tersedia atau sudah digunakan');
+            }
+
+            if ($promoKlaim->promo->jenis_promo === 'Buy 1 Get 1') {
+                return redirect()->back()->withErrors('Promo ' . $promoKlaim->promo->nm_promo . ' (Buy 1 Get 1) hanya berlaku untuk produk, bukan layanan');
+            }
+
+            $promoKlaim->update(['status' => 'digunakan']);
+        }
+
+        $booking = Booking::create([
+            'id_pelanggan' => auth()->id(),
+            'id_karyawan' => $request->id_karyawan,
+            'tanggal' => $request->tanggal,
+            'jam' => $request->jam,
+            'status' => 'menunggu',
+            'catatan' => $request->catatan ?? '',
+        ]);
+
+        $idLayanans = $request->id_layanan;
+        $hargas = $request->harga;
+        $diskons = $request->diskon ?? [];
+
+        foreach ($idLayanans as $i => $idLayanan) {
+            $harga = (float) ($hargas[$i] ?? 0);
+            $diskon = (float) ($diskons[$i] ?? 0);
+            $subtotal = $harga - $diskon;
+
+            DetailBooking::create([
+                'id_booking' => $booking->id_booking,
+                'id_layanan' => $idLayanan,
+                'harga' => $harga,
+                'diskon' => $diskon,
+                'subtotal' => $subtotal,
+                'id_promo' => $idPromo,
+            ]);
+        }
+
+        DB::table('log_booking')->insert([
+            'id_pelanggan' => auth()->id(),
+            'tanggal' => $request->tanggal,
+        ]);
+
+        $pelanggan = Pelanggan::where('id_user', auth()->id())->first();
+        if ($pelanggan) {
+            $pelanggan->increment('total_booking');
+        }
+
+        buatNotif(auth()->id(), 'Booking Baru', 'Booking treatment berhasil dibuat', 'Booking', route('pelanggan.booking'));
+
+        $admins = \App\Models\User::where('role', 'admin')->get();
+        foreach ($admins as $admin) {
+            buatNotif($admin->id, 'Booking Baru', 'Booking baru oleh ' . auth()->user()->nama, 'Booking', url('/admin/dashboard'));
+        }
+
+        return redirect()->route('pelanggan.booking')->with('success', 'Booking berhasil dibuat!');
+    }
+
+    public function show($id)
+    {
+        $user = auth()->user();
+        $booking = Booking::with(['detail.layanan', 'karyawan'])
+            ->where('id_booking', $id)
+            ->where('id_pelanggan', $user->id)
+            ->firstOrFail();
+
+        return view('pelanggan.booking.detail', compact('booking'));
+    }
+
+    public function edit($id)
+    {
+        $user = auth()->user();
+        $booking = Booking::where('id_booking', $id)
+            ->where('id_pelanggan', $user->id)
+            ->firstOrFail();
+
+        $detail = DetailBooking::where('id_booking', $booking->id_booking)->first();
+        $layanans = Layanan::where('status', 'Tersedia')->get();
+        $karyawans = Karyawan::with('user')
+            ->whereHas('user', fn($q) => $q->where('role', 'beautycian'))
+            ->where('status', 'Tersedia')
+            ->orderBy('id_user')
+            ->get();
+
+        $diskonMember = 0;
+        $pelanggan = Pelanggan::where('email', $user->email)
+            ->orWhere('nm_pelanggan', $user->nama)
+            ->orWhere('id_user', $user->id)
+            ->first();
+        if ($pelanggan && $pelanggan->id_member) {
+            $member = Membership::find($pelanggan->id_member);
+            if ($member) {
+                $diskonMember = (int) $member->diskon;
+            }
+        }
+
+        return view('pelanggan.booking.edit', compact('booking', 'detail', 'layanans', 'karyawans', 'diskonMember'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'id_layanan' => 'required|integer|exists:layanan,id_layanan',
+            'id_karyawan' => 'required|integer',
+            'tanggal' => 'required|date',
+            'jam' => 'required',
+            'harga' => 'required|numeric',
+            'diskon' => 'nullable|numeric|min:0',
+            'catatan' => 'nullable|string',
+        ]);
+
+        $booking = Booking::where('id_booking', $id)
+            ->where('id_pelanggan', auth()->id())
+            ->firstOrFail();
+
+        $booking->update([
+            'id_karyawan' => $request->id_karyawan,
+            'tanggal' => $request->tanggal,
+            'jam' => $request->jam,
+            'catatan' => $request->catatan ?? '',
+        ]);
+
+        $diskon = (float) ($request->diskon ?? 0);
+        $harga = (float) $request->harga;
+        $subtotal = $harga - $diskon;
+
+        DetailBooking::updateOrCreate(
+            ['id_booking' => $booking->id_booking],
+            [
+                'id_layanan' => $request->id_layanan,
+                'harga' => $harga,
+                'diskon' => $diskon,
+                'subtotal' => $subtotal,
+            ]
+        );
+
+        buatNotif(auth()->id(), 'Booking Diperbarui', 'Booking treatment berhasil diperbarui', 'Booking', route('pelanggan.booking'));
+
+        return redirect()->route('pelanggan.booking')->with('success', 'Booking berhasil diperbarui!');
+    }
+
+    public function destroy($id)
+    {
+        $booking = Booking::where('id_booking', $id)
+            ->where('id_pelanggan', auth()->id())
+            ->firstOrFail();
+
+        DetailBooking::where('id_booking', $booking->id_booking)->delete();
+        $booking->delete();
+
+        buatNotif(auth()->id(), 'Booking Dihapus', 'Booking treatment berhasil dihapus', 'Booking', route('pelanggan.booking'));
+
+        return redirect()->route('pelanggan.booking')->with('success', 'Booking berhasil dihapus!');
+    }
+
+    public function batchDestroy(Request $request)
+    {
+        $ids = $request->input('ids', []);
+        if (!is_array($ids) || empty($ids)) {
+            return response()->json(['success' => false, 'message' => 'Tidak ada booking yang dipilih.']);
+        }
+
+        $bookings = Booking::whereIn('id_booking', $ids)
+            ->where('id_pelanggan', auth()->id())
+            ->get();
+
+        foreach ($bookings as $booking) {
+            DetailBooking::where('id_booking', $booking->id_booking)->delete();
+            $booking->delete();
+        }
+
+        buatNotif(auth()->id(), 'Booking Dihapus', count($ids) . ' booking berhasil dihapus', 'Booking', route('pelanggan.booking'));
+
+        return response()->json([
+            'success' => true,
+            'message' => count($ids) . ' booking berhasil dihapus!',
+        ]);
+    }
+}

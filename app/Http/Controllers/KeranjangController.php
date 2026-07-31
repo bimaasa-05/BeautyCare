@@ -35,6 +35,17 @@ class KeranjangController extends Controller
         return view('pelanggan.keranjang.index', compact('troli', 'total', 'claimedPromos'));
     }
 
+    public function history()
+    {
+        $transaksis = Transaksi::with('detail')
+            ->where('id_user', auth()->id())
+            ->whereNull('id_booking')
+            ->orderBy('id_transaksi', 'desc')
+            ->get();
+
+        return view('pelanggan.keranjang.history', compact('transaksis'));
+    }
+
     public function store(Request $request)
     {
         $request->validate([
