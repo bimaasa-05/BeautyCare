@@ -342,7 +342,12 @@
                                                 {{ $p->kategori->nm_produk ?? '-' }}
                                             </span>
                                         </td>
-                                        <td class="px-5 py-4 text-sm text-gray-600" data-label="Supplier">{{ $p->supplier->nm_supplier ?? '-' }}</td>
+                                        <td class="px-5 py-4 text-sm text-gray-600" data-label="Supplier">
+                                            @php
+                                                $supplierTerakhir = $p->stokMasuk()->orderBy('id_stok', 'desc')->first()?->supplier?->nm_supplier;
+                                            @endphp
+                                            {{ $supplierTerakhir ?? '-' }}  
+                                        </td>
                                         <td class="px-5 py-4 text-sm text-gray-600" data-label="Satuan">{{ $p->satuan }}</td>
                                         <td class="px-5 py-4 text-sm text-gray-600" data-label="Harga Beli">Rp. {{ number_format($p->harga_beli, 0, ',', '.') }}</td>
                                         <td class="px-5 py-4 text-sm text-gray-600" data-label="Harga Jual">Rp. {{ number_format($p->harga_jual, 0, ',', '.') }}</td>
