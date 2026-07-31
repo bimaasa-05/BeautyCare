@@ -202,9 +202,12 @@
                                             <label class="form-label">
                                                 <i class="fa-solid fa-money-bill-1 text-pink-400 mr-1"></i>Jumlah Dibayar <span class="text-red-500">*</span>
                                             </label>
-                                            <input type="number" name="dibayar" id="dibayar"
-                                                class="form-input-custom @error('dibayar') border-red-400 @enderror"
-                                                placeholder="0" value="{{ old('dibayar', $totalBayar) }}" min="0" oninput="hitungKembali()">
+                                            <div class="relative">
+                                                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-[13px] font-semibold text-gray-500">Rp</span>
+                                                <input type="number" name="dibayar" id="dibayar"
+                                                    class="form-input-custom !pl-8 @error('dibayar') border-red-400 @enderror"
+                                                    placeholder="0" value="{{ old('dibayar', $totalBayar) }}" min="0" oninput="hitungKembali()">
+                                            </div>
                                             @error('dibayar')
                                                 <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
                                             @enderror
@@ -258,9 +261,12 @@
                                             <label class="form-label">
                                                 <i class="fa-solid fa-money-bill-1 text-pink-400 mr-1"></i>Jumlah Dibayar <span class="text-red-500">*</span>
                                             </label>
-                                            <input type="number" name="dibayar" id="dibayar_ewallet"
-                                                class="form-input-custom @error('dibayar') border-red-400 @enderror"
-                                                placeholder="0" value="{{ old('dibayar', $totalBayar) }}" min="0" oninput="hitungKembaliEwallet()">
+                                            <div class="relative">
+                                                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-[13px] font-semibold text-gray-500">Rp</span>
+                                                <input type="number" name="dibayar" id="dibayar_ewallet"
+                                                    class="form-input-custom !pl-8 @error('dibayar') border-red-400 @enderror"
+                                                    placeholder="0" value="{{ old('dibayar', $totalBayar) }}" min="0" oninput="hitungKembaliEwallet()">
+                                            </div>
                                             @error('dibayar')
                                                 <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
                                             @enderror
@@ -322,9 +328,12 @@
                                             <label class="form-label">
                                                 <i class="fa-solid fa-money-bill-1 text-pink-400 mr-1"></i>Jumlah Dibayar <span class="text-red-500">*</span>
                                             </label>
-                                            <input type="number" name="dibayar" id="dibayar4"
-                                                class="form-input-custom @error('dibayar') border-red-400 @enderror"
-                                                placeholder="0" value="{{ old('dibayar', $totalBayar) }}" min="0" oninput="hitungKembali4()">
+                                            <div class="relative">
+                                                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-[13px] font-semibold text-gray-500">Rp</span>
+                                                <input type="number" name="dibayar" id="dibayar4"
+                                                    class="form-input-custom !pl-8 @error('dibayar') border-red-400 @enderror"
+                                                    placeholder="0" value="{{ old('dibayar', $totalBayar) }}" min="0" oninput="hitungKembali4()">
+                                            </div>
                                             @error('dibayar')
                                                 <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
                                             @enderror
