@@ -265,6 +265,29 @@
                                         </div>
                                         <p
                                             class="text-[11px] font-semibold text-gray-500 mb-2 uppercase tracking-wider">
+                                            Sumber</p>
+                                        <div class="space-y-2 mb-3">
+                                            <label
+                                                class="flex items-center gap-2 text-[12px] text-gray-700 cursor-pointer">
+                                                <input type="radio" name="filter_sumber" value="" checked
+                                                    onchange="applyFilterPelanggan()">
+                                                Semua
+                                            </label>
+                                            <label
+                                                class="flex items-center gap-2 text-[12px] text-gray-700 cursor-pointer">
+                                                <input type="radio" name="filter_sumber" value="online"
+                                                    onchange="applyFilterPelanggan()">
+                                                Online
+                                            </label>
+                                            <label
+                                                class="flex items-center gap-2 text-[12px] text-gray-700 cursor-pointer">
+                                                <input type="radio" name="filter_sumber" value="walkin"
+                                                    onchange="applyFilterPelanggan()">
+                                                Walk-in
+                                            </label>
+                                        </div>
+                                        <p
+                                            class="text-[11px] font-semibold text-gray-500 mb-2 uppercase tracking-wider">
                                             Member</p>
                                         <div class="space-y-2">
                                             <label
@@ -336,6 +359,8 @@
             if (sort) params.set('filter_sort', sort.value);
             const member = document.querySelector('.filter-pelanggan input[name="filter_member"]:checked');
             if (member && member.value) params.set('filter_member', member.value);
+            const sumber = document.querySelector('.filter-pelanggan input[name="filter_sumber"]:checked');
+            if (sumber && sumber.value) params.set('filter_sumber', sumber.value);
             return params.toString();
         }
 

@@ -103,8 +103,8 @@ class PelangganController extends Controller
             'id_promo' => 'nullable|integer|exists:promo,id_promo',
         ]);
 
-        $diskon = (float) ($request->diskon ?? 0);
-        $harga = (float) $request->harga;
+        $diskon = (int) str_replace('.', '', $request->diskon ?? '0');
+        $harga = (int) str_replace('.', '', $request->harga);
         $subtotal = $harga - $diskon;
         $idPromo = $request->id_promo;
 
@@ -217,8 +217,8 @@ class PelangganController extends Controller
             'catatan' => $request->catatan ?? '',
         ]);
 
-        $diskon = (float) ($request->diskon ?? 0);
-        $harga = (float) $request->harga;
+        $diskon = (int) str_replace('.', '', $request->diskon ?? '0');
+        $harga = (int) str_replace('.', '', $request->harga);
         $subtotal = $harga - $diskon;
 
         DetailBooking::updateOrCreate(

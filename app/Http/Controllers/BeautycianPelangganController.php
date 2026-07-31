@@ -55,6 +55,10 @@ class BeautycianPelangganController extends Controller
 
         $total_treatment_selesai = Booking::where('id_karyawan', $id_karyawan)->where('status', 'selesai')->count();
 
+        $total_reservasi = Booking::where('id_karyawan', $id_karyawan)->count();
+
+        $rata_rata_treatment = $total_pelanggan > 0 ? round($total_reservasi / $total_pelanggan, 1) : 0;
+
         $statusCounts = Pelanggan::selectRaw("
             COALESCE((
                 SELECT status FROM booking
@@ -97,6 +101,7 @@ class BeautycianPelangganController extends Controller
             'total_pelanggan', 'total_member', 'total_non_member',
             'total_terjadwal', 'total_diproses', 'total_selesai', 'total_dibatalkan',
             'pelanggan_baru_bulan_ini', 'total_treatment_selesai',
+            'total_reservasi', 'rata_rata_treatment',
             'chartBulan', 'chartPelanggan', 'layananFavorit'
         ));
     }

@@ -16,63 +16,8 @@
     <link rel="stylesheet" href="{{ asset('assets/css/dashboard.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/responsive.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/beautycian.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        .stats-row-plg {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-        .stats-row-plg .stat-card {
-            background: var(--white);
-            border-radius: var(--radius-lg);
-            padding: 20px;
-            box-shadow: var(--shadow-sm);
-            transition: all var(--transition-base);
-            cursor: pointer;
-        }
-        .stats-row-plg .stat-card:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-md);
-        }
-        .stats-row-plg .stat-card .stat-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 12px;
-        }
-        .stats-row-plg .stat-card .stat-icon {
-            width: 44px;
-            height: 44px;
-            border-radius: var(--radius-md);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-        }
-        .stats-row-plg .stat-card .stat-icon.primary { background: var(--hover); color: var(--primary); }
-        .stats-row-plg .stat-card .stat-icon.success { background: #E8F8EE; color: var(--success); }
-        .stats-row-plg .stat-card .stat-icon.warning { background: #FEF3C7; color: var(--warning); }
-        .stats-row-plg .stat-card .stat-icon.info { background: #DBEAFE; color: var(--info); }
-        .stats-row-plg .stat-card .stat-icon.danger { background: #FDE8E8; color: var(--danger); }
-        .stats-row-plg .stat-card .stat-change {
-            font-size: 12px;
-            font-weight: var(--fw-medium);
-            padding: 2px 8px;
-            border-radius: 100px;
-        }
-        .stats-row-plg .stat-card .stat-change.up { background: #E8F8EE; color: var(--success); }
-        .stats-row-plg .stat-card .stat-change.down { background: #FDE8E8; color: var(--danger); }
-        .stats-row-plg .stat-card .stat-value {
-            font-size: 28px;
-            font-weight: var(--fw-bold);
-            color: var(--dark);
-            margin-bottom: 4px;
-        }
-        .stats-row-plg .stat-card .stat-label {
-            font-size: 13px;
-            color: var(--gray);
-        }
         .search-input-plg {
             padding: 9px 16px 9px 36px;
             border-radius: 100px;
@@ -111,15 +56,23 @@
         .dashboard-grid-plg { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 24px; }
         @media (max-width: 900px) { .dashboard-grid-plg { grid-template-columns: 1fr; } }
 
-        @media (max-width: 1200px) { .search-input-plg { width: 180px; } }
+        .donut-wrap { display: flex; flex-direction: column; align-items: center; position: relative; }
+        .donut-wrap canvas { max-height: 170px; max-width: 170px; }
+        .donut-center-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            pointer-events: none;
+        }
+        .donut-center-text .dct-value { font-size: 28px; font-weight: 800; color: var(--primary); line-height: 1; }
+        .donut-center-text .dct-label { font-size: 10px; color: var(--gray); font-weight: 500; margin-top: 2px; }
+
         @media (max-width: 768px) {
-            .stats-row-plg { gap: 12px; }
-            .stats-row-plg .stat-card { padding: 14px; }
-            .stats-row-plg .stat-card .stat-value { font-size: 22px; }
             .search-input-plg { width: 150px; }
         }
         @media (max-width: 430px) {
-            .stats-row-plg .stat-card .stat-value { font-size: 18px; }
             .search-input-plg { width: 100%; }
         }
     </style>
@@ -147,13 +100,12 @@
                     </div>
                 </div>
 
-                <div class="stats-row-plg">
+                <div class="stats-row">
                     <div class="stat-card">
                         <div class="stat-header">
                             <div class="stat-icon primary">
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/></svg>
                             </div>
-                            <span class="stat-change up">+{{ $total_pelanggan }}</span>
                         </div>
                         <div class="stat-value">{{ $total_pelanggan }}</div>
                         <div class="stat-label">Total Pelanggan</div>
@@ -164,7 +116,6 @@
                             <div class="stat-icon success">
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
                             </div>
-                            <span class="stat-change up">+{{ $total_member }}</span>
                         </div>
                         <div class="stat-value">{{ $total_member }}</div>
                         <div class="stat-label">Member</div>
@@ -172,21 +123,9 @@
 
                     <div class="stat-card">
                         <div class="stat-header">
-                            <div class="stat-icon warning">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                            </div>
-                            <span class="stat-change down">-{{ $total_non_member }}</span>
-                        </div>
-                        <div class="stat-value">{{ $total_non_member }}</div>
-                        <div class="stat-label">Non Member</div>
-                    </div>
-
-                    <div class="stat-card">
-                        <div class="stat-header">
                             <div class="stat-icon info">
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                             </div>
-                            <span class="stat-change up">+{{ $pelanggan_baru_bulan_ini }}</span>
                         </div>
                         <div class="stat-value">{{ $pelanggan_baru_bulan_ini }}</div>
                         <div class="stat-label">Pelanggan Baru</div>
@@ -197,69 +136,42 @@
                             <div class="stat-icon success">
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
                             </div>
-                            <span class="stat-change up">+{{ $total_treatment_selesai }}</span>
                         </div>
                         <div class="stat-value">{{ $total_treatment_selesai }}</div>
                         <div class="stat-label">Treatment Selesai</div>
-                    </div>
-                </div>
-
-                <div class="stats-row-plg">
-                    <div class="stat-card">
-                        <div class="stat-header">
-                            <div class="stat-icon info">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-                            </div>
-                            <span class="stat-change up">+{{ $total_terjadwal }}</span>
-                        </div>
-                        <div class="stat-value">{{ $total_terjadwal }}</div>
-                        <div class="stat-label">Terjadwal</div>
                     </div>
 
                     <div class="stat-card">
                         <div class="stat-header">
                             <div class="stat-icon warning">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                            </div>
+                        </div>
+                        <div class="stat-value">{{ $total_reservasi }}</div>
+                        <div class="stat-label">Total Reservasi</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon info">
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                             </div>
-                            <span class="stat-change up">+{{ $total_diproses }}</span>
                         </div>
-                        <div class="stat-value">{{ $total_diproses }}</div>
-                        <div class="stat-label">Diproses</div>
-                    </div>
-
-                    <div class="stat-card">
-                        <div class="stat-header">
-                            <div class="stat-icon success">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-                            </div>
-                            <span class="stat-change up">+{{ $total_selesai }}</span>
-                        </div>
-                        <div class="stat-value">{{ $total_selesai }}</div>
-                        <div class="stat-label">Selesai</div>
-                    </div>
-
-                    <div class="stat-card">
-                        <div class="stat-header">
-                            <div class="stat-icon danger">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
-                            </div>
-                            <span class="stat-change down">-{{ $total_dibatalkan }}</span>
-                        </div>
-                        <div class="stat-value">{{ $total_dibatalkan }}</div>
-                        <div class="stat-label">Dibatalkan</div>
+                        <div class="stat-value">{{ $rata_rata_treatment }}</div>
+                        <div class="stat-label">Rata-rata Treatment</div>
                     </div>
                 </div>
 
                 <div class="dashboard-grid-plg">
                     <div class="chart-card">
                         <div class="chart-header">
-                            <h3>Grafik Pelanggan per Bulan</h3>
+                            <h3>Grafik Pertumbuhan Pelanggan</h3>
                             <div class="chart-actions">
                                 <span style="font-size:11px;color:var(--gray);">Tahun {{ now()->year }}</span>
                             </div>
                         </div>
                         <div class="chart-body">
-                            <canvas id="chartPelanggan" height="260"></canvas>
+                            <canvas id="chartPelanggan" height="280"></canvas>
                         </div>
                     </div>
                     <div class="mini-charts">
@@ -288,42 +200,26 @@
                         <div class="mini-list-card" style="margin-top:16px;">
                             <div class="ml-header">
                                 <h4>
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/></svg>
-                                    Status Pelanggan
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                                    Komposisi Pelanggan
                                 </h4>
+                                <span style="font-size:11px;color:var(--gray);background:#F8F9FC;padding:2px 10px;border-radius:100px;">Total {{ $total_pelanggan }}</span>
                             </div>
-                            <div>
-                                <div class="ml-item">
-                                    <div class="ml-rank gold">#1</div>
-                                    <div class="ml-info">
-                                        <div class="ml-name">Terjadwal</div>
-                                        <div class="ml-count">Menunggu treatment</div>
-                                    </div>
-                                    <div class="ml-value">{{ $total_terjadwal }}</div>
+                            <div class="donut-wrap">
+                                <canvas id="donutMember"></canvas>
+                                <div class="donut-center-text">
+                                    <div class="dct-value">{{ $total_pelanggan > 0 ? round(($total_member / $total_pelanggan) * 100) : 0 }}%</div>
+                                    <div class="dct-label">Member</div>
                                 </div>
-                                <div class="ml-item">
-                                    <div class="ml-rank silver">#2</div>
-                                    <div class="ml-info">
-                                        <div class="ml-name">Diproses</div>
-                                        <div class="ml-count">Sedang dalam perawatan</div>
-                                    </div>
-                                    <div class="ml-value">{{ $total_diproses }}</div>
-                                </div>
-                                <div class="ml-item">
-                                    <div class="ml-rank bronz">#3</div>
-                                    <div class="ml-info">
-                                        <div class="ml-name">Selesai</div>
-                                        <div class="ml-count">Treatment selesai</div>
-                                    </div>
-                                    <div class="ml-value">{{ $total_selesai }}</div>
-                                </div>
-                                <div class="ml-item">
-                                    <div class="ml-rank normal">#4</div>
-                                    <div class="ml-info">
-                                        <div class="ml-name">Dibatalkan</div>
-                                        <div class="ml-count">Dibatalkan</div>
-                                    </div>
-                                    <div class="ml-value">{{ $total_dibatalkan }}</div>
+                                <div style="display:flex;gap:20px;margin-top:12px;font-size:11px;">
+                                    <span style="display:flex;align-items:center;gap:6px;background:#FFF8FA;padding:4px 12px;border-radius:100px;">
+                                        <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#FF4F87;"></span>
+                                        Member <strong>{{ $total_member }}</strong>
+                                    </span>
+                                    <span style="display:flex;align-items:center;gap:6px;background:#F8F9FC;padding:4px 12px;border-radius:100px;">
+                                        <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#E5E7EB;"></span>
+                                        Non Member <strong>{{ $total_non_member }}</strong>
+                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -503,59 +399,116 @@
     </div>
 
     <script>
+    const animOpts = {
+        duration: 1200,
+        easing: 'easeOutQuart'
+    };
+
+    function setupClickReplay(chart) {
+        chart.options.onClick = function() {
+            this.reset();
+            this.update();
+        };
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
-        var canvas = document.getElementById('chartPelanggan');
-        if (!canvas) return;
-        var ctx = canvas.getContext('2d');
-        var dpr = window.devicePixelRatio || 1;
-        var rect = canvas.getBoundingClientRect();
-        canvas.width = rect.width * dpr;
-        canvas.height = rect.height * dpr;
-        ctx.scale(dpr, dpr);
+        var lineCtx = document.getElementById('chartPelanggan');
+        if (!lineCtx) return;
+        var lineLabels = @json($chartBulan);
+        var lineData = @json($chartPelanggan);
 
-        var w = rect.width, h = rect.height;
-        var pad = { top: 20, bottom: 25, left: 30, right: 10 };
-        var cw = w - pad.left - pad.right, ch = h - pad.top - pad.bottom;
+        var gradient = lineCtx.getContext('2d').createLinearGradient(0, 0, 0, 280);
+        gradient.addColorStop(0, 'rgba(255, 79, 135, 0.25)');
+        gradient.addColorStop(1, 'rgba(255, 79, 135, 0.01)');
 
-        var labels = @json($chartBulan);
-        var data = @json($chartPelanggan);
-        var maxVal = Math.max(...data, 1) * 1.2;
-        var barW = cw / labels.length * 0.55;
-        var gap = cw / labels.length;
-
-        for (var i = 0; i <= 4; i++) {
-            var y = pad.top + ch - (ch / 4) * i;
-            ctx.strokeStyle = '#ECECEC';
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(pad.left, y);
-            ctx.lineTo(w - pad.right, y);
-            ctx.stroke();
-        }
-
-        labels.forEach(function(label, i) {
-            var x = pad.left + gap * i + (gap - barW) / 2;
-            var barH = (data[i] / maxVal) * ch;
-            var y = pad.top + ch - barH;
-            ctx.beginPath();
-            var r = 4;
-            ctx.moveTo(x, y + r);
-            ctx.arcTo(x, y, x + r, y, r);
-            ctx.lineTo(x + barW - r, y);
-            ctx.arcTo(x + barW, y, x + barW, y + r, r);
-            ctx.lineTo(x + barW, pad.top + ch);
-            ctx.lineTo(x, pad.top + ch);
-            ctx.closePath();
-            ctx.fillStyle = '#FF4F87';
-            ctx.globalAlpha = 0.85;
-            ctx.fill();
-            ctx.globalAlpha = 1;
-
-            ctx.fillStyle = '#999';
-            ctx.font = '10px Poppins, sans-serif';
-            ctx.textAlign = 'center';
-            ctx.fillText(label, x + barW / 2, h - pad.bottom + 16);
+        var lineChart = new Chart(lineCtx, {
+            type: 'line',
+            data: {
+                labels: lineLabels,
+                datasets: [{
+                    label: 'Pelanggan',
+                    data: lineData,
+                    borderColor: '#FF4F87',
+                    backgroundColor: gradient,
+                    borderWidth: 2.5,
+                    tension: 0.4,
+                    fill: true,
+                    pointBackgroundColor: '#fff',
+                    pointBorderColor: '#FF4F87',
+                    pointBorderWidth: 2,
+                    pointRadius: 3,
+                    pointHoverRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: animOpts,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#fff',
+                        titleColor: '#1F2937',
+                        bodyColor: '#4B5563',
+                        borderColor: '#FCE7F3',
+                        borderWidth: 1,
+                        padding: 10,
+                        cornerRadius: 8,
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false, drawBorder: false },
+                        ticks: { maxTicksLimit: 12 }
+                    },
+                    y: {
+                        border: { display: false },
+                        grid: { color: '#F3E8F5', borderDash: [3, 3] },
+                        ticks: { maxTicksLimit: 6, stepSize: 1 }
+                    }
+                }
+            }
         });
+        setupClickReplay(lineChart);
+
+        var donutCtx = document.getElementById('donutMember');
+        if (donutCtx) {
+            var donutChart = new Chart(donutCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Member', 'Non Member'],
+                    datasets: [{
+                        data: [{{ $total_member }}, {{ $total_non_member }}],
+                        backgroundColor: ['#FF4F87', '#E5E7EB'],
+                        borderWidth: 0,
+                        hoverOffset: 10
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    cutout: '75%',
+                    animation: {
+                        duration: 1000,
+                        easing: 'easeOutBack',
+                        animateRotate: true
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#fff',
+                            titleColor: '#1F2937',
+                            bodyColor: '#4B5563',
+                            borderColor: '#FCE7F3',
+                            borderWidth: 1,
+                            padding: 8,
+                            cornerRadius: 8,
+                        }
+                    }
+                }
+            });
+            setupClickReplay(donutChart);
+        }
     });
     </script>
     <script src="{{ asset('assets/js/beautycian.js') }}"></script>

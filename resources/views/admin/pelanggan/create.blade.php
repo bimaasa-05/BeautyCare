@@ -74,6 +74,81 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #94a3b8;
         }
+
+        .page-header-premium {
+            background: linear-gradient(135deg, #FFF5F8 0%, #FFE5EF 50%, #FFD6E6 100%);
+            border-radius: 20px;
+            padding: 28px 32px;
+            margin-bottom: 24px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 79, 135, 0.08);
+        }
+
+        .page-header-premium::before {
+            content: '';
+            position: absolute;
+            top: -60px;
+            right: -60px;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 79, 135, 0.12) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .page-header-premium::after {
+            content: '';
+            position: absolute;
+            bottom: -40px;
+            left: 30%;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 79, 135, 0.08) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .page-header-premium .ph-content {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .page-header-premium .ph-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .page-header-premium .ph-icon-wrap {
+            width: 52px;
+            height: 52px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, var(--primary), #FF7BA6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 22px;
+            box-shadow: 0 6px 20px rgba(255, 79, 135, 0.3);
+            flex-shrink: 0;
+        }
+
+        .page-header-premium .ph-text h3 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--dark);
+            margin: 0;
+        }
+
+        .page-header-premium .ph-text p {
+            font-size: 13px;
+            color: var(--gray);
+            margin: 2px 0 0;
+        }
     </style>
 </head>
 
@@ -85,8 +160,25 @@
         <main class="main-content">
             @include('layouts.header2')
 
+
             <!-- Dashboard Content -->
             <div class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+
+            <div class="page-header-premium">
+                <div class="ph-content">
+                    <div class="ph-left">
+                        <div class="ph-icon-wrap">
+                            <span class="nav-icon">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                            </span>
+                        </div>
+                        <div class="ph-text">
+                            <h3>Tambah Pelanggan</h3>
+                            <p>Tambahkan data pelanggan baru.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
                 <div class="bg-white rounded-2xl p-6 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)]">
                     <div class="flex justify-between items-center mb-6">
                         <div>
@@ -101,20 +193,6 @@
 
                     <form action="{{ route('admin.pelanggan.store') }}" method="POST" enctype="multipart/form-data">
                         @csrf
-
-                        <div class="mb-5">
-                            <label class="text-[13px] font-semibold text-gray-700 block mb-2">Tipe Pelanggan</label>
-                            <div class="flex items-center gap-4">
-                                <label class="flex items-center gap-2 text-[13px] text-gray-700 cursor-pointer">
-                                    <input type="radio" name="tipe" value="walkin" checked onchange="toggleTipePelanggan()">
-                                    Walk-in (Tanpa Akun)
-                                </label>
-                                <label class="flex items-center gap-2 text-[13px] text-gray-700 cursor-pointer">
-                                    <input type="radio" name="tipe" value="online" onchange="toggleTipePelanggan()">
-                                    Online (Dengan Akun)
-                                </label>
-                            </div>
-                        </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                             <div>
@@ -137,23 +215,6 @@
                                 @enderror
                             </div>
 
-                            <div id="passwordField" class="hidden">
-                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Password</label>
-                                <input type="password" name="password"
-                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('password') border-red-300 @enderror"
-                                    placeholder="Minimal 8 karakter">
-                                @error('password')
-                                    <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <div id="passwordConfirmField" class="hidden">
-                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Konfirmasi Password</label>
-                                <input type="password" name="password_confirmation"
-                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400"
-                                    placeholder="Ulangi password">
-                            </div>
-
                             <div>
                                 <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">No HP</label>
                                 <input type="number" name="no_hp" value="{{ old('no_hp') }}"
@@ -170,16 +231,6 @@
                                     class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('alamat') border-red-300 @enderror"
                                     placeholder="Masukkan alamat">
                                 @error('alamat')
-                                    <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <div>
-                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Member ID</label>
-                                <input type="number" name="id_member" value="{{ old('id_member') }}"
-                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('id_member') border-red-300 @enderror"
-                                    placeholder="Masukkan ID member (opsional)">
-                                @error('id_member')
                                     <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
@@ -221,13 +272,6 @@
     </div>
 
     <script>
-        function toggleTipePelanggan() {
-            const isOnline = document.querySelector('input[name="tipe"]:checked').value === 'online';
-            document.getElementById('passwordField').classList.toggle('hidden', !isOnline);
-            document.getElementById('passwordConfirmField').classList.toggle('hidden', !isOnline);
-        }
-
-        // Set current date
         const now = new Date();
         const options = {
             weekday: 'long',

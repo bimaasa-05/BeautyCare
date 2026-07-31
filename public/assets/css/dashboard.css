@@ -109,12 +109,12 @@
 }
 
 .sidebar-nav .nav-section-title {
-  font-size: 11px;
-  font-weight: var(--fw-semibold);
-  color: var(--gray);
+  font-size: 10px;
+  font-weight: 700;
+  color: #94A3B8;
   text-transform: uppercase;
-  letter-spacing: 1px;
-  padding: 8px 12px 8px;
+  letter-spacing: 1.2px;
+  padding: 12px 12px 6px;
 }
 
 .sidebar-nav .nav-item {
@@ -137,9 +137,9 @@
 }
 
 .sidebar-nav .nav-item.active {
-  background: var(--primary);
-  color: var(--white);
-  box-shadow: 0 4px 12px rgba(255, 79, 135, 0.25);
+  background: #FCE7F3;
+  color: #DB2777;
+  box-shadow: none;
 }
 
 .sidebar-nav .nav-item .nav-icon {
@@ -456,7 +456,7 @@
 /* ---- Stats Cards Row ---- */
 .stats-row {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 16px;
   margin-bottom: 24px;
 }
@@ -464,8 +464,8 @@
 .stat-card {
   background: var(--white);
   border-radius: var(--radius-lg);
-  padding: 20px;
-  box-shadow: var(--shadow-sm);
+  padding: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   transition: all var(--transition-base);
   cursor: pointer;
 }
@@ -485,7 +485,7 @@
 .stat-card .stat-icon {
   width: 44px;
   height: 44px;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-full);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -516,10 +516,10 @@
 }
 
 .stat-card .stat-value {
-  font-size: 28px;
-  font-weight: var(--fw-bold);
+  font-size: 24px;
+  font-weight: 700;
   color: var(--dark);
-  margin-bottom: 4px;
+  margin-bottom: 2px;
 }
 
 .stat-card .stat-label {
@@ -538,9 +538,10 @@
 /* ---- Chart Card ---- */
 .chart-card {
   background: var(--white);
-  border-radius: var(--radius-lg);
+  border-radius: 16px;
   padding: 20px;
   box-shadow: var(--shadow-sm);
+  border: 1px solid #F1F5F9;
 }
 
 .chart-card .chart-header {

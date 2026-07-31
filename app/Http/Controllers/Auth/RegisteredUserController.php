@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Pelanggan;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
@@ -43,8 +44,22 @@ class RegisteredUserController extends Controller
             'email' => $request->email,
             'no_hp' => $request->no_hp,
             'password' => Hash::make($request->password),
-            'status' => 'suspend',
+            'status' => 'non_aktif',
         ]);
+
+        $existingPelanggan = Pelanggan::where('email', $request->email)->whereNull('id_user')->first();
+        if ($existingPelanggan) {
+            $existingPelanggan->update(['id_user' => $user->id]);
+        } else {
+            Pelanggan::create([
+                'nm_pelanggan'   => $request->name,
+                'email'          => $request->email,
+                'no_hp'          => $request->no_hp,
+                'alamat'         => '',
+                'catatan_alergi' => '',
+                'id_user'        => $user->id,
+            ]);
+        }
 
         event(new Registered($user));
         return  \redirect()->route('login')->with('status', "Register Telah berhasil silahkan login");
