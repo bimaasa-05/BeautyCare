@@ -1171,7 +1171,7 @@
                     <div class="bc-header">
                         <div class="bc-title-wrap">
                             <div class="bc-title-icon">
-                                <i class="fa-regular fa-list"></i>
+                                <i class="fa-solid fa-list"></i>
                             </div>
                             <div>
                                 <div class="bc-title">Daftar Booking Saya</div>
@@ -1224,7 +1224,7 @@
                                      </td>
                                      <td>
                                          <span class="booking-id-badge">
-                                            <i class="fa-regular fa-receipt" style="font-size:10px;"></i>
+                                            <i class="fa-solid fa-receipt" style="font-size:10px;"></i>
                                             #BK{{ str_pad($booking->id_booking, 3, '0', STR_PAD_LEFT) }}
                                         </span>
                                     </td>
@@ -1247,7 +1247,15 @@
                                         </div>
                                     </td>
                                     <td data-label="Layanan">
-                                        <span style="font-weight:500;">{{ $booking->detail->first() && $booking->detail->first()->layanan ? $booking->detail->first()->layanan->nm_layanan : '-' }}</span>
+                                        @php
+                                            $layananNames = $booking->detail->filter(fn($d) => $d->layanan)->pluck('layanan.nm_layanan');
+                                        @endphp
+                                        <span style="font-weight:500;">
+                                            {{ $layananNames->first() ?: '-' }}
+                                            @if($layananNames->count() > 1)
+                                            <span style="font-size:11px;color:var(--gray);font-weight:400;"> +{{ $layananNames->count() - 1 }} lainnya</span>
+                                            @endif
+                                        </span>
                                     </td>
                                     <td data-label="Status">
                                         <span class="status-badge {{ $booking->status }}">
@@ -1262,8 +1270,8 @@
                                     </td>
                                     <td data-label="Aksi" style="text-align:center;">
                                         <div class="flex items-center justify-center gap-1.5">
-                                            <a href="{{ route('pelanggan.booking.edit', $booking->id_booking) }}" class="action-btn edit" title="Edit booking">
-                                                <i class="fa-regular fa-pen-to-square"></i>
+                                            <a href="{{ route('pelanggan.booking.detail', $booking->id_booking) }}" class="action-btn edit" title="Detail booking">
+                                                <i class="fa-regular fa-eye"></i>
                                             </a>
                                             <button onclick="confirmDelete({{ $booking->id_booking }})" class="action-btn delete" title="Hapus booking">
                                                 <i class="fa-regular fa-trash-can"></i>
