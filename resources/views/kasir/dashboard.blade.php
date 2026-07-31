@@ -563,17 +563,15 @@
 
     <script>
         function changeSalesPeriod(value) {
-            var url = '{{ route('kasir.dashboard') }}?periode=' + value;
             var pp = '{{ $paymentPeriode ?? '7hari' }}';
-            url += '&payment_periode=' + pp;
-            window.location.href = url;
+            document.getElementById('periodSelect').value = value;
+            updateSalesChart(value);
         }
 
         function changePaymentPeriod(value) {
-            var url = '{{ route('kasir.dashboard') }}?payment_periode=' + value;
             var p = '{{ $periode ?? '7hari' }}';
-            url += '&periode=' + p;
-            window.location.href = url;
+            document.getElementById('paymentPeriodSelect').value = value;
+            updatePaymentChart(value);
         }
 
         const now = new Date();
@@ -586,12 +584,15 @@
         const dateEl = document.getElementById('currentDate');
         if (dateEl) dateEl.textContent = now.toLocaleDateString('id-ID', options);
 
-        const chartLabels = @json($chartLabels);
-        const chartRevenue = @json($chartRevenue);
+        const allSalesChartData = @json($salesChartData);
+        const allPaymentChartData = @json($paymentChartData);
+
+        const salesChartLabels = @json($chartLabels);
+        const salesChartRevenue = @json($chartRevenue);
         const paymentLabels = @json($paymentLabels);
         const paymentValues = @json($paymentValues);
 
-        const maxRev = chartRevenue.length > 0 ? Math.max(...chartRevenue) : 0;
+        const maxRev = salesChartRevenue.length > 0 ? Math.max(...salesChartRevenue) : 0;
 
         Chart.defaults.font.family = "'Poppins', sans-serif";
         Chart.defaults.color = '#9CA3AF';
@@ -599,119 +600,42 @@
 
         const paymentColors = ['#22C55E', '#3B82F6', '#F59E0B', '#8B5CF6', '#EC4899', '#EF4444'];
 
-        const ctx = document.getElementById('chartPendapatan').getContext('2d');
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: chartLabels,
-                datasets: [{
-                    label: 'Pendapatan',
-                    data: chartRevenue,
-                    borderColor: '#EC4899',
-                    backgroundColor: 'rgba(236, 72, 153, 0.08)',
-                    borderWidth: 2,
-                    tension: 0.4,
-                    fill: true,
-                    pointBackgroundColor: '#fff',
-                    pointBorderColor: '#EC4899',
-                    pointBorderWidth: 2,
-                    pointRadius: 3,
-                    pointHoverRadius: 5
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                animation: {
-                    duration: 2000,
-                    easing: 'easeOutQuart'
-                },
-                plugins: {
-                    legend: {
-                        display: false
-                    },
-                    tooltip: {
-                        backgroundColor: '#fff',
-                        titleColor: '#1F2937',
-                        bodyColor: '#4B5563',
-                        borderColor: '#FCE7F3',
-                        borderWidth: 1,
-                        padding: 10,
-                        cornerRadius: 8,
-                        callbacks: {
-                            label: function(context) {
-                                var val = context.parsed.y;
-                                if (val >= 1000000) return 'Rp ' + (val / 1000000).toFixed(1) + ' jt';
-                                return 'Rp ' + val.toLocaleString('id-ID');
-                            }
-                        }
-                    }
-                },
-                scales: {
-                    x: {
-                        grid: {
-                            display: false,
-                            drawBorder: false
-                        },
-                        ticks: {
-                            maxTicksLimit: Math.min(chartLabels.length, 10)
-                        }
-                    },
-                    y: {
-                        border: {
-                            display: false
-                        },
-                        grid: {
-                            color: '#F3E8F5',
-                            borderDash: [3, 3]
-                        },
-                        ticks: {
-                            maxTicksLimit: 6,
-                            callback: function(value) {
-                                if (maxRev > 1000000) return 'Rp' + (value / 1000000).toFixed(1) + 'jt';
-                                return 'Rp' + value.toLocaleString('id-ID');
-                            }
-                        }
-                    }
-                }
-            }
-        });
+        let salesChartInstance = null;
+        let paymentChartInstance = null;
 
-        const ctxPayment = document.getElementById('chartPembayaran');
-        if (ctxPayment && paymentLabels.length > 0) {
-            new Chart(ctxPayment.getContext('2d'), {
-                type: 'doughnut',
+        function initSalesChart(labels, revenue) {
+            const ctx = document.getElementById('chartPendapatan').getContext('2d');
+            const max = revenue.length > 0 ? Math.max(...revenue) : 0;
+            if (salesChartInstance) salesChartInstance.destroy();
+            salesChartInstance = new Chart(ctx, {
+                type: 'line',
                 data: {
-                    labels: paymentLabels,
+                    labels: labels,
                     datasets: [{
-                        data: paymentValues,
-                        backgroundColor: paymentColors.slice(0, paymentLabels.length),
+                        label: 'Pendapatan',
+                        data: revenue,
+                        borderColor: '#EC4899',
+                        backgroundColor: 'rgba(236, 72, 153, 0.08)',
                         borderWidth: 2,
-                        borderColor: '#fff'
+                        tension: 0.4,
+                        fill: true,
+                        pointBackgroundColor: '#fff',
+                        pointBorderColor: '#EC4899',
+                        pointBorderWidth: 2,
+                        pointRadius: 3,
+                        pointHoverRadius: 5
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    cutout: '65%',
                     animation: {
-                        animateRotate: true,
                         duration: 2000,
                         easing: 'easeOutQuart'
                     },
                     plugins: {
                         legend: {
-                            position: 'bottom',
-                            labels: {
-                                font: {
-                                    family: 'Poppins',
-                                    size: 11
-                                },
-                                color: '#6B7280',
-                                padding: 12,
-                                usePointStyle: true,
-                                pointStyle: 'rectRot'
-                            }
+                            display: false
                         },
                         tooltip: {
                             backgroundColor: '#fff',
@@ -723,18 +647,126 @@
                             cornerRadius: 8,
                             callbacks: {
                                 label: function(context) {
-                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                    const pct = total > 0 ? ((context.parsed / total) * 100).toFixed(1) : 0;
-                                    return ' ' + context.label + ': ' + context.parsed + ' (' + pct + '%)';
+                                    var val = context.parsed.y;
+                                    if (val >= 1000000) return 'Rp ' + (val / 1000000).toFixed(1) + ' jt';
+                                    return 'Rp ' + val.toLocaleString('id-ID');
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false,
+                                drawBorder: false
+                            },
+                            ticks: {
+                                maxTicksLimit: Math.min(labels.length, 10)
+                            }
+                        },
+                        y: {
+                            border: {
+                                display: false
+                            },
+                            grid: {
+                                color: '#F3E8F5',
+                                borderDash: [3, 3]
+                            },
+                            ticks: {
+                                maxTicksLimit: 6,
+                                callback: function(value) {
+                                    if (max > 1000000) return 'Rp' + (value / 1000000).toFixed(1) + 'jt';
+                                    return 'Rp' + value.toLocaleString('id-ID');
                                 }
                             }
                         }
                     }
                 }
             });
-        } else if (ctxPayment) {
-            ctxPayment.parentNode.innerHTML = '<span style="font-size:12px;color:#999;">Belum ada data</span>';
         }
+
+        function initPaymentChart(labels, values) {
+            const ctx = document.getElementById('chartPembayaran').getContext('2d');
+            if (paymentChartInstance) paymentChartInstance.destroy();
+            if (labels.length > 0) {
+                paymentChartInstance = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            data: values,
+                            backgroundColor: paymentColors.slice(0, labels.length),
+                            borderWidth: 2,
+                            borderColor: '#fff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '65%',
+                        animation: {
+                            animateRotate: true,
+                            duration: 2000,
+                            easing: 'easeOutQuart'
+                        },
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    font: {
+                                        family: 'Poppins',
+                                        size: 11
+                                    },
+                                    color: '#6B7280',
+                                    padding: 12,
+                                    usePointStyle: true,
+                                    pointStyle: 'rectRot'
+                                }
+                            },
+                            tooltip: {
+                                backgroundColor: '#fff',
+                                titleColor: '#1F2937',
+                                bodyColor: '#4B5563',
+                                borderColor: '#FCE7F3',
+                                borderWidth: 1,
+                                padding: 10,
+                                cornerRadius: 8,
+                                callbacks: {
+                                    label: function(context) {
+                                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                        const pct = total > 0 ? ((context.parsed / total) * 100).toFixed(1) : 0;
+                                        return ' ' + context.label + ': ' + context.parsed + ' (' + pct + '%)';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            } else {
+                ctx.parentNode.innerHTML = '<span style="font-size:12px;color:#999;">Belum ada data</span>';
+            }
+        }
+
+        function updateSalesChart(period) {
+            const data = allSalesChartData[period];
+            if (!data) return;
+            const periodNames = { '7hari': '7 Hari', '30hari': '30 Hari', '3bulan': '3 Bulan', 'tahunini': '1 Tahun' };
+            const heading = document.querySelector('#periodSelect').closest('.chart-header').querySelector('h3');
+            if (heading) heading.textContent = 'Grafik Penjualan ' + (periodNames[period] || period);
+            initSalesChart(data.labels, data.values);
+        }
+
+        function updatePaymentChart(period) {
+            const data = allPaymentChartData[period];
+            if (!data) return;
+            const periodNames = { '7hari': '7 Hari', '30hari': '30 Hari', '3bulan': '3 Bulan', 'tahunini': '1 Tahun' };
+            const heading = document.querySelector('#paymentPeriodSelect').closest('.chart-header').querySelector('h3');
+            if (heading) heading.textContent = 'Metode Pembayaran ' + (periodNames[period] || period);
+            initPaymentChart(data.labels, data.values);
+        }
+
+        initSalesChart(salesChartLabels, salesChartRevenue);
+        initPaymentChart(paymentLabels, paymentValues);
     </script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
 </body>
