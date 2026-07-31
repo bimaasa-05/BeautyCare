@@ -553,7 +553,7 @@
                             </div>
                             <div class="promo-divider"></div>
                             <div class="promo-footer">
-                                <span class="promo-code"><i class="fa-regular fa-ticket"></i> {{ strtoupper(str_replace(' ', '', substr($promo->nm_promo, 0, 8))) }}</span>
+                                <span class="promo-code"><i class="fa-solid fa-ticket"></i> {{ strtoupper(str_replace(' ', '', substr($promo->nm_promo, 0, 8))) }}</span>
                                 @if($promo->status == 'Tersedia')
                                 <button class="promo-btn-claim @if($isClaimed) claimed @endif @if($isUsed) disabled @endif" data-id="{{ $promo->id_promo }}" @if($isClaimed || $isUsed) disabled="disabled" @endif>
                                     @if($isClaimed)<i class="fa-regular fa-circle-check"></i> @endif{{ $isClaimed ? 'Claimed' : 'Klaim Now' }}

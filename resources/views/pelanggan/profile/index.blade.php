@@ -526,7 +526,7 @@
                 @if($errors->any())
                 <div class="alert-premium" style="background:linear-gradient(135deg,#FEF2F2,#FEE2E2);border:1px solid #FECACA;color:#991B1B;">
                     <div class="alert-icon" style="background:#FECACA;color:#DC2626;">
-                        <i class="fa-regular fa-circle-exclamation"></i>
+                        <i class="fa-solid fa-circle-exclamation"></i>
                     </div>
                     <ul style="margin:0;padding-left:16px;">
                         @foreach($errors->all() as $err)
@@ -569,7 +569,7 @@
                         <div class="profile-card" style="margin-top:24px;">
                             <div class="pc-header">
                                 <div class="pc-icon">
-                                    <i class="fa-regular fa-circle-info"></i>
+                                    <i class="fa-solid fa-circle-info"></i>
                                 </div>
                                 <div class="pc-title">Info Akun</div>
                             </div>
@@ -585,7 +585,7 @@
                                 </div>
                                 <div class="info-row">
                                     <div class="ir-icon phone">
-                                        <i class="fa-regular fa-phone"></i>
+                                        <i class="fa-solid fa-phone"></i>
                                     </div>
                                     <div class="ir-content">
                                         <div class="ir-label">No. Handphone</div>
@@ -632,7 +632,7 @@
                                     <div class="form-group">
                                         <label>No. Handphone</label>
                                         <div class="input-icon-wrap">
-                                            <i class="fa-regular fa-phone"></i>
+                                            <i class="fa-solid fa-phone"></i>
                                             <input type="text" name="no_hp" class="form-control @error('no_hp') is-invalid @enderror" value="{{ old('no_hp', auth()->user()->no_hp) }}">
                                         </div>
                                         @error('no_hp') <span style="font-size:11px;color:#DC2626;margin-top:4px;display:block;">{{ $message }}</span> @enderror
@@ -647,7 +647,7 @@
                         <div class="profile-card" style="margin-top:24px;">
                             <div class="pc-header">
                                 <div class="pc-icon">
-                                    <i class="fa-regular fa-lock"></i>
+                                    <i class="fa-solid fa-lock"></i>
                                 </div>
                                 <div class="pc-title">Ganti Password</div>
                             </div>
@@ -657,7 +657,7 @@
                                     <div class="form-group">
                                         <label>Password Saat Ini</label>
                                         <div class="input-icon-wrap">
-                                            <i class="fa-regular fa-lock"></i>
+                                            <i class="fa-solid fa-lock"></i>
                                             <input type="password" name="current_password" class="form-control @error('current_password') is-invalid @enderror" placeholder="Masukkan password saat ini">
                                             <button type="button" class="toggle-pw" onclick="togglePassword(this)" tabindex="-1"><i class="fa-regular fa-eye"></i></button>
                                         </div>
@@ -666,7 +666,7 @@
                                     <div class="form-group">
                                         <label>Password Baru</label>
                                         <div class="input-icon-wrap">
-                                            <i class="fa-regular fa-lock"></i>
+                                            <i class="fa-solid fa-lock"></i>
                                             <input type="password" name="new_password" class="form-control @error('new_password') is-invalid @enderror" placeholder="Masukkan password baru">
                                             <button type="button" class="toggle-pw" onclick="togglePassword(this)" tabindex="-1"><i class="fa-regular fa-eye"></i></button>
                                         </div>
@@ -675,13 +675,13 @@
                                     <div class="form-group">
                                         <label>Konfirmasi Password Baru</label>
                                         <div class="input-icon-wrap">
-                                            <i class="fa-regular fa-lock"></i>
+                                            <i class="fa-solid fa-lock"></i>
                                             <input type="password" name="new_password_confirmation" class="form-control" placeholder="Konfirmasi password baru">
                                             <button type="button" class="toggle-pw" onclick="togglePassword(this)" tabindex="-1"><i class="fa-regular fa-eye"></i></button>
                                         </div>
                                     </div>
                                     <button type="submit" class="btn-primary-full">
-                                        <i class="fa-regular fa-key"></i> Update Password
+                                        <i class="fa-solid fa-key"></i> Update Password
                                     </button>
                                 </form>
                             </div>

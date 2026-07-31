@@ -114,7 +114,7 @@
                     <div class="dc-header">
                         <div class="dc-title-wrap">
                             <div class="dc-title-icon">
-                                <i class="fa-regular fa-receipt"></i>
+                                <i class="fa-solid fa-receipt"></i>
                             </div>
                             <div>
                                 <div class="dc-title">Detail Treatment</div>

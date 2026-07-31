@@ -687,7 +687,7 @@
                     <div class="tc-header">
                         <div class="tc-title-wrap">
                             <div class="tc-title-icon">
-                                <i class="fa-regular fa-list"></i>
+                                <i class="fa-solid fa-list"></i>
                             </div>
                             <div>
                                 <div class="tc-title">Daftar Treatment</div>
@@ -719,7 +719,7 @@
                             <tbody>
                                 @forelse($bookings as $booking)
                                 <tr>
-                                    <td><span class="treatment-id-badge"><i class="fa-regular fa-receipt" style="font-size:10px;"></i> #BK{{ str_pad($booking->id_booking, 3, '0', STR_PAD_LEFT) }}</span></td>
+                                    <td><span class="treatment-id-badge"><i class="fa-solid fa-receipt" style="font-size:10px;"></i> #BK{{ str_pad($booking->id_booking, 3, '0', STR_PAD_LEFT) }}</span></td>
                                     <td data-label="Tanggal">{{ \Carbon\Carbon::parse($booking->tanggal)->isoFormat('D MMM YYYY') }}</td>
                                     <td data-label="Jam">{{ \Carbon\Carbon::parse($booking->jam)->format('H:i') }}</td>
                                     <td data-label="Terapis">

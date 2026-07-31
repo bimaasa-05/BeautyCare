@@ -687,7 +687,7 @@
                     <div class="rc-header">
                         <div class="rc-title-wrap">
                             <div class="rc-title-icon">
-                                <i class="fa-regular fa-receipt"></i>
+                                <i class="fa-solid fa-receipt"></i>
                             </div>
                             <div>
                                 <div class="rc-title">Daftar Booking</div>
@@ -721,7 +721,7 @@
                                 <tr>
                                     <td>
                                         <span class="reservasi-id-badge">
-                                            <i class="fa-regular fa-receipt" style="font-size:10px;"></i>
+                                            <i class="fa-solid fa-receipt" style="font-size:10px;"></i>
                                             #BK{{ str_pad($booking->id_booking, 3, '0', STR_PAD_LEFT) }}
                                         </span>
                                     </td>
