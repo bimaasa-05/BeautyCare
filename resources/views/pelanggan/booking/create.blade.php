@@ -653,7 +653,7 @@
                 @if($errors->any())
                 <div class="alert-error-premium">
                     <div class="ae-icon">
-                        <i class="fa-regular fa-circle-exclamation"></i>
+                        <i class="fa-solid fa-circle-exclamation"></i>
                     </div>
                     <span>{{ $errors->first() }}</span>
                 </div>
@@ -667,7 +667,7 @@
                         <div class="fcp-body">
                             <!-- Section 1: Layanan & Terapis -->
                             <div class="fcp-section-title">
-                                <span class="fcp-st-icon"><i class="fa-regular fa-spa"></i></span>
+                                <span class="fcp-st-icon"><i class="fa-solid fa-spa"></i></span>
                                 Layanan & Terapis
                             </div>
                             <div class="fcp-section-sub">Pilih treatment dan beauty therapist favorit Anda</div>
@@ -695,7 +695,7 @@
 
                                 <div class="fg-premium">
                                     <label class="fg-label">
-                                        <i class="fa-regular fa-spa fg-label-icon"></i>
+                                        <i class="fa-solid fa-spa fg-label-icon"></i>
                                         Tambah Layanan <span class="fg-required">*</span>
                                     </label>
                                     <div style="display:flex;gap:8px;align-items:flex-start;">
@@ -721,7 +721,7 @@
                                         </button>
                                     </div>
                                     <div style="margin-top:8px;">
-                                        <span style="font-size:11px;color:var(--gray);"><i class="fa-regular fa-circle-info"></i> Pilih layanan lalu klik <strong>Tambah</strong> untuk menambahkan ke daftar</span>
+                                        <span style="font-size:11px;color:var(--gray);"><i class="fa-solid fa-circle-info"></i> Pilih layanan lalu klik <strong>Tambah</strong> untuk menambahkan ke daftar</span>
                                     </div>
                                 </div>
                             </div>
@@ -743,7 +743,7 @@
                                 </table>
                             </div>
                             <div id="noServicesMsg" style="margin-top:12px;padding:20px;text-align:center;background:#FAFAFA;border-radius:12px;border:1px dashed var(--border);">
-                                <i class="fa-regular fa-spa" style="font-size:24px;color:#ddd;display:block;margin-bottom:8px;"></i>
+                                <i class="fa-solid fa-spa" style="font-size:24px;color:#ddd;display:block;margin-bottom:8px;"></i>
                                 <span style="font-size:13px;color:var(--gray);">Belum ada layanan dipilih. Pilih layanan di atas lalu klik <strong>Tambah</strong>.</span>
                             </div>
 
@@ -779,7 +779,7 @@
                             @if($claimedPromos->isNotEmpty())
                             <div class="fcp-divider"></div>
                             <div class="fcp-section-title">
-                                <span class="fcp-st-icon"><i class="fa-regular fa-tag"></i></span>
+                                <span class="fcp-st-icon"><i class="fa-solid fa-tag"></i></span>
                                 Promo
                             </div>
                             <div class="fcp-section-sub">Gunakan promo yang sudah Anda klaim</div>
@@ -815,7 +815,7 @@
                             <!-- ═══ Summary Card ═══ -->
                             <div class="summary-card-premium">
                                 <div class="sc-title">
-                                    <i class="fa-regular fa-receipt"></i>
+                                    <i class="fa-solid fa-receipt"></i>
                                     Ringkasan Booking
                                 </div>
                                 <div class="sc-row">

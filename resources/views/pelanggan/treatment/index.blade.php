@@ -687,7 +687,7 @@
                     <div class="tc-header">
                         <div class="tc-title-wrap">
                             <div class="tc-title-icon">
-                                <i class="fa-regular fa-list"></i>
+                                <i class="fa-solid fa-list"></i>
                             </div>
                             <div>
                                 <div class="tc-title">Daftar Treatment</div>
@@ -697,7 +697,7 @@
                         <div class="tc-actions">
                             <div class="search-input-wrap">
                                 <i class="fa-solid fa-search si-icon"></i>
-                                <input type="text" placeholder="Cari treatment..." value="">
+                                <input type="text" id="searchInput" placeholder="Cari treatment..." value="">
                             </div>
                         </div>
                     </div>
@@ -719,7 +719,7 @@
                             <tbody>
                                 @forelse($bookings as $booking)
                                 <tr>
-                                    <td><span class="treatment-id-badge"><i class="fa-regular fa-receipt" style="font-size:10px;"></i> #BK{{ str_pad($booking->id_booking, 3, '0', STR_PAD_LEFT) }}</span></td>
+                                    <td><span class="treatment-id-badge"><i class="fa-solid fa-receipt" style="font-size:10px;"></i> #BK{{ str_pad($booking->id_booking, 3, '0', STR_PAD_LEFT) }}</span></td>
                                     <td data-label="Tanggal">{{ \Carbon\Carbon::parse($booking->tanggal)->isoFormat('D MMM YYYY') }}</td>
                                     <td data-label="Jam">{{ \Carbon\Carbon::parse($booking->jam)->format('H:i') }}</td>
                                     <td data-label="Terapis">
@@ -768,7 +768,7 @@
                     <div class="table-footer">
                         <div class="tf-info">
                             <span class="tf-dot"></span>
-                            Menampilkan {{ $bookings->count() }} treatment
+                            Menampilkan <span id="treatmentCount">{{ $bookings->count() }}</span> treatment
                         </div>
                         <div class="tf-pagination">
                             <button class="page-btn active">1</button>
@@ -780,6 +780,24 @@
     </div>
 
     <script>
+    function cariTreatment() {
+        var keyword = document.getElementById('searchInput').value.toLowerCase().trim();
+        var rows = document.querySelectorAll('.treatment-table tbody tr');
+        var visible = 0;
+
+        rows.forEach(function(row) {
+            if (row.querySelector('.empty-state')) return;
+            var match = row.textContent.toLowerCase().includes(keyword);
+            row.style.display = match ? '' : 'none';
+            if (match) visible++;
+        });
+
+        var countEl = document.getElementById('treatmentCount');
+        if (countEl) countEl.textContent = visible;
+    }
+
+    document.getElementById('searchInput').addEventListener('input', cariTreatment);
+
     const now = new Date();
     const options = {
         weekday: 'long',

@@ -253,6 +253,31 @@
         box-shadow: 0 4px 16px rgba(239, 68, 68, 0.3);
     }
 
+    .btn-history {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 20px;
+        border-radius: 100px;
+        border: 1.5px solid var(--primary);
+        background: var(--white);
+        color: var(--primary);
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-family: 'Poppins', sans-serif;
+        text-decoration: none;
+        box-shadow: 0 4px 12px rgba(255, 79, 135, 0.15);
+    }
+
+    .btn-history:hover {
+        background: linear-gradient(135deg, var(--primary), #FF7BA6);
+        color: #fff;
+        transform: translateY(-1px);
+        box-shadow: 0 6px 20px rgba(255, 79, 135, 0.3);
+    }
+
     .btn-hapus-sebagian.active:hover {
         background: linear-gradient(135deg, #dc2626, #b91c1c);
         box-shadow: 0 6px 24px rgba(239, 68, 68, 0.4);
@@ -1224,6 +1249,9 @@
                                 <p>Daftar produk yang Anda pilih untuk dibeli</p>
                             </div>
                         </div>
+                        <a href="{{ route('pelanggan.keranjang.history') }}" class="btn-history">
+                            <i class="fa-solid fa-clock-rotate-left"></i> History
+                        </a>
                     </div>
                 </div>
 
@@ -1388,7 +1416,7 @@
                     <div class="cm-divider"></div>
                     @if(isset($claimedPromos) && $claimedPromos->isNotEmpty())
                     <div class="cm-payment" style="padding:12px 28px 8px;">
-                        <div class="cmp-title"><i class="fa-regular fa-tag"></i> Promo Saya</div>
+                        <div class="cmp-title"><i class="fa-solid fa-tag"></i> Promo Saya</div>
                         <select id="checkoutPromo" style="width:100%;padding:10px 14px;border-radius:12px;border:1.5px solid var(--border);font-size:12px;font-family:'Poppins',sans-serif;background:#FAFAFA;outline:none;">
                             <option value="" data-jenis="" data-nilai="0">— Tanpa Promo —</option>
                             @foreach($claimedPromos as $cp)
