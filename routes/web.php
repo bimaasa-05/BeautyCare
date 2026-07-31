@@ -17,6 +17,7 @@ use App\Http\Controllers\AdminBeautycianController;
 use App\Http\Controllers\AdminLayananController;
 use App\Http\Controllers\AdminKategoriController;
 use App\Http\Controllers\AdminProdukController;
+use App\Http\Controllers\AdminStokController;
 use App\Http\Controllers\AdminMembershipController;
 use App\Http\Controllers\AdminPromoController;
 use App\Http\Controllers\NotifikasiController;
@@ -100,6 +101,10 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/produk/{produk}/edit', [AdminProdukController::class, 'edit'])->name('admin.produk.edit');
         Route::put('/admin/produk/{produk}', [AdminProdukController::class, 'update'])->name('admin.produk.update');
         Route::delete('/admin/produk/{produk}', [AdminProdukController::class, 'destroy'])->name('admin.produk.destroy');
+
+        Route::get('/admin/stok', [AdminStokController::class, 'index'])->name('admin.stok.index');
+        Route::get('/admin/stok/create', [AdminStokController::class, 'create'])->name('admin.stok.create');
+        Route::post('/admin/stok', [AdminStokController::class, 'store'])->name('admin.stok.store');
 
         Route::get('/admin/membership', [AdminMembershipController::class, 'index'])->name('admin.membership.index');
         Route::get('/admin/membership/create', [AdminMembershipController::class, 'create'])->name('admin.membership.create');
