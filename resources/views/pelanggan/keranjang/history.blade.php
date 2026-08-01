@@ -455,6 +455,15 @@
         .history-table tbody td:last-child {
             padding-right: 0;
         }
+
+        .page-header-premium { padding: 22px 20px; }
+        .history-card .hc-header { padding: 16px; }
+        .table-footer { padding: 14px 16px; }
+    }
+
+    @media (max-width: 576px) {
+        .page-header-premium .ph-text h3 { font-size: 17px; }
+        .page-header-premium .ph-icon-wrap { width: 44px; height: 44px; border-radius: 13px; font-size: 18px; }
     }
     </style>
 </head>

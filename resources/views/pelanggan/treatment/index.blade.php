@@ -608,6 +608,23 @@
         }
         .treatment-table tbody td:first-child { padding-left: 0; }
         .treatment-table tbody td:last-child { padding-right: 0; }
+
+        .page-header-premium { padding: 22px 20px; }
+        .page-header-premium .ph-content { flex-wrap: wrap; gap: 16px; }
+        .page-header-premium .ph-stats { gap: 14px; }
+        .page-header-premium .ph-stat-divider { display: none; }
+        .treatment-card .tc-header { flex-wrap: wrap; gap: 14px; }
+        .treatment-card .tc-header .tc-actions { width: 100%; }
+        .treatment-card .tc-header .tc-actions .search-input-wrap { flex: 1; }
+        .treatment-card .tc-header .tc-actions .search-input-wrap input,
+        .treatment-card .tc-header .tc-actions .search-input-wrap input:focus { width: 100%; }
+        .table-footer { padding: 14px 16px; }
+    }
+
+    @media (max-width: 576px) {
+        .page-header-premium .ph-text h3 { font-size: 17px; }
+        .page-header-premium .ph-icon-wrap { width: 44px; height: 44px; border-radius: 13px; font-size: 18px; }
+        .page-header-premium .ph-stat-item .ph-stat-num { font-size: 18px; }
     }
     </style>
 </head>

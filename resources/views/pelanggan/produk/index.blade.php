@@ -918,6 +918,21 @@
         .checkout-modal .cmp-group {
             grid-template-columns: 1fr;
         }
+
+        .page-header-premium { padding: 22px 20px; }
+        .filter-tab { padding: 7px 14px; font-size: 11px; }
+    }
+
+    @media (max-width: 576px) {
+        .page-header-premium .ph-text h3 { font-size: 17px; }
+        .page-header-premium .ph-icon-wrap { width: 44px; height: 44px; border-radius: 13px; font-size: 18px; }
+        .produk-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+        .produk-card .pc-body { padding: 12px 14px 14px; }
+        .checkout-modal .cm-header { padding: 16px 16px 0; }
+        .checkout-modal .cm-items { padding: 12px 16px; }
+        .checkout-modal .cm-total { padding: 12px 16px; }
+        .checkout-modal .cm-payment { padding: 0 16px 16px; }
+        .checkout-modal .cm-bayar { margin: 0 16px 16px; width: calc(100% - 32px); }
     }
     </style>
 </head>
