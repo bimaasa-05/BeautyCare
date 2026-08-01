@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Booking;
 use App\Models\RiwayatTreatment;
+use App\Helpers\ActivityLogger;
 
 class BeatycianJadwalTreatmentController extends Controller
 {
@@ -118,6 +119,7 @@ class BeatycianJadwalTreatmentController extends Controller
 
         if ($booking->status === 'diproses' || $booking->status === 'selesai') {
             $booking->update(['status' => 'selesai']);
+            ActivityLogger::log('Mengubah Status', auth()->user()->nama . ' menyelesaikan treatment booking #' . $booking->id_booking, 'Reservasi', $booking->id_booking);
             return back()->with('message', 'Treatment telah diselesaikan!');
         }
 
@@ -220,6 +222,8 @@ class BeatycianJadwalTreatmentController extends Controller
         );
 
         $booking->update(['status' => 'selesai']);
+
+        ActivityLogger::log('Menambahkan', auth()->user()->nama . ' menyimpan dokumentasi treatment booking #' . $booking->id_booking, 'Dokumentasi', $booking->id_booking);
 
         return back()->with('message', 'Dokumentasi treatment berhasil disimpan!');
     }

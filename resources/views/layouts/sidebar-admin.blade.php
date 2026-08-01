@@ -264,6 +264,9 @@
                     </svg>
                 </span>
                 Riwayat Aktivitas
+                @if (hitungPerubahanData() > 0)
+                <span class="nav-badge badge-primary">{{ hitungPerubahanData() > 99 ? '99+' : hitungPerubahanData() }}</span>
+                @endif
             </a>
         </div>
     </nav>

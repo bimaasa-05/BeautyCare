@@ -434,8 +434,14 @@
                         <div class="employee-grid">
                             @forelse($karyawanAktif as $k)
                             <div class="employee-card">
+                                @if ($k->user->foto ?? null)
+                                <img src="{{ asset('storage/' . $k->user->foto) }}"
+                                    alt="{{ $k->user->nama ?? 'Karyawan' }}"
+                                    style="width:36px;height:36px;border-radius:50%;object-fit:cover;">
+                                @else
                                 <img src="https://ui-avatars.com/api/?name={{ urlencode($k->user->nama ?? 'Karyawan') }}&background=FFE5EF&color=FF4F87&size=36"
                                     alt="{{ $k->user->nama ?? 'Karyawan' }}">
+                                @endif
                                 <div class="ec-info">
                                     <h4>{{ $k->user->nama ?? 'Karyawan' }}</h4>
                                     <p>{{ $k->jabatan }}</p>
@@ -466,11 +472,16 @@
                             @endphp
                             <div class="stock-item">
                                 <div class="stock-icon {{ $color }}">
+                                    @if ($s->foto)
+                                    <img src="{{ asset('storage/' . $s->foto) }}" alt="{{ $s->nm_produk }}"
+                                        style="width:34px;height:34px;border-radius:10px;object-fit:cover;">
+                                    @else
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                         <path
                                             d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
                                     </svg>
+                                    @endif
                                 </div>
                                 <div class="stock-info">
                                     <h4>{{ $s->nm_produk }}</h4>
@@ -496,8 +507,17 @@
                         <div class="booking-list">
                             @forelse($bookingTerbaru as $b)
                             <div class="booking-item">
+                                @php
+                                    $userFoto = $b->pelanggan->user->foto ?? null;
+                                @endphp
+                                @if ($userFoto)
+                                <img src="{{ asset('storage/' . $userFoto) }}"
+                                    alt="{{ $b->pelanggan->nm_pelanggan ?? 'Customer' }}"
+                                    style="width:40px;height:40px;border-radius:50%;object-fit:cover;">
+                                @else
                                 <img src="https://ui-avatars.com/api/?name={{ urlencode($b->pelanggan->nm_pelanggan ?? 'Customer') }}&background=FFE5EF&color=FF4F87&size=40"
                                     alt="{{ $b->pelanggan->nm_pelanggan ?? 'Customer' }}">
+                                @endif
                                 <div class="booking-info">
                                     <h4>{{ $b->pelanggan->nm_pelanggan ?? 'N/A' }}</h4>
                                     <p>{{ $b->detail->first()->layanan->nm_layanan ?? 'Booking' }}</p>
@@ -716,6 +736,11 @@
         } else {
             donutCanvas.parentNode.innerHTML = '<span style="font-size:12px;color:#999;">Tidak ada data</span>';
         }
+    }
+    </script>
+    <script>
+    function pilihPeriode(el) {
+        window.location.href = '?' + el.dataset.param + '=' + el.value;
     }
     </script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>

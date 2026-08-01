@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Pelanggan;
 use App\Models\Membership;
+use App\Helpers\ActivityLogger;
 use Illuminate\Http\Request;
 
 class KasirPelangganController extends Controller
@@ -51,6 +52,8 @@ class KasirPelangganController extends Controller
         }
         Pelanggan::create($data);
 
+        ActivityLogger::log('Menambahkan', auth()->user()->nama . ' menambahkan pelanggan ' . $request->nm_pelanggan, 'Pelanggan');
+
         buatNotif(auth()->id(), 'Pelanggan Ditambahkan', 'Pelanggan ' . $request->nm_pelanggan . ' berhasil ditambahkan', 'Lainnya', route('kasir.pelanggan.index'));
 
         return redirect('kasir/pelanggan')->with('message', 'Data BERhasil di buat');
@@ -94,6 +97,7 @@ class KasirPelangganController extends Controller
             $data['foto'] = $request->file('foto')->store('uploads/pelanggan', 'public');
         }
         Pelanggan::where('id_pelanggan', $id)->update($data);
+        ActivityLogger::log('Mengubah', auth()->user()->nama . ' mengubah data pelanggan ' . ($request->nm_pelanggan ?? ''), 'Pelanggan', $id, $pelanggan->toArray(), $data);
         buatNotif(auth()->id(), 'Pelanggan Diperbarui', 'Data pelanggan berhasil diperbarui', 'Lainnya', route('kasir.pelanggan.index'));
 
         return redirect('kasir/pelanggan')->with('message', 'data berhasil di Diupdate');
@@ -105,6 +109,8 @@ class KasirPelangganController extends Controller
         $pelanggan = Pelanggan::findOrFail($id);
         $nm = $pelanggan->nm_pelanggan;
         $pelanggan->delete();
+
+        ActivityLogger::log('Menghapus', auth()->user()->nama . ' menghapus pelanggan ' . $nm, 'Pelanggan', $id);
 
         buatNotif(auth()->id(), 'Pelanggan Dihapus', 'Pelanggan ' . $nm . ' berhasil dihapus', 'Lainnya', route('kasir.pelanggan.index'));
 

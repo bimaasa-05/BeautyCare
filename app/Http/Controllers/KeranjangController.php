@@ -8,6 +8,7 @@ use App\Models\Produk;
 use App\Models\PromoKlaim;
 use App\Models\Transaksi;
 use App\Models\Troli;
+use App\Helpers\ActivityLogger;
 use Illuminate\Http\Request;
 
 class KeranjangController extends Controller
@@ -291,6 +292,8 @@ class KeranjangController extends Controller
         if ($request->nm_produk) {
             buatNotif($user->id, 'Pembelian Langsung', 'Pembelian ' . $request->nm_produk . ' (' . $request->qty . ' pcs) via ' . $metode . ' berhasil', 'Transaksi', route('pelanggan.produk'));
 
+            ActivityLogger::log('Menambahkan', $user->nama . ' membeli ' . $request->nm_produk . ' (' . $request->qty . ' pcs) via ' . $metode, 'Transaksi', $transaksi->id_transaksi);
+
             $admins = \App\Models\User::where('role', 'admin')->get();
             foreach ($admins as $admin) {
                 buatNotif($admin->id, 'Pembelian Langsung', $user->nama . ' membeli ' . $request->nm_produk . ' (' . $request->qty . ' pcs) via ' . $metode, 'Transaksi', url('/admin/dashboard'));
@@ -298,6 +301,8 @@ class KeranjangController extends Controller
         } else {
             $itemCount = count($items);
             buatNotif($user->id, 'Checkout Berhasil', $itemCount . ' produk berhasil di-checkout', 'Transaksi', route('pelanggan.produk'));
+
+            ActivityLogger::log('Menambahkan', $user->nama . ' melakukan checkout ' . $itemCount . ' produk', 'Transaksi', $transaksi->id_transaksi);
 
             $admins = \App\Models\User::where('role', 'admin')->get();
             foreach ($admins as $admin) {
