@@ -28,6 +28,7 @@ class User extends Authenticatable
         'status',
         'suspend_until',
         'perubahan_last_seen',
+        'stok_last_seen',
     ];
 
     /**
