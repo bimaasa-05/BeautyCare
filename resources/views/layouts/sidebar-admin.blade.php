@@ -158,6 +158,9 @@
                     </svg>
                 </span>
                 Barang Masuk
+                @if (hitungMutasiStokBaru() > 0)
+                <span class="nav-badge badge-primary">{{ hitungMutasiStokBaru() > 99 ? '99+' : hitungMutasiStokBaru() }}</span>
+                @endif
             </a>
         </div>
 
