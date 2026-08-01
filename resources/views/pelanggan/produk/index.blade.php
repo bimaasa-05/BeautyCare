@@ -316,6 +316,124 @@
         letter-spacing: 0.3px;
     }
 
+    .produk-card .pc-image .pc-favorit-btn {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        border: none;
+        background: rgba(255,255,255,0.2);
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(255,255,255,0.15);
+        color: #fff;
+        font-size: 14px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+    }
+
+    .produk-card .pc-image .pc-favorit-btn:hover {
+        transform: scale(1.1);
+        background: rgba(255,255,255,0.35);
+    }
+
+    .produk-card .pc-image .pc-favorit-btn.active {
+        background: #fff;
+        color: #FF4F87;
+    }
+
+    .produk-card .pc-image .pc-favorit-count {
+        position: absolute;
+        top: 52px;
+        right: 12px;
+        padding: 3px 10px;
+        border-radius: 100px;
+        background: rgba(255,255,255,0.2);
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(255,255,255,0.15);
+        color: #fff;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.3px;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .sort-group {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: var(--white);
+        border: 1.5px solid var(--border);
+        border-radius: 100px;
+        padding: 4px 6px 4px 14px;
+        box-shadow: 0 2px 10px -4px rgba(0, 0, 0, 0.05);
+    }
+
+    .sort-group .sort-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--gray);
+        white-space: nowrap;
+    }
+
+    .sort-group .sort-label i {
+        color: var(--primary);
+        font-size: 12px;
+    }
+
+    .sort-group .sort-pills {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        background: #F5F0F2;
+        border-radius: 100px;
+        padding: 3px;
+    }
+
+    .sort-group .sort-pill {
+        padding: 6px 14px;
+        border-radius: 100px;
+        border: none;
+        background: transparent;
+        font-size: 11px;
+        font-weight: 600;
+        font-family: 'Poppins', sans-serif;
+        color: var(--gray);
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+    }
+
+    .sort-group .sort-pill:hover {
+        color: var(--primary);
+    }
+
+    .sort-group .sort-pill.active {
+        background: linear-gradient(135deg, var(--primary), #FF7BA6);
+        color: #fff;
+        box-shadow: 0 3px 10px rgba(255, 79, 135, 0.3);
+    }
+
+    @media (max-width: 900px) {
+        .sort-group {
+            border-radius: 16px;
+            flex-wrap: wrap;
+            padding: 8px 10px;
+        }
+    }
+
     .produk-card .pc-body {
         padding: 16px 20px 20px;
     }
@@ -981,6 +1099,20 @@
                         </a>
                     </div>
                     <div class="pt-right">
+                        <div class="sort-group" title="Urutkan produk">
+                            <span class="sort-label"><i class="fa-solid fa-arrow-down-wide-short"></i> Urutkan</span>
+                            <div class="sort-pills">
+                                <button type="button" class="sort-pill active" data-sort="terbaru" onclick="setSort('terbaru', this)">
+                                    <i class="fa-solid fa-clock-rotate-left"></i> Terbaru
+                                </button>
+                                <button type="button" class="sort-pill" data-sort="favorit" onclick="setSort('favorit', this)">
+                                    <i class="fa-solid fa-heart"></i> Favorit
+                                </button>
+                                <button type="button" class="sort-pill" data-sort="beli" onclick="setSort('beli', this)">
+                                    <i class="fa-solid fa-ranking-star"></i> Terlaris
+                                </button>
+                            </div>
+                        </div>
                         <div class="search-input-wrap">
                             <i class="fa-solid fa-search si-icon"></i>
                             <input type="text" placeholder="Cari produk..." value="">
@@ -998,12 +1130,16 @@
                         $class = $classMap[$kategoriLower] ?? 'lainnya';
                         $icon = $iconMap[$kategoriLower] ?? 'fa-cube';
                     @endphp
-                    <div class="produk-card">
+                    <div class="produk-card" data-id="{{ $produk->id_produk }}" data-favorit="{{ $produk->favorit_count }}" data-beli="{{ $produk->beli_count }}">
                         <div class="pc-image">
                             <div class="pc-img-placeholder {{ $class }}">
                                 <i class="fa-solid {{ $icon }}"></i>
                             </div>
                             <span class="pc-category-badge">{{ $nmKategori }}</span>
+                            <button class="pc-favorit-btn {{ in_array($produk->id_produk, $favoritProdukIds) ? 'active' : '' }}" data-id="{{ $produk->id_produk }}" onclick="toggleFavorit(this)" title="Favoritkan produk">
+                                <i class="fa-solid fa-heart"></i>
+                            </button>
+                            <span class="pc-favorit-count"><i class="fa-solid fa-heart"></i> {{ $produk->favorit_count }}</span>
                         </div>
                         <div class="pc-body">
                             <div class="pc-name">{{ $produk->nm_produk }}</div>
@@ -1254,6 +1390,81 @@
             card.style.display = (matchKategori && matchSearch) ? '' : 'none';
         });
     }
+
+    var currentSort = 'terbaru';
+
+    function setSort(mode, btn) {
+        document.querySelectorAll('.sort-pill').forEach(function(p) {
+            p.classList.remove('active');
+        });
+        if (btn) btn.classList.add('active');
+        applySort(mode);
+    }
+
+    function applySort(mode) {
+        currentSort = mode;
+        document.querySelectorAll('.sort-pill').forEach(function(p) {
+            p.classList.toggle('active', p.getAttribute('data-sort') === mode);
+        });
+        var grid = document.querySelector('.produk-grid');
+        var cards = Array.prototype.slice.call(grid.querySelectorAll('.produk-card'));
+
+        cards.sort(function(a, b) {
+            var va, vb;
+            if (mode === 'favorit') {
+                va = parseInt(a.getAttribute('data-favorit')) || 0;
+                vb = parseInt(b.getAttribute('data-favorit')) || 0;
+            } else if (mode === 'beli') {
+                va = parseInt(a.getAttribute('data-beli')) || 0;
+                vb = parseInt(b.getAttribute('data-beli')) || 0;
+            } else {
+                va = parseInt(a.getAttribute('data-id')) || 0;
+                vb = parseInt(b.getAttribute('data-id')) || 0;
+            }
+            if (vb !== va) return vb - va;
+            return (parseInt(b.getAttribute('data-id')) || 0) - (parseInt(a.getAttribute('data-id')) || 0);
+        });
+
+        cards.forEach(function(card) {
+            grid.appendChild(card);
+        });
+        applyFilters();
+    }
+
+    function toggleFavorit(btn) {
+        var id = btn.getAttribute('data-id');
+        var csrf = document.querySelector('meta[name="csrf-token"]').content;
+
+        fetch('{{ route("pelanggan.favorit.toggle") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrf
+            },
+            body: JSON.stringify({ id_produk: id })
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            if (data.success) {
+                btn.classList.toggle('active', data.in_favorit);
+                (data.affected || []).forEach(function(item) {
+                    var card = document.querySelector('.produk-card[data-id="' + item.id_produk + '"]');
+                    if (card) {
+                        card.setAttribute('data-favorit', item.count);
+                        var countEl = card.querySelector('.pc-favorit-count');
+                        if (countEl) countEl.innerHTML = '<i class="fa-solid fa-heart"></i> ' + item.count;
+                    }
+                });
+                if (currentSort === 'favorit') applySort('favorit');
+                showNotif(data.in_favorit ? 'Produk berhasil difavoritkan' : 'Favorit produk dihapus');
+            }
+        })
+        .catch(function() { alert('Terjadi kesalahan'); });
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        applySort('terbaru');
+    });
 
     document.querySelector('.search-input-wrap input').addEventListener('input', applyFilters);
 
