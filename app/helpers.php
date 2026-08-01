@@ -50,6 +50,40 @@ if (!function_exists('hitungPerubahanData')) {
     }
 }
 
+if (!function_exists('hitungMutasiStokBaru')) {
+    function hitungMutasiStokBaru()
+    {
+        static $cached = null;
+
+        if ($cached !== null) {
+            return $cached;
+        }
+
+        $user = auth()->user();
+
+        if (!$user || $user->role !== 'admin') {
+            return 0;
+        }
+
+        $lastSeen = $user->stok_last_seen;
+
+        $terakhir = \App\Models\Stok::max('id_stok') ?? 0;
+
+        if ($lastSeen === null) {
+            $user->update(['stok_last_seen' => $terakhir]);
+            return 0;
+        }
+
+        $jumlah = \App\Models\Stok::where('id_stok', '>', $lastSeen)->count();
+
+        $user->update(['stok_last_seen' => $terakhir]);
+
+        $cached = $jumlah;
+
+        return $jumlah;
+    }
+}
+
 if (!function_exists('catatStok')) {    function catatStok($idProduk, $type, $jumlah, $stokSebelum, $stokSesudah, $keterangan = '', $idSupplier = null, $refId = null, $refType = null)
     {
         try {
