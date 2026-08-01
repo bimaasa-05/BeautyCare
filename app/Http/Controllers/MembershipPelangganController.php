@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Membership;
 use App\Models\Pelanggan;
 use App\Models\Transaksi;
+use App\Helpers\ActivityLogger;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -149,6 +150,8 @@ class MembershipPelangganController extends Controller
             $pelanggan->id_member = $targetTier->id_member;
             $pelanggan->tgl_mulai_member = now();
             $pelanggan->save();
+
+            ActivityLogger::log('Mengubah', $user->nama . ' upgrade membership ke level ' . $request->tingkat, 'Membership', $pelanggan->id_pelanggan);
 
             buatNotif(
                 $user->id,
