@@ -462,6 +462,15 @@
             align-items: flex-start;
             gap: 12px;
         }
+
+        .page-header-premium { padding: 22px 20px; }
+        .promo-banner-cta .cta-content { flex-direction: column; align-items: flex-start; gap: 14px; }
+    }
+
+    @media (max-width: 576px) {
+        .page-header-premium .ph-text h3 { font-size: 17px; }
+        .page-header-premium .ph-icon-wrap { width: 44px; height: 44px; border-radius: 13px; font-size: 18px; }
+        .promo-banner-cta .cta-content .cta-text h3 { font-size: 15px; }
     }
     </style>
 </head>
@@ -497,7 +506,7 @@
                             <p>Dapatkan berbagai diskon dan penawaran menarik. Cek sekarang sebelum kehabisan!</p>
                         </div>
                         <span style="display:inline-flex;align-items:center;gap:8px;padding:10px 24px;border-radius:12px;background:rgba(255,255,255,0.2);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.15);color:#fff;font-size:13px;font-weight:600;white-space:nowrap;">
-                            <i class="fa-regular fa-clock"></i> Berakhir 31 Jul 2026
+                            <i class="fa-regular fa-clock"></i> Limited Edition
                         </span>
                     </div>
                 </div>
