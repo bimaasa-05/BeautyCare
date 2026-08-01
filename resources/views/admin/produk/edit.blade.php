@@ -263,7 +263,7 @@
                             <div>
                                 <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Foto</label>
                                 <input type="file" name="foto" accept="image/*"
-                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all @error('foto') border-red-300 @enderror">
+                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2 focus:outline-none focus:border-pink-300 focus:bg-white transition-all file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-[11px] file:font-semibold file:bg-pink-50 file:text-[#de3b7c] hover:file:bg-pink-100 @error('foto') border-red-300 @enderror">
                                 @if ($produk->foto)
                                     <p class="text-[11px] text-gray-400 mt-1">Foto saat ini: {{ $produk->foto }}</p>
                                 @endif
