@@ -18,7 +18,7 @@ class PelangganDashboardController extends Controller
     public function index()
     {
         $promos = Promo::where('status', 'Tersedia')
-            ->whereDate('selesai', '>=', now())
+            ->whereDate('selesai', '>', now())
             ->orderBy('id_promo', 'desc')
             ->get();
         $layanans = Layanan::where('status', 'Tersedia')
