@@ -202,7 +202,7 @@
                                     <option value="" disabled selected>Pilih user</option>
                                     @foreach ($users as $user)
                                         <option value="{{ $user->id }}" {{ old('id_user') == $user->id ? 'selected' : '' }}>
-                                            {{ $user->nama }} ({{ $user->email }})
+                                            {{ $user->nama }} ({{ $user->role }})
                                         </option>
                                     @endforeach
                                 </select>

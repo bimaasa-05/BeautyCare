@@ -27,6 +27,7 @@ class User extends Authenticatable
         'foto',
         'status',
         'suspend_until',
+        'perubahan_last_seen',
     ];
 
     /**

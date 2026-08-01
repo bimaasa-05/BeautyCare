@@ -21,8 +21,36 @@ if (!function_exists('buatNotif')) {
     }
 }
 
-if (!function_exists('catatStok')) {
-    function catatStok($idProduk, $type, $jumlah, $stokSebelum, $stokSesudah, $keterangan = '', $idSupplier = null, $refId = null, $refType = null)
+if (!function_exists('hitungPerubahanData')) {
+    function hitungPerubahanData()
+    {
+        static $cached = null;
+
+        if ($cached !== null) {
+            return $cached;
+        }
+
+        $user = auth()->user();
+
+        if (!$user || $user->role !== 'admin') {
+            return 0;
+        }
+
+        $lastSeen = $user->perubahan_last_seen ?? now()->startOfDay();
+
+        $jumlah = \App\Models\RiwayatAktivitas::where('role', '!=', 'admin')
+            ->where('created_at', '>', $lastSeen)
+            ->count();
+
+        $user->update(['perubahan_last_seen' => now()]);
+
+        $cached = $jumlah;
+
+        return $jumlah;
+    }
+}
+
+if (!function_exists('catatStok')) {    function catatStok($idProduk, $type, $jumlah, $stokSebelum, $stokSesudah, $keterangan = '', $idSupplier = null, $refId = null, $refType = null)
     {
         try {
             return \App\Models\Stok::create([
