@@ -10,6 +10,7 @@ use App\Models\Booking;
 use App\Models\DetailBooking;
 use App\Models\Pelanggan;
 use App\Models\Membership;
+use App\Models\Transaksi;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 
@@ -125,6 +126,38 @@ class PelangganDashboardController extends Controller
             $memberList = Membership::where('status', 'aktif')->orderBy('id_member')->get();
         }
 
+        $totalBelanja = Transaksi::where('id_pelanggan', $pelanggan->id_pelanggan)
+            ->where('status', 'Lunas')
+            ->sum('total');
+        $totalTransaksi = Transaksi::where('id_pelanggan', $pelanggan->id_pelanggan)
+            ->where('status', 'Lunas')
+            ->count();
+
+        $memberSaatIni = $pelanggan && $pelanggan->id_member
+            ? Membership::find($pelanggan->id_member)
+            : null;
+        $semuaMember = Membership::where('status', 'aktif')
+            ->orderBy('min_transaksi')
+            ->orderBy('min_pembelian')
+            ->get();
+        $levels = ['Silver', 'Gold', 'Platinum'];
+        $nextTier = null;
+        if ($memberSaatIni) {
+            $currentIndex = array_search($memberSaatIni->tingkat, $levels);
+            if ($currentIndex !== false && $currentIndex < count($levels) - 1) {
+                $nextTier = $semuaMember->firstWhere('tingkat', $levels[$currentIndex + 1]);
+            }
+        } elseif ($totalTransaksi > 0 || $totalBelanja > 0) {
+            $nextTier = $semuaMember->first();
+        }
+        $isMaxTier = $memberSaatIni && $memberSaatIni->tingkat === end($levels);
+        $targetBelanja = $isMaxTier ? $memberSaatIni->min_pembelian : ($nextTier?->min_pembelian ?? 0);
+        $targetTransaksi = $isMaxTier ? $memberSaatIni->min_transaksi : ($nextTier?->min_transaksi ?? 0);
+        $progressBelanja = $isMaxTier ? 100
+            : ($nextTier && $nextTier->min_pembelian > 0 ? (int) min(100, round($totalBelanja / $nextTier->min_pembelian * 100)) : 0);
+        $progressTransaksi = $isMaxTier ? 100
+            : ($nextTier && $nextTier->min_transaksi > 0 ? (int) min(100, round($totalTransaksi / $nextTier->min_transaksi * 100)) : 0);
+
         $chartMonths = [];
         $chartCounts = [];
         for ($i = 11; $i >= 0; $i--) {
@@ -144,7 +177,10 @@ class PelangganDashboardController extends Controller
             'memberTingkat', 'memberList',
             'chartMonths', 'chartCounts',
             'riwayatTreatments', 'bookingMendatang',
-            'layananFavorit', 'produkTerlaris'
+            'layananFavorit', 'produkTerlaris',
+            'totalBelanja', 'totalTransaksi', 'memberSaatIni',
+            'nextTier', 'isMaxTier', 'progressBelanja', 'progressTransaksi',
+            'targetBelanja', 'targetTransaksi'
         ));
     }
 }
