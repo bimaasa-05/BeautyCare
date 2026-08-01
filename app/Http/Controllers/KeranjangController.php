@@ -29,7 +29,9 @@ class KeranjangController extends Controller
             ->where('status', 'tersedia')
             ->get()
             ->filter(function ($klaim) {
-                return $klaim->promo && $klaim->promo->jenis_promo !== 'Paket';
+                return $klaim->promo
+                    && $klaim->promo->jenis_promo !== 'Paket'
+                    && $klaim->promo->selesai > now()->format('Y-m-d');
             });
 
         return view('pelanggan.keranjang.index', compact('troli', 'total', 'claimedPromos'));
@@ -225,6 +227,12 @@ class KeranjangController extends Controller
                 ->first();
             if ($promoKlaim) {
                 $promo = $promoKlaim->promo;
+                if ($promo->selesai <= now()->format('Y-m-d')) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Promo sudah berakhir dan tidak dapat digunakan',
+                    ], 400);
+                }
                 if ($promo->jenis_promo === 'Paket') {
                     return response()->json([
                         'success' => false,
