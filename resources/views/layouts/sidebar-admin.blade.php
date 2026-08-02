@@ -146,6 +146,22 @@
                 </span>
                 Data Produk
             </a>
+            <a href="{{ route('admin.stok.index') }}"
+                class="nav-item {{ request()->routeIs('admin.stok.*') ? 'active' : '' }}"
+                title="Catat dan lihat riwayat barang masuk">
+                <span class="nav-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 3v12" />
+                        <path d="m7 10 5 5 5-5" />
+                        <path d="M5 21h14" />
+                    </svg>
+                </span>
+                Barang Masuk
+                @if (hitungMutasiStokBaru() > 0)
+                <span class="nav-badge badge-primary">{{ hitungMutasiStokBaru() > 99 ? '99+' : hitungMutasiStokBaru() }}</span>
+                @endif
+            </a>
         </div>
 
         <div class="nav-section">
@@ -251,6 +267,9 @@
                     </svg>
                 </span>
                 Riwayat Aktivitas
+                @if (hitungPerubahanData() > 0)
+                <span class="nav-badge badge-primary">{{ hitungPerubahanData() > 99 ? '99+' : hitungPerubahanData() }}</span>
+                @endif
             </a>
         </div>
     </nav>

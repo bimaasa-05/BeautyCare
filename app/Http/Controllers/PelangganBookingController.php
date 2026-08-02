@@ -9,6 +9,7 @@ use App\Models\Karyawan;
 use App\Models\Pelanggan;
 use App\Models\Membership;
 use App\Models\PromoKlaim;
+use App\Helpers\ActivityLogger;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -169,6 +170,8 @@ class PelangganBookingController extends Controller
 
         buatNotif(auth()->id(), 'Booking Baru', 'Booking treatment berhasil dibuat', 'Booking', route('pelanggan.booking'));
 
+        ActivityLogger::log('Menambahkan', auth()->user()->nama . ' membuat booking baru', 'Booking', $booking->id_booking);
+
         $admins = \App\Models\User::where('role', 'admin')->get();
         foreach ($admins as $admin) {
             buatNotif($admin->id, 'Booking Baru', 'Booking baru oleh ' . auth()->user()->nama, 'Booking', url('/admin/dashboard'));
@@ -257,6 +260,8 @@ class PelangganBookingController extends Controller
 
         buatNotif(auth()->id(), 'Booking Diperbarui', 'Booking treatment berhasil diperbarui', 'Booking', route('pelanggan.booking'));
 
+        ActivityLogger::log('Mengubah', auth()->user()->nama . ' mengubah booking #' . $id, 'Booking', $id);
+
         return redirect()->route('pelanggan.booking')->with('success', 'Booking berhasil diperbarui!');
     }
 
@@ -268,6 +273,8 @@ class PelangganBookingController extends Controller
 
         DetailBooking::where('id_booking', $booking->id_booking)->delete();
         $booking->delete();
+
+        ActivityLogger::log('Menghapus', auth()->user()->nama . ' menghapus booking #' . $id, 'Booking', $id);
 
         buatNotif(auth()->id(), 'Booking Dihapus', 'Booking treatment berhasil dihapus', 'Booking', route('pelanggan.booking'));
 
@@ -291,6 +298,8 @@ class PelangganBookingController extends Controller
         }
 
         buatNotif(auth()->id(), 'Booking Dihapus', count($ids) . ' booking berhasil dihapus', 'Booking', route('pelanggan.booking'));
+
+        ActivityLogger::log('Menghapus', auth()->user()->nama . ' menghapus ' . count($ids) . ' booking', 'Booking');
 
         return response()->json([
             'success' => true,

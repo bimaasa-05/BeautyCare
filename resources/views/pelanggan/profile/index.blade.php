@@ -488,6 +488,16 @@
         .profile-grid {
             grid-template-columns: 1fr;
         }
+
+        .page-header-premium { padding: 22px 20px; }
+        .profile-card .pc-body { padding: 20px; }
+    }
+
+    @media (max-width: 576px) {
+        .page-header-premium .ph-text h3 { font-size: 17px; }
+        .page-header-premium .ph-icon-wrap { width: 44px; height: 44px; border-radius: 13px; font-size: 18px; }
+        .profile-card .pc-body { padding: 16px; }
+        .avatar-section .avatar-wrap { width: 110px; height: 110px; }
     }
     </style>
 </head>
