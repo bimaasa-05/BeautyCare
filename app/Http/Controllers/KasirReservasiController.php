@@ -170,6 +170,8 @@ class KasirReservasiController extends Controller
 
         $booking->update(['status' => 'dikonfirmasi']);
 
+        ActivityLogger::log('Mengubah Status', auth()->user()->nama . ' mengkonfirmasi reservasi #' . str_pad($id, 3, '0', STR_PAD_LEFT), 'Reservasi', $id);
+
         buatNotif(auth()->id(), 'Booking Dikonfirmasi', 'Booking ' . ($booking->pelanggan->nm_pelanggan ?? '-') . ' telah dikonfirmasi', 'Booking', route('kasir.reservasi.show', $id));
 
         return redirect()->back()->with('success', 'Booking berhasil dikonfirmasi');

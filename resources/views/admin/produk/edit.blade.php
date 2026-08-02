@@ -221,22 +221,6 @@
                             </div>
 
                             <div>
-                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Supplier <span class="text-red-400">*</span></label>
-                                <select name="id_supplier"
-                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all @error('id_supplier') border-red-300 @enderror" required>
-                                    <option value="" disabled>Pilih supplier</option>
-                                    @foreach ($supplier as $s)
-                                        <option value="{{ $s->id_supplier }}" {{ old('id_supplier', $produk->id_supplier) == $s->id_supplier ? 'selected' : '' }}>
-                                            {{ $s->nm_supplier }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                @error('id_supplier')
-                                    <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <div>
                                 <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Satuan <span class="text-red-400">*</span></label>
                                 <input type="text" name="satuan" value="{{ old('satuan', $produk->satuan) }}"
                                     class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('satuan') border-red-300 @enderror"
@@ -248,7 +232,7 @@
 
                             <div>
                                 <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Harga Beli <span class="text-red-400">*</span></label>
-                                <input type="number" step="0.01" name="harga_beli" value="{{ old('harga_beli', $produk->harga_beli) }}"
+                                <input type="number" step="0.01" name="harga_beli" value="{{ old('harga_beli', $produk->harga_beli !== null ? rtrim(rtrim(number_format((float) $produk->harga_beli, 2, '.', ''), '0'), '.') : '') }}"
                                     class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('harga_beli') border-red-300 @enderror"
                                     placeholder="Masukkan harga beli">
                                 @error('harga_beli')
@@ -258,7 +242,7 @@
 
                             <div>
                                 <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Harga Jual <span class="text-red-400">*</span></label>
-                                <input type="number" step="0.01" name="harga_jual" value="{{ old('harga_jual', $produk->harga_jual) }}"
+                                <input type="number" step="0.01" name="harga_jual" value="{{ old('harga_jual', $produk->harga_jual !== null ? rtrim(rtrim(number_format((float) $produk->harga_jual, 2, '.', ''), '0'), '.') : '') }}"
                                     class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('harga_jual') border-red-300 @enderror"
                                     placeholder="Masukkan harga jual">
                                 @error('harga_jual')
@@ -279,7 +263,7 @@
                             <div>
                                 <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Foto</label>
                                 <input type="file" name="foto" accept="image/*"
-                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all @error('foto') border-red-300 @enderror">
+                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2 focus:outline-none focus:border-pink-300 focus:bg-white transition-all file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-[11px] file:font-semibold file:bg-pink-50 file:text-[#de3b7c] hover:file:bg-pink-100 @error('foto') border-red-300 @enderror">
                                 @if ($produk->foto)
                                     <p class="text-[11px] text-gray-400 mt-1">Foto saat ini: {{ $produk->foto }}</p>
                                 @endif

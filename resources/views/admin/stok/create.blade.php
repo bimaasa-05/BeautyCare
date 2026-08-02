@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Tambah Produk - BeautyCare</title>
+    <title>Catat Barang Masuk - BeautyCare</title>
     @include('partials.head-meta')
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -153,131 +153,117 @@
 </head>
 
 <body>
+    <!-- Page Loader -->
     <div class="dashboard-layout">
         @include('layouts.sidebar')
 
         <main class="main-content">
             @include('layouts.header2')
 
-
+            <!-- Dashboard Content -->
             <div class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
 
-            <div class="page-header-premium">
-                <div class="ph-content">
-                    <div class="ph-left">
-                        <div class="ph-icon-wrap">
-                            <span class="nav-icon">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16v-2"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
-                            </span>
-                        </div>
-                        <div class="ph-text">
-                            <h3>Tambah Produk</h3>
-                            <p>Tambahkan produk kecantikan baru ke dalam stok.</p>
+                <div class="page-header-premium">
+                    <div class="ph-content">
+                        <div class="ph-left">
+                            <div class="ph-icon-wrap">
+                                <span class="nav-icon">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                                        stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <path d="M12 3v12" />
+                                        <path d="m7 10 5 5 5-5" />
+                                        <path d="M5 21h14" />
+                                    </svg>
+                                </span>
+                            </div>
+                            <div class="ph-text">
+                                <h3>Catat Barang Masuk</h3>
+                                <p>Catat stok masuk dari supplier. Setiap catatan otomatis menambah stok produk dan
+                                    tersimpan di riwayat mutasi stok.</p>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+
                 <div class="bg-white rounded-2xl p-6 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)]">
                     <div class="flex justify-between items-center mb-6">
                         <div>
-                            <h3 class="text-[16px] font-bold text-gray-800">Tambah Produk</h3>
-                            <p class="text-[12px] text-gray-400 mt-0.5">Buat data produk baru</p>
+                            <h3 class="text-[16px] font-bold text-gray-800">Form Barang Masuk</h3>
+                            <p class="text-[12px] text-gray-400 mt-0.5">Pilih produk dan supplier pemasok</p>
                         </div>
-                        <a href="{{ route('admin.produk.index') }}"
+                        <a href="{{ route('admin.stok.index') }}"
                             class="flex items-center gap-2 border border-gray-200 text-gray-600 text-[12px] font-medium px-4 py-2 rounded-full hover:bg-gray-50 transition-colors">
                             <i class="fa-solid fa-arrow-left"></i> Kembali
                         </a>
                     </div>
 
-                    <form action="{{ route('admin.produk.store') }}" method="POST" enctype="multipart/form-data">
+                    <form action="{{ route('admin.stok.store') }}" method="POST">
                         @csrf
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                             <div>
-                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Nama Produk <span class="text-red-400">*</span></label>
-                                <input type="text" name="nm_produk" value="{{ old('nm_produk') }}"
-                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('nm_produk') border-red-300 @enderror"
-                                    placeholder="Masukkan nama produk">
-                                @error('nm_produk')
-                                    <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <div>
-                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Kategori <span class="text-red-400">*</span></label>
-                                <select name="id_kategori_produk"
-                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all @error('id_kategori_produk') border-red-300 @enderror" required>
-                                    <option value="" disabled selected>Pilih kategori</option>
-                                    @foreach ($kategori as $k)
-                                        <option value="{{ $k->id_kategori_produk }}" {{ old('id_kategori_produk') == $k->id_kategori_produk ? 'selected' : '' }}>
-                                            {{ $k->nm_produk }}
+                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Produk <span
+                                        class="text-red-400">*</span></label>
+                                <select name="id_produk"
+                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all @error('id_produk') border-red-300 @enderror"
+                                    required>
+                                    <option value="" disabled selected>Pilih produk</option>
+                                    @foreach ($produk as $p)
+                                        <option value="{{ $p->id_produk }}" {{ old('id_produk') == $p->id_produk ? 'selected' : '' }}>
+                                            {{ $p->nm_produk }} (stok: {{ $p->stok }})
                                         </option>
                                     @endforeach
                                 </select>
-                                @error('id_kategori_produk')
+                                @error('id_produk')
                                     <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
 
                             <div>
-                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Satuan <span class="text-red-400">*</span></label>
-                                <input type="text" name="satuan" value="{{ old('satuan') }}"
-                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('satuan') border-red-300 @enderror"
-                                    placeholder="Contoh: Kg, Pcs, Botol">
-                                @error('satuan')
-                                    <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <div>
-                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Harga Beli <span class="text-red-400">*</span></label>
-                                <input type="number" step="0.01" name="harga_beli" value="{{ old('harga_beli') }}"
-                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('harga_beli') border-red-300 @enderror"
-                                    placeholder="Masukkan harga beli">
-                                @error('harga_beli')
-                                    <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <div>
-                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Harga Jual <span class="text-red-400">*</span></label>
-                                <input type="number" step="0.01" name="harga_jual" value="{{ old('harga_jual') }}"
-                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('harga_jual') border-red-300 @enderror"
-                                    placeholder="Masukkan harga jual">
-                                @error('harga_jual')
-                                    <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <div>
-                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Stok <span class="text-red-400">*</span></label>
-                                <input type="number" name="stok" value="{{ old('stok') }}"
-                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('stok') border-red-300 @enderror"
-                                    placeholder="Masukkan stok">
-                                @error('stok')
-                                    <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <div>
-                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Foto</label>
-                                <input type="file" name="foto" accept="image/*"
-                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all @error('foto') border-red-300 @enderror">
-                                @error('foto')
-                                    <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <div>
-                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Status <span class="text-red-400">*</span></label>
-                                <select name="status"
-                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all @error('status') border-red-300 @enderror">
-                                    <option value="" disabled selected>Pilih status</option>
-                                    <option value="Tersedia" {{ old('status') == 'Tersedia' ? 'selected' : '' }}>Tersedia</option>
-                                    <option value="Habis" {{ old('status') == 'Habis' ? 'selected' : '' }}>Habis</option>
-                                    <option value="Belum Restok" {{ old('status') == 'Belum Restok' ? 'selected' : '' }}>Belum Restok</option>
+                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Supplier <span
+                                        class="text-red-400">*</span></label>
+                                <select name="id_supplier"
+                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all @error('id_supplier') border-red-300 @enderror"
+                                    required>
+                                    <option value="" disabled selected>Pilih supplier</option>
+                                    @foreach ($supplier as $s)
+                                        <option value="{{ $s->id_supplier }}" {{ old('id_supplier') == $s->id_supplier ? 'selected' : '' }}>
+                                            {{ $s->nm_supplier }}
+                                        </option>
+                                    @endforeach
                                 </select>
-                                @error('status')
+                                @error('id_supplier')
+                                    <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div>
+                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Jumlah <span
+                                        class="text-red-400">*</span></label>
+                                <input type="number" name="jumlah" value="{{ old('jumlah') }}" min="1"
+                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('jumlah') border-red-300 @enderror"
+                                    placeholder="Masukkan jumlah barang masuk">
+                                @error('jumlah')
+                                    <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div>
+                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Tanggal</label>
+                                <input type="date" name="tanggal" value="{{ old('tanggal', date('Y-m-d')) }}"
+                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all @error('tanggal') border-red-300 @enderror">
+                                @error('tanggal')
+                                    <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div class="md:col-span-2">
+                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Keterangan</label>
+                                <textarea name="keterangan" rows="2"
+                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('keterangan') border-red-300 @enderror"
+                                    placeholder="Contoh: Restok bulanan, PO #123">{{ old('keterangan') }}</textarea>
+                                @error('keterangan')
                                     <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
@@ -288,7 +274,7 @@
                                 class="flex items-center gap-2 bg-[#de3b7c] text-white text-[13px] font-semibold px-6 py-2.5 rounded-full hover:bg-[#c62f6b] transition-colors shadow-sm">
                                 <i class="fa-solid fa-floppy-disk"></i> Simpan
                             </button>
-                            <a href="{{ route('admin.produk.index') }}"
+                            <a href="{{ route('admin.stok.index') }}"
                                 class="flex items-center gap-2 border border-gray-200 text-gray-600 text-[13px] font-medium px-6 py-2.5 rounded-full hover:bg-gray-50 transition-colors">
                                 Batal
                             </a>
@@ -300,6 +286,7 @@
     </div>
 
     <script>
+        // Set current date
         const now = new Date();
         const options = {
             weekday: 'long',

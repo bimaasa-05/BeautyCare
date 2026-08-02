@@ -2,6 +2,12 @@
    BEAUTYCARE - RESPONSIVE STYLES
    ============================================= */
 
+/* ---- Utilitas ---- */
+.overflow-x-auto {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
 /* ---- 1920px & up ---- */
 @media screen and (min-width: 1920px) {
   .container {

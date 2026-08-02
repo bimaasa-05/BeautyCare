@@ -217,6 +217,12 @@ class AdminDashboardController extends Controller
         $stokMenipisPct = $totalStok > 0 ? round(($stokMenipis / $totalStok) * 100) : 0;
         $stokHabisPct = $totalStok > 0 ? round(($stokHabis / $totalStok) * 100) : 0;
 
+        $notifStok = Produk::with('kategori')
+            ->where('stok', '<=', 20)
+            ->orderBy('stok', 'asc')
+            ->limit(10)
+            ->get();
+
         $bookingTerbaru = Booking::with(['pelanggan', 'detail.layanan'])
             ->orderBy('tanggal', 'desc')
             ->orderBy('jam', 'desc')
@@ -244,6 +250,7 @@ class AdminDashboardController extends Controller
             'layananTerlaris', 'produkTerlaris',
             'karyawanAktif',
             'ringkasanStok',
+            'notifStok',
             'stokTerisi', 'stokMenipisPct', 'stokHabisPct',
             'bookingTerbaru',
             'fmt'

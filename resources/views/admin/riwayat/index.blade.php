@@ -38,7 +38,7 @@
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
         .table-row-hover { transition: all 0.3s ease; }
         .table-row-hover:hover { background: #FFF5F8 !important; transform: scale(1.002); }
-        .pagination-custom nav svg { display: none; }
+        .pagination-custom nav svg { width: 14px; height: 14px; }
         .pagination-custom nav .flex a, .pagination-custom nav .flex span {
             font-size: 12px; padding: 6px 14px; border-radius: 100px !important; margin: 0 2px;
         }

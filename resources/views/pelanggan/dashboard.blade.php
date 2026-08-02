@@ -130,6 +130,14 @@
             display: flex;
             align-items: center;
         }
+
+        .table-widget .table-scroll {
+            overflow-x: auto;
+        }
+
+        .dashboard-bottom-row .list-widget {
+            min-width: 0;
+        }
     }
     </style>
 </head>

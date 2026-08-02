@@ -508,6 +508,14 @@
     @media (max-width: 768px) {
         .form-card-premium .fcp-body { padding: 20px; }
         .header-back .hb-text h3 { font-size: 16px; flex-wrap: wrap; }
+        .header-back { flex-wrap: wrap; gap: 12px; }
+        .form-card-premium .fcp-section-sub { margin-left: 0; }
+        .form-actions { flex-wrap: wrap; }
+        .form-actions .btn-cancel-form { flex: 1; min-width: 140px; }
+    }
+
+    @media (max-width: 576px) {
+        .form-card-premium .fcp-body { padding: 16px; }
     }
 
     .custom-select-wrap {
