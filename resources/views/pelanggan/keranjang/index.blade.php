@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="id">
 
 <head>
@@ -858,265 +858,8 @@
         margin-bottom: 20px;
     }
 
-    .checkout-modal {
-        display: none;
-        position: fixed;
-        inset: 0;
-        background: rgba(0,0,0,0.4);
-        z-index: 999;
-        align-items: center;
-        justify-content: center;
-        padding: 20px;
-    }
 
-    .checkout-modal.show {
-        display: flex;
-    }
-
-    .checkout-modal .cm-card {
-        background: var(--white);
-        border-radius: 24px;
-        max-width: 520px;
-        width: 100%;
-        max-height: 90vh;
-        overflow-y: auto;
-        box-shadow: 0 20px 60px rgba(0,0,0,0.15);
-        animation: modalIn 0.3s ease;
-    }
-
-    .checkout-modal .cm-header {
-        padding: 24px 28px 0;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-    }
-
-    .checkout-modal .cm-header h3 {
-        font-size: 18px;
-        font-weight: 700;
-        color: var(--dark);
-        margin: 0;
-    }
-
-    .checkout-modal .cm-close {
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        border: none;
-        background: #f1f5f9;
-        color: var(--gray);
-        font-size: 16px;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: all 0.2s ease;
-    }
-
-    .checkout-modal .cm-close:hover {
-        background: #e2e8f0;
-    }
-
-    .checkout-modal .cm-items {
-        padding: 16px 28px;
-        max-height: 240px;
-        overflow-y: auto;
-    }
-
-    .checkout-modal .cm-item {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 10px 0;
-        border-bottom: 1px solid var(--border);
-        gap: 12px;
-    }
-
-    .checkout-modal .cm-item:last-child {
-        border-bottom: none;
-    }
-
-    .checkout-modal .cm-item .cmi-left {
-        flex: 1;
-        min-width: 0;
-    }
-
-    .checkout-modal .cm-item .cmi-nama {
-        font-size: 13px;
-        font-weight: 700;
-        color: var(--dark);
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    .checkout-modal .cm-item .cmi-qty {
-        font-size: 11px;
-        color: var(--gray);
-        font-weight: 500;
-    }
-
-    .checkout-modal .cm-item .cmi-harga {
-        font-size: 14px;
-        font-weight: 700;
-        color: var(--primary);
-        white-space: nowrap;
-    }
-
-    .checkout-modal .cm-divider {
-        height: 1px;
-        background: var(--border);
-        margin: 0 28px;
-    }
-
-    .checkout-modal .cm-total {
-        padding: 16px 28px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-    }
-
-    .checkout-modal .cm-total .cmt-label {
-        font-size: 13px;
-        font-weight: 600;
-        color: var(--gray);
-    }
-
-    .checkout-modal .cm-total .cmt-nominal {
-        font-size: 22px;
-        font-weight: 800;
-        color: var(--dark);
-    }
-
-    .checkout-modal .cm-payment {
-        padding: 0 28px 24px;
-    }
-
-    .checkout-modal .cm-payment .cmp-title {
-        font-size: 12px;
-        font-weight: 700;
-        color: var(--gray);
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        margin-bottom: 12px;
-    }
-
-    .checkout-modal .cmp-group {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 8px;
-    }
-
-    .checkout-modal .cmp-option {
-        position: relative;
-    }
-
-    .checkout-modal .cmp-option input {
-        position: absolute;
-        opacity: 0;
-        pointer-events: none;
-    }
-
-    .checkout-modal .cmp-option label {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 10px 14px;
-        border-radius: 12px;
-        border: 1.5px solid var(--border);
-        background: #FAFAFA;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        font-size: 12px;
-        font-weight: 600;
-        color: var(--dark);
-        font-family: 'Poppins', sans-serif;
-    }
-
-    .checkout-modal .cmp-option label:hover {
-        border-color: var(--primary);
-        background: var(--hover);
-    }
-
-    .checkout-modal .cmp-option input:checked + label {
-        border-color: var(--primary);
-        background: linear-gradient(135deg, var(--primary), #FF7BA6);
-        color: #fff;
-        box-shadow: 0 4px 12px rgba(255, 79, 135, 0.2);
-    }
-
-    .checkout-modal .cm-bayar {
-        margin: 0 28px 24px;
-        width: calc(100% - 56px);
-        padding: 14px;
-        border-radius: 12px;
-        border: none;
-        font-size: 14px;
-        font-weight: 700;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        font-family: 'Poppins', sans-serif;
-        background: linear-gradient(135deg, var(--primary), #FF7BA6);
-        color: #fff;
-        box-shadow: 0 4px 16px rgba(255, 79, 135, 0.25);
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-    }
-
-    .checkout-modal .cm-bayar:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 24px rgba(255, 79, 135, 0.35);
-    }
-
-    @media (max-width: 768px) {
-        .keranjang-grid {
-            grid-template-columns: 1fr;
-            gap: 14px;
-        }
-
-        .keranjang-card .kc-image {
-            height: 140px;
-        }
-
-        .keranjang-tools {
-            flex-direction: column;
-            align-items: stretch;
-        }
-
-        .keranjang-tools .kt-left {
-            flex-direction: column;
-            align-items: stretch;
-        }
-
-        .search-input-wrap input {
-            width: 100%;
-        }
-
-        .search-input-wrap input:focus {
-            width: 100%;
-        }
-
-        .keranjang-tools .kt-actions {
-            justify-content: flex-end;
-        }
-
-        .keranjang-footer {
-            flex-direction: column;
-            text-align: center;
-        }
-
-        .keranjang-footer .kf-buttons {
-            justify-content: center;
-        }
-
-        .checkout-modal .cmp-group {
-            grid-template-columns: 1fr;
-        }
-    }
-
-    /* ─── Modal Premium ─── */
+    /* â”€â”€â”€ Modal Premium â”€â”€â”€ */
     .modal-premium {
         position: fixed;
         inset: 0;
@@ -1349,9 +1092,9 @@
                             <a href="{{ route('pelanggan.produk') }}" class="btn-belanja btn-belanja-outline">
                                 <i class="fa-solid fa-arrow-left"></i> Lanjut Belanja
                             </a>
-                            <button class="btn-belanja" onclick="openCheckout()">
+                            <a href="{{ route('pelanggan.checkout') }}" class="btn-belanja">
                                 <i class="fa-solid fa-credit-card"></i> Checkout
-                            </button>
+                            </a>
                         </div>
                     </div>
                 @endif
@@ -1396,87 +1139,10 @@
                 </div>
             </div>
 
-            <div class="checkout-modal" id="checkoutModal">
-                <div class="cm-card">
-                    <div class="cm-header">
-                        <h3><i class="fa-solid fa-receipt"></i> Checkout</h3>
-                        <button class="cm-close" onclick="closeCheckout()"><i class="fa-solid fa-xmark"></i></button>
-                    </div>
-                    <div class="cm-items">
-                        @foreach($troli as $item)
-                        <div class="cm-item" id="cm-item-{{ $item->id }}">
-                            <div class="cmi-left">
-                                <div class="cmi-nama">{{ $item->nm_produk }}</div>
-                                <div class="cmi-qty" id="cm-qty-{{ $item->id }}">{{ $item->qty }} x Rp {{ number_format($item->harga_satuan, 0, ',', '.') }}</div>
-                            </div>
-                            <div class="cmi-harga" id="cm-total-{{ $item->id }}">Rp {{ number_format($item->total_harga, 0, ',', '.') }}</div>
-                        </div>
-                        @endforeach
-                    </div>
-                    <div class="cm-divider"></div>
-                    @if(isset($claimedPromos) && $claimedPromos->isNotEmpty())
-                    <div class="cm-payment" style="padding:12px 28px 8px;">
-                        <div class="cmp-title"><i class="fa-solid fa-tag"></i> Promo Saya</div>
-                        <select id="checkoutPromo" style="width:100%;padding:10px 14px;border-radius:12px;border:1.5px solid var(--border);font-size:12px;font-family:'Poppins',sans-serif;background:#FAFAFA;outline:none;">
-                            <option value="" data-jenis="" data-nilai="0">— Tanpa Promo —</option>
-                            @foreach($claimedPromos as $cp)
-                            <option value="{{ $cp->id_promo }}" data-jenis="{{ $cp->promo->jenis_promo }}" data-nilai="{{ $cp->promo->nilai }}" data-label="{{ $cp->promo->nm_promo }}">
-                                {{ $cp->promo->nm_promo }} ({{ $cp->promo->jenis_promo == 'Diskon' ? $cp->promo->nilai.'%' : 'Rp '.number_format($cp->promo->nilai,0,',','.') }})
-                            </option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="cm-divider"></div>
-                    @endif
-                    <div class="cm-total">
-                        <div class="cmt-label">Total Belanja</div>
-                        <div class="cmt-nominal" id="grandTotalModal">Rp {{ number_format($total, 0, ',', '.') }}</div>
-                    </div>
-                    @if(isset($claimedPromos) && $claimedPromos->isNotEmpty())
-                    <div class="cm-total" style="padding-top:0;">
-                        <div class="cmt-label">Diskon Promo</div>
-                        <div class="cmt-nominal" id="promoDiskonModal" style="font-size:15px;color:#059669;">Rp 0</div>
-                    </div>
-                    <div class="cm-total" style="padding-top:0;">
-                        <div class="cmt-label" style="font-weight:800;">Total Setelah Diskon</div>
-                        <div class="cmt-nominal" id="totalAfterPromo" style="font-size:24px;">Rp {{ number_format($total, 0, ',', '.') }}</div>
-                    </div>
-                    @endif
-                    <div class="cm-divider"></div>
-                    <div class="cm-payment">
-                        <div class="cmp-title"><i class="fa-solid fa-wallet"></i> Metode Pembayaran</div>
-                        <div class="cmp-group">
-                            <div class="cmp-option">
-                                <input type="radio" name="metode_bayar" id="pay_transfer" value="Transfer" checked>
-                                <label for="pay_transfer"><i class="fa-solid fa-building-columns"></i> Transfer</label>
-                            </div>
-                            <div class="cmp-option">
-                                <input type="radio" name="metode_bayar" id="pay_dana" value="Dana">
-                                <label for="pay_dana"><i class="fa-solid fa-qrcode"></i> Dana</label>
-                            </div>
-                            <div class="cmp-option">
-                                <input type="radio" name="metode_bayar" id="pay_gopay" value="GoPay">
-                                <label for="pay_gopay"><i class="fa-solid fa-qrcode"></i> GoPay</label>
-                            </div>
-                            <div class="cmp-option">
-                                <input type="radio" name="metode_bayar" id="pay_ovo" value="OVO">
-                                <label for="pay_ovo"><i class="fa-solid fa-qrcode"></i> OVO</label>
-                            </div>
-                            <div class="cmp-option">
-                                <input type="radio" name="metode_bayar" id="pay_shopeepay" value="ShopeePay">
-                                <label for="pay_shopeepay"><i class="fa-solid fa-qrcode"></i> ShopeePay</label>
-                            </div>
-                        </div>
-                    </div>
-                    <button class="cm-bayar" onclick="bayarSekarang()">
-                        <i class="fa-solid fa-check-circle"></i> Bayar Sekarang
-                    </button>
-                </div>
-            </div>
         </main>
     </div>
 
-    <!-- ═══ Modal Delete Premium ═══ -->
+    <!-- â•â•â• Modal Delete Premium â•â•â• -->
     <div id="deleteModal" class="modal-premium">
         <div class="modal-box">
             <form id="deleteForm" method="POST">
@@ -1538,18 +1204,6 @@
         if (e.target === this) closeDetail();
     });
 
-    function openCheckout() {
-        document.getElementById('checkoutModal').classList.add('show');
-    }
-
-    function closeCheckout() {
-        document.getElementById('checkoutModal').classList.remove('show');
-    }
-
-    document.getElementById('checkoutModal').addEventListener('click', function(e) {
-        if (e.target === this) closeCheckout();
-    });
-
     function updateQty(id, delta) {
         var valEl = document.getElementById('qty-' + id);
         var curr = parseInt(valEl.textContent);
@@ -1576,18 +1230,6 @@
 
                 var grandEl = document.getElementById('grandTotal');
                 grandEl.textContent = 'Rp ' + formatAngka(data.total_all);
-
-                var cmQty = document.getElementById('cm-qty-' + id);
-                if (cmQty) {
-                    var parts = cmQty.textContent.split(' x ');
-                    cmQty.textContent = newQty + ' x ' + parts[1];
-                }
-
-                var cmTotal = document.getElementById('cm-total-' + id);
-                if (cmTotal) cmTotal.textContent = 'Rp ' + formatAngka(data.total_item);
-
-                var modalTotal = document.getElementById('grandTotalModal');
-                if (modalTotal) modalTotal.textContent = 'Rp ' + formatAngka(data.total_all);
             }
         });
     }
@@ -1714,9 +1356,6 @@
                 var grandEl = document.getElementById('grandTotal');
                 grandEl.textContent = 'Rp ' + formatAngka(data.total_all);
 
-                var modalTotal = document.getElementById('grandTotalModal');
-                if (modalTotal) modalTotal.textContent = 'Rp ' + formatAngka(data.total_all);
-
                 localStorage.setItem('cart_seen', '1');
                 showNotif(data.message);
 
@@ -1755,67 +1394,6 @@
         document.getElementById('cartNotifMsg').textContent = msg;
         el.classList.add('show');
         setTimeout(function() { el.classList.remove('show'); }, 3000);
-    }
-
-    function hitungPromoDiskon() {
-        var select = document.getElementById('checkoutPromo');
-        if (!select || !select.value) {
-            document.getElementById('promoDiskonModal').textContent = 'Rp 0';
-            document.getElementById('totalAfterPromo').textContent = document.getElementById('grandTotalModal').textContent;
-            return 0;
-        }
-        var selected = select.options[select.selectedIndex];
-        var jenis = selected.getAttribute('data-jenis');
-        var nilai = parseFloat(selected.getAttribute('data-nilai'));
-        var total = parseInt('{{ $total }}');
-        var diskon = 0;
-        if (jenis === 'Diskon') {
-            diskon = Math.round(total * nilai / 100);
-        } else {
-            diskon = Math.round(Math.min(nilai, total));
-        }
-        document.getElementById('promoDiskonModal').textContent = 'Rp ' + formatAngka(diskon);
-        document.getElementById('totalAfterPromo').textContent = 'Rp ' + formatAngka(total - diskon);
-        return diskon;
-    }
-
-    var checkoutPromo = document.getElementById('checkoutPromo');
-    if (checkoutPromo) {
-        checkoutPromo.addEventListener('change', hitungPromoDiskon);
-    }
-
-    function bayarSekarang() {
-        var metode = document.querySelector('input[name="metode_bayar"]:checked');
-        if (metode) {
-            var csrf = document.querySelector('meta[name="csrf-token"]').content;
-            var promoSelect = document.getElementById('checkoutPromo');
-            var bodyData = {
-                metode: metode.value
-            };
-            if (promoSelect && promoSelect.value) {
-                bodyData.id_promo = promoSelect.value;
-            }
-
-            fetch('/pelanggan/checkout-notif', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': csrf
-                },
-                body: JSON.stringify(bodyData)
-            })
-            .then(function(r) { return r.json(); })
-            .then(function(data) {
-                if (data.success) {
-                    closeCheckout();
-                    document.querySelector('.keranjang-tools').style.display = 'none';
-                    document.querySelector('.keranjang-grid').style.display = 'none';
-                    document.querySelector('.keranjang-footer').style.display = 'none';
-                    document.getElementById('keranjangEmpty').style.display = '';
-                    showNotif(data.message);
-                }
-            });
-        }
     }
 
     var notifData = document.getElementById('cartNotifData');
