@@ -343,6 +343,15 @@
         background: #059669;
     }
 
+    .status-badge.sb-menunggu { background: #FEF3C7; color: #B45309; }
+    .status-badge.sb-menunggu .sb-dot { background: #F59E0B; }
+    .status-badge.sb-diproses { background: #DBEAFE; color: #1D4ED8; }
+    .status-badge.sb-diproses .sb-dot { background: #3B82F6; }
+    .status-badge.sb-gagal { background: #FEE2E2; color: #B91C1C; }
+    .status-badge.sb-gagal .sb-dot { background: #DC2626; }
+    .status-badge.sb-kadaluarsa, .status-badge.sb-dibatalkan { background: #F3F4F6; color: #6B7280; }
+    .status-badge.sb-kadaluarsa .sb-dot, .status-badge.sb-dibatalkan .sb-dot { background: #9CA3AF; }
+
     .empty-state {
         padding: 60px 20px;
         text-align: center;
@@ -555,7 +564,17 @@
                                         </span>
                                     </td>
                                     <td data-label="Status">
-                                        <span class="status-badge">
+                                        @php
+                                        $sbClass = [
+                                            'Menunggu Pembayaran' => 'sb-menunggu',
+                                            'Sedang Diproses' => 'sb-diproses',
+                                            'Lunas' => '',
+                                            'Gagal' => 'sb-gagal',
+                                            'Kadaluarsa' => 'sb-kadaluarsa',
+                                            'Dibatalkan' => 'sb-dibatalkan',
+                                        ][$transaksi->status] ?? 'sb-kadaluarsa';
+                                        @endphp
+                                        <span class="status-badge {{ $sbClass }}">
                                             <span class="sb-dot"></span>
                                             {{ $transaksi->status }}
                                         </span>
