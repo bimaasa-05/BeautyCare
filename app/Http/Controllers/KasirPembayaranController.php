@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Booking;
+use App\Models\Produk;
 use App\Models\Transaksi;
 use App\Models\DetailTransaksi;
 use Illuminate\Http\Request;
@@ -40,7 +41,11 @@ class KasirPembayaranController extends Controller
 
         $totalSudahDibayar = Transaksi::where('status', 'Lunas')->count();
 
-        return view('kasir.pembayaran.index', compact('reservasiSelesai', 'totalTagihan', 'totalSudahDibayar'));
+        $pesananOnlineCount = Transaksi::where('sumber', 'online')
+            ->whereIn('status', ['Menunggu Pembayaran', 'Sedang Diproses'])
+            ->count();
+
+        return view('kasir.pembayaran.index', compact('reservasiSelesai', 'totalTagihan', 'totalSudahDibayar', 'pesananOnlineCount'));
     }
 
     public function create($id)
@@ -162,5 +167,77 @@ class KasirPembayaranController extends Controller
     {
         $transaksi = Transaksi::with(['pelanggan', 'user', 'detail'])->findOrFail($id);
         return view('kasir.pembayaran.show', compact('transaksi'));
+    }
+
+    public function pesananOnline()
+    {
+        $pesanan = Transaksi::with(['pelanggan', 'user', 'detail', 'pembayaran'])
+            ->where('sumber', 'online')
+            ->whereIn('status', ['Menunggu Pembayaran', 'Sedang Diproses'])
+            ->orderBy('id_transaksi', 'desc')
+            ->get();
+
+        $demoMode = env('CHECKOUT_DEMO_MODE', false);
+
+        return view('kasir.pembayaran.pesanan-online', compact('pesanan', 'demoMode'));
+    }
+
+    public function verifikasi(Request $request, $id)
+    {
+        $request->validate([
+            'aksi' => 'required|in:konfirmasi,tolak',
+            'no_referensi' => 'nullable|string|max:50',
+        ]);
+
+        $transaksi = Transaksi::with(['detail', 'pembayaran'])->findOrFail($id);
+
+        if ($transaksi->sumber !== 'online' || !in_array($transaksi->status, ['Sedang Diproses', 'Menunggu Pembayaran'])) {
+            return back()->with('error', 'Status pesanan tidak valid untuk verifikasi.');
+        }
+
+        if ($request->aksi === 'konfirmasi') {
+            foreach ($transaksi->detail as $d) {
+                if ($d->jenis === 'Produk' && $d->id_item > 0) {
+                    $produk = Produk::find($d->id_item);
+                    if (!$produk || $produk->stok < $d->qty) {
+                        return back()->with('error', 'Stok ' . ($produk->nm_produk ?? 'produk') . ' tidak mencukupi untuk dikonfirmasi.');
+                    }
+                }
+            }
+
+            DB::transaction(function () use ($transaksi, $request) {
+                foreach ($transaksi->detail as $d) {
+                    if ($d->jenis === 'Produk' && $d->id_item > 0) {
+                        Produk::where('id_produk', $d->id_item)->decrement('stok', $d->qty);
+                    }
+                }
+
+                $transaksi->update(['status' => 'Lunas']);
+
+                if ($transaksi->pembayaran) {
+                    $transaksi->pembayaran->update([
+                        'status' => 'Dibayar',
+                        'paid_at' => now(),
+                        'no_referensi' => $request->no_referensi ?? $transaksi->pembayaran->kode_pembayaran,
+                    ]);
+                }
+            });
+
+            buatNotif($transaksi->id_user, 'Pembayaran Diterima', 'Pesanan ' . $transaksi->no_invoice . ' telah diverifikasi dan berhasil.', 'Transaksi', route('pelanggan.pesanan.show', $transaksi->id_transaksi));
+
+            $admins = \App\Models\User::where('role', 'admin')->get();
+            foreach ($admins as $admin) {
+                buatNotif($admin->id, 'Pesanan Lunas', 'Pesanan ' . $transaksi->no_invoice . ' oleh ' . ($transaksi->user->nama ?? '') . ' dikonfirmasi lunas.', 'Transaksi', url('/admin/dashboard'));
+            }
+
+            return back()->with('message', 'Pesanan ' . $transaksi->no_invoice . ' dikonfirmasi lunas.');
+        }
+
+        $transaksi->update(['status' => 'Gagal']);
+        $transaksi->pembayaran?->update(['status' => 'Gagal']);
+
+        buatNotif($transaksi->id_user, 'Pembayaran Ditolak', 'Pembayaran pesanan ' . $transaksi->no_invoice . ' ditolak oleh kasir.', 'Transaksi', route('pelanggan.pesanan.show', $transaksi->id_transaksi));
+
+        return back()->with('message', 'Pesanan ' . $transaksi->no_invoice . ' ditolak.');
     }
 }
