@@ -12,6 +12,7 @@ class Transaksi extends Model
 
     protected $fillable = [
         'id_booking',
+        'sumber',
         'id_pelanggan',
         'id_user',
         'no_invoice',
@@ -52,5 +53,10 @@ class Transaksi extends Model
     public function booking()
     {
         return $this->belongsTo(Booking::class, 'id_booking', 'id_booking');
+    }
+
+    public function pembayaran()
+    {
+        return $this->hasOne(Pembayaran::class, 'id_transaksi', 'id_transaksi');
     }
 }
