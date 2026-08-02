@@ -1087,7 +1087,6 @@
                             $benefits = $tierBenefits[$member->tingkat] ?? [];
                             $isCurrent = $memberSaatIni && $memberSaatIni->id_member === $member->id_member;
                             $meetsTransaksi = $totalTransaksi >= $member->min_transaksi;
-                            $meetsBelanja = $totalBelanja >= $member->min_pembelian;
                             $canUpgrade = !$isCurrent && !$memberSaatIni;
                             if ($memberSaatIni) {
                                 $levels = ['Silver', 'Gold', 'Platinum'];
@@ -1122,31 +1121,21 @@
                                     </div>
                                     @endforeach
                                 </div>
-                                <div class="mt-price">Min. {{ $member->min_transaksi }}x Transaksi
+                                <div class="mt-price">Min. {{ $member->min_transaksi }}x Pembelian Produk
                                     @if ($memberSaatIni && !$isCurrent)
                                         @php $levels = ['Silver', 'Gold', 'Platinum']; $curIdx = array_search($memberSaatIni->tingkat, $levels); $thisIdx = array_search($member->tingkat, $levels); @endphp
                                         @if ($thisIdx > $curIdx)
-                                            <span>({{ $meetsTransaksi ? 'Terpenuhi' : 'Kurang ' . ($member->min_transaksi - $totalTransaksi) . ' Transaksi' }})</span>
+                                            <span>({{ $meetsTransaksi ? 'Terpenuhi' : 'Kurang ' . ($member->min_transaksi - $totalTransaksi) . ' Pembelian' }})</span>
                                         @endif
                                     @elseif (!$memberSaatIni && !$isCurrent)
-                                        <span>({{ $meetsTransaksi ? 'Terpenuhi' : 'Kurang ' . ($member->min_transaksi - $totalTransaksi) . ' Transaksi' }})</span>
-                                    @endif
-                                </div>
-                                <div class="mt-price">Min. Rp {{ number_format($member->min_pembelian, 0, ',', '.') }} Pembelian
-                                    @if ($memberSaatIni && !$isCurrent)
-                                        @php $levels = ['Silver', 'Gold', 'Platinum']; $curIdx = array_search($memberSaatIni->tingkat, $levels); $thisIdx = array_search($member->tingkat, $levels); @endphp
-                                        @if ($thisIdx > $curIdx)
-                                            <span>({{ $meetsBelanja ? 'Terpenuhi' : 'Kurang Rp ' . number_format($member->min_pembelian - $totalBelanja, 0, ',', '.') }})</span>
-                                        @endif
-                                    @elseif (!$memberSaatIni && !$isCurrent)
-                                        <span>({{ $meetsBelanja ? 'Terpenuhi' : 'Kurang Rp ' . number_format($member->min_pembelian - $totalBelanja, 0, ',', '.') }})</span>
+                                        <span>({{ $meetsTransaksi ? 'Terpenuhi' : 'Kurang ' . ($member->min_transaksi - $totalTransaksi) . ' Pembelian' }})</span>
                                     @endif
                                 </div>
                                 @if ($isCurrent)
                                 <button class="mt-btn current">
                                     <i class="fa-regular fa-circle-check"></i> Level Saat Ini
                                 </button>
-                                @elseif ($meetsTransaksi && $meetsBelanja && $canUpgrade)
+                                @elseif ($meetsTransaksi && $canUpgrade)
                                 <button class="mt-btn primary" data-tier="{{ strtolower($member->tingkat) }}" onclick="showUpgradeModal(this)">Upgrade ke {{ $member->tingkat }}</button>
                                 @elseif ($canUpgrade)
                                 <button class="mt-btn outline" disabled style="opacity:0.5;cursor:not-allowed;">
@@ -1320,7 +1309,7 @@
                 '{{ $b }}',
                 @endforeach
             ],
-            eligible: {{ $totalTransaksi >= $member->min_transaksi && $totalBelanja >= $member->min_pembelian ? 'true' : 'false' }}
+            eligible: {{ $totalTransaksi >= $member->min_transaksi ? 'true' : 'false' }}
         },
         @endforeach
     };
