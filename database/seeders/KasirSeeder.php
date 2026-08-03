@@ -10,6 +10,7 @@ use App\Models\Membership;
 use App\Models\Pelanggan;
 use App\Models\Produk;
 use App\Models\Promo;
+use App\Models\Stok;
 use App\Models\Supplier;
 use App\Models\Transaksi;
 use App\Models\DetailTransaksi;
@@ -92,7 +93,7 @@ class KasirSeeder extends Seeder
     {
         $data = [
             ['nm_produk' => 'Skincare', 'status' => 'tersedia'],
-            ['nm_produk' => 'Hair Care', 'status' => 'tersedia'],
+            ['nm_produk' => 'HairCare', 'status' => 'tersedia'],
             ['nm_produk' => 'Body Care', 'status' => 'tersedia'],
             ['nm_produk' => 'Nail Care', 'status' => 'tersedia'],
             ['nm_produk' => 'Makeup', 'status' => 'tersedia'],
@@ -125,7 +126,24 @@ class KasirSeeder extends Seeder
             ['id_kategori_produk' => 5, 'id_supplier' => 2, 'nm_produk' => 'Setting Spray 50ml', 'satuan' => 'Botol', 'harga_beli' => 30000, 'harga_jual' => 70000, 'stok' => 30, 'foto' => '', 'status' => 'Tersedia'],
         ];
         foreach ($data as $d) {
-            Produk::create($d);
+            $idSupplier = $d['id_supplier'];
+            unset($d['id_supplier']);
+
+            $produk = Produk::create($d);
+
+            Stok::create([
+                'id_produk' => $produk->id_produk,
+                'id_supplier' => $idSupplier,
+                'tanggal' => now()->toDateString(),
+                'type' => 'Masuk',
+                'jumlah' => $d['stok'],
+                'stok_sebelum' => 0,
+                'stok_sesudah' => $d['stok'],
+                'keterangan' => 'Stok awal dari seeder',
+                'ref_id' => 0,
+                'ref_type' => 'Seeder',
+                'status' => 1,
+            ]);
         }
     }
 

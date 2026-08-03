@@ -63,11 +63,20 @@
                         </div>
                     @endif
 
-                    <div class="mb-6">
-                        <h3 class="text-[16px] font-bold text-gray-800">
-                            <i class="fa-solid fa-credit-card text-pink-500 mr-2"></i>Pembayaran
-                        </h3>
-                        <p class="text-[12px] text-gray-400 mt-0.5">Proses pembayaran reservasi yang sudah selesai</p>
+                    <div class="mb-6 flex items-center justify-between flex-wrap gap-3">
+                        <div>
+                            <h3 class="text-[16px] font-bold text-gray-800">
+                                <i class="fa-solid fa-credit-card text-pink-500 mr-2"></i>Pembayaran
+                            </h3>
+                            <p class="text-[12px] text-gray-400 mt-0.5">Proses pembayaran reservasi yang sudah selesai</p>
+                        </div>
+                        <a href="{{ route('kasir.pembayaran.pesanan-online') }}"
+                            class="inline-flex items-center gap-2 bg-white border border-pink-200 text-pink-500 text-[12px] font-semibold px-4 py-2 rounded-full hover:bg-pink-50 transition-all shadow-sm">
+                            <i class="fa-solid fa-globe"></i> Pesanan Online
+                            @if($pesananOnlineCount > 0)
+                            <span class="bg-pink-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">{{ $pesananOnlineCount }}</span>
+                            @endif
+                        </a>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">

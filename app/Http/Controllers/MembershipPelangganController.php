@@ -42,6 +42,9 @@ class MembershipPelangganController extends Controller
         if ($pelanggan) {
             $totalTransaksi = Transaksi::where('id_pelanggan', $pelanggan->id_pelanggan)
                 ->where('status', 'Lunas')
+                ->whereHas('detail', function ($q) {
+                    $q->where('jenis', 'Produk');
+                })
                 ->count();
 
             $totalBelanja = Transaksi::where('id_pelanggan', $pelanggan->id_pelanggan)
@@ -117,13 +120,16 @@ class MembershipPelangganController extends Controller
 
         $totalTransaksi = Transaksi::where('id_pelanggan', $pelanggan->id_pelanggan)
             ->where('status', 'Lunas')
+            ->whereHas('detail', function ($q) {
+                $q->where('jenis', 'Produk');
+            })
             ->count();
 
         $totalBelanja = Transaksi::where('id_pelanggan', $pelanggan->id_pelanggan)
             ->where('status', 'Lunas')
             ->sum('total');
 
-        if ($totalTransaksi < $targetTier->min_transaksi || $totalBelanja < $targetTier->min_pembelian) {
+        if ($totalTransaksi < $targetTier->min_transaksi) {
             return response()->json([
                 'success' => false,
                 'message' => 'Anda belum memenuhi syarat untuk upgrade ke ' . $request->tingkat . '.',

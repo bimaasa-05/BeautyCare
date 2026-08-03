@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="id">
 
 <head>
@@ -893,17 +893,10 @@
         margin-bottom: 20px;
     }
 
-    .checkout-modal {
-        display: none;
-        position: fixed;
-        inset: 0;
-        background: rgba(0,0,0,0.4);
-        z-index: 999;
-        align-items: center;
-        justify-content: center;
-        padding: 20px;
-    }
 
+<<<<<<< HEAD
+    /* â”€â”€â”€ Modal Premium â”€â”€â”€ */
+=======
     .checkout-modal.show {
         display: flex;
     }
@@ -1167,6 +1160,7 @@
     }
 
     /* ─── Modal Premium ─── */
+>>>>>>> 357fd1431f743dcc3322899f04711b817ce83046
     .modal-premium {
         position: fixed;
         inset: 0;
@@ -1399,9 +1393,9 @@
                             <a href="{{ route('pelanggan.produk') }}" class="btn-belanja btn-belanja-outline">
                                 <i class="fa-solid fa-arrow-left"></i> Lanjut Belanja
                             </a>
-                            <button class="btn-belanja" onclick="openCheckout()">
+                            <a href="{{ route('pelanggan.checkout') }}" class="btn-belanja">
                                 <i class="fa-solid fa-credit-card"></i> Checkout
-                            </button>
+                            </a>
                         </div>
                     </div>
                 @endif
@@ -1446,87 +1440,10 @@
                 </div>
             </div>
 
-            <div class="checkout-modal" id="checkoutModal">
-                <div class="cm-card">
-                    <div class="cm-header">
-                        <h3><i class="fa-solid fa-receipt"></i> Checkout</h3>
-                        <button class="cm-close" onclick="closeCheckout()"><i class="fa-solid fa-xmark"></i></button>
-                    </div>
-                    <div class="cm-items">
-                        @foreach($troli as $item)
-                        <div class="cm-item" id="cm-item-{{ $item->id }}">
-                            <div class="cmi-left">
-                                <div class="cmi-nama">{{ $item->nm_produk }}</div>
-                                <div class="cmi-qty" id="cm-qty-{{ $item->id }}">{{ $item->qty }} x Rp {{ number_format($item->harga_satuan, 0, ',', '.') }}</div>
-                            </div>
-                            <div class="cmi-harga" id="cm-total-{{ $item->id }}">Rp {{ number_format($item->total_harga, 0, ',', '.') }}</div>
-                        </div>
-                        @endforeach
-                    </div>
-                    <div class="cm-divider"></div>
-                    @if(isset($claimedPromos) && $claimedPromos->isNotEmpty())
-                    <div class="cm-payment" style="padding:12px 28px 8px;">
-                        <div class="cmp-title"><i class="fa-solid fa-tag"></i> Promo Saya</div>
-                        <select id="checkoutPromo" style="width:100%;padding:10px 14px;border-radius:12px;border:1.5px solid var(--border);font-size:12px;font-family:'Poppins',sans-serif;background:#FAFAFA;outline:none;">
-                            <option value="" data-jenis="" data-nilai="0">— Tanpa Promo —</option>
-                            @foreach($claimedPromos as $cp)
-                            <option value="{{ $cp->id_promo }}" data-jenis="{{ $cp->promo->jenis_promo }}" data-nilai="{{ $cp->promo->nilai }}" data-label="{{ $cp->promo->nm_promo }}">
-                                {{ $cp->promo->nm_promo }} ({{ $cp->promo->jenis_promo == 'Diskon' ? $cp->promo->nilai.'%' : 'Rp '.number_format($cp->promo->nilai,0,',','.') }})
-                            </option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="cm-divider"></div>
-                    @endif
-                    <div class="cm-total">
-                        <div class="cmt-label">Total Belanja</div>
-                        <div class="cmt-nominal" id="grandTotalModal">Rp {{ number_format($total, 0, ',', '.') }}</div>
-                    </div>
-                    @if(isset($claimedPromos) && $claimedPromos->isNotEmpty())
-                    <div class="cm-total" style="padding-top:0;">
-                        <div class="cmt-label">Diskon Promo</div>
-                        <div class="cmt-nominal" id="promoDiskonModal" style="font-size:15px;color:#059669;">Rp 0</div>
-                    </div>
-                    <div class="cm-total" style="padding-top:0;">
-                        <div class="cmt-label" style="font-weight:800;">Total Setelah Diskon</div>
-                        <div class="cmt-nominal" id="totalAfterPromo" style="font-size:24px;">Rp {{ number_format($total, 0, ',', '.') }}</div>
-                    </div>
-                    @endif
-                    <div class="cm-divider"></div>
-                    <div class="cm-payment">
-                        <div class="cmp-title"><i class="fa-solid fa-wallet"></i> Metode Pembayaran</div>
-                        <div class="cmp-group">
-                            <div class="cmp-option">
-                                <input type="radio" name="metode_bayar" id="pay_transfer" value="Transfer" checked>
-                                <label for="pay_transfer"><i class="fa-solid fa-building-columns"></i> Transfer</label>
-                            </div>
-                            <div class="cmp-option">
-                                <input type="radio" name="metode_bayar" id="pay_dana" value="Dana">
-                                <label for="pay_dana"><i class="fa-solid fa-qrcode"></i> Dana</label>
-                            </div>
-                            <div class="cmp-option">
-                                <input type="radio" name="metode_bayar" id="pay_gopay" value="GoPay">
-                                <label for="pay_gopay"><i class="fa-solid fa-qrcode"></i> GoPay</label>
-                            </div>
-                            <div class="cmp-option">
-                                <input type="radio" name="metode_bayar" id="pay_ovo" value="OVO">
-                                <label for="pay_ovo"><i class="fa-solid fa-qrcode"></i> OVO</label>
-                            </div>
-                            <div class="cmp-option">
-                                <input type="radio" name="metode_bayar" id="pay_shopeepay" value="ShopeePay">
-                                <label for="pay_shopeepay"><i class="fa-solid fa-qrcode"></i> ShopeePay</label>
-                            </div>
-                        </div>
-                    </div>
-                    <button class="cm-bayar" onclick="bayarSekarang()">
-                        <i class="fa-solid fa-check-circle"></i> Bayar Sekarang
-                    </button>
-                </div>
-            </div>
         </main>
     </div>
 
-    <!-- ═══ Modal Delete Premium ═══ -->
+    <!-- â•â•â• Modal Delete Premium â•â•â• -->
     <div id="deleteModal" class="modal-premium">
         <div class="modal-box">
             <form id="deleteForm" method="POST">
@@ -1588,18 +1505,6 @@
         if (e.target === this) closeDetail();
     });
 
-    function openCheckout() {
-        document.getElementById('checkoutModal').classList.add('show');
-    }
-
-    function closeCheckout() {
-        document.getElementById('checkoutModal').classList.remove('show');
-    }
-
-    document.getElementById('checkoutModal').addEventListener('click', function(e) {
-        if (e.target === this) closeCheckout();
-    });
-
     function updateQty(id, delta) {
         var valEl = document.getElementById('qty-' + id);
         var curr = parseInt(valEl.textContent);
@@ -1626,18 +1531,6 @@
 
                 var grandEl = document.getElementById('grandTotal');
                 grandEl.textContent = 'Rp ' + formatAngka(data.total_all);
-
-                var cmQty = document.getElementById('cm-qty-' + id);
-                if (cmQty) {
-                    var parts = cmQty.textContent.split(' x ');
-                    cmQty.textContent = newQty + ' x ' + parts[1];
-                }
-
-                var cmTotal = document.getElementById('cm-total-' + id);
-                if (cmTotal) cmTotal.textContent = 'Rp ' + formatAngka(data.total_item);
-
-                var modalTotal = document.getElementById('grandTotalModal');
-                if (modalTotal) modalTotal.textContent = 'Rp ' + formatAngka(data.total_all);
             }
         });
     }
@@ -1764,9 +1657,6 @@
                 var grandEl = document.getElementById('grandTotal');
                 grandEl.textContent = 'Rp ' + formatAngka(data.total_all);
 
-                var modalTotal = document.getElementById('grandTotalModal');
-                if (modalTotal) modalTotal.textContent = 'Rp ' + formatAngka(data.total_all);
-
                 localStorage.setItem('cart_seen', '1');
                 showNotif(data.message);
 
@@ -1805,67 +1695,6 @@
         document.getElementById('cartNotifMsg').textContent = msg;
         el.classList.add('show');
         setTimeout(function() { el.classList.remove('show'); }, 3000);
-    }
-
-    function hitungPromoDiskon() {
-        var select = document.getElementById('checkoutPromo');
-        if (!select || !select.value) {
-            document.getElementById('promoDiskonModal').textContent = 'Rp 0';
-            document.getElementById('totalAfterPromo').textContent = document.getElementById('grandTotalModal').textContent;
-            return 0;
-        }
-        var selected = select.options[select.selectedIndex];
-        var jenis = selected.getAttribute('data-jenis');
-        var nilai = parseFloat(selected.getAttribute('data-nilai'));
-        var total = parseInt('{{ $total }}');
-        var diskon = 0;
-        if (jenis === 'Diskon') {
-            diskon = Math.round(total * nilai / 100);
-        } else {
-            diskon = Math.round(Math.min(nilai, total));
-        }
-        document.getElementById('promoDiskonModal').textContent = 'Rp ' + formatAngka(diskon);
-        document.getElementById('totalAfterPromo').textContent = 'Rp ' + formatAngka(total - diskon);
-        return diskon;
-    }
-
-    var checkoutPromo = document.getElementById('checkoutPromo');
-    if (checkoutPromo) {
-        checkoutPromo.addEventListener('change', hitungPromoDiskon);
-    }
-
-    function bayarSekarang() {
-        var metode = document.querySelector('input[name="metode_bayar"]:checked');
-        if (metode) {
-            var csrf = document.querySelector('meta[name="csrf-token"]').content;
-            var promoSelect = document.getElementById('checkoutPromo');
-            var bodyData = {
-                metode: metode.value
-            };
-            if (promoSelect && promoSelect.value) {
-                bodyData.id_promo = promoSelect.value;
-            }
-
-            fetch('/pelanggan/checkout-notif', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': csrf
-                },
-                body: JSON.stringify(bodyData)
-            })
-            .then(function(r) { return r.json(); })
-            .then(function(data) {
-                if (data.success) {
-                    closeCheckout();
-                    document.querySelector('.keranjang-tools').style.display = 'none';
-                    document.querySelector('.keranjang-grid').style.display = 'none';
-                    document.querySelector('.keranjang-footer').style.display = 'none';
-                    document.getElementById('keranjangEmpty').style.display = '';
-                    showNotif(data.message);
-                }
-            });
-        }
     }
 
     var notifData = document.getElementById('cartNotifData');

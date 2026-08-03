@@ -20,29 +20,6 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
-        select.form-input-custom {
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 14px center;
-            padding-right: 40px;
-            border: 1.5px solid #ECECEC;
-            border-radius: 12px;
-            padding: 10px 14px;
-            font-size: 13px;
-            width: 100%;
-            transition: all 0.3s ease;
-            font-family: 'Inter', sans-serif;
-            background-color: #fff;
-            cursor: pointer;
-        }
-
-        select.form-input-custom:focus {
-            border-color: #FF4F87;
-            box-shadow: 0 0 0 3px rgba(255, 79, 135, 0.12);
-            outline: none;
-        }
-
         .sidebar-toggle {
             display: none;
             background: none;
@@ -122,40 +99,74 @@
             background: #F9A8D4;
         }
 
-        .dropdown-pink {
+        .chart-card .chart-actions select.dropdown-pink {
             appearance: none;
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23EC4899' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
             background-repeat: no-repeat;
             background-position: right 12px center;
+            background-color: #fff;
+            padding: 8px 14px;
             padding-right: 36px;
             border: 1.5px solid #FCE7F3;
             border-radius: 10px;
-            padding: 8px 14px;
             font-size: 12px;
-            background-color: #fff;
-            cursor: pointer;
             color: #EC4899;
             font-weight: 500;
             font-family: 'Inter', sans-serif;
-            transition: all 0.2s;
             min-width: 130px;
+            cursor: pointer;
         }
 
-        .dropdown-pink:focus {
-            border-color: #EC4899;
-            box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.12);
+        .chart-card .chart-actions select.dropdown-pink:hover {
+            border-color: #FCE7F3;
+            background-color: #fff;
+            color: #EC4899;
+            box-shadow: none;
+        }
+
+        .chart-card .chart-actions select.dropdown-pink:focus {
+            border-color: #FCE7F3;
+            box-shadow: none;
             outline: none;
+        }
+
+        .chart-card .chart-actions {
+            flex-shrink: 0;
+        }
+
+        .chart-card .chart-header {
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .chart-card {
+            display: flex;
+            flex-direction: column;
         }
 
         .chart-body {
             position: relative;
             width: 100%;
+            flex: 1;
             min-height: 280px;
         }
 
         .chart-body canvas {
             width: 100% !important;
-            height: 280px !important;
+            height: 100% !important;
+        }
+
+        .mini-chart-card {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .mini-chart-card .mc-body {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 220px;
         }
 
         .table-scroll {
@@ -323,9 +334,10 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="mc-body"
-                                style="display:flex;justify-content:center;align-items:center;min-height:220px;">
+                            <div class="mc-body">
                                 <canvas id="chartPembayaran" style="max-width:220px;max-height:220px;"></canvas>
+                                <span id="paymentEmptyMsg" style="display:none;font-size:12px;color:#999;">Belum ada
+                                    data</span>
                             </div>
                         </div>
 
@@ -563,17 +575,15 @@
 
     <script>
         function changeSalesPeriod(value) {
-            var url = '{{ route('kasir.dashboard') }}?periode=' + value;
             var pp = '{{ $paymentPeriode ?? '7hari' }}';
-            url += '&payment_periode=' + pp;
-            window.location.href = url;
+            document.getElementById('periodSelect').value = value;
+            updateSalesChart(value);
         }
 
         function changePaymentPeriod(value) {
-            var url = '{{ route('kasir.dashboard') }}?payment_periode=' + value;
             var p = '{{ $periode ?? '7hari' }}';
-            url += '&periode=' + p;
-            window.location.href = url;
+            document.getElementById('paymentPeriodSelect').value = value;
+            updatePaymentChart(value);
         }
 
         const now = new Date();
@@ -586,106 +596,130 @@
         const dateEl = document.getElementById('currentDate');
         if (dateEl) dateEl.textContent = now.toLocaleDateString('id-ID', options);
 
-        const chartLabels = @json($chartLabels);
-        const chartRevenue = @json($chartRevenue);
+        const allSalesChartData = @json($salesChartData);
+        const allPaymentChartData = @json($paymentChartData);
+
+        const salesChartLabels = @json($chartLabels);
+        const salesChartRevenue = @json($chartRevenue);
         const paymentLabels = @json($paymentLabels);
         const paymentValues = @json($paymentValues);
 
-        const maxRev = chartRevenue.length > 0 ? Math.max(...chartRevenue) : 0;
-
         Chart.defaults.font.family = "'Poppins', sans-serif";
         Chart.defaults.color = '#9CA3AF';
-        Chart.defaults.font.size = 11;
+        Chart.defaults.font.size = 10;
 
-        const paymentColors = ['#22C55E', '#3B82F6', '#F59E0B', '#8B5CF6', '#EC4899', '#EF4444'];
+        const doughnutColors = ['#EC4899', '#8B5CF6', '#F59E0B', '#10B981', '#3B82F6', '#EF4444'];
 
-        const ctx = document.getElementById('chartPendapatan').getContext('2d');
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: chartLabels,
-                datasets: [{
-                    label: 'Pendapatan',
-                    data: chartRevenue,
-                    borderColor: '#EC4899',
-                    backgroundColor: 'rgba(236, 72, 153, 0.08)',
-                    borderWidth: 2,
-                    tension: 0.4,
-                    fill: true,
-                    pointBackgroundColor: '#fff',
-                    pointBorderColor: '#EC4899',
-                    pointBorderWidth: 2,
-                    pointRadius: 3,
-                    pointHoverRadius: 5
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                animation: {
-                    duration: 2000,
-                    easing: 'easeOutQuart'
+        let salesChartInstance = null;
+        let paymentChartInstance = null;
+
+        function initSalesChart(labels, revenue) {
+            const ctx = document.getElementById('chartPendapatan').getContext('2d');
+            const max = revenue.length > 0 ? Math.max(...revenue) : 0;
+            const stagger = labels.length > 0 ? 1600 / labels.length : 0;
+            if (salesChartInstance) salesChartInstance.destroy();
+            salesChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Pendapatan',
+                        data: revenue,
+                        backgroundColor: '#8B5CF6',
+                        borderRadius: { topLeft: 6, topRight: 6 },
+                        barPercentage: 0.5
+                    }]
                 },
-                plugins: {
-                    legend: {
-                        display: false
-                    },
-                    tooltip: {
-                        backgroundColor: '#fff',
-                        titleColor: '#1F2937',
-                        bodyColor: '#4B5563',
-                        borderColor: '#FCE7F3',
-                        borderWidth: 1,
-                        padding: 10,
-                        cornerRadius: 8,
-                        callbacks: {
-                            label: function(context) {
-                                var val = context.parsed.y;
-                                if (val >= 1000000) return 'Rp ' + (val / 1000000).toFixed(1) + ' jt';
-                                return 'Rp ' + val.toLocaleString('id-ID');
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: {
+                        y: {
+                            type: 'number',
+                            easing: 'easeOutQuart',
+                            duration: 700,
+                            from: 0,
+                            delay: function(ctx) {
+                                if (ctx.type !== 'data' || ctx.yStarted) return 0;
+                                ctx.yStarted = true;
+                                return ctx.dataIndex * stagger;
                             }
                         }
-                    }
-                },
-                scales: {
-                    x: {
-                        grid: {
-                            display: false,
-                            drawBorder: false
-                        },
-                        ticks: {
-                            maxTicksLimit: Math.min(chartLabels.length, 10)
-                        }
                     },
-                    y: {
-                        border: {
+                    plugins: {
+                        legend: {
                             display: false
                         },
-                        grid: {
-                            color: '#F3E8F5',
-                            borderDash: [3, 3]
+                        tooltip: {
+                            backgroundColor: '#fff',
+                            titleColor: '#1F2937',
+                            bodyColor: '#4B5563',
+                            borderColor: '#FCE7F3',
+                            borderWidth: 1,
+                            padding: 10,
+                            cornerRadius: 8,
+                            displayColors: false,
+                            callbacks: {
+                                label: function(context) {
+                                    var val = context.parsed.y;
+                                    if (val >= 1000000) return 'Rp ' + (val / 1000000).toFixed(1) + ' jt';
+                                    return 'Rp ' + val.toLocaleString('id-ID');
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false,
+                                drawBorder: false
+                            },
+                            ticks: {
+                                maxRotation: 0
+                            }
                         },
-                        ticks: {
-                            maxTicksLimit: 6,
-                            callback: function(value) {
-                                if (maxRev > 1000000) return 'Rp' + (value / 1000000).toFixed(1) + 'jt';
-                                return 'Rp' + value.toLocaleString('id-ID');
+                        y: {
+                            border: {
+                                display: false
+                            },
+                            grid: {
+                                color: '#F9EEF4',
+                                borderDash: [3, 3]
+                            },
+                            ticks: {
+                                maxTicksLimit: 5,
+                                callback: function(value) {
+                                    if (max >= 1000000000) return 'Rp' + (value / 1000000000).toFixed(1) + 'M';
+                                    if (max >= 1000000) return 'Rp' + (value / 1000000).toFixed(1) + 'jt';
+                                    if (max >= 1000) return 'Rp' + (value / 1000).toFixed(0) + 'rb';
+                                    return 'Rp' + value;
+                                }
                             }
                         }
                     }
                 }
-            }
-        });
+            });
+        }
 
-        const ctxPayment = document.getElementById('chartPembayaran');
-        if (ctxPayment && paymentLabels.length > 0) {
-            new Chart(ctxPayment.getContext('2d'), {
+        function initPaymentChart(labels, values) {
+            const canvas = document.getElementById('chartPembayaran');
+            const emptyMsg = document.getElementById('paymentEmptyMsg');
+            if (paymentChartInstance) paymentChartInstance.destroy();
+            if (labels.length === 0) {
+                if (canvas) canvas.style.display = 'none';
+                if (emptyMsg) emptyMsg.style.display = 'block';
+                return;
+            }
+            if (canvas) canvas.style.display = 'block';
+            if (emptyMsg) emptyMsg.style.display = 'none';
+            const ctx = canvas.getContext('2d');
+            paymentChartInstance = new Chart(ctx, {
                 type: 'doughnut',
                 data: {
-                    labels: paymentLabels,
+                    labels: labels,
                     datasets: [{
-                        data: paymentValues,
-                        backgroundColor: paymentColors.slice(0, paymentLabels.length),
+                        data: values,
+                        backgroundColor: doughnutColors.slice(0, labels.length),
                         borderWidth: 2,
                         borderColor: '#fff'
                     }]
@@ -696,8 +730,7 @@
                     cutout: '65%',
                     animation: {
                         animateRotate: true,
-                        duration: 2000,
-                        easing: 'easeOutQuart'
+                        duration: 1000
                     },
                     plugins: {
                         legend: {
@@ -705,12 +738,12 @@
                             labels: {
                                 font: {
                                     family: 'Poppins',
-                                    size: 11
+                                    size: 10
                                 },
                                 color: '#6B7280',
                                 padding: 12,
                                 usePointStyle: true,
-                                pointStyle: 'rectRot'
+                                pointStyleWidth: 8
                             }
                         },
                         tooltip: {
@@ -723,7 +756,7 @@
                             cornerRadius: 8,
                             callbacks: {
                                 label: function(context) {
-                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const total = context.dataset.data.reduce(function(a, b) { return a + b; }, 0);
                                     const pct = total > 0 ? ((context.parsed / total) * 100).toFixed(1) : 0;
                                     return ' ' + context.label + ': ' + context.parsed + ' (' + pct + '%)';
                                 }
@@ -732,9 +765,28 @@
                     }
                 }
             });
-        } else if (ctxPayment) {
-            ctxPayment.parentNode.innerHTML = '<span style="font-size:12px;color:#999;">Belum ada data</span>';
         }
+
+        function updateSalesChart(period) {
+            const data = allSalesChartData[period];
+            if (!data) return;
+            const periodNames = { '7hari': '7 Hari', '30hari': '30 Hari', '3bulan': '3 Bulan', 'tahunini': '1 Tahun' };
+            const heading = document.querySelector('#periodSelect').closest('.chart-card').querySelector('.chart-header h3');
+            if (heading) heading.textContent = 'Grafik Penjualan ' + (periodNames[period] || period);
+            initSalesChart(data.labels, data.values);
+        }
+
+        function updatePaymentChart(period) {
+            const data = allPaymentChartData[period];
+            if (!data) return;
+            const periodNames = { '7hari': '7 Hari', '30hari': '30 Hari', '3bulan': '3 Bulan', 'tahunini': '1 Tahun' };
+            const heading = document.querySelector('#paymentPeriodSelect').closest('.mini-chart-card').querySelector('.mc-header h3');
+            if (heading) heading.textContent = 'Metode Pembayaran ' + (periodNames[period] || period);
+            initPaymentChart(data.labels, data.values);
+        }
+
+        initSalesChart(salesChartLabels, salesChartRevenue);
+        initPaymentChart(paymentLabels, paymentValues);
     </script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
 </body>
