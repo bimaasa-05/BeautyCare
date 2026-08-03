@@ -251,16 +251,6 @@
                             </div>
 
                             <div>
-                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Stok <span class="text-red-400">*</span></label>
-                                <input type="number" name="stok" value="{{ old('stok', $produk->stok) }}"
-                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('stok') border-red-300 @enderror"
-                                    placeholder="Masukkan stok">
-                                @error('stok')
-                                    <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <div>
                                 <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Foto</label>
                                 <input type="file" name="foto" accept="image/*"
                                     class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2 focus:outline-none focus:border-pink-300 focus:bg-white transition-all file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-[11px] file:font-semibold file:bg-pink-50 file:text-[#de3b7c] hover:file:bg-pink-100 @error('foto') border-red-300 @enderror">
@@ -271,20 +261,12 @@
                                     <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
+                        </div>
 
-                            <div>
-                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Status <span class="text-red-400">*</span></label>
-                                <select name="status"
-                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all @error('status') border-red-300 @enderror">
-                                    <option value="" disabled>Pilih status</option>
-                                    <option value="Tersedia" {{ old('status', $produk->status) == 'Tersedia' ? 'selected' : '' }}>Tersedia</option>
-                                    <option value="Habis" {{ old('status', $produk->status) == 'Habis' ? 'selected' : '' }}>Habis</option>
-                                    <option value="Belum Restok" {{ old('status', $produk->status) == 'Belum Restok' ? 'selected' : '' }}>Belum Restok</option>
-                                </select>
-                                @error('status')
-                                    <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
-                                @enderror
-                            </div>
+                        <div class="mt-5 bg-[#FFF7FA] border border-pink-100 rounded-xl px-4 py-3 flex items-center gap-2 text-[12px] text-gray-500">
+                            <i class="fa-solid fa-circle-info text-[#EC4899]"></i>
+                            Stok saat ini: <b class="text-gray-700">{{ $produk->stok }}</b>. Perubahan stok hanya dapat dilakukan melalui menu
+                            <a href="{{ route('admin.stok.index') }}" class="font-semibold text-[#BE185D] hover:underline">Mutasi Stok</a>.
                         </div>
 
                         <div class="flex items-center gap-3 mt-6 pt-5 border-t border-gray-100">
