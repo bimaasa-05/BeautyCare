@@ -331,6 +331,7 @@ Route::middleware('auth')->group(function () {
 
         //Route Produk
         Route::get('/pelanggan/produk', [PelangganProdukController::class, 'index'])->name('pelanggan.produk');
+        Route::post('/pelanggan/produk/favorit/toggle', [App\Http\Controllers\PelangganFavoritController::class, 'toggle'])->name('pelanggan.favorit.toggle');
 
         //Route Keranjang
         Route::get('/pelanggan/keranjang', [App\Http\Controllers\KeranjangController::class, 'index'])->name('pelanggan.keranjang');
