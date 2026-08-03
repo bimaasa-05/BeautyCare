@@ -220,7 +220,7 @@ class CheckoutController extends Controller
                 ? Produk::with('kategori')->find($t->id_produk)
                 : Produk::with('kategori')->where('nm_produk', $t->nm_produk)->first();
 
-            if (!$produk || $produk->status !== 'Tersedia') {
+            if (!$produk || $produk->status !== 'Tersedia' || $produk->stok <= 0) {
                 continue;
             }
 
