@@ -14,10 +14,17 @@ class Supplier extends Model
         'nm_supplier',
         'no_hp',
         'alamat',
+        'id_produk',
+        'status',
     ];
 
     public function stoks()
     {
         return $this->hasMany(Stok::class, 'id_supplier', 'id_supplier');
+    }
+
+    public function produk()
+    {
+        return $this->belongsTo(Produk::class, 'id_produk', 'id_produk');
     }
 }
