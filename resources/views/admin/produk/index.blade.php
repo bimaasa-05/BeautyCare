@@ -48,6 +48,17 @@
             display: block;
         }
 
+        .stat-card {
+            cursor: pointer;
+            user-select: none;
+            transition: all .3s;
+        }
+
+        .stat-card.active {
+            border-color: #EC4899;
+            box-shadow: 0 4px 24px rgba(236, 72, 153, 0.22);
+        }
+
         @media (max-width: 768px) {
             .sidebar-toggle {
                 display: flex;
@@ -220,7 +231,7 @@
                     @endif
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <div class="bg-white rounded-2xl p-5 shadow-[0_2px_16px_rgba(236,72,153,0.08)] border border-pink-50 hover:shadow-[0_4px_24px_rgba(236,72,153,0.14)] transition-all duration-300">
+                        <div onclick="setStokFilter('all', this)" class="stat-card active bg-white rounded-2xl p-5 shadow-[0_2px_16px_rgba(236,72,153,0.08)] border border-pink-50 hover:shadow-[0_4px_24px_rgba(236,72,153,0.14)] transition-all duration-300">
                             <div class="flex items-start justify-between mb-4">
                                 <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-pink-400 to-rose-500 flex items-center justify-center shadow-sm">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white">
@@ -236,7 +247,7 @@
                             <p class="text-xs text-gray-400 mt-1">{{ $produk->sum('stok') }} total stok</p>
                         </div>
 
-                        <div class="bg-white rounded-2xl p-5 shadow-[0_2px_16px_rgba(236,72,153,0.08)] border border-pink-50 hover:shadow-[0_4px_24px_rgba(236,72,153,0.14)] transition-all duration-300">
+                        <div onclick="setStokFilter('rendah', this)" class="stat-card bg-white rounded-2xl p-5 shadow-[0_2px_16px_rgba(236,72,153,0.08)] border border-pink-50 hover:shadow-[0_4px_24px_rgba(236,72,153,0.14)] transition-all duration-300">
                             <div class="flex items-start justify-between mb-4">
                                 <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-sm">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white">
@@ -251,7 +262,7 @@
                             <p class="text-xs text-gray-400 mt-1">Stok &lt; 10 unit</p>
                         </div>
 
-                        <div class="bg-white rounded-2xl p-5 shadow-[0_2px_16px_rgba(236,72,153,0.08)] border border-pink-50 hover:shadow-[0_4px_24px_rgba(236,72,153,0.14)] transition-all duration-300">
+                        <div onclick="setStokFilter('habis', this)" class="stat-card bg-white rounded-2xl p-5 shadow-[0_2px_16px_rgba(236,72,153,0.08)] border border-pink-50 hover:shadow-[0_4px_24px_rgba(236,72,153,0.14)] transition-all duration-300">
                             <div class="flex items-start justify-between mb-4">
                                 <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-rose-400 to-pink-600 flex items-center justify-center shadow-sm">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white">
@@ -268,7 +279,7 @@
                             <p class="text-xs text-gray-400 mt-1">Perlu restok</p>
                         </div>
 
-                        <div class="bg-white rounded-2xl p-5 shadow-[0_2px_16px_rgba(236,72,153,0.08)] border border-pink-50 hover:shadow-[0_4px_24px_rgba(236,72,153,0.14)] transition-all duration-300">
+                        <div onclick="setStokFilter('normal', this)" class="stat-card bg-white rounded-2xl p-5 shadow-[0_2px_16px_rgba(236,72,153,0.08)] border border-pink-50 hover:shadow-[0_4px_24px_rgba(236,72,153,0.14)] transition-all duration-300">
                             <div class="flex items-start justify-between mb-4">
                                 <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center shadow-sm">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white">
@@ -324,7 +335,7 @@
                                 </thead>
                                 <tbody id="produkTableBody">
                                     @forelse ($produk as $p)
-                                    <tr class="border-t border-pink-50 hover:bg-pink-50/30 transition-colors produk-row">
+                                    <tr class="border-t border-pink-50 hover:bg-pink-50/30 transition-colors produk-row" data-stok="{{ $p->stok }}">
                                         <td class="px-5 py-4 text-sm text-gray-600">{{ $loop->iteration }}</td>
                                         <td class="px-5 py-4" data-label="Nama Produk">
                                             <div class="flex items-center gap-2.5">
@@ -431,13 +442,30 @@
         const dateEl = document.getElementById('currentDate');
         if (dateEl) dateEl.textContent = now.toLocaleDateString('id-ID', options);
 
-        document.getElementById('searchProduk').addEventListener('input', function() {
-            const q = this.value.toLowerCase();
+        var stokFilter = 'all';
+
+        function setStokFilter(mode, el) {
+            stokFilter = mode;
+            document.querySelectorAll('.stat-card').forEach(function(c) {
+                c.classList.toggle('active', c === el);
+            });
+            applyProdukFilter();
+        }
+
+        function applyProdukFilter() {
+            const q = (document.getElementById('searchProduk').value || '').toLowerCase();
             document.querySelectorAll('.produk-row').forEach(function(row) {
                 const nm = row.querySelector('.nm_produk')?.textContent?.toLowerCase() || '';
-                row.style.display = nm.includes(q) ? '' : 'none';
+                const stok = parseInt(row.getAttribute('data-stok')) || 0;
+                let okStok = true;
+                if (stokFilter === 'rendah') okStok = stok > 0 && stok < 10;
+                else if (stokFilter === 'habis') okStok = stok === 0;
+                else if (stokFilter === 'normal') okStok = stok >= 10;
+                row.style.display = okStok && nm.includes(q) ? '' : 'none';
             });
-        });
+        }
+
+        document.getElementById('searchProduk').addEventListener('input', applyProdukFilter);
     </script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
 </body>
