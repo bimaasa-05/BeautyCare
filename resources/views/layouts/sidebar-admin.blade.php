@@ -112,11 +112,11 @@
                     title="Kelola kategori layanan dan produk">Data Kategori</a>
                 <a href="{{ route('admin.produk.index') }}"
                     class="sub-item {{ request()->routeIs('admin.produk.index') ? 'active' : '' }}"
-                    title="Kelola stok dan data produk">Data Produk</a>
+                    title="Kelola data produk; stok diatur melalui menu Mutasi Stok">Data Produk</a>
                 <a href="{{ route('admin.stok.index') }}"
                     class="sub-item {{ request()->routeIs('admin.stok.*') ? 'active' : '' }}"
-                    title="Catat dan lihat riwayat barang masuk">
-                    Barang Masuk
+                    title="Catat barang masuk, refund, dan lihat riwayat mutasi stok">
+                    Mutasi Stok
                     @if (hitungMutasiStokBaru() > 0)
                     <span class="nav-badge badge-primary">{{ hitungMutasiStokBaru() > 99 ? '99+' : hitungMutasiStokBaru() }}</span>
                     @endif
