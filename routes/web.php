@@ -110,6 +110,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/stok', [AdminStokController::class, 'index'])->name('admin.stok.index');
         Route::get('/admin/stok/create', [AdminStokController::class, 'create'])->name('admin.stok.create');
         Route::post('/admin/stok', [AdminStokController::class, 'store'])->name('admin.stok.store');
+        Route::get('/admin/stok/refund', [AdminStokController::class, 'refundCreate'])->name('admin.stok.refund-create');
+        Route::post('/admin/stok/refund', [AdminStokController::class, 'refundStore'])->name('admin.stok.refund-store');
 
         Route::get('/admin/membership', [AdminMembershipController::class, 'index'])->name('admin.membership.index');
         Route::get('/admin/membership/create', [AdminMembershipController::class, 'create'])->name('admin.membership.create');
