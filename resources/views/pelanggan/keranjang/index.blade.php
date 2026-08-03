@@ -760,143 +760,6 @@
         flex-shrink: 0;
     }
 
-    .detail-modal {
-        display: none;
-        position: fixed;
-        inset: 0;
-        background: rgba(0,0,0,0.4);
-        z-index: 999;
-        align-items: center;
-        justify-content: center;
-        padding: 20px;
-    }
-
-    .detail-modal.show {
-        display: flex;
-    }
-
-    .detail-modal .dm-card {
-        background: var(--white);
-        border-radius: 24px;
-        max-width: 420px;
-        width: 100%;
-        overflow: hidden;
-        box-shadow: 0 20px 60px rgba(0,0,0,0.15);
-        animation: modalIn 0.3s ease;
-    }
-
-    @keyframes modalIn {
-        from { opacity: 0; transform: scale(0.92) translateY(20px); }
-        to { opacity: 1; transform: scale(1) translateY(0); }
-    }
-
-    .detail-modal .dm-banner {
-        height: 160px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        position: relative;
-        font-size: 48px;
-        color: rgba(255,255,255,0.6);
-    }
-
-    .detail-modal .dm-banner.skincare { background: linear-gradient(135deg, #F472B6, #F9A8D4); }
-    .detail-modal .dm-banner.haircare { background: linear-gradient(135deg, #34D399, #6EE7B7); }
-    .detail-modal .dm-banner.bodycare { background: linear-gradient(135deg, #60A5FA, #93C5FD); }
-    .detail-modal .dm-banner.nailcare { background: linear-gradient(135deg, #F43F5E, #FB7185); }
-    .detail-modal .dm-banner.makeup { background: linear-gradient(135deg, #A78BFA, #C4B5FD); }
-    .detail-modal .dm-banner.lainnya { background: linear-gradient(135deg, #94A3B8, #CBD5E1); }
-
-    .detail-modal .dm-close {
-        position: absolute;
-        top: 14px;
-        right: 14px;
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        border: none;
-        background: rgba(255,255,255,0.2);
-        backdrop-filter: blur(8px);
-        color: #fff;
-        font-size: 16px;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: all 0.2s ease;
-    }
-
-    .detail-modal .dm-close:hover {
-        background: rgba(255,255,255,0.35);
-        transform: scale(1.05);
-    }
-
-    .detail-modal .dm-banner .dm-category-badge {
-        position: absolute;
-        top: 14px;
-        left: 14px;
-        padding: 5px 14px;
-        border-radius: 100px;
-        background: rgba(255,255,255,0.2);
-        backdrop-filter: blur(8px);
-        border: 1px solid rgba(255,255,255,0.15);
-        color: #fff;
-        font-size: 11px;
-        font-weight: 700;
-        letter-spacing: 0.3px;
-    }
-
-    .detail-modal .dm-body {
-        padding: 24px;
-    }
-
-    .detail-modal .dm-body .dm-nama {
-        font-size: 18px;
-        font-weight: 700;
-        color: var(--dark);
-        margin-bottom: 4px;
-    }
-
-    .detail-modal .dm-body .dm-kategori {
-        font-size: 12px;
-        color: var(--gray);
-        font-weight: 500;
-        margin-bottom: 16px;
-    }
-
-    .detail-modal .dm-body .dm-divider {
-        height: 1px;
-        background: var(--border);
-        margin-bottom: 16px;
-    }
-
-    .detail-modal .dm-body .dm-harga-label {
-        font-size: 11px;
-        font-weight: 600;
-        color: var(--gray);
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        margin-bottom: 4px;
-    }
-
-    .detail-modal .dm-body .dm-harga {
-        font-size: 26px;
-        font-weight: 800;
-        color: var(--primary);
-        margin-bottom: 8px;
-    }
-
-    .detail-modal .dm-body .dm-qty-info {
-        font-size: 13px;
-        color: var(--gray);
-        font-weight: 500;
-        margin-bottom: 20px;
-    }
-
-
-<<<<<<< HEAD
-    /* â”€â”€â”€ Modal Premium â”€â”€â”€ */
-=======
     .checkout-modal.show {
         display: flex;
     }
@@ -1160,7 +1023,6 @@
     }
 
     /* ─── Modal Premium ─── */
->>>>>>> 357fd1431f743dcc3322899f04711b817ce83046
     .modal-premium {
         position: fixed;
         inset: 0;
@@ -1372,7 +1234,7 @@
                                 <div class="kc-divider"></div>
 
                                 <div class="kc-actions">
-                                    <a href="javascript:void(0)" class="kc-btn-detail" onclick="showDetail({{ $item->id }})">
+                                    <a href="{{ route('pelanggan.keranjang.detail', $item->id) }}" class="kc-btn-detail" title="Lihat detail keranjang">
                                         <i class="fa-regular fa-eye"></i> Selengkapnya
                                     </a>
                                     <button onclick="confirmDelete({{ $item->id }})" class="kc-btn-hapus">
@@ -1417,29 +1279,6 @@
                 <span id="cartNotifMsg">Berhasil!</span>
             </div>
 
-            <div class="detail-modal" id="detailModal">
-                <div class="dm-card">
-                    <div class="dm-banner" id="dmBanner">
-                        <span class="dm-category-badge" id="dmCategoryBadge"></span>
-                        <div id="dmIcon"></div>
-                        <button class="dm-close" onclick="closeDetail()">
-                            <i class="fa-solid fa-xmark"></i>
-                        </button>
-                    </div>
-                    <div class="dm-body">
-                        <div class="dm-nama" id="dmNama"></div>
-                        <div class="dm-kategori" id="dmKategori"></div>
-                        <div class="dm-divider"></div>
-                        <div class="dm-harga-label">Harga Satuan</div>
-                        <div class="dm-harga" id="dmHarga"></div>
-                        <div class="dm-qty-info" id="dmQty">Jumlah: -</div>
-                        <div class="dm-divider"></div>
-                        <div class="dm-harga-label">Subtotal</div>
-                        <div class="dm-harga" id="dmSubtotal" style="color: var(--dark);"></div>
-                    </div>
-                </div>
-            </div>
-
         </main>
     </div>
 
@@ -1463,47 +1302,9 @@
     </div>
 
     <script>
-    var kategoriIcons = {
-        'Skincare': '<i class="fa-solid fa-spa"></i>',
-        'Hair Care': '<i class="fa-solid fa-scissors"></i>',
-        'Body Care': '<i class="fa-solid fa-hand-sparkles"></i>',
-        'Nail Care': '<i class="fa-solid fa-hand"></i>',
-        'Makeup': '<i class="fa-solid fa-palette"></i>'
-    };
-
-    var detailData = {};
-
     function formatAngka(n) {
         return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
     }
-
-    function showDetail(id) {
-        var nama = document.querySelector('.keranjang-card[data-id="' + id + '"] .kc-nama').textContent;
-        var kategori = document.querySelector('.keranjang-card[data-id="' + id + '"] .kc-kategori').textContent;
-        var hargaText = document.querySelector('.keranjang-card[data-id="' + id + '"] .kc-harga').textContent.trim();
-        var qty = document.getElementById('qty-' + id).textContent;
-        var subtotal = document.getElementById('total-item-' + id).textContent;
-
-        var banner = document.getElementById('dmBanner');
-        banner.className = 'dm-banner ' + kategori.toLowerCase().replace(/\s+/g, '');
-        document.getElementById('dmIcon').innerHTML = kategoriIcons[kategori] || '<i class="fa-solid fa-cube"></i>';
-        document.getElementById('dmCategoryBadge').textContent = kategori;
-        document.getElementById('dmNama').textContent = nama;
-        document.getElementById('dmKategori').textContent = kategori;
-        document.getElementById('dmHarga').textContent = hargaText;
-        document.getElementById('dmQty').textContent = 'Jumlah: ' + qty + ' pcs';
-        document.getElementById('dmSubtotal').textContent = subtotal;
-
-        document.getElementById('detailModal').classList.add('show');
-    }
-
-    function closeDetail() {
-        document.getElementById('detailModal').classList.remove('show');
-    }
-
-    document.getElementById('detailModal').addEventListener('click', function(e) {
-        if (e.target === this) closeDetail();
-    });
 
     function updateQty(id, delta) {
         var valEl = document.getElementById('qty-' + id);

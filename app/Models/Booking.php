@@ -17,6 +17,8 @@ class Booking extends Model
         'jam',
         'status',
         'catatan',
+        'reminder_h1',
+        'reminder_jam',
     ];
 
     public function pelanggan()
