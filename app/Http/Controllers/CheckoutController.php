@@ -9,6 +9,7 @@ use App\Models\Produk;
 use App\Models\PromoKlaim;
 use App\Models\Transaksi;
 use App\Models\Troli;
+use App\Helpers\ActivityLogger;
 use Illuminate\Http\Request;
 
 class CheckoutController extends Controller
@@ -179,6 +180,8 @@ class CheckoutController extends Controller
         if (!$request->beli) {
             Troli::where('id_user', $user->id)->delete();
         }
+
+        ActivityLogger::log('Menambahkan', $user->nama . ' membuat pesanan ' . $noInvoice . ' via ' . $request->provider . ' (menunggu pembayaran)', 'Transaksi', $transaksi->id_transaksi);
 
         buatNotif($user->id, 'Pesanan Dibuat', 'Pesanan ' . $noInvoice . ' berhasil dibuat. Silakan selesaikan pembayaran.', 'Transaksi', route('pelanggan.pembayaran.show', $transaksi->id_transaksi));
 

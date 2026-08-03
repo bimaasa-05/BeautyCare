@@ -212,7 +212,7 @@ class AdminDashboardController extends Controller
         $totalStok = Produk::where('status', 'Tersedia')->count();
         $stokAman = Produk::where('status', 'Tersedia')->where('stok', '>', 20)->count();
         $stokMenipis = Produk::where('status', 'Tersedia')->where('stok', '<=', 20)->where('stok', '>', 0)->count();
-        $stokHabis = Produk::where('status', 'Tersedia')->where('stok', '<=', 0)->count();
+        $stokHabis = Produk::where('status', 'Habis')->count();
         $stokTerisi = $totalStok > 0 ? round(($stokAman / $totalStok) * 100) : 0;
         $stokMenipisPct = $totalStok > 0 ? round(($stokMenipis / $totalStok) * 100) : 0;
         $stokHabisPct = $totalStok > 0 ? round(($stokHabis / $totalStok) * 100) : 0;

@@ -220,10 +220,11 @@
                                 <div class="ph-text">
                                     <h3>Data Supplier</h3>
                                     <p>Pusat informasi mitra bisnis dan pemasok kita! Di sini, Anda dapat dengan mudah
-                                        mengelola daftar supplier yang bekerja sama dengan perusahaan. Perbarui detail
-                                        kontak, pantau daftar produk yang mereka sediakan, dan pastikan jalur komunikasi
-                                        dengan vendor selalu lancar. Mari kelola data mitra dengan rapi agar
-                                        ketersediaan stok operasional kita selalu aman dan terjaga!</p>
+                                        mengelola daftar supplier yang bekerja sama dengan perusahaan. Setiap supplier
+                                        menyuplai 1 produk, lengkap dengan stok dan status kontrak kerjasama (Aktif /
+                                        Non Aktif). Perbarui detail kontak, pantau produk yang mereka sediakan, dan
+                                        pastikan jalur komunikasi dengan vendor selalu lancar. Mari kelola data mitra
+                                        dengan rapi agar ketersediaan stok operasional kita selalu aman dan terjaga!</p>
                                 </div>
                             </div>
                         </div>
@@ -271,8 +272,8 @@
                                 </div>
                             </div>
                             <p class="text-sm text-gray-400 font-medium mb-1">Aktif</p>
-                            <p class="text-2xl font-bold text-gray-800">{{ $supplier->count() }}</p>
-                            <p class="text-xs text-gray-400 mt-1">Semua supplier</p>
+                            <p class="text-2xl font-bold text-gray-800">{{ $aktif }}</p>
+                            <p class="text-xs text-gray-400 mt-1">Masih ada kontrak kerjasama</p>
                         </div>
 
                         <div
@@ -289,9 +290,9 @@
                                     </svg>
                                 </div>
                             </div>
-                            <p class="text-sm text-gray-400 font-medium mb-1">Terdaftar</p>
-                            <p class="text-2xl font-bold text-gray-800">{{ $supplier->count() }}</p>
-                            <p class="text-xs text-gray-400 mt-1">Supplier terdaftar</p>
+                            <p class="text-sm text-gray-400 font-medium mb-1">Non Aktif</p>
+                            <p class="text-2xl font-bold text-gray-800">{{ $nonAktif }}</p>
+                            <p class="text-xs text-gray-400 mt-1">Kontrak sudah berakhir</p>
                         </div>
                     </div>
 
@@ -334,6 +335,12 @@
                                         </th>
                                         <th class="text-left px-5 py-3 text-xs font-bold text-gray-400 uppercase">Alamat
                                         </th>
+                                        <th class="text-left px-5 py-3 text-xs font-bold text-gray-400 uppercase">Nama
+                                            Produk</th>
+                                        <th class="text-left px-5 py-3 text-xs font-bold text-gray-400 uppercase">Stok
+                                        </th>
+                                        <th class="text-left px-5 py-3 text-xs font-bold text-gray-400 uppercase">Status
+                                        </th>
                                         <th class="text-left px-5 py-3 text-xs font-bold text-gray-400 uppercase">Aksi
                                         </th>
                                     </tr>
@@ -367,6 +374,30 @@
                                             </td>
                                             <td class="px-5 py-4 text-sm text-gray-600 max-w-[200px] truncate"
                                                 data-label="Alamat">{{ $s->alamat }}</td>
+                                            <td class="px-5 py-4" data-label="Nama Produk">
+                                                <p class="text-sm font-semibold text-gray-800">
+                                                    {{ $s->produk?->nm_produk ?? '-' }}</p>
+                                            </td>
+                                            <td class="px-5 py-4" data-label="Stok">
+                                                @php
+                                                    $stokSup = $s->produk?->stok ?? null;
+                                                    $stokSupClass = $stokSup === null ? 'text-gray-400' : ($stokSup == 0 ? 'text-red-500' : ($stokSup < 10 ? 'text-amber-500' : 'text-gray-800'));
+                                                @endphp
+                                                <p class="text-sm font-semibold {{ $stokSupClass }}">
+                                                    {{ $stokSup ?? '-' }}</p>
+                                            </td>
+                                            <td class="px-5 py-4" data-label="Status">
+                                                @php
+                                                    $statusSup = $s->status ?? 'Aktif';
+                                                    $statusSupClass = $statusSup === 'Aktif'
+                                                        ? 'bg-emerald-50 text-emerald-600 border-emerald-100'
+                                                        : 'bg-gray-100 text-gray-500 border-gray-200';
+                                                @endphp
+                                                <span
+                                                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border {{ $statusSupClass }}">
+                                                    {{ $statusSup }}
+                                                </span>
+                                            </td>
                                             <td class="px-5 py-4" data-label="Aksi">
                                                 <div class="flex gap-1.5">
                                                     <a href="{{ route('admin.supplier.edit', $s->id_supplier) }}"
@@ -407,7 +438,7 @@
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="5" class="px-5 py-10 text-center text-gray-400 text-sm">
+                                            <td colspan="8" class="px-5 py-10 text-center text-gray-400 text-sm">
                                                 <i class="fa-regular fa-face-frown text-4xl block mb-3"></i>
                                                 Belum ada data supplier
                                             </td>
