@@ -74,7 +74,7 @@ if (!function_exists('hitungMutasiStokBaru')) {
             return 0;
         }
 
-        $jumlah = \App\Models\Stok::where('id_stok', '>', $lastSeen)->count();
+        $jumlah = \App\Models\Stok::where('type', 'Masuk')->where('id_stok', '>', $lastSeen)->count();
 
         $user->update(['stok_last_seen' => $terakhir]);
 
