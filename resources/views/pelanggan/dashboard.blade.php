@@ -125,6 +125,80 @@
         flex: 1;
     }
 
+    .mb-progres {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        flex: 1;
+    }
+
+    .mb-progres .mb-tier-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+    }
+
+    .mb-progres .mb-tier-name {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--dark);
+    }
+
+    .mb-progres .mb-tier-name i {
+        color: var(--primary);
+    }
+
+    .mb-progres .mb-tier-badge {
+        font-size: 11px;
+        font-weight: 700;
+        padding: 4px 12px;
+        border-radius: 100px;
+        background: #F3E8FF;
+        color: #9333EA;
+        white-space: nowrap;
+    }
+
+    .mb-progres .mb-tier-badge.max {
+        background: #D1FAE5;
+        color: #059669;
+    }
+
+    .mb-progres .mb-bar-label {
+        display: flex;
+        justify-content: space-between;
+        font-size: 11px;
+        color: var(--gray);
+        font-weight: 500;
+        margin-bottom: 5px;
+    }
+
+    .mb-progres .mb-bar-label strong {
+        color: var(--dark);
+    }
+
+    .mb-progres .mb-bar {
+        height: 8px;
+        border-radius: 100px;
+        background: var(--hover);
+        overflow: hidden;
+    }
+
+    .mb-progres .mb-bar .mb-fill {
+        height: 100%;
+        border-radius: 100px;
+        background: linear-gradient(90deg, var(--primary), #FF7BA6);
+        transition: width 0.8s ease;
+        width: 0;
+    }
+
+    .mb-progres .mb-bar .mb-fill.full {
+        background: linear-gradient(90deg, #22C55E, #4ADE80);
+    }
+
     @media (max-width: 768px) {
         .sidebar-toggle {
             display: flex;
@@ -382,6 +456,57 @@
 
                 <!-- Dashboard Bottom Row -->
                 <div class="dashboard-bottom-row">
+                    <!-- Progres Membership -->
+                    <div class="list-widget">
+                        <div class="lw-header">
+                            <h3>Progres Membership</h3>
+                            <a href="{{ route('pelanggan.membership') }}" style="font-size:13px;color:var(--primary);font-weight:500;">Lihat Semua</a>
+                        </div>
+                        @if($nextTier || $isMaxTier)
+                        <div class="mb-progres">
+                            <div class="mb-tier-row">
+                                <span class="mb-tier-name">
+                                    <i class="fa-solid fa-crown"></i>
+                                    {{ $memberSaatIni ? $memberSaatIni->tingkat : 'Non Member' }}
+                                </span>
+                                @if($isMaxTier)
+                                <span class="mb-tier-badge max"><i class="fa-solid fa-check"></i> Max Tier</span>
+                                @else
+                                <span class="mb-tier-badge"><i class="fa-solid fa-arrow-up"></i> {{ $nextTier->tingkat }}</span>
+                                @endif
+                            </div>
+                            <div>
+                                <div class="mb-bar-label">
+                                    <span>Total Belanja</span>
+                                    <span><strong>Rp {{ number_format($totalBelanja, 0, ',', '.') }}</strong> / Rp {{ number_format($targetBelanja, 0, ',', '.') }}</span>
+                                </div>
+                                <div class="mb-bar">
+                                    <div class="mb-fill {{ $progressBelanja >= 100 ? 'full' : '' }}" data-width="{{ $progressBelanja }}"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="mb-bar-label">
+                                    <span>Total Transaksi</span>
+                                    <span><strong>{{ $totalTransaksi }}</strong> / {{ $targetTransaksi }}</span>
+                                </div>
+                                <div class="mb-bar">
+                                    <div class="mb-fill {{ $progressTransaksi >= 100 ? 'full' : '' }}" data-width="{{ $progressTransaksi }}"></div>
+                                </div>
+                            </div>
+                            @if(!$isMaxTier)
+                            <div style="font-size:11px;color:var(--gray);margin-top:2px;">
+                                <i class="fa-solid fa-circle-info" style="color:var(--primary);"></i>
+                                Tinggal <strong style="color:var(--primary);">Rp {{ number_format(max(0, $nextTier->min_pembelian - $totalBelanja), 0, ',', '.') }}</strong> lagi untuk naik ke {{ $nextTier->tingkat }}!
+                            </div>
+                            @endif
+                        </div>
+                        @else
+                        <div style="text-align:center;padding:20px;color:var(--gray);font-size:13px;">
+                            Belum ada data membership. Mulai transaksi Anda untuk bergabung!
+                        </div>
+                        @endif
+                    </div>
+
                     <!-- Promo Terbaru -->
                     <div class="list-widget">
                         <div class="lw-header">
@@ -542,6 +667,11 @@
         };
         const dateEl = document.getElementById('currentDate');
         if (dateEl) dateEl.textContent = now.toLocaleDateString('id-ID', options);
+
+        document.querySelectorAll('.mb-fill').forEach(function(fill) {
+            var width = parseInt(fill.getAttribute('data-width')) || 0;
+            setTimeout(function() { fill.style.width = width + '%'; }, 200);
+        });
 
         const periodSelect = document.getElementById('chartPeriod');
         if (periodSelect) {
