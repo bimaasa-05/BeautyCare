@@ -36,6 +36,7 @@ class AdminProdukController extends Controller
             'harga_jual'         => 'required|numeric',
             'stok'               => 'required|integer',
             'status'             => 'required|string|in:Tersedia,Habis,Belum Restok',
+            'deskripsi'          => 'nullable|string',
         ]);
 
         $data = $request->all();
@@ -89,6 +90,7 @@ class AdminProdukController extends Controller
             'harga_jual'         => 'required|numeric',
             'stok'               => 'required|integer',
             'status'             => 'required|string|in:Tersedia,Habis,Belum Restok',
+            'deskripsi'          => 'nullable|string',
         ]);
 
         $data = $request->all();
