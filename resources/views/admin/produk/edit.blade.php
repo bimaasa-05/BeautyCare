@@ -285,6 +285,16 @@
                                     <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
+
+                            <div class="md:col-span-2">
+                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Deskripsi Produk</label>
+                                <textarea name="deskripsi" rows="5"
+                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('deskripsi') border-red-300 @enderror"
+                                    placeholder="Masukkan deskripsi lengkap produk (manfaat, cara pakai, dll.)">{{ old('deskripsi', $produk->deskripsi) }}</textarea>
+                                @error('deskripsi')
+                                    <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
                         </div>
 
                         <div class="flex items-center gap-3 mt-6 pt-5 border-t border-gray-100">
