@@ -21,6 +21,15 @@ class Produk extends Model
         'status',
     ];
 
+    protected static function booted()
+    {
+        static::saving(function (Produk $produk) {
+            if ($produk->isDirty('stok') || !$produk->exists) {
+                $produk->status = $produk->stok > 0 ? 'Tersedia' : 'Habis';
+            }
+        });
+    }
+
     public function kategori()
     {
         return $this->belongsTo(KategoriProduk::class, 'id_kategori_produk', 'id_kategori_produk');
@@ -34,5 +43,10 @@ class Produk extends Model
     public function stokMasuk()
     {
         return $this->hasMany(Stok::class, 'id_produk', 'id_produk')->where('type', 'Masuk');
+    }
+
+    public function supplier()
+    {
+        return $this->hasOne(Supplier::class, 'id_produk', 'id_produk');
     }
 }
