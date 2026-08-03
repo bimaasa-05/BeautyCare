@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Riwayat Stok - BeautyCare</title>
+    <title>Mutasi Stok - BeautyCare</title>
     @include('partials.head-meta')
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -205,9 +205,10 @@
                                     </span>
                                 </div>
                                 <div class="ph-text">
-                                    <h3>Riwayat Mutasi Stok</h3>
-                                    <p>Pantau seluruh pergerakan stok: barang masuk dari supplier, penjualan, dan
-                                        penyesuaian. Setiap mutasi tercatat otomatis beserta supplier pemasoknya.</p>
+                                    <h3>Mutasi Stok</h3>
+                                    <p>Kelola seluruh pergerakan stok: catat barang masuk dari supplier, refund barang
+                                        rusak / tidak sesuai, dan pantau riwayat penjualan. Ini satu-satunya tempat
+                                        perubahan stok dilakukan.</p>
                                 </div>
                             </div>
                         </div>
@@ -285,7 +286,7 @@
                                     $judulTabel = match ($tabType) {
                                         'Masuk' => 'Daftar Barang Masuk',
                                         'Keluar' => 'Daftar Barang Keluar',
-                                        'Penyesuaian' => 'Daftar Penyesuaian Stok',
+                                        'Refund' => 'Daftar Refund Stok',
                                         default => 'Daftar Mutasi Stok',
                                     };
                                 @endphp
@@ -313,6 +314,15 @@
                                         <path d="M12 5v14"></path>
                                     </svg> Catat Barang Masuk
                                 </a>
+                                <a href="{{ route('admin.stok.refund-create') }}"
+                                    class="flex items-center gap-1.5 px-3 py-2 bg-gradient-to-r from-violet-500 to-purple-700 text-white rounded-xl text-xs font-bold shadow-sm hover:opacity-95">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                                        <path d="M3 3v5h5"></path>
+                                    </svg> Catat Refund
+                                </a>
                             </div>
                         </div>
                         <div class="flex items-center gap-2 px-5 pt-4 flex-wrap">
@@ -330,9 +340,10 @@
                                 <i class="fa-solid fa-arrow-up mr-1"></i>Barang Keluar
                                 <span class="ml-1 opacity-70">({{ $countKeluar }})</span>
                             </a>
-                            <a href="{{ route('admin.stok.index', array_merge(request()->only(['dari', 'sampai']), ['type' => 'Penyesuaian'])) }}"
-                                class="px-4 py-2 rounded-xl text-xs font-bold transition-colors {{ $tabType === 'Penyesuaian' ? 'bg-amber-500 text-white shadow-sm' : 'bg-[#FFF7FA] text-gray-500 hover:bg-pink-50' }}">
-                                Penyesuaian <span class="ml-1 opacity-70">({{ $countPenyesuaian }})</span>
+                            <a href="{{ route('admin.stok.index', array_merge(request()->only(['dari', 'sampai']), ['type' => 'Refund'])) }}"
+                                class="px-4 py-2 rounded-xl text-xs font-bold transition-colors {{ $tabType === 'Refund' ? 'bg-violet-500 text-white shadow-sm' : 'bg-[#FFF7FA] text-gray-500 hover:bg-pink-50' }}">
+                                <i class="fa-solid fa-rotate-left mr-1"></i>Refund
+                                <span class="ml-1 opacity-70">({{ $countRefund }})</span>
                             </a>
                         </div>
                         <div class="overflow-x-auto">
@@ -364,7 +375,7 @@
                                             $badge = match ($s->type) {
                                                 'Masuk' => 'bg-emerald-50 text-emerald-600 border-emerald-100',
                                                 'Keluar' => 'bg-red-50 text-red-500 border-red-100',
-                                                'Penyesuaian' => 'bg-amber-50 text-amber-600 border-amber-100',
+                                                'Refund' => 'bg-violet-50 text-violet-600 border-violet-100',
                                                 default => 'bg-gray-50 text-gray-500 border-gray-100',
                                             };
                                         @endphp
