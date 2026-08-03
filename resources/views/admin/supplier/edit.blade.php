@@ -227,6 +227,36 @@
                                 @enderror
                             </div>
 
+                            <div>
+                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Nama Produk</label>
+                                <select name="id_produk"
+                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all @error('id_produk') border-red-300 @enderror">
+                                    <option value="" {{ $supplier->id_produk ? '' : 'selected' }}>Pilih produk</option>
+                                    @foreach ($produk as $p)
+                                        <option value="{{ $p->id_produk }}" {{ in_array($p->id_produk, $terpakai) ? 'disabled' : '' }} {{ old('id_produk', $supplier->id_produk) == $p->id_produk ? 'selected' : '' }}>
+                                            {{ $p->nm_produk }}@if (in_array($p->id_produk, $terpakai)) (sudah punya supplier)@endif
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('id_produk')
+                                    <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div>
+                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Status</label>
+                                <select name="status"
+                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all @error('status') border-red-300 @enderror">
+                                    <option value="Aktif" {{ old('status', $supplier->status ?? 'Aktif') == 'Aktif' ? 'selected' : '' }}>Aktif</option>
+                                    <option value="Non Aktif" {{ old('status', $supplier->status ?? 'Aktif') == 'Non Aktif' ? 'selected' : '' }}>Non Aktif</option>
+                                </select>
+                                <p class="text-[11px] text-gray-400 mt-1">Aktif = masih ada kontrak kerjasama dengan
+                                    BeautyCare</p>
+                                @error('status')
+                                    <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
                             <div class="flex items-center gap-3 mt-6 pt-5 border-t border-gray-100">
                                 <button type="submit"
                                     class="flex items-center gap-2 bg-[#de3b7c] text-white text-[13px] font-semibold px-6 py-2.5 rounded-full hover:bg-[#c62f6b] transition-colors shadow-sm">
