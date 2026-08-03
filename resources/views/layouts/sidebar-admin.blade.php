@@ -1,4 +1,8 @@
 <!-- Sidebar Admin -->
+@php
+    $masterDataActive = request()->routeIs('admin.user.index', 'admin.pelanggan.index', 'admin.beautician.index', 'admin.supplier.index');
+    $layananProdukActive = request()->routeIs('admin.layanan.index', 'admin.kategori.index', 'admin.produk.index', 'admin.stok.*');
+@endphp
 <aside class="sidebar" id="sidebar">
     <div class="sidebar-logo">
         <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -45,123 +49,79 @@
         </div>
 
         <div class="nav-section">
-            <div class="nav-section-title">Data Master</div>
-            <a href="{{ route('admin.user.index') }}"
-                class="nav-item {{ request()->routeIs('admin.user.index') ? 'active' : '' }}"
-                title="Kelola seluruh data pengguna sistem">
+            <div class="nav-item {{ $masterDataActive ? 'active' : '' }}" onclick="toggleSubnav(this)"
+                title="Kelola data utama sistem">
                 <span class="nav-icon">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                         stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                        <circle cx="9" cy="7" r="4" />
-                        <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-                        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                        <ellipse cx="12" cy="5" rx="9" ry="3" />
+                        <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3" />
+                        <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" />
                     </svg>
                 </span>
-                Data User
-            </a>
-            <a href="{{ route('admin.pelanggan.index') }}"
-                class="nav-item {{ request()->routeIs('admin.pelanggan.index') ? 'active' : '' }}" class="nav-item"
-                title="Kelola data pelanggan yang terdaftar">
-                <span class="nav-icon">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                Data Master
+                <span class="nav-arrow {{ $masterDataActive ? 'open' : '' }}">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                         stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                        <circle cx="8.5" cy="7" r="4" />
-                        <polyline points="17 11 19 13 23 9" />
+                        <polyline points="6 9 12 15 18 9" />
                     </svg>
                 </span>
-                Data Pelanggan
-            </a>
-            <a href="{{ route('admin.beautician.index') }}"
-                class="nav-item {{ request()->routeIs('admin.beautician.index') ? 'active' : '' }}" class="nav-item"
-                title="Kelola data beautician / terapis">
-                <span class="nav-icon">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                        <circle cx="12" cy="7" r="4" />
-                        <path d="M19 7l1 2 2 1-2 1-1 2-1-2-2-1 2-1 1-2z" />
-                    </svg>
-                </span>
-                Data Beautician
-            </a>
-            <a href="{{ route('admin.supplier.index') }}"
-                class="nav-item {{ request()->routeIs('admin.supplier.index') ? 'active' : '' }}" class="nav-item"
-                title="Kelola data supplier">
-                <span class="nav-icon">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round">
-                        <path
-                            d="M5 18H19M5 18C3.89543 18 3 17.1046 3 16V8C3 6.89543 3.89543 6 5 6H19C20.1046 6 21 6.89543 21 8V16C21 17.1046 20.1046 18 19 18M5 18L5 20M19 18L19 20" />
-                        <circle cx="7" cy="14" r="1.5" fill="currentColor" />
-                        <circle cx="17" cy="14" r="1.5" fill="currentColor" />
-                        <path d="M5 9H9V12H5V9Z" />
-                    </svg>
-                </span>
-                Data Supplier
-            </a>
+            </div>
+            <div class="sub-nav {{ $masterDataActive ? 'open' : '' }}">
+                <a href="{{ route('admin.user.index') }}"
+                    class="sub-item {{ request()->routeIs('admin.user.index') ? 'active' : '' }}"
+                    title="Kelola seluruh data pengguna sistem">Data User</a>
+                <a href="{{ route('admin.pelanggan.index') }}"
+                    class="sub-item {{ request()->routeIs('admin.pelanggan.index') ? 'active' : '' }}"
+                    title="Kelola data pelanggan yang terdaftar">Data Pelanggan</a>
+                <a href="{{ route('admin.beautician.index') }}"
+                    class="sub-item {{ request()->routeIs('admin.beautician.index') ? 'active' : '' }}"
+                    title="Kelola data beautician / terapis">Data Beautician</a>
+                <a href="{{ route('admin.supplier.index') }}"
+                    class="sub-item {{ request()->routeIs('admin.supplier.index') ? 'active' : '' }}"
+                    title="Kelola data supplier">Data Supplier</a>
+            </div>
         </div>
 
         <div class="nav-section">
-            <div class="nav-section-title">Layanan & Produk</div>
-            <a href="{{ route('admin.layanan.index') }}"
-                class="nav-item {{ request()->routeIs('admin.layanan.index') ? 'active' : '' }}" class="nav-item"
-                title="Kelola daftar layanan yang tersedia">
-                <span class="nav-icon">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-                    </svg>
-                </span>
-                Data Layanan
-            </a>
-            <a href="{{ route('admin.kategori.index') }}"
-                class="nav-item {{ request()->routeIs('admin.kategori.index') ? 'active' : '' }}"
-                title="Kelola kategori layanan dan produk">
-                <span class="nav-icon">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="4" y1="21" x2="20" y2="21" />
-                        <line x1="4" y1="21" x2="4" y2="9" />
-                        <line x1="20" y1="21" x2="20" y2="9" />
-                        <line x1="2" y1="9" x2="22" y2="9" />
-                        <rect x="7" y="12" width="3" height="6" />
-                        <rect x="14" y="12" width="3" height="6" />
-                    </svg>
-                </span>
-                Data Kategori
-            </a>
-            <a href="{{ route('admin.produk.index') }}"
-                class="nav-item {{ request()->routeIs('admin.produk.index') ? 'active' : '' }}" class="nav-item"
-                title="Kelola stok dan data produk">
+            <div class="nav-item {{ $layananProdukActive ? 'active' : '' }}" onclick="toggleSubnav(this)"
+                title="Kelola layanan dan produk">
                 <span class="nav-icon">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                         stroke-linecap="round" stroke-linejoin="round">
                         <path
                             d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
                         <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+                        <line x1="12" y1="22.08" x2="12" y2="12" />
                     </svg>
                 </span>
-                Data Produk
-            </a>
-            <a href="{{ route('admin.stok.index') }}"
-                class="nav-item {{ request()->routeIs('admin.stok.*') ? 'active' : '' }}"
-                title="Catat dan lihat riwayat barang masuk">
-                <span class="nav-icon">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                Layanan & Produk
+                <span class="nav-arrow {{ $layananProdukActive ? 'open' : '' }}">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                         stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M12 3v12" />
-                        <path d="m7 10 5 5 5-5" />
-                        <path d="M5 21h14" />
+                        <polyline points="6 9 12 15 18 9" />
                     </svg>
                 </span>
-                Barang Masuk
-                @if (hitungMutasiStokBaru() > 0)
-                <span class="nav-badge badge-primary">{{ hitungMutasiStokBaru() > 99 ? '99+' : hitungMutasiStokBaru() }}</span>
-                @endif
-            </a>
+            </div>
+            <div class="sub-nav {{ $layananProdukActive ? 'open' : '' }}">
+                <a href="{{ route('admin.layanan.index') }}"
+                    class="sub-item {{ request()->routeIs('admin.layanan.index') ? 'active' : '' }}"
+                    title="Kelola daftar layanan yang tersedia">Data Layanan</a>
+                <a href="{{ route('admin.kategori.index') }}"
+                    class="sub-item {{ request()->routeIs('admin.kategori.index') ? 'active' : '' }}"
+                    title="Kelola kategori layanan dan produk">Data Kategori</a>
+                <a href="{{ route('admin.produk.index') }}"
+                    class="sub-item {{ request()->routeIs('admin.produk.index') ? 'active' : '' }}"
+                    title="Kelola data produk; stok diatur melalui menu Mutasi Stok">Data Produk</a>
+                <a href="{{ route('admin.stok.index') }}"
+                    class="sub-item {{ request()->routeIs('admin.stok.*') ? 'active' : '' }}"
+                    title="Catat barang masuk, refund, dan lihat riwayat mutasi stok">
+                    Mutasi Stok
+                    @if (hitungMutasiStokBaru() > 0)
+                    <span class="nav-badge badge-primary">{{ hitungMutasiStokBaru() > 99 ? '99+' : hitungMutasiStokBaru() }}</span>
+                    @endif
+                </a>
+            </div>
         </div>
 
         <div class="nav-section">
@@ -288,6 +248,13 @@
         if (o) o.classList.remove('active');
     }
 
+    function toggleSubnav(item) {
+        var sub = item.nextElementSibling;
+        var arrow = item.querySelector('.nav-arrow');
+        if (sub) sub.classList.toggle('open');
+        if (arrow) arrow.classList.toggle('open');
+    }
+
     document.addEventListener('DOMContentLoaded', function () {
         var overlay = document.getElementById('sidebarOverlay');
         if (overlay) {
@@ -296,7 +263,7 @@
             });
         }
 
-        document.querySelectorAll('#sidebar .nav-item').forEach(function (item) {
+        document.querySelectorAll('#sidebar .nav-item, #sidebar .sub-item').forEach(function (item) {
             item.addEventListener('click', function () {
                 if (window.innerWidth <= 768) {
                     closeSidebar();

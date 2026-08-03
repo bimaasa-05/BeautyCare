@@ -208,7 +208,13 @@ class KasirPembayaranController extends Controller
             DB::transaction(function () use ($transaksi, $request) {
                 foreach ($transaksi->detail as $d) {
                     if ($d->jenis === 'Produk' && $d->id_item > 0) {
-                        Produk::where('id_produk', $d->id_item)->decrement('stok', $d->qty);
+                        $produk = Produk::find($d->id_item);
+                        if ($produk) {
+                            $stokLama = $produk->stok;
+                            $produk->decrement('stok', $d->qty);
+                            $produk->refresh();
+                            catatStok($produk->id_produk, 'Keluar', $d->qty, $stokLama, $produk->stok, 'Penjualan online (konfirmasi kasir) ' . $transaksi->no_invoice, null, $transaksi->id_transaksi, 'Transaksi');
+                        }
                     }
                 }
 
@@ -222,6 +228,8 @@ class KasirPembayaranController extends Controller
                     ]);
                 }
             });
+
+            ActivityLogger::log('Menambahkan', auth()->user()->nama . ' mengkonfirmasi pesanan ' . $transaksi->no_invoice . ' lunas', 'Transaksi', $transaksi->id_transaksi);
 
             buatNotif($transaksi->id_user, 'Pembayaran Diterima', 'Pesanan ' . $transaksi->no_invoice . ' telah diverifikasi dan berhasil.', 'Transaksi', route('pelanggan.pesanan.show', $transaksi->id_transaksi));
 

@@ -204,7 +204,9 @@
                         </div>
                         <div class="ph-text">
                             <h3>Data Produk</h3>
-                            <p>Kelola stok dan informasi produk kecantikan.</p>
+                            <p>Kelola informasi produk kecantikan. Perubahan stok dilakukan melalui menu Mutasi
+                                Stok (barang masuk / refund), bukan dari halaman ini. Produk tanpa supplier
+                                belum bisa dicatat barang masuk.</p>
                         </div>
                     </div>
                 </div>
@@ -343,10 +345,7 @@
                                             </span>
                                         </td>
                                         <td class="px-5 py-4 text-sm text-gray-600" data-label="Supplier">
-                                            @php
-                                                $supplierTerakhir = $p->stokMasuk()->orderBy('id_stok', 'desc')->first()?->supplier?->nm_supplier;
-                                            @endphp
-                                            {{ $supplierTerakhir ?? '-' }}  
+                                            {{ $p->supplier?->nm_supplier ?? '-' }}
                                         </td>
                                         <td class="px-5 py-4 text-sm text-gray-600" data-label="Satuan">{{ $p->satuan }}</td>
                                         <td class="px-5 py-4 text-sm text-gray-600" data-label="Harga Beli">Rp. {{ number_format($p->harga_beli, 0, ',', '.') }}</td>
@@ -369,7 +368,6 @@
                                                 $statusBadge = match($p->status) {
                                                     'Tersedia' => 'bg-emerald-50 text-emerald-600 border-emerald-100',
                                                     'Habis' => 'bg-red-50 text-red-500 border-red-100',
-                                                    'Belum Restok' => 'bg-amber-50 text-amber-600 border-amber-100',
                                                     default => 'bg-gray-50 text-gray-500 border-gray-100'
                                                 };
                                             @endphp

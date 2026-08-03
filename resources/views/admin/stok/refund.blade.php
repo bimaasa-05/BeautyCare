@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Catat Barang Masuk - BeautyCare</title>
+    <title>Catat Refund - BeautyCare</title>
     @include('partials.head-meta')
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -171,16 +171,16 @@
                                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
                                         stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                         stroke-linejoin="round">
-                                        <path d="M12 3v12" />
-                                        <path d="m7 10 5 5 5-5" />
-                                        <path d="M5 21h14" />
+                                        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                                        <path d="M3 3v5h5"></path>
                                     </svg>
                                 </span>
                             </div>
                             <div class="ph-text">
-                                <h3>Catat Barang Masuk</h3>
-                                <p>Catat stok masuk dari supplier. Setiap catatan otomatis menambah stok produk dan
-                                    tersimpan di riwayat mutasi stok.</p>
+                                <h3>Catat Refund Stok</h3>
+                                <p>Catat barang yang rusak atau tidak sesuai harapan untuk dikembalikan ke supplier.
+                                    Setiap catatan otomatis mengurangi stok produk dan tersimpan di riwayat mutasi stok.
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -189,8 +189,8 @@
                 <div class="bg-white rounded-2xl p-6 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)]">
                     <div class="flex justify-between items-center mb-6">
                         <div>
-                            <h3 class="text-[16px] font-bold text-gray-800">Form Barang Masuk</h3>
-                            <p class="text-[12px] text-gray-400 mt-0.5">Pilih produk dan supplier pemasok</p>
+                            <h3 class="text-[16px] font-bold text-gray-800">Form Refund</h3>
+                            <p class="text-[12px] text-gray-400 mt-0.5">Pilih produk dan supplier tujuan refund</p>
                         </div>
                         <a href="{{ route('admin.stok.index') }}"
                             class="flex items-center gap-2 border border-gray-200 text-gray-600 text-[12px] font-medium px-4 py-2 rounded-full hover:bg-gray-50 transition-colors">
@@ -198,30 +198,19 @@
                         </a>
                     </div>
 
-                    <form action="{{ route('admin.stok.store') }}" method="POST">
+                    @if ($errors->any())
+                        <div
+                            class="mb-4 bg-red-50 border border-red-200 text-red-600 text-xs font-medium px-4 py-3 rounded-xl flex flex-col gap-1">
+                            @foreach ($errors->all() as $err)
+                                <p><i class="fa-solid fa-circle-exclamation mr-1"></i> {{ $err }}</p>
+                            @endforeach
+                        </div>
+                    @endif
+
+                    <form action="{{ route('admin.stok.refund-store') }}" method="POST">
                         @csrf
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                            <div>
-                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Produk <span
-                                        class="text-red-400">*</span></label>
-                                <input type="hidden" name="id_produk" id="id_produk_hidden" value="{{ old('id_produk') }}">
-                                <select name="id_produk_display" id="id_produk" disabled
-                                    class="w-full bg-gray-100 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 transition-all text-gray-500 @error('id_produk') border-red-300 @enderror">
-                                    <option value="" disabled selected>Pilih supplier terlebih dahulu</option>
-                                    @foreach ($produk as $p)
-                                        <option value="{{ $p->id_produk }}" data-stok="{{ $p->stok }}">
-                                            {{ $p->nm_produk }} (stok: {{ $p->stok }})
-                                        </option>
-                                    @endforeach
-                                </select>
-                                <p class="text-[11px] text-gray-400 mt-1" id="produkInfo">Produk otomatis menyesuaikan
-                                    supplier yang dipilih (1 supplier = 1 produk).</p>
-                                @error('id_produk')
-                                    <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
-                                @enderror
-                            </div>
-
                             <div>
                                 <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Supplier <span
                                         class="text-red-400">*</span></label>
@@ -246,11 +235,31 @@
                             </div>
 
                             <div>
+                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Produk <span
+                                        class="text-red-400">*</span></label>
+                                <input type="hidden" name="id_produk" id="id_produk_hidden" value="{{ old('id_produk') }}">
+                                <select name="id_produk_display" id="id_produk" disabled
+                                    class="w-full bg-gray-100 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 transition-all text-gray-500 @error('id_produk') border-red-300 @enderror">
+                                    <option value="" disabled selected>Pilih supplier terlebih dahulu</option>
+                                    @foreach ($produk as $p)
+                                        <option value="{{ $p->id_produk }}" data-stok="{{ $p->stok }}">
+                                            {{ $p->nm_produk }} (stok: {{ $p->stok }})
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <p class="text-[11px] text-gray-400 mt-1" id="produkInfo">Produk otomatis menyesuaikan
+                                    supplier yang dipilih (1 supplier = 1 produk).</p>
+                                @error('id_produk')
+                                    <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div>
                                 <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Jumlah <span
                                         class="text-red-400">*</span></label>
                                 <input type="number" name="jumlah" value="{{ old('jumlah') }}" min="1"
                                     class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('jumlah') border-red-300 @enderror"
-                                    placeholder="Masukkan jumlah barang masuk">
+                                    placeholder="Masukkan jumlah barang di-refund">
                                 @error('jumlah')
                                     <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
                                 @enderror
@@ -269,7 +278,7 @@
                                 <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Keterangan</label>
                                 <textarea name="keterangan" rows="2"
                                     class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('keterangan') border-red-300 @enderror"
-                                    placeholder="Contoh: Restok bulanan, PO #123">{{ old('keterangan') }}</textarea>
+                                    placeholder="Contoh: Barang rusak saat pengiriman, kemasan penyok, kadaluarsa">{{ old('keterangan') }}</textarea>
                                 @error('keterangan')
                                     <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
                                 @enderror

@@ -78,11 +78,11 @@ class KasirSeeder extends Seeder
     private function supplier(): void
     {
         $data = [
-            ['nm_supplier' => 'PT. Cosmetica Indah', 'no_hp' => '021-5551001', 'alamat' => 'Jl. Industri Raya No. 10, Jakarta'],
-            ['nm_supplier' => 'CV. Bahan Baku Sehat', 'no_hp' => '021-5551002', 'alamat' => 'Jl. Niaga Timur No. 25, Bandung'],
-            ['nm_supplier' => 'UD. Salon Perkasa', 'no_hp' => '031-5552001', 'alamat' => 'Jl. Komersial No. 8, Surabaya'],
-            ['nm_supplier' => 'PT. Natural Beauty Supply', 'no_hp' => '061-5553001', 'alamat' => 'Jl. Sentral No. 15, Medan'],
-            ['nm_supplier' => 'Toko Indah Jaya', 'no_hp' => '0274-555401', 'alamat' => 'Jl. Pasar Besar No. 3, Yogyakarta'],
+            ['nm_supplier' => 'PT. Cosmetica Indah', 'no_hp' => '021-5551001', 'alamat' => 'Jl. Industri Raya No. 10, Jakarta', 'status' => 'Aktif'],
+            ['nm_supplier' => 'CV. Bahan Baku Sehat', 'no_hp' => '021-5551002', 'alamat' => 'Jl. Niaga Timur No. 25, Bandung', 'status' => 'Aktif'],
+            ['nm_supplier' => 'UD. Salon Perkasa', 'no_hp' => '031-5552001', 'alamat' => 'Jl. Komersial No. 8, Surabaya', 'status' => 'Aktif'],
+            ['nm_supplier' => 'PT. Natural Beauty Supply', 'no_hp' => '061-5553001', 'alamat' => 'Jl. Sentral No. 15, Medan', 'status' => 'Aktif'],
+            ['nm_supplier' => 'Toko Indah Jaya', 'no_hp' => '0274-555401', 'alamat' => 'Jl. Pasar Besar No. 3, Yogyakarta', 'status' => 'Non Aktif'],
         ];
         foreach ($data as $d) {
             Supplier::create($d);
@@ -130,6 +130,9 @@ class KasirSeeder extends Seeder
             unset($d['id_supplier']);
 
             $produk = Produk::create($d);
+
+            Supplier::where('id_supplier', $idSupplier)->whereNull('id_produk')
+                ->update(['id_produk' => $produk->id_produk]);
 
             Stok::create([
                 'id_produk' => $produk->id_produk,
