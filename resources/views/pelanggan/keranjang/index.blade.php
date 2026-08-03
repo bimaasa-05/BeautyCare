@@ -510,6 +510,28 @@
         color: var(--primary);
     }
 
+    .keranjang-card .kc-qty-row .kc-qty-control button:disabled,
+    .keranjang-card .kc-qty-row .kc-qty-control button:disabled:hover {
+        opacity: 0.45;
+        cursor: not-allowed;
+        background: #FAFAFA;
+        color: var(--gray);
+    }
+
+    .keranjang-card .kc-stok-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 12px;
+        border-radius: 100px;
+        background: #FEF2F2;
+        color: #DC2626;
+        border: 1px solid #FECACA;
+        font-size: 11px;
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+
     .keranjang-card .kc-qty-row .kc-qty-control .kc-qty-val {
         width: 40px;
         height: 32px;
@@ -675,6 +697,14 @@
     .btn-belanja:hover {
         transform: translateY(-2px);
         box-shadow: 0 6px 20px rgba(255, 79, 135, 0.3);
+    }
+
+    .btn-belanja.disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        pointer-events: none;
+        transform: none !important;
+        box-shadow: none !important;
     }
 
     .btn-belanja-outline {
@@ -1190,8 +1220,16 @@
                         </div>
                     </div>
 
+                    @php
+                        $jmlStokHabis = $troli->filter(function ($i) use ($produkStok) {
+                            return ($produkStok[$i->id] ?? 0) <= 0;
+                        })->count();
+                        $sisaAktif = $troli->count() - $jmlStokHabis;
+                    @endphp
+
                     <div class="keranjang-grid" id="keranjangGrid">
                         @foreach($troli as $item)
+                        @php $stok = $produkStok[$item->id] ?? 0; @endphp
                         <div class="keranjang-card" data-id="{{ $item->id }}">
                             <div class="kc-image">
                                 <div class="kc-img-placeholder {{ str_replace(' ', '', strtolower($item->kategori)) }}">
@@ -1215,15 +1253,18 @@
                             <div class="kc-body">
                                 <div class="kc-nama">{{ $item->nm_produk }}</div>
                                 <div class="kc-kategori">{{ $item->kategori }}</div>
+                                @if($stok <= 0)
+                                <div class="kc-stok-badge"><i class="fa-solid fa-triangle-exclamation"></i> Stok Habis</div>
+                                @endif
                                 <div class="kc-divider"></div>
 
                                 <div class="kc-harga">Rp {{ number_format($item->harga_satuan, 0, ',', '.') }} <span>/pcs</span></div>
 
                                 <div class="kc-qty-row">
                                     <div class="kc-qty-control">
-                                        <button onclick="updateQty({{ $item->id }}, -1)"><i class="fa-solid fa-minus"></i></button>
+                                        <button onclick="updateQty({{ $item->id }}, -1)" {{ $stok <= 0 ? 'disabled' : '' }}><i class="fa-solid fa-minus"></i></button>
                                         <span class="kc-qty-val" id="qty-{{ $item->id }}">{{ $item->qty }}</span>
-                                        <button onclick="updateQty({{ $item->id }}, 1)"><i class="fa-solid fa-plus"></i></button>
+                                        <button onclick="updateQty({{ $item->id }}, 1)" {{ $stok <= 0 ? 'disabled' : '' }}><i class="fa-solid fa-plus"></i></button>
                                     </div>
                                     <div class="kc-subtotal">
                                         <div class="kcs-label">Subtotal</div>
@@ -1255,7 +1296,7 @@
                             <a href="{{ route('pelanggan.produk') }}" class="btn-belanja btn-belanja-outline">
                                 <i class="fa-solid fa-arrow-left"></i> Lanjut Belanja
                             </a>
-                            <a href="{{ route('pelanggan.checkout') }}" class="btn-belanja">
+                            <a href="{{ route('pelanggan.checkout') }}" class="btn-belanja {{ $sisaAktif <= 0 ? 'disabled' : '' }}" {{ $sisaAktif <= 0 ? 'aria-disabled="true"' : '' }}>
                                 <i class="fa-solid fa-credit-card"></i> Checkout
                             </a>
                         </div>
@@ -1302,11 +1343,15 @@
     </div>
 
     <script>
+    var keranjangStok = @json($produkStok);
+
     function formatAngka(n) {
         return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
     }
 
     function updateQty(id, delta) {
+        if ((keranjangStok[id] || 0) <= 0) return;
+
         var valEl = document.getElementById('qty-' + id);
         var curr = parseInt(valEl.textContent);
         var newQty = curr + delta;
