@@ -205,16 +205,18 @@
                             <div>
                                 <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Produk <span
                                         class="text-red-400">*</span></label>
-                                <select name="id_produk"
-                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all @error('id_produk') border-red-300 @enderror"
-                                    required>
-                                    <option value="" disabled selected>Pilih produk</option>
+                                <input type="hidden" name="id_produk" id="id_produk_hidden" value="{{ old('id_produk') }}">
+                                <select name="id_produk_display" id="id_produk" disabled
+                                    class="w-full bg-gray-100 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 transition-all text-gray-500 @error('id_produk') border-red-300 @enderror">
+                                    <option value="" disabled selected>Pilih supplier terlebih dahulu</option>
                                     @foreach ($produk as $p)
-                                        <option value="{{ $p->id_produk }}" {{ old('id_produk') == $p->id_produk ? 'selected' : '' }}>
+                                        <option value="{{ $p->id_produk }}" data-stok="{{ $p->stok }}">
                                             {{ $p->nm_produk }} (stok: {{ $p->stok }})
                                         </option>
                                     @endforeach
                                 </select>
+                                <p class="text-[11px] text-gray-400 mt-1" id="produkInfo">Produk otomatis menyesuaikan
+                                    supplier yang dipilih (1 supplier = 1 produk).</p>
                                 @error('id_produk')
                                     <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
                                 @enderror
@@ -223,13 +225,18 @@
                             <div>
                                 <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Supplier <span
                                         class="text-red-400">*</span></label>
-                                <select name="id_supplier"
+                                <select name="id_supplier" id="id_supplier"
                                     class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all @error('id_supplier') border-red-300 @enderror"
                                     required>
                                     <option value="" disabled selected>Pilih supplier</option>
                                     @foreach ($supplier as $s)
-                                        <option value="{{ $s->id_supplier }}" {{ old('id_supplier') == $s->id_supplier ? 'selected' : '' }}>
-                                            {{ $s->nm_supplier }}
+                                        <option value="{{ $s->id_supplier }}" data-produk="{{ $s->id_produk }}"
+                                            data-nama-produk="{{ $s->produk?->nm_produk }}"
+                                            data-stok-produk="{{ $s->produk?->stok }}"
+                                            {{ old('id_supplier') == $s->id_supplier ? 'selected' : '' }}>
+                                            {{ $s->nm_supplier }}@if ($s->produk)
+                                                - {{ $s->produk->nm_produk }}
+                                            @endif
                                         </option>
                                     @endforeach
                                 </select>
@@ -285,6 +292,40 @@
         </main>
     </div>
 
+    <script>
+        const supplierSelect = document.getElementById('id_supplier');
+        const produkSelect = document.getElementById('id_produk');
+        const produkHidden = document.getElementById('id_produk_hidden');
+        const produkInfo = document.getElementById('produkInfo');
+
+        supplierSelect.addEventListener('change', function () {
+            const option = this.options[this.selectedIndex];
+            const idProduk = option ? option.getAttribute('data-produk') : '';
+            const nmProduk = option ? (option.getAttribute('data-nama-produk') || '') : '';
+            const stokProduk = option ? (option.getAttribute('data-stok-produk') || '') : '';
+
+            if (idProduk) {
+                produkSelect.value = idProduk;
+                produkHidden.value = idProduk;
+                produkInfo.textContent = nmProduk + ' - stok saat ini: ' + stokProduk;
+            } else {
+                produkSelect.value = '';
+                produkHidden.value = '';
+                produkInfo.textContent = 'Produk otomatis menyesuaikan supplier yang dipilih (1 supplier = 1 produk).';
+            }
+        });
+
+        window.addEventListener('DOMContentLoaded', function () {
+            if (supplierSelect.value && produkHidden.value) {
+                const option = supplierSelect.options[supplierSelect.selectedIndex];
+                const idProduk = option ? option.getAttribute('data-produk') : '';
+                const nmProduk = option ? (option.getAttribute('data-nama-produk') || '') : '';
+                const stokProduk = option ? (option.getAttribute('data-stok-produk') || '') : '';
+                produkSelect.value = idProduk;
+                produkInfo.textContent = nmProduk + ' - stok saat ini: ' + stokProduk;
+            }
+        });
+    </script>
     <script>
         // Set current date
         const now = new Date();
