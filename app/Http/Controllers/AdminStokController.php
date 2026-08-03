@@ -26,7 +26,19 @@ class AdminStokController extends Controller
         $totalKeluar = Stok::where('type', 'Keluar')->sum('jumlah');
         $totalMutasi = Stok::count();
 
-        return view('admin.stok.index', compact('stok', 'totalMasuk', 'totalKeluar', 'totalMutasi'));
+        $countMasuk       = Stok::where('type', 'Masuk')->count();
+        $countKeluar      = Stok::where('type', 'Keluar')->count();
+        $countPenyesuaian = Stok::where('type', 'Penyesuaian')->count();
+
+        return view('admin.stok.index', compact(
+            'stok',
+            'totalMasuk',
+            'totalKeluar',
+            'totalMutasi',
+            'countMasuk',
+            'countKeluar',
+            'countPenyesuaian'
+        ));
     }
 
     public function create()
