@@ -9,6 +9,8 @@ class AdminPromoController extends Controller
 {
     public function index()
     {
+        Promo::whereDate('selesai', '<', now()->toDateString())->delete();
+
         $promos = Promo::orderBy('id_promo', 'desc')->get();
 
         return view('admin.promo.index', compact('promos'));
