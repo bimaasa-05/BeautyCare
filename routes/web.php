@@ -17,6 +17,7 @@ use App\Http\Controllers\AdminBeautycianController;
 use App\Http\Controllers\AdminLayananController;
 use App\Http\Controllers\AdminKategoriController;
 use App\Http\Controllers\AdminProdukController;
+use App\Http\Controllers\AdminStokController;
 use App\Http\Controllers\AdminMembershipController;
 use App\Http\Controllers\AdminPromoController;
 use App\Http\Controllers\NotifikasiController;
@@ -105,6 +106,10 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/produk/{produk}/edit', [AdminProdukController::class, 'edit'])->name('admin.produk.edit');
         Route::put('/admin/produk/{produk}', [AdminProdukController::class, 'update'])->name('admin.produk.update');
         Route::delete('/admin/produk/{produk}', [AdminProdukController::class, 'destroy'])->name('admin.produk.destroy');
+
+        Route::get('/admin/stok', [AdminStokController::class, 'index'])->name('admin.stok.index');
+        Route::get('/admin/stok/create', [AdminStokController::class, 'create'])->name('admin.stok.create');
+        Route::post('/admin/stok', [AdminStokController::class, 'store'])->name('admin.stok.store');
 
         Route::get('/admin/membership', [AdminMembershipController::class, 'index'])->name('admin.membership.index');
         Route::get('/admin/membership/create', [AdminMembershipController::class, 'create'])->name('admin.membership.create');
@@ -218,6 +223,8 @@ Route::middleware('auth')->group(function () {
         Route::post('/kasir/checkin/{id}/process', [KasirCheckinController::class, 'checkIn'])->name('kasir.checkin.process');
         Route::post('/kasir/checkin/{id}/undo', [KasirCheckinController::class, 'undoCheckIn'])->name('kasir.checkin.undo');
         Route::get('/kasir/pembayaran', [KasirPembayaranController::class, 'index'])->name('kasir.pembayaran.index');
+        Route::get('/kasir/pembayaran/pesanan-online', [KasirPembayaranController::class, 'pesananOnline'])->name('kasir.pembayaran.pesanan-online');
+        Route::post('/kasir/pembayaran/verifikasi/{id}', [KasirPembayaranController::class, 'verifikasi'])->name('kasir.pembayaran.verifikasi');
         Route::get('/kasir/pembayaran/bayar/{id}', [KasirPembayaranController::class, 'create'])->name('kasir.pembayaran.create');
         Route::post('/kasir/pembayaran', [KasirPembayaranController::class, 'store'])->name('kasir.pembayaran.store');
         Route::get('/kasir/pembayaran/{id}', [KasirPembayaranController::class, 'show'])->name('kasir.pembayaran.show');
@@ -341,6 +348,23 @@ Route::middleware('auth')->group(function () {
         Route::delete('/pelanggan/keranjang/batch', [App\Http\Controllers\KeranjangController::class, 'batchDestroy'])->name('pelanggan.keranjang.batch');
         Route::delete('/pelanggan/keranjang/{id}', [App\Http\Controllers\KeranjangController::class, 'destroy'])->name('pelanggan.keranjang.destroy')->whereNumber('id');
         Route::post('/pelanggan/checkout-notif', [App\Http\Controllers\KeranjangController::class, 'checkoutNotif'])->name('pelanggan.checkout.notif');
+
+        //Route Checkout Online
+        Route::get('/pelanggan/checkout', [App\Http\Controllers\CheckoutController::class, 'create'])->name('pelanggan.checkout');
+        Route::post('/pelanggan/checkout', [App\Http\Controllers\CheckoutController::class, 'store'])->name('pelanggan.checkout.store');
+
+        //Route Pembayaran Online
+        Route::get('/pelanggan/pembayaran/{transaksi}', [App\Http\Controllers\PembayaranController::class, 'show'])->name('pelanggan.pembayaran.show');
+        Route::get('/pelanggan/pembayaran/{transaksi}/berhasil', [App\Http\Controllers\PembayaranController::class, 'berhasil'])->name('pelanggan.pembayaran.berhasil');
+        Route::get('/pelanggan/pembayaran/{transaksi}/status', [App\Http\Controllers\PembayaranController::class, 'status'])->name('pelanggan.pembayaran.status');
+        Route::post('/pelanggan/pembayaran/{transaksi}/sudah-bayar', [App\Http\Controllers\PembayaranController::class, 'sudahBayar'])->name('pelanggan.pembayaran.sudah-bayar');
+        Route::post('/pelanggan/pembayaran/{transaksi}/batal', [App\Http\Controllers\PembayaranController::class, 'batal'])->name('pelanggan.pembayaran.batal');
+        Route::post('/pelanggan/pembayaran/{transaksi}/perpanjang', [App\Http\Controllers\PembayaranController::class, 'perpanjang'])->name('pelanggan.pembayaran.perpanjang');
+        Route::post('/pelanggan/pembayaran/{transaksi}/bukti', [App\Http\Controllers\PembayaranController::class, 'uploadBukti'])->name('pelanggan.pembayaran.bukti');
+
+        //Route Pesanan
+        Route::get('/pelanggan/pesanan', [App\Http\Controllers\PesananController::class, 'index'])->name('pelanggan.pesanan.index');
+        Route::get('/pelanggan/pesanan/{transaksi}', [App\Http\Controllers\PesananController::class, 'show'])->name('pelanggan.pesanan.show');
 
         //Route Profile
         Route::get('/pelanggan/profile', function () {

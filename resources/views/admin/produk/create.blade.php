@@ -220,22 +220,6 @@
                             </div>
 
                             <div>
-                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Supplier <span class="text-red-400">*</span></label>
-                                <select name="id_supplier"
-                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all @error('id_supplier') border-red-300 @enderror" required>
-                                    <option value="" disabled selected>Pilih supplier</option>
-                                    @foreach ($supplier as $s)
-                                        <option value="{{ $s->id_supplier }}" {{ old('id_supplier') == $s->id_supplier ? 'selected' : '' }}>
-                                            {{ $s->nm_supplier }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                @error('id_supplier')
-                                    <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <div>
                                 <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Satuan <span class="text-red-400">*</span></label>
                                 <input type="text" name="satuan" value="{{ old('satuan') }}"
                                     class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('satuan') border-red-300 @enderror"

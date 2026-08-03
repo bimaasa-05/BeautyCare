@@ -12,7 +12,6 @@ class Produk extends Model
 
     protected $fillable = [
         'id_kategori_produk',
-        'id_supplier',
         'nm_produk',
         'satuan',
         'harga_beli',
@@ -27,8 +26,13 @@ class Produk extends Model
         return $this->belongsTo(KategoriProduk::class, 'id_kategori_produk', 'id_kategori_produk');
     }
 
-    public function supplier()
+    public function stoks()
     {
-        return $this->belongsTo(Supplier::class, 'id_supplier', 'id_supplier');
+        return $this->hasMany(Stok::class, 'id_produk', 'id_produk');
+    }
+
+    public function stokMasuk()
+    {
+        return $this->hasMany(Stok::class, 'id_produk', 'id_produk')->where('type', 'Masuk');
     }
 }

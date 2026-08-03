@@ -161,7 +161,7 @@
                                             </span>
                                         </td>
                                         <td class="py-3 px-4 text-center">
-                                            <a href="{{ route('kasir.invoice.show', $i->id_transaksi) }}"
+                                            <a href="{{ route('kasir.invoice.show', $i->id_transaksi) }}" target="_blank"
                                                 class="inline-flex items-center gap-1.5 bg-pink-500 text-white text-[12px] font-semibold px-4 py-2 rounded-full hover:bg-pink-600 transition-all shadow-sm hover:shadow-md hover:shadow-pink-200">
                                                 <i class="fa-solid fa-print"></i> Cetak
                                             </a>

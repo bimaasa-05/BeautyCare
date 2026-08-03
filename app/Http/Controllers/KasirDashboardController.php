@@ -107,6 +107,20 @@ class KasirDashboardController extends Controller
 
         [$chartLabels, $chartRevenue] = $this->getChartData($userId, $periode, $periodStart);
 
+        $salesChartData = [
+            '7hari' => $this->getChartDataForPeriod($userId, '7hari'),
+            '30hari' => $this->getChartDataForPeriod($userId, '30hari'),
+            '3bulan' => $this->getChartDataForPeriod($userId, '3bulan'),
+            'tahunini' => $this->getChartDataForPeriod($userId, 'tahunini'),
+        ];
+
+        $paymentChartData = [
+            '7hari' => $this->getPaymentChartDataForPeriod($userId, '7hari'),
+            '30hari' => $this->getPaymentChartDataForPeriod($userId, '30hari'),
+            '3bulan' => $this->getPaymentChartDataForPeriod($userId, '3bulan'),
+            'tahunini' => $this->getPaymentChartDataForPeriod($userId, 'tahunini'),
+        ];
+
         $paymentData = Transaksi::select('metode_byr', DB::raw('COUNT(*) as total'), DB::raw('COALESCE(SUM(total),0) as jumlah'))
             ->where('id_user', $userId)
             ->where('status', 'Lunas')
@@ -191,6 +205,7 @@ class KasirDashboardController extends Controller
             'produkTerjual', 'produkTerjualGrowth',
             'chartLabels', 'chartRevenue', 'periode',
             'paymentLabels', 'paymentValues', 'paymentPeriode',
+            'salesChartData', 'paymentChartData',
             'transaksiTerbaru',
             'produkTerlaris',
             'rekapPembayaran',
@@ -199,6 +214,42 @@ class KasirDashboardController extends Controller
             'stokMenipis',
             'fmt', 'fmtRibuan', 'today'
         ));
+    }
+
+    private function getChartDataForPeriod($userId, $periode)
+    {
+        $start = match ($periode) {
+            '30hari' => date('Y-m-d', strtotime('-30 days')),
+            '3bulan' => date('Y-m-d', strtotime('-3 months')),
+            'tahunini' => date('Y-01-01'),
+            default => date('Y-m-d', strtotime('-7 days')),
+        };
+        [$labels, $revenue] = $this->getChartData($userId, $periode, $start);
+        return ['labels' => $labels, 'values' => $revenue];
+    }
+
+    private function getPaymentChartDataForPeriod($userId, $periode)
+    {
+        $today = date('Y-m-d');
+        $start = match ($periode) {
+            '30hari' => date('Y-m-d', strtotime('-30 days')),
+            '3bulan' => date('Y-m-d', strtotime('-3 months')),
+            'tahunini' => date('Y-01-01'),
+            default => date('Y-m-d', strtotime('-7 days')),
+        };
+
+        $data = Transaksi::select('metode_byr', DB::raw('COUNT(*) as total'), DB::raw('COALESCE(SUM(total),0) as jumlah'))
+            ->where('id_user', $userId)
+            ->where('status', 'Lunas')
+            ->whereBetween('tanggal', [$start, $today])
+            ->groupBy('metode_byr')
+            ->orderBy('total', 'desc')
+            ->get();
+
+        $labels = $data->pluck('metode_byr')->toArray();
+        $values = $data->pluck('total')->map(fn($v) => (int) $v)->toArray();
+
+        return ['labels' => $labels, 'values' => $values];
     }
 
     private function getChartData($userId, $periode, $start)

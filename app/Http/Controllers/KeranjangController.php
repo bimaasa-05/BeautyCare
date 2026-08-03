@@ -8,6 +8,7 @@ use App\Models\Produk;
 use App\Models\PromoKlaim;
 use App\Models\Transaksi;
 use App\Models\Troli;
+use App\Helpers\ActivityLogger;
 use Illuminate\Http\Request;
 
 class KeranjangController extends Controller
@@ -289,13 +290,17 @@ class KeranjangController extends Controller
             if ($item['jenis'] === 'Produk' && $item['id_item'] > 0) {
                 $produk = Produk::find($item['id_item']);
                 if ($produk && $produk->stok >= $item['qty']) {
+                    $stokLama = $produk->stok;
                     $produk->decrement('stok', $item['qty']);
+                    catatStok($produk->id_produk, 'Keluar', $item['qty'], $stokLama, $produk->stok, 'Penjualan via checkout pelanggan', null, $transaksi->id_transaksi, 'Transaksi');
                 }
             }
         }
 
         if ($request->nm_produk) {
             buatNotif($user->id, 'Pembelian Langsung', 'Pembelian ' . $request->nm_produk . ' (' . $request->qty . ' pcs) via ' . $metode . ' berhasil', 'Transaksi', route('pelanggan.produk'));
+
+            ActivityLogger::log('Menambahkan', $user->nama . ' membeli ' . $request->nm_produk . ' (' . $request->qty . ' pcs) via ' . $metode, 'Transaksi', $transaksi->id_transaksi);
 
             $admins = \App\Models\User::where('role', 'admin')->get();
             foreach ($admins as $admin) {
@@ -304,6 +309,8 @@ class KeranjangController extends Controller
         } else {
             $itemCount = count($items);
             buatNotif($user->id, 'Checkout Berhasil', $itemCount . ' produk berhasil di-checkout', 'Transaksi', route('pelanggan.produk'));
+
+            ActivityLogger::log('Menambahkan', $user->nama . ' melakukan checkout ' . $itemCount . ' produk', 'Transaksi', $transaksi->id_transaksi);
 
             $admins = \App\Models\User::where('role', 'admin')->get();
             foreach ($admins as $admin) {

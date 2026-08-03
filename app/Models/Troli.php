@@ -15,6 +15,7 @@ class Troli extends Model
         'id_user',
         'nm_produk',
         'produk_slug',
+        'id_produk',
         'kategori',
         'harga_satuan',
         'qty',
