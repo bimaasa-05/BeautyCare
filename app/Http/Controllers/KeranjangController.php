@@ -16,7 +16,8 @@ class KeranjangController extends Controller
     public function index()
     {
         $troli = Troli::where('id_user', auth()->id())->latest()->get();
-        $total = $troli->sum('total_harga');
+
+        [$total, $produkStok] = $this->totalStokTroli($troli);
 
         if (request()->ajax()) {
             return response()->json([
@@ -35,7 +36,31 @@ class KeranjangController extends Controller
                     && $klaim->promo->selesai > now()->format('Y-m-d');
             });
 
-        return view('pelanggan.keranjang.index', compact('troli', 'total', 'claimedPromos'));
+        return view('pelanggan.keranjang.index', compact('troli', 'total', 'claimedPromos', 'produkStok'));
+    }
+
+    protected function stokTroli($troli)
+    {
+        $map = [];
+        foreach ($troli as $tItem) {
+            $produk = $tItem->id_produk
+                ? Produk::find($tItem->id_produk)
+                : Produk::where('nm_produk', $tItem->nm_produk)->first();
+            $map[$tItem->id] = $produk ? (int) $produk->stok : 0;
+        }
+        return $map;
+    }
+
+    protected function totalStokTroli($troli)
+    {
+        $stokMap = $this->stokTroli($troli);
+        $total = 0;
+        foreach ($troli as $tItem) {
+            if (($stokMap[$tItem->id] ?? 0) > 0) {
+                $total += $tItem->total_harga;
+            }
+        }
+        return [$total, $stokMap];
     }
 
     public function history()
@@ -117,16 +142,33 @@ class KeranjangController extends Controller
         $request->validate(['qty' => 'required|integer|min:1']);
 
         $item = Troli::where('id', $id)->where('id_user', auth()->id())->firstOrFail();
-        $item->qty = (int) $request->qty;
+
+        $produk = $item->id_produk
+            ? Produk::find($item->id_produk)
+            : Produk::where('nm_produk', $item->nm_produk)->first();
+
+        $stok = $produk ? (int) $produk->stok : 0;
+
+        if ($stok <= 0) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Stok produk habis, tidak dapat mengubah jumlah.',
+            ], 422);
+        }
+
+        $item->qty = min((int) $request->qty, $stok);
+        if ($item->qty < 1) {
+            $item->qty = 1;
+        }
         $item->total_harga = $item->harga_satuan * $item->qty;
         $item->save();
 
-        $total_all = Troli::where('id_user', auth()->id())->sum('total_harga');
+        [$totalAll] = $this->totalStokTroli(Troli::where('id_user', auth()->id())->get());
 
         return response()->json([
             'success' => true,
             'total_item' => $item->total_harga,
-            'total_all' => $total_all,
+            'total_all' => $totalAll,
         ]);
     }
 
@@ -139,8 +181,9 @@ class KeranjangController extends Controller
 
         Troli::whereIn('id', $ids)->where('id_user', auth()->id())->delete();
 
-        $total_all = Troli::where('id_user', auth()->id())->sum('total_harga');
-        $count = Troli::where('id_user', auth()->id())->count();
+        $sisa = Troli::where('id_user', auth()->id())->get();
+        [$totalAll] = $this->totalStokTroli($sisa);
+        $count = $sisa->count();
 
         buatNotif(auth()->id(), 'Produk Dihapus', count($ids) . ' produk berhasil dihapus dari keranjang', 'Transaksi', route('pelanggan.keranjang'));
 
@@ -211,6 +254,9 @@ class KeranjangController extends Controller
             $troliItems = Troli::where('id_user', $user->id)->get();
             foreach ($troliItems as $tItem) {
                 $produk = Produk::where('nm_produk', $tItem->nm_produk)->first();
+                if ($produk && $produk->stok <= 0) {
+                    continue;
+                }
                 $items[] = [
                     'jenis' => 'Produk',
                     'id_item' => $produk ? $produk->id_produk : 0,
