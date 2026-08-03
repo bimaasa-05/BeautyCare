@@ -340,10 +340,13 @@ Route::middleware('auth')->group(function () {
 
         //Route Produk
         Route::get('/pelanggan/produk', [PelangganProdukController::class, 'index'])->name('pelanggan.produk');
+        Route::get('/pelanggan/produk/{produk}', [PelangganProdukController::class, 'show'])->name('pelanggan.produk.detail')->whereNumber('produk');
+        Route::post('/pelanggan/produk/favorit/toggle', [App\Http\Controllers\PelangganFavoritController::class, 'toggle'])->name('pelanggan.favorit.toggle');
 
         //Route Keranjang
         Route::get('/pelanggan/keranjang', [App\Http\Controllers\KeranjangController::class, 'index'])->name('pelanggan.keranjang');
         Route::get('/pelanggan/keranjang/history', [App\Http\Controllers\KeranjangController::class, 'history'])->name('pelanggan.keranjang.history');
+        Route::get('/pelanggan/keranjang/{id}', [App\Http\Controllers\KeranjangController::class, 'show'])->name('pelanggan.keranjang.detail')->whereNumber('id');
         Route::post('/pelanggan/keranjang', [App\Http\Controllers\KeranjangController::class, 'store'])->name('pelanggan.keranjang.store');
         Route::put('/pelanggan/keranjang/{id}', [App\Http\Controllers\KeranjangController::class, 'update'])->name('pelanggan.keranjang.update');
         Route::delete('/pelanggan/keranjang/batch', [App\Http\Controllers\KeranjangController::class, 'batchDestroy'])->name('pelanggan.keranjang.batch');

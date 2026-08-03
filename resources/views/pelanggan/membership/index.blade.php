@@ -291,6 +291,92 @@
         font-weight: 500;
     }
 
+    .progres-card {
+        background: var(--white);
+        border-radius: 20px;
+        padding: 24px 28px;
+        box-shadow: 0 2px 12px -4px rgba(0, 0, 0, 0.06);
+        margin-bottom: 24px;
+    }
+
+    .progres-card .pg-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 18px;
+        flex-wrap: wrap;
+    }
+
+    .progres-card .pg-head h4 {
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--dark);
+        margin: 0;
+    }
+
+    .progres-card .pg-head .pg-target {
+        font-size: 12px;
+        color: var(--gray);
+        background: var(--hover);
+        padding: 6px 14px;
+        border-radius: 100px;
+        font-weight: 600;
+    }
+
+    .progres-card .pg-row {
+        margin-bottom: 16px;
+    }
+
+    .progres-card .pg-row:last-child {
+        margin-bottom: 0;
+    }
+
+    .progres-card .pg-label {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 12px;
+        color: var(--gray);
+        margin-bottom: 6px;
+        font-weight: 500;
+    }
+
+    .progres-card .pg-label strong {
+        color: var(--dark);
+    }
+
+    .progres-card .pg-bar {
+        height: 10px;
+        border-radius: 100px;
+        background: var(--hover);
+        overflow: hidden;
+    }
+
+    .progres-card .pg-bar .pg-fill {
+        height: 100%;
+        border-radius: 100px;
+        background: linear-gradient(90deg, var(--primary), #FF7BA6);
+        transition: width 0.8s ease;
+        width: 0;
+    }
+
+    .progres-card .pg-bar .pg-fill.full {
+        background: linear-gradient(90deg, #22C55E, #4ADE80);
+    }
+
+    .progres-card .pg-info {
+        font-size: 12px;
+        color: var(--primary);
+        font-weight: 600;
+        margin-top: 14px;
+        padding-top: 14px;
+        border-top: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
     .member-tier-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -1054,6 +1140,46 @@
                     </div>
                 </div>
 
+                @if($nextTier || $isMaxTier)
+                <div class="progres-card">
+                    <div class="pg-head">
+                        <h4><i class="fa-solid fa-chart-line" style="color: var(--primary); margin-right: 8px;"></i>Progres Menuju {{ $isMaxTier ? 'Level Tertinggi' : $nextTier->tingkat }}</h4>
+                        @if(!$isMaxTier)
+                        <span class="pg-target"><i class="fa-solid fa-trophy"></i> {{ $nextTier->tingkat }}</span>
+                        @endif
+                    </div>
+                    <div class="pg-row">
+                        <div class="pg-label">
+                            <span>Total Belanja</span>
+                            <span><strong>Rp {{ number_format($totalBelanja, 0, ',', '.') }}</strong> / Rp {{ number_format($targetBelanja, 0, ',', '.') }}</span>
+                        </div>
+                        <div class="pg-bar">
+                            <div class="pg-fill {{ $progressBelanja >= 100 ? 'full' : '' }}" data-width="{{ $progressBelanja }}"></div>
+                        </div>
+                    </div>
+                    <div class="pg-row">
+                        <div class="pg-label">
+                            <span>Total Transaksi</span>
+                            <span><strong>{{ $totalTransaksi }}</strong> / {{ $targetTransaksi }}</span>
+                        </div>
+                        <div class="pg-bar">
+                            <div class="pg-fill {{ $progressTransaksi >= 100 ? 'full' : '' }}" data-width="{{ $progressTransaksi }}"></div>
+                        </div>
+                    </div>
+                    @if(!$isMaxTier)
+                    <div class="pg-info">
+                        <i class="fa-solid fa-circle-info"></i>
+                        Tinggal Rp {{ number_format($sisaBelanja, 0, ',', '.') }} atau {{ $sisaTransaksi }} transaksi lagi untuk naik ke {{ $nextTier->tingkat }}!
+                    </div>
+                    @else
+                    <div class="pg-info">
+                        <i class="fa-solid fa-crown"></i>
+                        Selamat! Anda sudah berada di level tertinggi membership.
+                    </div>
+                    @endif
+                </div>
+                @endif
+
                 <div class="benefit-section-title">
                     <i class="fa-solid fa-layer-group"></i> Pilih Level Membership
                 </div>
@@ -1450,6 +1576,11 @@
     };
     const dateEl = document.getElementById('currentDate');
     if (dateEl) dateEl.textContent = now.toLocaleDateString('id-ID', options);
+
+    document.querySelectorAll('.pg-fill').forEach(function(fill) {
+        var width = parseInt(fill.getAttribute('data-width')) || 0;
+        setTimeout(function() { fill.style.width = width + '%'; }, 200);
+    });
     </script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
 </body>
