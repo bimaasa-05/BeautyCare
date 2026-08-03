@@ -49,6 +49,19 @@ class KeranjangController extends Controller
         return view('pelanggan.keranjang.history', compact('transaksis'));
     }
 
+    public function show($id)
+    {
+        $item = Troli::where('id', $id)
+            ->where('id_user', auth()->id())
+            ->firstOrFail();
+
+        $produk = $item->id_produk
+            ? Produk::with('kategori')->find($item->id_produk)
+            : Produk::with('kategori')->where('nm_produk', $item->nm_produk)->first();
+
+        return view('pelanggan.keranjang.detail', compact('item', 'produk'));
+    }
+
     public function store(Request $request)
     {
         $request->validate([
