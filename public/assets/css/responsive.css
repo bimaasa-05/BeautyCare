@@ -305,8 +305,11 @@
   .stat-card {
     padding: 14px;
   }
+  .chart-card .chart-body {
+    min-height: 220px;
+  }
   .chart-card .chart-body canvas {
-    height: 200px !important;
+    height: 100% !important;
   }
   .navbar-top .left-section h2 {
     font-size: 16px;
