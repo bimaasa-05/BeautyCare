@@ -265,6 +265,13 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        cursor: pointer;
+        text-decoration: none;
+        transition: transform 0.3s ease;
+    }
+
+    .produk-card .pc-image:hover {
+        transform: scale(1.03);
     }
 
     .produk-card .pc-image .pc-img-placeholder {
@@ -480,50 +487,17 @@
         color: var(--gray);
     }
 
-    .pc-btn-beli {
-        padding: 8px 18px;
-        border-radius: 100px;
-        border: none;
-        background: linear-gradient(135deg, var(--primary), #FF7BA6);
-        color: #fff;
-        font-size: 12px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        font-family: 'Poppins', sans-serif;
-        box-shadow: 0 4px 12px rgba(255, 79, 135, 0.2);
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
+    .pc-name-link {
+        color: var(--dark);
         text-decoration: none;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
     }
 
-    .pc-btn-beli:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 6px 20px rgba(255, 79, 135, 0.3);
-    }
-
-    .pc-btn-detail {
-        padding: 8px 16px;
-        border-radius: 100px;
-        border: 1.5px solid var(--border);
-        background: transparent;
-        color: var(--gray);
-        font-size: 12px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        font-family: 'Poppins', sans-serif;
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        text-decoration: none;
-    }
-
-    .pc-btn-detail:hover {
-        border-color: var(--primary);
+    .pc-name-link:hover {
         color: var(--primary);
-        background: var(--hover);
     }
 
     .produk-empty {
@@ -594,211 +568,6 @@
         flex-shrink: 0;
     }
 
-    .beli-modal {
-        display: none;
-        position: fixed;
-        inset: 0;
-        background: rgba(0,0,0,0.4);
-        z-index: 999;
-        align-items: center;
-        justify-content: center;
-        padding: 20px;
-    }
-
-    .beli-modal.show {
-        display: flex;
-    }
-
-    .beli-modal .bm-card {
-        background: var(--white);
-        border-radius: 24px;
-        max-width: 420px;
-        width: 100%;
-        overflow: hidden;
-        box-shadow: 0 20px 60px rgba(0,0,0,0.15);
-        animation: modalIn 0.3s ease;
-    }
-
-    @keyframes modalIn {
-        from { opacity: 0; transform: scale(0.92) translateY(20px); }
-        to { opacity: 1; transform: scale(1) translateY(0); }
-    }
-
-    .beli-modal .bm-banner {
-        height: 160px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        position: relative;
-        font-size: 48px;
-        color: rgba(255,255,255,0.6);
-    }
-
-    .beli-modal .bm-banner.skincare { background: linear-gradient(135deg, #F472B6, #F9A8D4); }
-    .beli-modal .bm-banner.haircare { background: linear-gradient(135deg, #34D399, #6EE7B7); }
-    .beli-modal .bm-banner.bodycare { background: linear-gradient(135deg, #60A5FA, #93C5FD); }
-    .beli-modal .bm-banner.makeup { background: linear-gradient(135deg, #A78BFA, #C4B5FD); }
-    .beli-modal .bm-banner.nailcare { background: linear-gradient(135deg, #F43F5E, #FB7185); }
-    .beli-modal .bm-banner.lainnya { background: linear-gradient(135deg, #94A3B8, #CBD5E1); }
-
-    .beli-modal .bm-close {
-        position: absolute;
-        top: 14px;
-        right: 14px;
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        border: none;
-        background: rgba(255,255,255,0.2);
-        backdrop-filter: blur(8px);
-        color: #fff;
-        font-size: 16px;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: all 0.2s ease;
-    }
-
-    .beli-modal .bm-close:hover {
-        background: rgba(255,255,255,0.35);
-        transform: scale(1.05);
-    }
-
-    .beli-modal .bm-banner .bm-category-badge {
-        position: absolute;
-        top: 14px;
-        left: 14px;
-        padding: 5px 14px;
-        border-radius: 100px;
-        background: rgba(255,255,255,0.2);
-        backdrop-filter: blur(8px);
-        border: 1px solid rgba(255,255,255,0.15);
-        color: #fff;
-        font-size: 11px;
-        font-weight: 700;
-        letter-spacing: 0.3px;
-    }
-
-    .beli-modal .bm-body {
-        padding: 24px;
-    }
-
-    .beli-modal .bm-body .bm-nama {
-        font-size: 18px;
-        font-weight: 700;
-        color: var(--dark);
-        margin-bottom: 4px;
-    }
-
-    .beli-modal .bm-body .bm-kategori {
-        font-size: 12px;
-        color: var(--gray);
-        font-weight: 500;
-        margin-bottom: 16px;
-    }
-
-    .beli-modal .bm-body .bm-divider {
-        height: 1px;
-        background: var(--border);
-        margin-bottom: 16px;
-    }
-
-    .beli-modal .bm-body .bm-harga-label {
-        font-size: 11px;
-        font-weight: 600;
-        color: var(--gray);
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        margin-bottom: 4px;
-    }
-
-    .beli-modal .bm-body .bm-harga {
-        font-size: 26px;
-        font-weight: 800;
-        color: var(--primary);
-        margin-bottom: 20px;
-    }
-
-    .beli-modal .bm-body .bm-qty {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        margin-bottom: 20px;
-    }
-
-    .beli-modal .bm-body .bm-qty label {
-        font-size: 13px;
-        font-weight: 600;
-        color: var(--dark);
-    }
-
-    .beli-modal .bm-body .bm-qty .qty-control {
-        display: flex;
-        align-items: center;
-        gap: 0;
-        border: 1.5px solid var(--border);
-        border-radius: 10px;
-        overflow: hidden;
-    }
-
-    .beli-modal .bm-body .bm-qty .qty-control button {
-        width: 36px;
-        height: 36px;
-        border: none;
-        background: #FAFAFA;
-        color: var(--dark);
-        font-size: 16px;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: all 0.2s ease;
-        font-family: 'Poppins', sans-serif;
-    }
-
-    .beli-modal .bm-body .bm-qty .qty-control button:hover {
-        background: var(--hover);
-        color: var(--primary);
-    }
-
-    .beli-modal .bm-body .bm-qty .qty-control input {
-        width: 50px;
-        height: 36px;
-        border: none;
-        border-left: 1.5px solid var(--border);
-        border-right: 1.5px solid var(--border);
-        text-align: center;
-        font-size: 14px;
-        font-weight: 700;
-        color: var(--dark);
-        outline: none;
-        font-family: 'Poppins', sans-serif;
-    }
-
-    .bm-btn-beli {
-        width: 100%;
-        padding: 14px;
-        border-radius: 12px;
-        border: none;
-        font-size: 14px;
-        font-weight: 700;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        font-family: 'Poppins', sans-serif;
-        background: linear-gradient(135deg, var(--primary), #FF7BA6);
-        color: #fff;
-        box-shadow: 0 4px 16px rgba(255, 79, 135, 0.25);
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-    }
-
-    .bm-btn-beli:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 24px rgba(255, 79, 135, 0.35);
-    }
 
 
     @media (max-width: 768px) {
@@ -823,8 +592,6 @@
         .search-input-wrap input:focus {
             width: 100%;
         }
-<<<<<<< HEAD
-=======
 
         .checkout-modal .cmp-group {
             grid-template-columns: 1fr;
@@ -844,7 +611,6 @@
         .checkout-modal .cm-total { padding: 12px 16px; }
         .checkout-modal .cm-payment { padding: 0 16px 16px; }
         .checkout-modal .cm-bayar { margin: 0 16px 16px; width: calc(100% - 32px); }
->>>>>>> 357fd1431f743dcc3322899f04711b817ce83046
     }
 
     </style>
@@ -926,25 +692,26 @@
                         $icon = $iconMap[$kategoriLower] ?? 'fa-cube';
                     @endphp
                     <div class="produk-card" data-id="{{ $produk->id_produk }}" data-favorit="{{ $produk->favorit_count }}" data-beli="{{ $produk->beli_count }}">
-                        <div class="pc-image">
-                            <div class="pc-img-placeholder {{ $class }}">
-                                <i class="fa-solid {{ $icon }}"></i>
-                            </div>
+                        <a href="{{ route('pelanggan.produk.detail', $produk->id_produk) }}" class="pc-image">
+                            @if ($produk->foto)
+                                <img src="{{ asset('storage/' . $produk->foto) }}" alt="{{ $produk->nm_produk }}" style="width:100%;height:100%;object-fit:cover;">
+                            @else
+                                <div class="pc-img-placeholder {{ $class }}">
+                                    <i class="fa-solid {{ $icon }}"></i>
+                                </div>
+                            @endif
                             <span class="pc-category-badge">{{ $nmKategori }}</span>
                             <button class="pc-favorit-btn {{ in_array($produk->id_produk, $favoritProdukIds) ? 'active' : '' }}" data-id="{{ $produk->id_produk }}" onclick="toggleFavorit(this)" title="Favoritkan produk">
                                 <i class="fa-solid fa-heart"></i>
                             </button>
                             <span class="pc-favorit-count"><i class="fa-solid fa-heart"></i> {{ $produk->favorit_count }}</span>
-                        </div>
+                        </a>
                         <div class="pc-body">
-                            <div class="pc-name">{{ $produk->nm_produk }}</div>
+                            <a href="{{ route('pelanggan.produk.detail', $produk->id_produk) }}" class="pc-name-link">{{ $produk->nm_produk }}</a>
                             <div class="pc-category">{{ $nmKategori }}</div>
                             <div class="pc-divider"></div>
                             <div class="pc-footer">
                                 <div class="pc-price">Rp {{ number_format($produk->harga_jual, 0, ',', '.') }} <span>/{{ $produk->satuan }}</span></div>
-                                <a href="#" class="pc-btn-beli" data-produk="{{ $produk->id_produk }}" data-nama="{{ $produk->nm_produk }}" data-kategori="{{ $nmKategori }}" data-harga="Rp {{ number_format($produk->harga_jual, 0, ',', '.') }}" data-harga-numeric="{{ $produk->harga_jual }}" onclick="showBeliModal(this)">
-                                    <i class="fa-solid fa-cart-plus"></i> Beli
-                                </a>
                             </div>
                         </div>
                     </div>
@@ -962,150 +729,18 @@
         </main>
     </div>
 
-    <div class="beli-modal" id="beliModal">
-        <div class="bm-card">
-            <div class="bm-banner" id="modalBanner">
-                <span class="bm-category-badge" id="modalCategoryBadge"></span>
-                <div class="um-icon" id="modalIcon"></div>
-                <button class="bm-close" onclick="closeBeliModal()">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-            <div class="bm-body">
-                <div class="bm-nama" id="modalNama"></div>
-                <div class="bm-kategori" id="modalKategori"></div>
-                <div class="bm-divider"></div>
-                <div class="bm-harga-label">Harga</div>
-                <div class="bm-harga" id="modalHarga"></div>
-                <div class="bm-qty">
-                    <label>Jumlah</label>
-                    <div class="qty-control">
-                        <button onclick="qtyMinus()"><i class="fa-solid fa-minus"></i></button>
-                        <input type="text" id="qtyInput" value="1" readonly>
-                        <button onclick="qtyPlus()"><i class="fa-solid fa-plus"></i></button>
-                    </div>
-                </div>
-                <div style="display:flex; gap:8px;">
-                    <button class="bm-btn-beli" onclick="tambahKeranjang()" style="flex:1;">
-                        <i class="fa-solid fa-cart-shopping"></i> Keranjang
-                    </button>
-                    <button class="bm-btn-beli" onclick="beliLangsung()" style="flex:1; background: linear-gradient(135deg, #10B981, #34D399); box-shadow: 0 4px 16px rgba(16, 185, 129, 0.25);">
-                        <i class="fa-solid fa-bolt"></i> Beli Langsung
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <div class="cart-notif" id="cartNotif">
         <div class="cn-icon"><i class="fa-solid fa-check"></i></div>
         <span id="cartNotifMsg">Berhasil ditambahkan ke keranjang!</span>
     </div>
 
     <script>
-    var hargaNumeric = 0;
-    var currentProdukSlug = '';
-
-    var kategoriIcons = {
-        'Skincare': '<i class="fa-solid fa-spa"></i>',
-        'Hair Care': '<i class="fa-solid fa-scissors"></i>',
-        'Body Care': '<i class="fa-solid fa-hand-sparkles"></i>',
-        'Nail Care': '<i class="fa-solid fa-hand"></i>',
-        'Makeup': '<i class="fa-solid fa-palette"></i>'
-    };
-
-    function formatRupiah(angka) {
-        return 'Rp ' + angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-    }
-
-    function updateTotalHarga() {
-        var qty = parseInt(document.getElementById('qtyInput').value) || 1;
-        var total = hargaNumeric * qty;
-        document.getElementById('modalHarga').textContent = formatRupiah(total);
-    }
-
-    function showBeliModal(btn) {
-        var nama = btn.getAttribute('data-nama');
-        var kategori = btn.getAttribute('data-kategori');
-        hargaNumeric = parseInt(btn.getAttribute('data-harga-numeric')) || 0;
-        currentProdukSlug = btn.getAttribute('data-produk') || '';
-
-        document.getElementById('modalBanner').className = 'bm-banner ' + kategori.toLowerCase().replace(/\s+/g, '');
-        document.getElementById('modalIcon').innerHTML = kategoriIcons[kategori] || '<i class="fa-solid fa-cube"></i>';
-        document.getElementById('modalCategoryBadge').textContent = kategori;
-        document.getElementById('modalNama').textContent = nama;
-        document.getElementById('modalKategori').textContent = kategori;
-        document.getElementById('qtyInput').value = '1';
-        updateTotalHarga();
-
-        document.getElementById('beliModal').classList.add('show');
-    }
-
-    function closeBeliModal() {
-        document.getElementById('beliModal').classList.remove('show');
-    }
-
-    document.getElementById('beliModal').addEventListener('click', function(e) {
-        if (e.target === this) closeBeliModal();
-    });
-
     function showNotif(msg) {
         var el = document.getElementById('cartNotif');
         document.getElementById('cartNotifMsg').textContent = msg;
         el.classList.add('show');
         setTimeout(function() { el.classList.remove('show'); }, 3000);
     }
-
-    function tambahKeranjang() {
-        var nama = document.getElementById('modalNama').textContent;
-        var kategori = document.getElementById('modalKategori').textContent;
-        var qty = parseInt(document.getElementById('qtyInput').value) || 1;
-
-        var csrf = document.querySelector('meta[name="csrf-token"]').content;
-
-        fetch('{{ route("pelanggan.keranjang.store") }}', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': csrf
-            },
-            body: JSON.stringify({
-                nm_produk: nama,
-                produk_slug: currentProdukSlug,
-                kategori: kategori,
-                harga_satuan: hargaNumeric,
-                qty: qty
-            })
-        })
-        .then(function(res) { return res.json(); })
-        .then(function(data) {
-            if (data.success) {
-                closeBeliModal();
-                showNotif(data.message);
-                localStorage.removeItem('cart_seen');
-                var badge = document.getElementById('cartBadgeSidebar');
-                if (badge) {
-                    badge.textContent = data.count;
-                    badge.style.display = data.count > 0 ? '' : 'none';
-                }
-            }
-        });
-    }
-
-    function qtyPlus() {
-        var input = document.getElementById('qtyInput');
-        input.value = parseInt(input.value) + 1;
-        updateTotalHarga();
-    }
-
-    function qtyMinus() {
-        var input = document.getElementById('qtyInput');
-        var val = parseInt(input.value);
-        if (val > 1) input.value = val - 1;
-        updateTotalHarga();
-    }
-
-    document.getElementById('qtyInput').addEventListener('input', updateTotalHarga);
 
     var currentKategori = 'semua';
 
@@ -1124,7 +759,7 @@
         var searchTerm = document.querySelector('.search-input-wrap input').value.toLowerCase();
         document.querySelectorAll('.produk-card').forEach(function(card) {
             var cardKategori = card.querySelector('.pc-category').textContent.trim().replace(/\s+/g, '').toLowerCase();
-            var nama = card.querySelector('.pc-name').textContent.toLowerCase();
+            var nama = card.querySelector('.pc-name-link').textContent.toLowerCase();
             var current = currentKategori.replace(/\s+/g, '').toLowerCase();
 
             var matchKategori = (currentKategori === 'semua' || cardKategori === current);
@@ -1175,6 +810,8 @@
     }
 
     function toggleFavorit(btn) {
+        event.preventDefault();
+        event.stopPropagation();
         var id = btn.getAttribute('data-id');
         var csrf = document.querySelector('meta[name="csrf-token"]').content;
 
@@ -1220,12 +857,6 @@
     };
     const dateEl = document.getElementById('currentDate');
     if (dateEl) dateEl.textContent = now.toLocaleDateString('id-ID', options);
-
-    function beliLangsung() {
-        var qty = parseInt(document.getElementById('qtyInput').value) || 1;
-        closeBeliModal();
-        window.location.href = '{{ route("pelanggan.checkout") }}?beli=' + currentProdukSlug + '&qty=' + qty;
-    }
     </script>
 
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
