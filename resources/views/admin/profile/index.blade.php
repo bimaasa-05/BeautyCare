@@ -87,6 +87,9 @@
         .form-group .input-icon-wrap { position: relative; }
         .form-group .input-icon-wrap i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #bbb; font-size: 14px; }
         .form-group .input-icon-wrap .form-control { padding-left: 40px; }
+        .form-group .input-icon-wrap .toggle-password { left: auto; right: 14px; cursor: pointer; z-index: 2; }
+        .form-group .input-icon-wrap .toggle-password:hover { color: var(--primary); }
+        .form-group .input-icon-wrap input[type="password"] { padding-right: 40px; }
         .btn-primary-full { width: 100%; padding: 12px 24px; border-radius: 12px; border: none; background: linear-gradient(135deg, var(--primary), #FF7BA6); color: #fff; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; font-family: 'Poppins', sans-serif; box-shadow: 0 4px 16px rgba(255, 79, 135, 0.25); }
         .btn-primary-full:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(255, 79, 135, 0.35); }
         .info-row { display: flex; align-items: center; padding: 14px 0; border-bottom: 1px solid #F5F5F5; }
@@ -129,7 +132,7 @@
                 @endif
                 @if($errors->any())
                 <div class="alert-premium" style="background:linear-gradient(135deg,#FEF2F2,#FEE2E2);border:1px solid #FECACA;color:#991B1B;">
-                    <div class="alert-icon" style="background:#FECACA;color:#DC2626;"><i class="fa-regular fa-circle-exclamation"></i></div>
+                                    <div class="alert-icon" style="background:#FECACA;color:#DC2626;"><i class="fa-solid fa-circle-exclamation"></i></div>
                     <ul style="margin:0;padding-left:16px;">@foreach($errors->all() as $err)<li>{{ $err }}</li>@endforeach</ul>
                 </div>
                 @endif
@@ -158,7 +161,7 @@
                         </div>
                         <div class="profile-card" style="margin-top:24px;">
                             <div class="pc-header">
-                                <div class="pc-icon"><i class="fa-regular fa-circle-info"></i></div>
+                                <div class="pc-icon"><i class="fa-solid fa-circle-info"></i></div>
                                 <div class="pc-title">Info Akun</div>
                             </div>
                             <div class="pc-body" style="padding:8px 24px;">
@@ -209,7 +212,7 @@
                         </div>
                         <div class="profile-card" style="margin-top:24px;">
                             <div class="pc-header">
-                                <div class="pc-icon"><i class="fa-regular fa-lock"></i></div>
+                                <div class="pc-icon"><i class="fa-solid fa-lock"></i></div>
                                 <div class="pc-title">Ganti Password</div>
                             </div>
                             <div class="pc-body">
@@ -217,22 +220,22 @@
                                     @csrf
                                     <div class="form-group">
                                         <label>Password Saat Ini</label>
-                                        <div class="input-icon-wrap"><i class="fa-regular fa-lock"></i>
-                                        <input type="password" name="current_password" class="form-control @error('current_password') is-invalid @enderror" placeholder="Masukkan password saat ini"></div>
+                                        <div class="input-icon-wrap"><i class="fa-solid fa-lock"></i>
+                                        <input type="password" name="current_password" class="form-control @error('current_password') is-invalid @enderror" placeholder="Masukkan password saat ini"><i class="fa-solid fa-eye toggle-password" onclick="togglePassword(this)"></i></div>
                                         @error('current_password') <span style="font-size:11px;color:#DC2626;margin-top:4px;display:block;">{{ $message }}</span> @enderror
                                     </div>
                                     <div class="form-group">
                                         <label>Password Baru</label>
-                                        <div class="input-icon-wrap"><i class="fa-regular fa-lock"></i>
-                                        <input type="password" name="new_password" class="form-control @error('new_password') is-invalid @enderror" placeholder="Masukkan password baru"></div>
+                                        <div class="input-icon-wrap"><i class="fa-solid fa-lock"></i>
+                                        <input type="password" name="new_password" class="form-control @error('new_password') is-invalid @enderror" placeholder="Masukkan password baru"><i class="fa-solid fa-eye toggle-password" onclick="togglePassword(this)"></i></div>
                                         @error('new_password') <span style="font-size:11px;color:#DC2626;margin-top:4px;display:block;">{{ $message }}</span> @enderror
                                     </div>
                                     <div class="form-group">
                                         <label>Konfirmasi Password Baru</label>
-                                        <div class="input-icon-wrap"><i class="fa-regular fa-lock"></i>
-                                        <input type="password" name="new_password_confirmation" class="form-control" placeholder="Konfirmasi password baru"></div>
+                                        <div class="input-icon-wrap"><i class="fa-solid fa-lock"></i>
+                                        <input type="password" name="new_password_confirmation" class="form-control" placeholder="Konfirmasi password baru"><i class="fa-solid fa-eye toggle-password" onclick="togglePassword(this)"></i></div>
                                     </div>
-                                    <button type="submit" class="btn-primary-full"><i class="fa-regular fa-key"></i> Update Password</button>
+                                    <button type="submit" class="btn-primary-full"><i class="fa-solid fa-key"></i> Update Password</button>
                                 </form>
                             </div>
                         </div>
@@ -242,6 +245,13 @@
         </main>
     </div>
     <script>
+        function togglePassword(icon) {
+            const input = icon.parentElement.querySelector('input');
+            const show = input.type === 'password';
+            input.type = show ? 'text' : 'password';
+            icon.classList.toggle('fa-eye', !show);
+            icon.classList.toggle('fa-eye-slash', show);
+        }
         function previewAndSubmit(input) {
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
