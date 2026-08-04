@@ -330,7 +330,7 @@
                                         <th class="py-3 px-4">Nomor Hp</th>
                                         <th class="py-3 px-4">Email</th>
                                         <th class="py-3 px-4">Alamat</th>
-                                        <th class="py-3 px-4">Member ID</th>
+                                        <th class="py-3 px-4">Member</th>
                                         <th class="py-3 px-4">Catatan Alergi</th>
                                         <th class="py-3 px-4">Foto</th>
                                         <th class="py-3 px-4 text-center">Aksi</th>
