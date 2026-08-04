@@ -22,7 +22,13 @@
         .sidebar-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.3); z-index: 90; }
         .sidebar-overlay.active { display: block; }
         @media (max-width: 768px) { .sidebar-toggle { display: flex; align-items: center; } }
-    </style>
+    
+        @media (max-width: 768px) {
+            .filter-bar { justify-content: flex-start !important; align-items: stretch !important; }
+            .filter-bar .relative { flex: 1 1 100%; }
+            .filter-bar input, .filter-bar select { width: 100% !important; }
+        }
+</style>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; }
@@ -104,7 +110,7 @@
                         </div>
                     </div>
 
-                    <form action="" method="GET" class="flex justify-end mb-4">
+                    <form action="" method="GET" class="flex flex-wrap items-center justify-end gap-2 mb-4 filter-bar">
                         <div class="relative">
                             <i class="fa-solid fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-[12px]"></i>
                             <input type="text" placeholder="Cari pelanggan..." name="keyword"
@@ -113,8 +119,7 @@
                         </div>
                     </form>
 
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse">
+                    <div class="overflow-x-auto"><table class="w-full text-left border-collapse">
                             <thead>
                                 <tr class="text-[11px] font-bold text-gray-400 uppercase border-b border-gray-100 bg-gray-50/50">
                                     <th class="py-3 px-4">#</th>
@@ -176,7 +181,7 @@
                                     </tr>
                                 @endforelse
                             </tbody>
-                        </table>
+                        </table></div>
                     </div>
                 </div>
             </div>
