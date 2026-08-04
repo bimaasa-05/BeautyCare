@@ -34,6 +34,9 @@
         .photo-card.empty-photo svg { width: 40px; height: 40px; }
 
         .photo-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        @media (max-width: 576px) {
+            .photo-pair { grid-template-columns: 1fr; }
+        }
 
         .back-link { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--gray); text-decoration: none; margin-bottom: 16px; font-weight: 500; }
         .back-link:hover { color: var(--primary); }
@@ -182,7 +185,7 @@
                         </div>
                     </div>
 
-                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+                    <div style="display:grid;gap:20px;" class="photo-pair">
                         @if($booking->riwayatTreatment->produk_digunakan)
                         <div>
                             <div style="font-size:12px;font-weight:600;color:var(--gray);margin-bottom:6px;">Produk yang Digunakan</div>
