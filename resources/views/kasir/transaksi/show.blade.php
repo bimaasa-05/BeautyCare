@@ -157,7 +157,7 @@
                     class="bg-white rounded-2xl p-6 shadow-[0_2px_10px_-4px rgba(0,0,0,0.05)] relative overflow-hidden">
                     <div class="float-icon" style="top:-20px;right:-5px;">📋</div>
 
-                    <div class="flex justify-between items-center mb-6">
+                    <div class="flex flex-wrap justify-between items-center gap-2 mb-6">
                         <div>
                             <h3 class="text-[16px] font-bold text-gray-800">
                                 <i class="fa-solid fa-receipt text-pink-500 mr-2"></i>Detail Transaksi
