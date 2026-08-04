@@ -152,7 +152,7 @@
                         </div>
                     @endif
 
-                    <div class="flex justify-between items-center mb-6">
+                    <div class="flex flex-wrap justify-between items-center gap-2 mb-6">
                         <div>
                             <h3 class="text-[16px] font-bold text-gray-800">
                                 <i class="fa-solid fa-credit-card text-pink-500 mr-2"></i>Detail Pembayaran
@@ -284,8 +284,7 @@
                                 <h4 class="text-[13px] font-bold text-gray-600 mb-3 flex items-center gap-2">
                                     <i class="fa-solid fa-list text-pink-400"></i> Detail Layanan
                                 </h4>
-                                <div class="overflow-x-auto">
-                                    <table class="w-full text-[13px]">
+                                <div class="overflow-x-auto"><table class="w-full text-[13px]">
                                         <thead>
                                             <tr class="border-b border-gray-100">
                                                 <th
@@ -326,7 +325,7 @@
                                                 </td>
                                             </tr>
                                         </tfoot>
-                                    </table>
+                                    </table></div>
                                 </div>
                             </div>
 
