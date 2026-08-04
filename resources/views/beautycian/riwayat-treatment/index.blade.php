@@ -144,8 +144,7 @@
                         </div>
                     </div>
 
-                    <div class="overflow-x-auto">
-                        <table class="booking-table">
+                    <div class="overflow-x-auto"><table class="booking-table">
                             <thead>
                                 <tr>
                                     <th>ID Booking</th>
@@ -226,7 +225,7 @@
                                 </tr>
                                 @endforelse
                             </tbody>
-                        </table>
+                        </table></div>
                     </div>
 
                     <div class="table-footer">
