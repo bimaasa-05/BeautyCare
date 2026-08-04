@@ -49,9 +49,9 @@
 
             <div class="flex-1 overflow-y-auto p-8">
                 <div class="bg-white rounded-2xl p-6 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] relative overflow-hidden">
-                    <div class="float-icon" style="top:-15px;right:-10px;">✏️</div>
+                    <div class="float-icon" style="top:-15px;right:-10px;">âœï¸</div>
 
-                    <div class="flex justify-between items-center mb-6">
+                    <div class="flex flex-wrap justify-between items-center gap-2 mb-6">
                         <div>
                             <h3 class="text-[16px] font-bold text-gray-800">
                                 <i class="fa-solid fa-pen-to-square text-pink-500 mr-2"></i>Edit Transaksi
@@ -115,7 +115,7 @@
 
                             <div id="item-container">
                                 @foreach ($transaksi->detail ?? [] as $dt)
-                                <div class="item-row flex items-center gap-3 mb-3 p-3 bg-gray-50 rounded-xl border border-gray-100" data-index="{{ $loop->index }}">
+                                <div class="item-row flex items-center gap-3 mb-3 p-3 bg-gray-50 rounded-xl border border-gray-100 flex-wrap" data-index="{{ $loop->index }}">
                                     <input type="hidden" name="items[{{ $loop->index }}][jenis]" class="item-jenis-hidden" value="{{ $dt->jenis }}">
                                     <input type="hidden" name="items[{{ $loop->index }}][id_item]" class="item-id-hidden" value="{{ $dt->id_item }}">
                                     <input type="hidden" name="items[{{ $loop->index }}][nm_item]" class="item-nama-hidden" value="{{ $dt->nm_item }}">
@@ -172,7 +172,7 @@
                                         {{ old('metode_byr', $transaksi->metode_byr) == 'Tunai' ? 'checked' : '' }}
                                         onchange="togglePaymentMethod('Tunai')">
                                     <div class="p-4 rounded-xl border-2 border-gray-100 peer-checked:border-pink-400 peer-checked:bg-pink-50/50 hover:border-pink-200 transition-all text-center">
-                                        <div class="text-2xl mb-1">💵</div>
+                                        <div class="text-2xl mb-1">ðŸ’µ</div>
                                         <div class="text-[12px] font-semibold text-gray-600 peer-checked:text-pink-500">Tunai</div>
                                     </div>
                                 </label>
@@ -181,7 +181,7 @@
                                         {{ old('metode_byr', $transaksi->metode_byr) == 'Transfer' ? 'checked' : '' }}
                                         onchange="togglePaymentMethod('Transfer')">
                                     <div class="p-4 rounded-xl border-2 border-gray-100 peer-checked:border-pink-400 peer-checked:bg-pink-50/50 hover:border-pink-200 transition-all text-center">
-                                        <div class="text-2xl mb-1">🏦</div>
+                                        <div class="text-2xl mb-1">ðŸ¦</div>
                                         <div class="text-[12px] font-semibold text-gray-600 peer-checked:text-pink-500">Transfer</div>
                                     </div>
                                 </label>
@@ -190,7 +190,7 @@
                                         {{ old('metode_byr', $transaksi->metode_byr) == 'Debit' ? 'checked' : '' }}
                                         onchange="togglePaymentMethod('Debit')">
                                     <div class="p-4 rounded-xl border-2 border-gray-100 peer-checked:border-pink-400 peer-checked:bg-pink-50/50 hover:border-pink-200 transition-all text-center">
-                                        <div class="text-2xl mb-1">💳</div>
+                                        <div class="text-2xl mb-1">ðŸ’³</div>
                                         <div class="text-[12px] font-semibold text-gray-600 peer-checked:text-pink-500">Debit</div>
                                     </div>
                                 </label>
@@ -575,7 +575,7 @@
 
         function getItemTemplate(index) {
             return `
-            <div class="item-row flex items-center gap-3 mb-3 p-3 bg-gray-50 rounded-xl border border-gray-100" data-index="${index}">
+            <div class="item-row flex items-center gap-3 mb-3 p-3 bg-gray-50 rounded-xl border border-gray-100 flex-wrap" data-index="${index}">
                 <input type="hidden" name="items[${index}][jenis]" class="item-jenis-hidden" value="Layanan">
                 <input type="hidden" name="items[${index}][id_item]" class="item-id-hidden" value="">
                 <input type="hidden" name="items[${index}][nm_item]" class="item-nama-hidden" value="">
