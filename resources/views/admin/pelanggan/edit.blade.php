@@ -208,18 +208,26 @@
                                 <div id="konversiFields" class="hidden mt-3 grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
                                         <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Password</label>
-                                        <input type="password" name="password"
-                                            class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('password') border-red-300 @enderror"
-                                            placeholder="Minimal 8 karakter">
+                                        <div class="relative">
+                                            <input type="password" name="password"
+                                                class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl pl-4 pr-10 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('password') border-red-300 @enderror"
+                                                placeholder="Masukkan password">
+                                            <i class="fa-solid fa-eye absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm cursor-pointer hover:text-pink-400 transition-colors z-[1]"
+                                                onclick="togglePassword(this)"></i>
+                                        </div>
                                         @error('password')
                                             <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
                                         @enderror
                                     </div>
                                     <div>
                                         <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Konfirmasi Password</label>
-                                        <input type="password" name="password_confirmation"
-                                            class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400"
-                                            placeholder="Ulangi password">
+                                        <div class="relative">
+                                            <input type="password" name="password_confirmation"
+                                                class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl pl-4 pr-10 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400"
+                                                placeholder="Ulangi password">
+                                            <i class="fa-solid fa-eye absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm cursor-pointer hover:text-pink-400 transition-colors z-[1]"
+                                                onclick="togglePassword(this)"></i>
+                                        </div>
                                     </div>
                                 </div>
                             @else
@@ -322,6 +330,13 @@
     </div>
 
     <script>
+        function togglePassword(icon) {
+            const input = icon.parentElement.querySelector('input');
+            const show = input.type === 'password';
+            input.type = show ? 'text' : 'password';
+            icon.classList.toggle('fa-eye', !show);
+            icon.classList.toggle('fa-eye-slash', show);
+        }
         function toggleKonversi() {
             const checked = document.querySelector('input[name="konversi_online"]')?.checked;
             document.getElementById('konversiFields')?.classList.toggle('hidden', !checked);
