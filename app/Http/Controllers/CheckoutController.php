@@ -66,7 +66,7 @@ class CheckoutController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'metode' => 'required|in:QRIS,Transfer,E-Wallet',
+            'metode' => 'required|in:QRIS,Transfer',
             'provider' => 'required|string|max:50',
             'id_promo' => 'nullable|integer',
             'beli' => 'nullable|integer',
@@ -76,7 +76,6 @@ class CheckoutController extends Controller
         $providers = [
             'QRIS' => ['QRIS'],
             'Transfer' => array_keys(self::bankTujuan()),
-            'E-Wallet' => ['Dana', 'GoPay', 'OVO', 'ShopeePay'],
         ];
 
         abort_unless(in_array($request->provider, $providers[$request->metode]), 422);
@@ -162,9 +161,9 @@ class CheckoutController extends Controller
             ]);
         }
 
-        $expiresAt = in_array($request->metode, ['QRIS', 'E-Wallet'])
-            ? now()->addMinutes(10)
-            : now()->addHours(24);
+        $expiresAt = $request->metode === 'QRIS'
+            ? now()->addMinutes(3) //Hitung Mundur Dalam 3 Menit
+            : now()->addHours(24); //Hitung Mundur Dalam 24 Jam
 
         Pembayaran::create([
             'id_transaksi' => $transaksi->id_transaksi,
