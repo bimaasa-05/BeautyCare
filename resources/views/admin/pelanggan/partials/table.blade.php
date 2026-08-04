@@ -7,7 +7,7 @@
         @if ($p->sumber === 'Online')
             <span class="text-blue-500 bg-blue-50 px-2 py-0.5 rounded-full text-[11px] font-semibold">Online</span>
         @else
-            <span class="text-amber-500 bg-amber-50 px-2 py-0.5 rounded-full text-[11px] font-semibold">Walk-in</span>
+            <span class="text-amber-500 bg-amber-50 px-2 py-0.5 rounded-full text-[11px] font-semibold whitespace-nowrap">Walk-in</span>
         @endif
     </td>
     <td class="py-3.5 px-4 font-medium text-gray-500" data-label="Status">
