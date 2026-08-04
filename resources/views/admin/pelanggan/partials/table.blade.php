@@ -7,7 +7,7 @@
         @if ($p->sumber === 'Online')
             <span class="text-blue-500 bg-blue-50 px-2 py-0.5 rounded-full text-[11px] font-semibold">Online</span>
         @else
-            <span class="text-amber-500 bg-amber-50 px-2 py-0.5 rounded-full text-[11px] font-semibold">Walk-in</span>
+            <span class="text-amber-500 bg-amber-50 px-2 py-0.5 rounded-full text-[11px] font-semibold whitespace-nowrap">Walk-in</span>
         @endif
     </td>
     <td class="py-3.5 px-4 font-medium text-gray-500" data-label="Status">
@@ -39,8 +39,32 @@
     </td>
     <td class="py-3.5 px-4 font-medium text-gray-500" data-label="Email">{{ $p->email }}</td>
     <td class="py-3.5 px-4 font-medium text-gray-500" data-label="Alamat">{{ $p->alamat ?? '-' }}</td>
-    <td class="py-3.5 px-4 font-medium text-gray-500" data-label="Member ID">
-        {{ $p->id_member ?? '-' }}
+    <td class="py-3.5 px-4 font-medium text-gray-500" data-label="Member">
+        @php
+            $memberInfo = $p->id_member ? ($memberships[$p->id_member] ?? null) : null;
+        @endphp
+        @if ($memberInfo)
+            <div class="flex flex-col gap-0.5">
+                <span class="font-semibold text-gray-700">{{ $memberInfo->nm_member }}</span>
+                @if ($memberInfo->masa_berlaku > 0 && $p->tgl_mulai_member)
+                    @php
+                        $tglAkhir = $memberInfo->tanggalBerakhir($p->tgl_mulai_member);
+                        $sisa = $memberInfo->sisaHari($p->tgl_mulai_member);
+                        $expired = $memberInfo->sudahKadaluarsa($p->tgl_mulai_member);
+                    @endphp
+                    <span class="text-[10px] {{ $expired ? 'text-red-500' : 'text-emerald-500' }}">
+                        @if ($expired)
+                            Expired
+                        @else
+                            Sisa {{ $sisa }} hari
+                        @endif
+                        &middot; s.d. {{ $tglAkhir->format('d/m/Y') }}
+                    </span>
+                @endif
+            </div>
+        @else
+            <span class="text-gray-400">-</span>
+        @endif
     </td>
     <td class="py-3.5 px-4 font-medium text-gray-500" data-label="Catatan Alergi">{{ $p->catatan_alergi ?? '-' }}
     </td>

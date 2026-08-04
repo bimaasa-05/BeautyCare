@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Riwayat Stok - BeautyCare</title>
+    <title>Mutasi Stok - BeautyCare</title>
     @include('partials.head-meta')
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -205,9 +205,10 @@
                                     </span>
                                 </div>
                                 <div class="ph-text">
-                                    <h3>Riwayat Mutasi Stok</h3>
-                                    <p>Pantau seluruh pergerakan stok: barang masuk dari supplier, penjualan, dan
-                                        penyesuaian. Setiap mutasi tercatat otomatis beserta supplier pemasoknya.</p>
+                                    <h3>Mutasi Stok</h3>
+                                    <p>Kelola seluruh pergerakan stok: catat barang masuk dari supplier, refund barang
+                                        rusak / tidak sesuai, dan pantau riwayat penjualan. Ini satu-satunya tempat
+                                        perubahan stok dilakukan.</p>
                                 </div>
                             </div>
                         </div>
@@ -279,21 +280,22 @@
                     <div
                         class="bg-white rounded-2xl border border-pink-50 shadow-[0_2px_16px_rgba(236,72,153,0.07)] overflow-hidden">
                         <div class="p-5 border-b border-pink-50 flex items-center justify-between flex-wrap gap-3">
-                            <h3 class="font-bold text-gray-800">Daftar Mutasi Stok</h3>
+                            <h3 class="font-bold text-gray-800">
+                                @php
+                                    $tabType = request('type');
+                                    $judulTabel = match ($tabType) {
+                                        'Masuk' => 'Daftar Barang Masuk',
+                                        'Keluar' => 'Daftar Barang Keluar',
+                                        'Refund' => 'Daftar Refund Stok',
+                                        default => 'Daftar Mutasi Stok',
+                                    };
+                                @endphp
+                                {{ $judulTabel }}
+                            </h3>
                             <div class="flex items-center gap-2 flex-wrap">
                                 <form method="GET" action="{{ route('admin.stok.index') }}"
                                     class="flex items-center gap-2 flex-wrap">
-                                    <select name="type"
-                                        class="bg-[#FFF7FA] border border-pink-100 rounded-xl text-xs px-3 py-2 focus:outline-none focus:border-pink-300">
-                                        <option value="">Semua Tipe</option>
-                                        <option value="Masuk" {{ request('type') == 'Masuk' ? 'selected' : '' }}>Masuk
-                                        </option>
-                                        <option value="Keluar" {{ request('type') == 'Keluar' ? 'selected' : '' }}>
-                                            Keluar</option>
-                                        <option value="Penyesuaian"
-                                            {{ request('type') == 'Penyesuaian' ? 'selected' : '' }}>Penyesuaian
-                                        </option>
-                                    </select>
+                                    <input type="hidden" name="type" value="{{ $tabType }}">
                                     <input type="date" name="dari" value="{{ request('dari') }}"
                                         class="bg-[#FFF7FA] border border-pink-100 rounded-xl text-xs px-3 py-2 focus:outline-none focus:border-pink-300">
                                     <input type="date" name="sampai" value="{{ request('sampai') }}"
@@ -312,7 +314,37 @@
                                         <path d="M12 5v14"></path>
                                     </svg> Catat Barang Masuk
                                 </a>
+                                <a href="{{ route('admin.stok.refund-create') }}"
+                                    class="flex items-center gap-1.5 px-3 py-2 bg-gradient-to-r from-violet-500 to-purple-700 text-white rounded-xl text-xs font-bold shadow-sm hover:opacity-95">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                                        <path d="M3 3v5h5"></path>
+                                    </svg> Catat Refund
+                                </a>
                             </div>
+                        </div>
+                        <div class="flex items-center gap-2 px-5 pt-4 flex-wrap">
+                            <a href="{{ route('admin.stok.index', request()->only(['dari', 'sampai'])) }}"
+                                class="px-4 py-2 rounded-xl text-xs font-bold transition-colors {{ !$tabType ? 'bg-gradient-to-r from-[#EC4899] to-[#BE185D] text-white shadow-sm' : 'bg-[#FFF7FA] text-gray-500 hover:bg-pink-50' }}">
+                                Semua <span class="ml-1 opacity-70">({{ $totalMutasi }})</span>
+                            </a>
+                            <a href="{{ route('admin.stok.index', array_merge(request()->only(['dari', 'sampai']), ['type' => 'Masuk'])) }}"
+                                class="px-4 py-2 rounded-xl text-xs font-bold transition-colors {{ $tabType === 'Masuk' ? 'bg-emerald-500 text-white shadow-sm' : 'bg-[#FFF7FA] text-gray-500 hover:bg-pink-50' }}">
+                                <i class="fa-solid fa-arrow-down mr-1"></i>Barang Masuk
+                                <span class="ml-1 opacity-70">({{ $countMasuk }})</span>
+                            </a>
+                            <a href="{{ route('admin.stok.index', array_merge(request()->only(['dari', 'sampai']), ['type' => 'Keluar'])) }}"
+                                class="px-4 py-2 rounded-xl text-xs font-bold transition-colors {{ $tabType === 'Keluar' ? 'bg-rose-500 text-white shadow-sm' : 'bg-[#FFF7FA] text-gray-500 hover:bg-pink-50' }}">
+                                <i class="fa-solid fa-arrow-up mr-1"></i>Barang Keluar
+                                <span class="ml-1 opacity-70">({{ $countKeluar }})</span>
+                            </a>
+                            <a href="{{ route('admin.stok.index', array_merge(request()->only(['dari', 'sampai']), ['type' => 'Refund'])) }}"
+                                class="px-4 py-2 rounded-xl text-xs font-bold transition-colors {{ $tabType === 'Refund' ? 'bg-violet-500 text-white shadow-sm' : 'bg-[#FFF7FA] text-gray-500 hover:bg-pink-50' }}">
+                                <i class="fa-solid fa-rotate-left mr-1"></i>Refund
+                                <span class="ml-1 opacity-70">({{ $countRefund }})</span>
+                            </a>
                         </div>
                         <div class="overflow-x-auto">
                             <table class="w-full admin-table">
@@ -343,7 +375,7 @@
                                             $badge = match ($s->type) {
                                                 'Masuk' => 'bg-emerald-50 text-emerald-600 border-emerald-100',
                                                 'Keluar' => 'bg-red-50 text-red-500 border-red-100',
-                                                'Penyesuaian' => 'bg-amber-50 text-amber-600 border-amber-100',
+                                                'Refund' => 'bg-violet-50 text-violet-600 border-violet-100',
                                                 default => 'bg-gray-50 text-gray-500 border-gray-100',
                                             };
                                         @endphp
@@ -376,7 +408,7 @@
                                         <tr>
                                             <td colspan="9" class="px-5 py-10 text-center text-gray-400 text-sm">
                                                 <i class="fa-regular fa-face-frown text-4xl block mb-3"></i>
-                                                Belum ada mutasi stok
+                                                Belum ada data {{ strtolower($judulTabel) }}
                                             </td>
                                         </tr>
                                     @endforelse

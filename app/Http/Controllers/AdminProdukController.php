@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Produk;
-use App\Models\Stok;
 use App\Models\KategoriProduk;
 use Illuminate\Http\Request;
 
@@ -11,7 +10,7 @@ class AdminProdukController extends Controller
 {
     public function index(Request $request)
     {
-        $produk = Produk::with('kategori')->orderBy('id_produk', 'desc')->get();
+        $produk = Produk::with('kategori', 'supplier')->orderBy('id_produk', 'desc')->get();
         return view('admin.produk.index', compact('produk'));
     }
 
@@ -40,6 +39,7 @@ class AdminProdukController extends Controller
         ]);
 
         $data = $request->all();
+        $data['stok'] = 0;
 
         if ($request->hasFile('foto')) {
             $data['foto'] = $request->file('foto')->store('produk', 'public');
@@ -47,26 +47,10 @@ class AdminProdukController extends Controller
 
         $produk = Produk::create($data);
 
-        if ($produk->stok > 0) {
-            Stok::create([
-                'id_produk'    => $produk->id_produk,
-                'id_supplier'  => null,
-                'tanggal'      => now()->toDateString(),
-                'type'         => 'Masuk',
-                'jumlah'       => $produk->stok,
-                'stok_sebelum' => 0,
-                'stok_sesudah' => $produk->stok,
-                'keterangan'   => 'Stok awal saat produk dibuat',
-                'ref_id'       => $produk->id_produk,
-                'ref_type'     => 'Produk',
-                'status'       => 1,
-            ]);
-        }
-
         buatNotif(auth()->id(), 'Produk Ditambahkan', 'Produk ' . $request->nm_produk . ' berhasil ditambahkan', 'Lainnya', route('admin.produk.index'));
 
         return redirect()->route('admin.produk.index')
-            ->with('success', 'Produk berhasil ditambahkan.');
+            ->with('success', 'Produk berhasil ditambahkan. Catat stok masuk melalui menu Mutasi Stok.');
     }
 
     public function edit(Produk $produk)
@@ -99,24 +83,7 @@ class AdminProdukController extends Controller
             $data['foto'] = $request->file('foto')->store('produk', 'public');
         }
 
-        $stokLama = $produk->stok;
         $produk->update($data);
-
-        if ($produk->stok != $stokLama) {
-            Stok::create([
-                'id_produk'    => $produk->id_produk,
-                'id_supplier'  => null,
-                'tanggal'      => now()->toDateString(),
-                'type'         => 'Penyesuaian',
-                'jumlah'       => abs($produk->stok - $stokLama),
-                'stok_sebelum' => $stokLama,
-                'stok_sesudah' => $produk->stok,
-                'keterangan'   => 'Penyesuaian stok dari ' . $stokLama . ' menjadi ' . $produk->stok,
-                'ref_id'       => $produk->id_produk,
-                'ref_type'     => 'Produk',
-                'status'       => 1,
-            ]);
-        }
 
         buatNotif(auth()->id(), 'Produk Diperbarui', 'Produk ' . $produk->nm_produk . ' berhasil diperbarui', 'Lainnya', route('admin.produk.edit', $produk->id_produk));
 

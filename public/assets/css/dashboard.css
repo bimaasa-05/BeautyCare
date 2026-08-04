@@ -182,17 +182,23 @@
 
 .sidebar-nav .sub-nav {
   padding-left: 44px;
+  padding-right: 6px;
   max-height: 0;
   overflow: hidden;
   transition: max-height 0.3s ease;
 }
 
 .sidebar-nav .sub-nav.open {
-  max-height: 300px;
+  max-height: 320px;
 }
 
 .sidebar-nav .sub-nav .sub-item {
-  padding: 8px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 2px;
+  padding: 9px 14px;
   font-size: 13px;
   color: var(--gray);
   border-radius: var(--radius-sm);
@@ -203,6 +209,17 @@
 .sidebar-nav .sub-nav .sub-item:hover {
   color: var(--primary);
   background: var(--hover);
+}
+
+.sidebar-nav .sub-nav .sub-item.active {
+  color: var(--primary);
+  background: #FCE7F3;
+  font-weight: var(--fw-medium);
+}
+
+.sidebar-nav .sub-nav .sub-item .nav-badge {
+  font-size: 10px;
+  padding: 1px 7px;
 }
 
 .sidebar-footer {

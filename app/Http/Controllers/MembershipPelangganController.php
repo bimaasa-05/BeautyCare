@@ -5,11 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Membership;
 use App\Models\Pelanggan;
 use App\Models\Transaksi;
-use App\Helpers\ActivityLogger;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class MembershipPelangganController extends Controller
 {
@@ -17,10 +13,7 @@ class MembershipPelangganController extends Controller
     {
         $user = Auth::user();
 
-        $pelanggan = Pelanggan::with('membership')
-            ->where('email', $user->email)
-            ->orWhere('nm_pelanggan', $user->nama)
-            ->first();
+        $pelanggan = Pelanggan::dariUser($user);
 
         if (!$pelanggan) {
             $pelanggan = Pelanggan::create([
@@ -37,7 +30,10 @@ class MembershipPelangganController extends Controller
         $totalTransaksi = 0;
         $totalBelanja = 0;
         $memberSaatIni = null;
+        $memberKadaluarsa = null;
         $diskonMember = 0;
+        $masaAkhir = null;
+        $sisaHariMember = 0;
 
         if ($pelanggan) {
             $totalTransaksi = Transaksi::where('id_pelanggan', $pelanggan->id_pelanggan)
@@ -49,12 +45,24 @@ class MembershipPelangganController extends Controller
 
             $totalBelanja = Transaksi::where('id_pelanggan', $pelanggan->id_pelanggan)
                 ->where('status', 'Lunas')
+                ->whereHas('detail', function ($q) {
+                    $q->where('jenis', 'Produk');
+                })
                 ->sum('total');
 
             if ($pelanggan->id_member) {
-                $memberSaatIni = Membership::find($pelanggan->id_member);
-                if ($memberSaatIni) {
-                    $diskonMember = $memberSaatIni->diskon;
+                $member = Membership::find($pelanggan->id_member);
+                if ($member) {
+                    $masaAkhir = $member->tanggalBerakhir($pelanggan->tgl_mulai_member);
+                    $sisaHariMember = $member->sisaHari($pelanggan->tgl_mulai_member);
+
+                    $memberAktif = $pelanggan->membershipAktif();
+                    if ($memberAktif) {
+                        $memberSaatIni = $memberAktif;
+                        $diskonMember = $memberAktif->diskon;
+                    } else {
+                        $memberKadaluarsa = $member;
+                    }
                 }
             }
         }
@@ -70,6 +78,13 @@ class MembershipPelangganController extends Controller
             $currentIndex = array_search($memberSaatIni->tingkat, $levels);
             if ($currentIndex !== false && $currentIndex < count($levels) - 1) {
                 $nextTierName = $levels[$currentIndex + 1];
+                $nextTier = $semuaMember->firstWhere('tingkat', $nextTierName);
+            }
+        } elseif ($memberKadaluarsa) {
+            $levels = ['Silver', 'Gold', 'Platinum'];
+            $lastIdx = array_search($memberKadaluarsa->tingkat, $levels);
+            if ($lastIdx !== false && $lastIdx < count($levels) - 1) {
+                $nextTierName = $levels[$lastIdx + 1];
                 $nextTier = $semuaMember->firstWhere('tingkat', $nextTierName);
             }
         } elseif ($totalTransaksi > 0 || $totalBelanja > 0) {
@@ -105,6 +120,9 @@ class MembershipPelangganController extends Controller
             'totalBelanja',
             'diskonMember',
             'memberSaatIni',
+            'memberKadaluarsa',
+            'masaAkhir',
+            'sisaHariMember',
             'semuaMember',
             'nextTier',
             'pelanggan',
@@ -116,108 +134,5 @@ class MembershipPelangganController extends Controller
             'targetBelanja',
             'targetTransaksi'
         ));
-    }
-
-    public function upgrade(Request $request)
-    {
-        $request->validate([
-            'tingkat' => 'required|string|in:Silver,Gold,Platinum',
-            'metode' => 'required|string',
-        ]);
-
-        $user = Auth::user();
-        $pelanggan = Pelanggan::with('membership')
-            ->where('email', $user->email)
-            ->orWhere('nm_pelanggan', $user->nama)
-            ->first();
-
-        if (!$pelanggan) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Data pelanggan tidak ditemukan.',
-            ], 404);
-        }
-
-        $targetTier = Membership::where('tingkat', $request->tingkat)
-            ->where('status', 'aktif')
-            ->first();
-
-        if (!$targetTier) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Level membership tidak tersedia.',
-            ], 404);
-        }
-
-        $totalTransaksi = Transaksi::where('id_pelanggan', $pelanggan->id_pelanggan)
-            ->where('status', 'Lunas')
-            ->whereHas('detail', function ($q) {
-                $q->where('jenis', 'Produk');
-            })
-            ->count();
-
-        $totalBelanja = Transaksi::where('id_pelanggan', $pelanggan->id_pelanggan)
-            ->where('status', 'Lunas')
-            ->sum('total');
-
-        if ($totalTransaksi < $targetTier->min_transaksi) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Anda belum memenuhi syarat untuk upgrade ke ' . $request->tingkat . '.',
-            ], 400);
-        }
-
-        $levels = ['Silver', 'Gold', 'Platinum'];
-        $currentTingkat = $pelanggan->membership ? $pelanggan->membership->tingkat : null;
-
-        if ($currentTingkat) {
-            $currentIdx = array_search($currentTingkat, $levels);
-            $targetIdx = array_search($request->tingkat, $levels);
-            if ($targetIdx <= $currentIdx) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Tidak dapat upgrade ke level yang sama atau lebih rendah.',
-                ], 400);
-            }
-        }
-
-        try {
-            DB::beginTransaction();
-
-            $pelanggan->id_member = $targetTier->id_member;
-            $pelanggan->tgl_mulai_member = now();
-            $pelanggan->save();
-
-            ActivityLogger::log('Mengubah', $user->nama . ' upgrade membership ke level ' . $request->tingkat, 'Membership', $pelanggan->id_pelanggan);
-
-            buatNotif(
-                $user->id,
-                'Upgrade Membership Berhasil',
-                'Selamat! Membership Anda telah di-upgrade ke level ' . $request->tingkat . '. Nikmati semua keuntungannya!',
-                'Membership',
-                route('pelanggan.membership'),
-                $user->id
-            );
-
-            DB::commit();
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Selamat! Membership Anda berhasil di-upgrade ke ' . $request->tingkat . '!',
-            ]);
-        } catch (\Exception $e) {
-            DB::rollBack();
-
-            Log::error('Membership upgrade gagal: ' . $e->getMessage(), [
-                'user_id' => $user->id,
-                'pelanggan_id' => $pelanggan->id_pelanggan,
-                'target_tier' => $request->tingkat,
-            ]);
-
-            return response()->json([
-                'success' => false,
-                'message' => 'Terjadi kesalahan saat upgrade membership.',
-            ], 500);
-        }
     }
 }
