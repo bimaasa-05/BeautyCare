@@ -334,7 +334,6 @@ Route::middleware('auth')->group(function () {
 
         //Route Membership
         Route::get('/pelanggan/membership', [MembershipPelangganController::class, 'index'])->name('pelanggan.membership');
-        Route::post('/pelanggan/membership/upgrade', [MembershipPelangganController::class, 'upgrade'])->name('pelanggan.membership.upgrade');
 
         //Route Produk
         Route::get('/pelanggan/produk', [PelangganProdukController::class, 'index'])->name('pelanggan.produk');
