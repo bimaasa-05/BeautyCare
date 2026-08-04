@@ -39,6 +39,7 @@
         .ml-item .ml-value { font-size: 12px; font-weight: 700; color: var(--primary); }
 
         .dashboard-bottom-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 24px; }
+        .dashboard-grid { align-items: start; }
         @media (max-width: 900px) { .dashboard-bottom-grid { grid-template-columns: 1fr; } }
         @media (max-width: 1200px) { .search-input-wrap input { width: 180px; } }
         @media (max-width: 768px) { .search-input-wrap input { width: 150px; } }
@@ -237,7 +238,7 @@
                     </div>
 
                     <div style="overflow-x:auto;">
-                        <table class="booking-table">
+                        <div class="overflow-x-auto"><table class="booking-table">
                             <thead>
                                 <tr>
                                     <th>ID Booking</th>
@@ -327,7 +328,7 @@
                                 </tr>
                                 @endforelse
                             </tbody>
-                        </table>
+                        </table></div>
                     </div>
 
                     <div class="table-footer">
