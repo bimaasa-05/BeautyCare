@@ -52,7 +52,7 @@
                 <div class="bg-white rounded-2xl p-6 shadow-[0_2px_10px_-4px rgba(0,0,0,0.05)] relative overflow-hidden">
                     <div class="float-icon" style="top:-15px;right:-10px;">💳</div>
 
-                    <div class="flex justify-between items-center mb-6">
+                    <div class="flex flex-wrap justify-between items-center gap-2 mb-6">
                         <div>
                             <h3 class="text-[16px] font-bold text-gray-800">
                                 <i class="fa-solid fa-credit-card text-pink-500 mr-2"></i>Proses Pembayaran
@@ -76,7 +76,7 @@
                             <h4 class="text-[12px] font-semibold text-gray-500 uppercase tracking-wider mb-3">
                                 <i class="fa-regular fa-circle-info text-pink-400 mr-1"></i>Informasi Booking
                             </h4>
-                            <table class="w-full text-[13px]">
+                            <div class="overflow-x-auto"><table class="w-full text-[13px]">
                                 <tr>
                                     <td class="py-1.5 text-gray-400 w-28">ID Booking</td>
                                     <td class="py-1.5 font-semibold text-gray-700">#{{ $booking->id_booking }}</td>
@@ -101,14 +101,14 @@
                                     <td class="py-1.5 text-gray-400">Karyawan</td>
                                     <td class="py-1.5 text-gray-700">{{ $booking->karyawan->nama ?? '-' }}</td>
                                 </tr>
-                            </table>
+                            </table></div>
                         </div>
 
                         <div class="p-4 bg-gradient-to-br from-emerald-50 to-white rounded-xl border border-emerald-100">
                             <h4 class="text-[12px] font-semibold text-gray-500 uppercase tracking-wider mb-3">
                                 <i class="fa-solid fa-list text-emerald-400 mr-1"></i>Layanan
                             </h4>
-                            <table class="w-full text-[13px]">
+                            <div class="overflow-x-auto"><table class="w-full text-[13px]">
                                 <thead>
                                     <tr class="border-b border-emerald-100">
                                         <th class="text-left py-2 text-[11px] font-semibold text-gray-400">Layanan</th>
@@ -133,7 +133,7 @@
                                         <td class="py-3 text-right text-[16px] font-bold text-pink-500">Rp {{ number_format($totalBayar, 0, ',', '.') }}</td>
                                     </tr>
                                 </tfoot>
-                            </table>
+                            </table></div>
                         </div>
                     </div>
 
