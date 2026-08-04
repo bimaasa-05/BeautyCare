@@ -653,26 +653,12 @@
                                     @endforeach
                                 </div>
 
-                                <div class="pay-group">
-                                    <div class="pg-title"><i class="fa-solid fa-mobile-screen"></i> E-Wallet</div>
-                                    @foreach(['Dana' => 'fa-solid fa-qrcode', 'GoPay' => 'fa-solid fa-qrcode', 'OVO' => 'fa-solid fa-qrcode', 'ShopeePay' => 'fa-solid fa-qrcode'] as $ewallet => $icon)
-                                    <label class="pay-option" data-metode="E-Wallet" data-provider="{{ $ewallet }}">
-                                        <input type="radio" name="pay" value="{{ $ewallet }}">
-                                        <div class="po-icon"><i class="{{ $icon }}"></i></div>
-                                        <div>
-                                            <div class="po-label">{{ $ewallet }}</div>
-                                            <div class="po-desc">Bayar cepat lewat aplikasi {{ $ewallet }}</div>
-                                        </div>
-                                    </label>
-                                    @endforeach
-                                </div>
-
                                 <button type="submit" class="btn-buat-pesanan" id="btnBuatPesanan" disabled>
                                     <i class="fa-solid fa-check-circle"></i> Buat Pesanan
                                 </button>
                                 <div class="co-note">
                                     <i class="fa-regular fa-clock"></i>
-                                    Batas bayar QRIS & E-Wallet 10 menit, Transfer 24 jam
+                                    Batas bayar QRIS 10 menit, Transfer 24 jam
                                 </div>
                             </div>
                         </div>
