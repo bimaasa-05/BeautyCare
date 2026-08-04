@@ -139,8 +139,7 @@
                         </div>
                     </div>
 
-                    <div class="overflow-x-auto">
-                        <table class="service-table">
+                    <div class="overflow-x-auto"><table class="service-table">
                             <thead>
                                 <tr>
                                     <th>Layanan</th>
@@ -173,7 +172,7 @@
                                     <td style="text-align:right;font-weight:700;">Rp {{ number_format($total, 0, ',', '.') }}</td>
                                 </tr>
                             </tfoot>
-                        </table>
+                        </table></div>
                     </div>
                 </div>
             </div>
