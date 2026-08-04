@@ -30,6 +30,7 @@ class AdminPelangganController extends Controller
                 'pelanggan.nm_pelanggan',
                 'pelanggan.alamat',
                 'pelanggan.id_member',
+                'pelanggan.tgl_mulai_member',
                 'pelanggan.catatan_alergi',
             );
 
@@ -47,6 +48,7 @@ class AdminPelangganController extends Controller
                 'nm_pelanggan',
                 'alamat',
                 'id_member',
+                'tgl_mulai_member',
                 'catatan_alergi',
             );
 
@@ -95,10 +97,14 @@ class AdminPelangganController extends Controller
         $pelanggan = $pelanggan->values();
 
         if ($request->ajax()) {
-            return view('admin.pelanggan.partials.table', compact('pelanggan'));
+            $memberships = \App\Models\Membership::all()->keyBy('id_member');
+
+            return view('admin.pelanggan.partials.table', compact('pelanggan', 'memberships'));
         }
 
-        return view('admin.pelanggan.index', compact('pelanggan'));
+        $memberships = \App\Models\Membership::all()->keyBy('id_member');
+
+        return view('admin.pelanggan.index', compact('pelanggan', 'memberships'));
     }
 
     public function create()
@@ -137,7 +143,10 @@ class AdminPelangganController extends Controller
             return redirect()->route('admin.pelanggan.index')
                 ->with('error', 'Pelanggan dari akun online tidak dapat diedit.');
         }
-        return view('admin.pelanggan.edit', compact('pelanggan'));
+        $memberships = \App\Models\Membership::where('status', 'aktif')
+            ->orderBy('nm_member')
+            ->get();
+        return view('admin.pelanggan.edit', compact('pelanggan', 'memberships'));
     }
 
     public function update(Request $request, Pelanggan $pelanggan)
@@ -173,6 +182,14 @@ class AdminPelangganController extends Controller
 
         if (!$isWalkin) {
             $data['id_member'] = $request->id_member;
+
+            if ($request->id_member) {
+                if ($pelanggan->id_member != $request->id_member || !$pelanggan->tgl_mulai_member) {
+                    $data['tgl_mulai_member'] = now()->toDateString();
+                }
+            } else {
+                $data['tgl_mulai_member'] = null;
+            }
         }
 
         if ($request->hasFile('foto')) {
