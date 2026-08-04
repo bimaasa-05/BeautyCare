@@ -1,6 +1,6 @@
 @php
     $toastMessage =
-        session('message') ?: session('error') ?: session('warning') ?: session('info') ?: session('status');
+        session('message') ?: session('success') ?: session('error') ?: session('warning') ?: session('info') ?: session('status');
     $toastType = session('error') ? 'error' : (session('warning') ? 'warning' : (session('info') ? 'info' : 'success'));
 @endphp
 @if ($toastMessage)

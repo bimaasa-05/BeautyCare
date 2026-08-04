@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Notifikasi;
+use App\Models\RiwayatAktivitas;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -34,6 +35,54 @@ class NotifikasiController extends Controller
                     'aktor_nama' => $n->aktor?->nama,
                 ];
             }),
+        ]);
+    }
+
+    public function popupAktivitas(Request $request)
+    {
+        $user = Auth::user();
+        $since = $request->input('since');
+        $now = now();
+        $items = [];
+
+        if ($since) {
+            // Popup realtime hanya untuk admin: perubahan data oleh kasir/beautycian
+            if ($user->role === 'admin') {
+                $aktivitas = RiwayatAktivitas::with('user')
+                    ->whereIn('role', ['kasir', 'beautycian'])
+                    ->where('created_at', '>', $since)
+                    ->orderByDesc('created_at')
+                    ->take(5)
+                    ->get();
+
+                foreach ($aktivitas as $a) {
+                    $pelaku = ucfirst($a->role) . ' ' . ($a->user?->nama ?? '');
+                    $items[] = [
+                        'message' => trim($pelaku) . ': ' . $a->deskripsi,
+                        'type' => 'success',
+                    ];
+                }
+                // Role lain: biarkan popup notifikasi yang sudah ada (sesuai permintaan user)
+            } else {
+                $notif = Notifikasi::with('aktor')
+                    ->where('id_user', $user->id)
+                    ->where('created_at', '>', $since)
+                    ->latest()
+                    ->take(5)
+                    ->get();
+
+                foreach ($notif as $n) {
+                    $items[] = [
+                        'message' => $n->judul . ': ' . $n->isi,
+                        'type' => 'info',
+                    ];
+                }
+            }
+        }
+
+        return response()->json([
+            'now' => $now->toIso8601String(),
+            'items' => $items,
         ]);
     }
 
