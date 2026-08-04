@@ -42,6 +42,7 @@ class AdminMembershipController extends Controller
             'diskon'       => 'required|numeric|min:0|max:100',
             'min_transaksi' => 'required|integer|min:0',
             'min_pembelian' => 'required|numeric|min:0',
+            'harga'        => 'required|numeric|min:0',
             'masa_berlaku' => 'required|integer|min:0',
             'deskripsi'    => 'nullable|string|max:500',
         ]);
@@ -52,6 +53,7 @@ class AdminMembershipController extends Controller
             'diskon'       => $request->diskon,
             'min_transaksi' => $request->min_transaksi,
             'min_pembelian' => $request->min_pembelian,
+            'harga'        => $request->harga ?: 0,
             'masa_berlaku' => $request->masa_berlaku,
             'deskripsi'    => $request->deskripsi,
             'status'       => $request->masa_berlaku > 0 ? 'aktif' : 'non_aktif',
@@ -78,6 +80,7 @@ class AdminMembershipController extends Controller
             'diskon'       => 'required|numeric|min:0|max:100',
             'min_transaksi' => 'required|integer|min:0',
             'min_pembelian' => 'required|numeric|min:0',
+            'harga'        => 'required|numeric|min:0',
             'masa_berlaku' => 'required|integer|min:0',
             'deskripsi'    => 'nullable|string|max:500',
         ]);
@@ -90,6 +93,7 @@ class AdminMembershipController extends Controller
             'diskon'       => $request->diskon,
             'min_transaksi' => $request->min_transaksi,
             'min_pembelian' => $request->min_pembelian,
+            'harga'        => $request->harga ?: 0,
             'masa_berlaku' => $request->masa_berlaku,
             'deskripsi'    => $request->deskripsi,
             'status'       => $request->masa_berlaku > 0 ? 'aktif' : 'non_aktif',

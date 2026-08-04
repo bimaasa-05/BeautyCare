@@ -68,12 +68,9 @@ class PelangganController extends Controller
 
         $user = auth()->user();
         $diskonMember = 0;
-        $pelanggan = Pelanggan::where('email', $user->email)
-            ->orWhere('nm_pelanggan', $user->nama)
-            ->orWhere('id_user', $user->id)
-            ->first();
+        $pelanggan = Pelanggan::dariUser($user);
         if ($pelanggan && $pelanggan->id_member) {
-            $member = Membership::find($pelanggan->id_member);
+            $member = $pelanggan->membershipAktif();
             if ($member) {
                 $diskonMember = (int) $member->diskon;
             }
@@ -180,12 +177,9 @@ class PelangganController extends Controller
             ->get();
 
         $diskonMember = 0;
-        $pelanggan = Pelanggan::where('email', $user->email)
-            ->orWhere('nm_pelanggan', $user->nama)
-            ->orWhere('id_user', $user->id)
-            ->first();
+        $pelanggan = Pelanggan::dariUser($user);
         if ($pelanggan && $pelanggan->id_member) {
-            $member = Membership::find($pelanggan->id_member);
+            $member = $pelanggan->membershipAktif();
             if ($member) {
                 $diskonMember = (int) $member->diskon;
             }

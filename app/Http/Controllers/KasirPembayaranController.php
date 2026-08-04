@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Booking;
 use App\Models\Produk;
 use App\Models\Transaksi;
+use App\Models\Pelanggan;
+use App\Models\Membership;
 use App\Models\DetailTransaksi;
 use Illuminate\Http\Request;
 use App\Helpers\ActivityLogger;
@@ -226,6 +228,22 @@ class KasirPembayaranController extends Controller
                         'paid_at' => now(),
                         'no_referensi' => $request->no_referensi ?? $transaksi->pembayaran->kode_pembayaran,
                     ]);
+                }
+
+                $detailMembership = $transaksi->detail->firstWhere('jenis', 'Membership');
+                if ($detailMembership && $transaksi->id_pelanggan) {
+                    $pelanggan = Pelanggan::find($transaksi->id_pelanggan);
+                    $tier = Membership::find($detailMembership->id_item);
+
+                    if ($pelanggan && $tier) {
+                        $pelanggan->id_member = $tier->id_member;
+                        $pelanggan->tgl_mulai_member = now();
+                        $pelanggan->save();
+
+                        ActivityLogger::log('Mengubah', $transaksi->user->nama ?? 'Pelanggan' . ' membership diaktifkan ke level ' . $tier->tingkat . ' via pembayaran ' . $transaksi->no_invoice, 'Membership', $pelanggan->id_pelanggan);
+
+                        buatNotif($transaksi->id_user, 'Membership Aktif', 'Selamat! Membership ' . $tier->tingkat . ' Anda telah aktif. Nikmati semua keuntungannya!', 'Membership', route('pelanggan.membership'));
+                    }
                 }
             });
 
