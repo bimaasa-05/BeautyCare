@@ -516,8 +516,8 @@
                                 <p>Periksa pesanan Anda lalu pilih metode pembayaran</p>
                             </div>
                         </div>
-                        <a href="{{ route('pelanggan.keranjang') }}" class="btn-back">
-                            <i class="fa-solid fa-arrow-left"></i> Kembali ke Keranjang
+                        <a href="{{ $isMembership ? route('pelanggan.membership') : route('pelanggan.keranjang') }}" class="btn-back">
+                            <i class="fa-solid fa-arrow-left"></i> {{ $isMembership ? 'Kembali ke Membership' : 'Kembali ke Keranjang' }}
                         </a>
                     </div>
                 </div>
@@ -541,6 +541,9 @@
                     <input type="hidden" name="beli" value="{{ request('beli') }}">
                     <input type="hidden" name="qty" value="{{ request('qty', 1) }}">
                     @endif
+                    @if(request('beli_membership'))
+                    <input type="hidden" name="beli_membership" value="{{ request('beli_membership') }}">
+                    @endif
 
                     <div class="checkout-layout">
                         <div class="checkout-card">
@@ -548,7 +551,7 @@
                                 <div class="cc-icon"><i class="fa-solid fa-receipt"></i></div>
                                 <div>
                                     <div class="cc-title">Ringkasan Pesanan</div>
-                                    <div class="cc-subtitle">{{ count($items) }} produk siap diproses</div>
+                                    <div class="cc-subtitle">{{ count($items) }} {{ $isMembership ? 'paket membership siap diproses' : 'produk siap diproses' }}</div>
                                 </div>
                             </div>
                             <div class="cc-body">
@@ -556,7 +559,13 @@
                                 <div class="co-item">
                                     <div class="coi-info">
                                         <div class="coi-nama">{{ $item['nm_produk'] }}</div>
-                                        <div class="coi-meta">{{ $item['kategori'] }} &bull; {{ $item['qty'] }} x Rp {{ number_format($item['harga_satuan'], 0, ',', '.') }} &bull; Stok: {{ $item['stok'] }}</div>
+                                        <div class="coi-meta">
+                                            @if($isMembership)
+                                            {{ $item['kategori'] }} {{ $membership->tingkat }} &bull; Masa berlaku {{ $membership->masa_berlaku }} hari &bull; Sekali bayar
+                                            @else
+                                            {{ $item['kategori'] }} &bull; {{ $item['qty'] }} x Rp {{ number_format($item['harga_satuan'], 0, ',', '.') }} &bull; Stok: {{ $item['stok'] }}
+                                            @endif
+                                        </div>
                                     </div>
                                     <div class="coi-harga">Rp {{ number_format($item['subtotal'], 0, ',', '.') }}</div>
                                 </div>
