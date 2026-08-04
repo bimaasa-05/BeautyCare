@@ -353,6 +353,7 @@
         font-size: 13px;
         color: var(--dark);
         vertical-align: middle;
+        text-align: center;
     }
 
     .treatment-table tbody td:first-child {
@@ -737,8 +738,18 @@
                                 @forelse($bookings as $booking)
                                 <tr>
                                     <td><span class="treatment-id-badge"><i class="fa-solid fa-receipt" style="font-size:10px;"></i> #BK{{ str_pad($booking->id_booking, 3, '0', STR_PAD_LEFT) }}</span></td>
-                                    <td data-label="Tanggal">{{ \Carbon\Carbon::parse($booking->tanggal)->isoFormat('D MMM YYYY') }}</td>
-                                    <td data-label="Jam">{{ \Carbon\Carbon::parse($booking->jam)->format('H:i') }}</td>
+                                    <td data-label="Tanggal">
+                                        <div class="flex items-center gap-1.5">
+                                            <i class="fa-regular fa-calendar text-gray-300 text-[11px]"></i>
+                                            <span>{{ \Carbon\Carbon::parse($booking->tanggal)->isoFormat('D MMM YYYY') }}</span>
+                                        </div>
+                                    </td>
+                                    <td data-label="Jam">
+                                        <div class="flex items-center gap-1.5">
+                                            <i class="fa-regular fa-clock text-gray-300 text-[11px]"></i>
+                                            <span>{{ \Carbon\Carbon::parse($booking->jam)->format('H:i') }}</span>
+                                        </div>
+                                    </td>
                                     <td data-label="Terapis">
                                         <div class="therapist-cell">
                                             <div class="th-avatar">{{ $booking->karyawan ? substr($booking->karyawan->nama, 0, 1) : '?' }}</div>
@@ -786,9 +797,6 @@
                         <div class="tf-info">
                             <span class="tf-dot"></span>
                             Menampilkan <span id="treatmentCount">{{ $bookings->count() }}</span> treatment
-                        </div>
-                        <div class="tf-pagination">
-                            <button class="page-btn active">1</button>
                         </div>
                     </div>
                 </div>
