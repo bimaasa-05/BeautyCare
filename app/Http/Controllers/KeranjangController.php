@@ -208,22 +208,7 @@ class KeranjangController extends Controller
     {
         $user = auth()->user();
 
-        $pelanggan = Pelanggan::where('email', $user->email)
-            ->orWhere('nm_pelanggan', $user->nama)
-            ->orWhere('id_user', $user->id)
-            ->first();
-
-        if (!$pelanggan) {
-            $pelanggan = Pelanggan::create([
-                'nm_pelanggan' => $user->nama,
-                'email' => $user->email,
-                'no_hp' => $user->no_hp ?? '',
-                'alamat' => '',
-                'catatan_alergi' => '',
-                'id_user' => $user->id,
-                'id_member' => 1,
-            ]);
-        }
+        $pelanggan = Pelanggan::dariUserOrCreate($user);
 
         $lastId = Transaksi::max('id_transaksi') + 1;
         $no_invoice = 'INV-' . date('Ymd') . '-' . str_pad($lastId, 4, '0', STR_PAD_LEFT);

@@ -278,10 +278,16 @@
                             </div>
 
                             <div id="memberField" @if($isWalkin) class="opacity-40 pointer-events-none" @endif>
-                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Member ID</label>
-                                <input type="number" name="id_member" value="{{ old('id_member', $pelanggan->id_member) }}"
-                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('id_member') border-red-300 @enderror"
-                                    placeholder="{{ $isWalkin ? 'Tidak tersedia untuk Walk-in' : 'Masukkan ID member (opsional)' }}" {{ $isWalkin ? 'disabled' : '' }}>
+                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Membership</label>
+                                <select name="id_member" {{ $isWalkin ? 'disabled' : '' }}
+                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all @error('id_member') border-red-300 @enderror">
+                                    <option value="">-- Tanpa Membership --</option>
+                                    @foreach ($memberships ?? [] as $m)
+                                        <option value="{{ $m->id_member }}" {{ old('id_member', $pelanggan->id_member) == $m->id_member ? 'selected' : '' }}>
+                                            {{ $m->nm_member }} ({{ $m->tingkat }} - Diskon {{ $m->diskon }}% - {{ $m->masa_berlaku }} hari)
+                                        </option>
+                                    @endforeach
+                                </select>
                                 @error('id_member')
                                     <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
                                 @enderror

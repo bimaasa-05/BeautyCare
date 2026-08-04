@@ -353,6 +353,7 @@
         font-size: 13px;
         color: var(--dark);
         vertical-align: middle;
+        text-align: center;
     }
 
     .reservasi-table tbody td:first-child {

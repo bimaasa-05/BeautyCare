@@ -506,18 +506,65 @@
         color: #ccc;
     }
 
-    .member-tier-card .mt-body .mt-price {
-        font-size: 13px;
-        font-weight: 600;
-        color: var(--dark);
-        line-height: 1.4;
+    .member-tier-card .mt-body .mt-syarat {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 1px dashed var(--border);
     }
 
-    .member-tier-card .mt-body .mt-price span {
-        display: block;
+    .member-tier-card .mt-body .mt-syarat-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--dark);
+    }
+
+    .member-tier-card .mt-body .mt-syarat-row i {
+        color: var(--primary);
+        width: 16px;
+        font-size: 12px;
+        flex-shrink: 0;
+    }
+
+    .member-tier-card .mt-body .mt-syarat-status {
+        font-size: 10px;
+        font-weight: 700;
+        padding: 2px 8px;
+        border-radius: 100px;
+        white-space: nowrap;
+    }
+
+    .member-tier-card .mt-body .mt-syarat-status.ok {
+        background: #D1FAE5;
+        color: #059669;
+    }
+
+    .member-tier-card .mt-body .mt-syarat-status.kurang {
+        background: #FEF3C7;
+        color: #D97706;
+    }
+
+    .member-tier-card .mt-body .mt-validity {
+        display: flex;
+        align-items: center;
+        gap: 8px;
         font-size: 12px;
         font-weight: 600;
+        color: var(--gray);
+        margin-top: 12px;
+    }
+
+    .member-tier-card .mt-body .mt-validity i {
         color: var(--primary);
+        width: 18px;
+        font-size: 13px;
+        flex-shrink: 0;
     }
 
     .mt-btn {
@@ -635,404 +682,6 @@
         margin: 0;
     }
 
-    .upgrade-modal {
-        display: none;
-        position: fixed;
-        inset: 0;
-        background: rgba(0,0,0,0.4);
-        z-index: 999;
-        align-items: center;
-        justify-content: center;
-        padding: 20px;
-    }
-
-    .upgrade-modal.show {
-        display: flex;
-    }
-
-    .upgrade-modal .um-card {
-        background: var(--white);
-        border-radius: 24px;
-        max-width: 420px;
-        width: 100%;
-        overflow: hidden;
-        box-shadow: 0 20px 60px rgba(0,0,0,0.15);
-        animation: modalIn 0.3s ease;
-    }
-
-    @keyframes modalIn {
-        from { opacity: 0; transform: scale(0.92) translateY(20px); }
-        to { opacity: 1; transform: scale(1) translateY(0); }
-    }
-
-    .upgrade-modal .um-banner {
-        height: 120px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        position: relative;
-    }
-
-    .upgrade-modal .um-banner.gold {
-        background: linear-gradient(135deg, #F59E0B, #FBBF24);
-    }
-
-    .upgrade-modal .um-banner.platinum {
-        background: linear-gradient(135deg, #6366F1, #818CF8);
-    }
-
-    .upgrade-modal .um-banner .um-icon {
-        width: 56px;
-        height: 56px;
-        border-radius: 50%;
-        background: rgba(255,255,255,0.2);
-        backdrop-filter: blur(8px);
-        border: 1px solid rgba(255,255,255,0.15);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #fff;
-        font-size: 24px;
-    }
-
-    .upgrade-modal .um-close {
-        position: absolute;
-        top: 14px;
-        right: 14px;
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        border: none;
-        background: rgba(255,255,255,0.2);
-        backdrop-filter: blur(8px);
-        color: #fff;
-        font-size: 16px;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: all 0.2s ease;
-    }
-
-    .upgrade-modal .um-close:hover {
-        background: rgba(255,255,255,0.35);
-        transform: scale(1.05);
-    }
-
-    .upgrade-modal .um-body {
-        padding: 24px;
-    }
-
-    .upgrade-modal .um-body .um-tier {
-        font-size: 14px;
-        color: var(--gray);
-        font-weight: 500;
-        margin-bottom: 2px;
-    }
-
-    .upgrade-modal .um-body .um-title {
-        font-size: 22px;
-        font-weight: 800;
-        color: var(--dark);
-        margin-bottom: 4px;
-    }
-
-    .upgrade-modal .um-body .um-desc {
-        font-size: 13px;
-        color: var(--gray);
-        line-height: 1.5;
-        margin-bottom: 20px;
-    }
-
-    .upgrade-modal .um-body .um-price-label {
-        font-size: 11px;
-        font-weight: 600;
-        color: var(--gray);
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        margin-bottom: 4px;
-    }
-
-    .upgrade-modal .um-body .um-price {
-        font-size: 28px;
-        font-weight: 800;
-        color: var(--primary);
-    }
-
-    .upgrade-modal .um-body .um-price span {
-        font-size: 14px;
-        font-weight: 500;
-        color: var(--gray);
-    }
-
-    .upgrade-modal .um-body .um-divider {
-        height: 1px;
-        background: var(--border);
-        margin: 20px 0;
-    }
-
-    .upgrade-modal .um-body .um-benefits-title {
-        font-size: 13px;
-        font-weight: 700;
-        color: var(--dark);
-        margin-bottom: 12px;
-    }
-
-    .upgrade-modal .um-body .um-benefits {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        margin-bottom: 20px;
-    }
-
-    .upgrade-modal .um-body .um-benefits .um-benefit-item {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        font-size: 13px;
-        color: var(--dark);
-    }
-
-    .upgrade-modal .um-body .um-benefits .um-benefit-item i {
-        width: 18px;
-        font-size: 13px;
-        color: var(--primary);
-        flex-shrink: 0;
-    }
-
-    .um-btn-upgrade {
-        width: 100%;
-        padding: 14px;
-        border-radius: 12px;
-        border: none;
-        font-size: 14px;
-        font-weight: 700;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        font-family: 'Poppins', sans-serif;
-        background: linear-gradient(135deg, var(--primary), #FF7BA6);
-        color: #fff;
-        box-shadow: 0 4px 16px rgba(255, 79, 135, 0.25);
-    }
-
-    .um-btn-upgrade:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 24px rgba(255, 79, 135, 0.35);
-    }
-
-    .payment-modal {
-        display: none;
-        position: fixed;
-        inset: 0;
-        background: rgba(0,0,0,0.4);
-        z-index: 1000;
-        align-items: center;
-        justify-content: center;
-        padding: 20px;
-    }
-
-    .payment-modal.show {
-        display: flex;
-    }
-
-    .payment-modal .pm-card {
-        background: var(--white);
-        border-radius: 24px;
-        max-width: 480px;
-        width: 100%;
-        max-height: 90vh;
-        overflow-y: auto;
-        box-shadow: 0 20px 60px rgba(0,0,0,0.15);
-        animation: modalIn 0.3s ease;
-    }
-
-    .payment-modal .pm-header {
-        padding: 24px 28px 0;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-    }
-
-    .payment-modal .pm-header h3 {
-        font-size: 18px;
-        font-weight: 700;
-        color: var(--dark);
-        margin: 0;
-    }
-
-    .payment-modal .pm-close {
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        border: none;
-        background: #f1f5f9;
-        color: var(--gray);
-        font-size: 16px;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: all 0.2s ease;
-    }
-
-    .payment-modal .pm-close:hover {
-        background: #e2e8f0;
-    }
-
-    .payment-modal .pm-info {
-        padding: 16px 28px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        background: #FFF5F8;
-        margin: 16px 28px;
-        border-radius: 12px;
-    }
-
-    .payment-modal .pm-info .pmi-label {
-        font-size: 13px;
-        font-weight: 600;
-        color: var(--gray);
-    }
-
-    .payment-modal .pm-info .pmi-nominal {
-        font-size: 20px;
-        font-weight: 800;
-        color: var(--primary);
-    }
-
-    .payment-modal .pm-divider {
-        height: 1px;
-        background: var(--border);
-        margin: 0 28px;
-    }
-
-    .payment-modal .pm-payment {
-        padding: 0 28px 24px;
-    }
-
-    .payment-modal .pm-payment .pmp-title {
-        font-size: 12px;
-        font-weight: 700;
-        color: var(--gray);
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        margin-bottom: 12px;
-    }
-
-    .payment-modal .pmp-group {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 8px;
-    }
-
-    .payment-modal .pmp-option {
-        position: relative;
-    }
-
-    .payment-modal .pmp-option input {
-        position: absolute;
-        opacity: 0;
-        pointer-events: none;
-    }
-
-    .payment-modal .pmp-option label {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 10px 14px;
-        border-radius: 12px;
-        border: 1.5px solid var(--border);
-        background: #FAFAFA;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        font-size: 12px;
-        font-weight: 600;
-        color: var(--dark);
-        font-family: 'Poppins', sans-serif;
-    }
-
-    .payment-modal .pmp-option label:hover {
-        border-color: var(--primary);
-        background: var(--hover);
-    }
-
-    .payment-modal .pmp-option input:checked + label {
-        border-color: var(--primary);
-        background: linear-gradient(135deg, var(--primary), #FF7BA6);
-        color: #fff;
-        box-shadow: 0 4px 12px rgba(255, 79, 135, 0.2);
-    }
-
-    .payment-modal .pm-bayar {
-        margin: 0 28px 24px;
-        width: calc(100% - 56px);
-        padding: 14px;
-        border-radius: 12px;
-        border: none;
-        font-size: 14px;
-        font-weight: 700;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        font-family: 'Poppins', sans-serif;
-        background: linear-gradient(135deg, var(--primary), #FF7BA6);
-        color: #fff;
-        box-shadow: 0 4px 16px rgba(255, 79, 135, 0.25);
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-    }
-
-    .payment-modal .pm-bayar:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 24px rgba(255, 79, 135, 0.35);
-    }
-
-    .notif-toast {
-        position: fixed;
-        top: 24px;
-        right: 24px;
-        z-index: 9999;
-        color: #fff;
-        padding: 14px 24px;
-        border-radius: 14px;
-        font-size: 13px;
-        font-weight: 600;
-        font-family: 'Poppins', sans-serif;
-        box-shadow: 0 8px 30px rgba(0,0,0,0.15);
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        transform: translateX(120%);
-        transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-        max-width: 380px;
-    }
-
-    .notif-toast.show {
-        transform: translateX(0);
-    }
-
-    .notif-toast .nt-icon {
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        background: rgba(255,255,255,0.15);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 14px;
-        flex-shrink: 0;
-    }
-
-    .notif-toast.success {
-        background: #166534;
-    }
-
-    .notif-toast.error {
-        background: #991B1B;
-    }
-
     @media (max-width: 768px) {
         .member-tier-grid {
             grid-template-columns: 1fr;
@@ -1048,10 +697,6 @@
             grid-template-columns: 1fr;
         }
 
-        .payment-modal .pmp-group {
-            grid-template-columns: 1fr;
-        }
-
         .page-header-premium { padding: 22px 20px; }
         .member-status-card { padding: 22px 20px; }
     }
@@ -1059,10 +704,6 @@
     @media (max-width: 576px) {
         .page-header-premium .ph-text h3 { font-size: 17px; }
         .page-header-premium .ph-icon-wrap { width: 44px; height: 44px; border-radius: 13px; font-size: 18px; }
-        .payment-modal .pm-header { padding: 16px 16px 0; }
-        .payment-modal .pm-info { margin: 12px 16px; padding: 12px 16px; }
-        .payment-modal .pm-divider { margin: 0 16px; }
-        .payment-modal .pm-payment { padding: 0 16px 16px; }
     }
     </style>
 </head>
@@ -1099,12 +740,32 @@
                             </div>
                             <div class="ms-text">
                                 <h3>Status Keanggotaan</h3>
-                                <p>Anda saat ini terdaftar sebagai member aktif BeautyCare</p>
+                                @if($memberSaatIni)
+                                    <p>
+                                        @if($masaAkhir)
+                                            Berlaku s.d. {{ $masaAkhir->isoFormat('D MMM YYYY') }} &middot; Sisa {{ $sisaHariMember }} hari
+                                        @else
+                                            Anda saat ini terdaftar sebagai member aktif BeautyCare
+                                        @endif
+                                    </p>
+                                @elseif($memberKadaluarsa)
+                                    <p>Membership {{ $memberKadaluarsa->tingkat }} Anda telah berakhir{{ $masaAkhir ? ' pada ' . $masaAkhir->isoFormat('D MMM YYYY') : '' }}. Silakan perpanjang keanggotaan atau upgrade ke level yang lebih tinggi!</p>
+                                @else
+                                    <p>Anda belum terdaftar sebagai member BeautyCare</p>
+                                @endif
                             </div>
                         </div>
                         <div class="ms-level">
+                            @if($memberSaatIni)
                             <i class="fa-solid fa-crown"></i>
-                            {{ $memberSaatIni ? $memberSaatIni->tingkat . ' Member' : 'Non Member' }}
+                            {{ $memberSaatIni->tingkat }} Member
+                            @elseif($memberKadaluarsa)
+                            <i class="fa-solid fa-clock"></i>
+                            Expired
+                            @else
+                            <i class="fa-solid fa-user"></i>
+                            Non Member
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -1139,6 +800,18 @@
                         <div class="sm-label">Next Tier</div>
                     </div>
                 </div>
+
+                @if($memberKadaluarsa)
+                <div class="progres-card">
+                    <div class="pg-head">
+                        <h4><i class="fa-solid fa-clock" style="color: var(--primary); margin-right: 8px;"></i>Keanggotaan Berakhir</h4>
+                    </div>
+                    <div class="pg-info" style="border-top: none; padding-top: 0; margin-top: 0;">
+                        <i class="fa-solid fa-circle-info"></i>
+                        Anda dapat <strong>memperpanjang</strong> level {{ $memberKadaluarsa->tingkat }} atau <strong>naik ke level berikutnya</strong> dengan memenuhi syaratnya. Keuntungan member tidak berlaku lagi sampai membership diaktifkan kembali.
+                    </div>
+                </div>
+                @endif
 
                 @if($nextTier || $isMaxTier)
                 <div class="progres-card">
@@ -1224,13 +897,20 @@
                             $subtitle = $tierSubtitles[$member->tingkat] ?? '';
                             $benefits = $tierBenefits[$member->tingkat] ?? [];
                             $isCurrent = $memberSaatIni && $memberSaatIni->id_member === $member->id_member;
+                            $isRenewal = $memberKadaluarsa && $memberKadaluarsa->id_member === $member->id_member;
                             $meetsTransaksi = $totalTransaksi >= $member->min_transaksi;
+                            $meetsBelanja = $totalBelanja >= $member->min_pembelian;
+                            $meetsSyarat = $meetsTransaksi && $meetsBelanja;
+                            $kurangTransaksi = max(0, $member->min_transaksi - $totalTransaksi);
+                            $kurangBelanja = max(0, $member->min_pembelian - $totalBelanja);
                             $canUpgrade = !$isCurrent && !$memberSaatIni;
+                            $showSyarat = !$isCurrent && !$memberSaatIni;
                             if ($memberSaatIni) {
                                 $levels = ['Silver', 'Gold', 'Platinum'];
                                 $currentIdx = array_search($memberSaatIni->tingkat, $levels);
                                 $thisIdx = array_search($member->tingkat, $levels);
                                 $canUpgrade = $thisIdx > $currentIdx;
+                                $showSyarat = !$isCurrent && $thisIdx > $currentIdx;
                             }
                         @endphp
                         <div class="member-tier-card">
@@ -1259,22 +939,29 @@
                                     </div>
                                     @endforeach
                                 </div>
-                                <div class="mt-price">Min. {{ $member->min_transaksi }}x Pembelian Produk
-                                    @if ($memberSaatIni && !$isCurrent)
-                                        @php $levels = ['Silver', 'Gold', 'Platinum']; $curIdx = array_search($memberSaatIni->tingkat, $levels); $thisIdx = array_search($member->tingkat, $levels); @endphp
-                                        @if ($thisIdx > $curIdx)
-                                            <span>({{ $meetsTransaksi ? 'Terpenuhi' : 'Kurang ' . ($member->min_transaksi - $totalTransaksi) . ' Pembelian' }})</span>
+                                <div class="mt-syarat">
+                                    <div class="mt-syarat-row">
+                                        <span><i class="fa-solid fa-bag-shopping"></i> Min. {{ $member->min_transaksi }}x Pembelian Produk</span>
+                                        @if($showSyarat)
+                                        <span class="mt-syarat-status {{ $meetsTransaksi ? 'ok' : 'kurang' }}">{{ $meetsTransaksi ? 'Terpenuhi' : 'Kurang ' . $kurangTransaksi . 'x' }}</span>
                                         @endif
-                                    @elseif (!$memberSaatIni && !$isCurrent)
-                                        <span>({{ $meetsTransaksi ? 'Terpenuhi' : 'Kurang ' . ($member->min_transaksi - $totalTransaksi) . ' Pembelian' }})</span>
-                                    @endif
+                                    </div>
+                                    <div class="mt-syarat-row">
+                                        <span><i class="fa-solid fa-wallet"></i> Min. Belanja Rp {{ number_format($member->min_pembelian, 0, ',', '.') }}</span>
+                                        @if($showSyarat)
+                                        <span class="mt-syarat-status {{ $meetsBelanja ? 'ok' : 'kurang' }}">{{ $meetsBelanja ? 'Terpenuhi' : 'Kurang Rp ' . number_format($kurangBelanja, 0, ',', '.') }}</span>
+                                        @endif
+                                    </div>
+                                </div>
+                                <div class="mt-validity">
+                                    <i class="fa-regular fa-clock"></i> Masa Berlaku {{ $member->masa_berlaku }} hari
                                 </div>
                                 @if ($isCurrent)
                                 <button class="mt-btn current">
                                     <i class="fa-regular fa-circle-check"></i> Level Saat Ini
                                 </button>
-                                @elseif ($meetsTransaksi && $canUpgrade)
-                                <button class="mt-btn primary" data-tier="{{ strtolower($member->tingkat) }}" onclick="showUpgradeModal(this)">Upgrade ke {{ $member->tingkat }}</button>
+                                @elseif ($meetsSyarat && $canUpgrade)
+                                <a href="{{ route('pelanggan.checkout', ['beli_membership' => $member->id_member]) }}" class="mt-btn primary" style="display:block;">{{ $isRenewal ? 'Perpanjang ke ' . $member->tingkat : 'Upgrade ke ' . $member->tingkat }}</a>
                                 @elseif ($canUpgrade)
                                 <button class="mt-btn outline" disabled style="opacity:0.5;cursor:not-allowed;">
                                     <i class="fa-solid fa-lock"></i> Belum Memenuhi Syarat
@@ -1353,220 +1040,7 @@
         </main>
     </div>
 
-    <div class="upgrade-modal" id="upgradeModal">
-        <div class="um-card">
-            <div class="um-banner" id="modalBanner">
-                <div class="um-icon" id="modalIcon"></div>
-                <button class="um-close" onclick="closeUpgradeModal()">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-            <div class="um-body">
-                <div class="um-tier" id="modalTier"></div>
-                <div class="um-title" id="modalTitle"></div>
-                <div class="um-desc" id="modalDesc"></div>
-                <div class="um-price-label">Harga Upgrade</div>
-                <div class="um-price" id="modalPrice"></div>
-                <div class="um-divider"></div>
-                <div class="um-benefits-title"><i class="fa-regular fa-circle-check"></i> Benefit yang Didapatkan</div>
-                <div class="um-benefits" id="modalBenefits"></div>
-                <button class="um-btn-upgrade" id="modalBtn">Upgrade Sekarang</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="payment-modal" id="paymentModal">
-        <div class="pm-card">
-            <div class="pm-header">
-                <h3><i class="fa-solid fa-wallet"></i> Pembayaran Upgrade</h3>
-                <button class="pm-close" onclick="closePaymentModal()"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div class="pm-info">
-                <div class="pmi-label">Total Pembayaran</div>
-                <div class="pmi-nominal" id="pmTotal">Rp 600.000</div>
-            </div>
-            <div class="pm-divider"></div>
-            <div class="pm-payment">
-                <div class="pmp-title"><i class="fa-solid fa-credit-card"></i> Metode Pembayaran</div>
-                <div class="pmp-group">
-                    <div class="pmp-option">
-                        <input type="radio" name="pm_metode" id="pm_transfer" value="Transfer" checked>
-                        <label for="pm_transfer"><i class="fa-solid fa-building-columns"></i> Transfer</label>
-                    </div>
-                    <div class="pmp-option">
-                        <input type="radio" name="pm_metode" id="pm_dana" value="Dana">
-                        <label for="pm_dana"><i class="fa-solid fa-qrcode"></i> Dana</label>
-                    </div>
-                    <div class="pmp-option">
-                        <input type="radio" name="pm_metode" id="pm_gopay" value="GoPay">
-                        <label for="pm_gopay"><i class="fa-solid fa-qrcode"></i> GoPay</label>
-                    </div>
-                    <div class="pmp-option">
-                        <input type="radio" name="pm_metode" id="pm_ovo" value="OVO">
-                        <label for="pm_ovo"><i class="fa-solid fa-qrcode"></i> OVO</label>
-                    </div>
-                    <div class="pmp-option">
-                        <input type="radio" name="pm_metode" id="pm_shopeepay" value="ShopeePay">
-                        <label for="pm_shopeepay"><i class="fa-solid fa-qrcode"></i> ShopeePay</label>
-                    </div>
-                </div>
-            </div>
-            <button class="pm-bayar" onclick="prosesBayarUpgrade()">
-                <i class="fa-solid fa-check-circle"></i> Bayar Sekarang
-            </button>
-        </div>
-    </div>
-
-    <div class="notif-toast success" id="notifToast">
-        <div class="nt-icon"><i class="fa-solid fa-check"></i></div>
-        <span id="notifToastMsg">Berhasil!</span>
-    </div>
-
     <script>
-    var currentUpgradeTier = '';
-
-    const tierData = {
-        @foreach ($semuaMember as $member)
-        {{ strtolower($member->tingkat) }}: {
-            name: '{{ $member->tingkat }}',
-            bannerClass: '{{ strtolower($member->tingkat) }}',
-            icon: '<i class="fa-solid fa-' + '{{ $member->tingkat == "Silver" ? "medal" : ($member->tingkat == "Gold" ? "trophy" : "gem") }}' + '"></i>',
-            title: '{{ $member->tingkat }} Member',
-            desc: 'Tingkatkan pengalaman Anda dengan keuntungan eksklusif sebagai {{ $member->tingkat }} Member.',
-            price: 'Rp {{ number_format($member->min_pembelian, 0, ',', '.') }} <span>/tahun</span>',
-            priceNumeric: {{ $member->min_pembelian }},
-            benefits: [
-                @php
-                    $benefitTexts = [
-                        'Silver' => ['Diskon 5% semua layanan', 'Gratis konsultasi 1x/bulan'],
-                        'Gold' => ['Diskon 10% semua layanan', 'Gratis konsultasi 2x/bulan', 'Prioritas booking'],
-                        'Platinum' => ['Diskon 20% semua layanan', 'Gratis konsultasi 4x/bulan', 'Prioritas booking', 'Undangan event eksklusif'],
-                    ];
-                @endphp
-                @foreach ($benefitTexts[$member->tingkat] ?? [] as $b)
-                '{{ $b }}',
-                @endforeach
-            ],
-            eligible: {{ $totalTransaksi >= $member->min_transaksi ? 'true' : 'false' }}
-        },
-        @endforeach
-    };
-
-    function showUpgradeModal(btn) {
-        var tier = btn.getAttribute('data-tier');
-        var data = tierData[tier];
-        if (!data) return;
-
-        currentUpgradeTier = tier;
-
-        document.getElementById('modalBanner').className = 'um-banner ' + data.bannerClass;
-        document.getElementById('modalIcon').innerHTML = data.icon;
-        document.getElementById('modalTier').textContent = data.name + ' Membership';
-        document.getElementById('modalTitle').textContent = data.title;
-        document.getElementById('modalDesc').textContent = data.desc;
-        document.getElementById('modalPrice').innerHTML = data.price;
-
-        var benefitsEl = document.getElementById('modalBenefits');
-        benefitsEl.innerHTML = '';
-        data.benefits.forEach(function(benefit) {
-            var item = document.createElement('div');
-            item.className = 'um-benefit-item';
-            item.innerHTML = '<i class="fa-regular fa-circle-check"></i> ' + benefit;
-            benefitsEl.appendChild(item);
-        });
-
-        document.getElementById('upgradeModal').classList.add('show');
-    }
-
-    function closeUpgradeModal() {
-        document.getElementById('upgradeModal').classList.remove('show');
-    }
-
-    document.getElementById('upgradeModal').addEventListener('click', function(e) {
-        if (e.target === this) closeUpgradeModal();
-    });
-
-    document.getElementById('modalBtn').addEventListener('click', function() {
-        var data = tierData[currentUpgradeTier];
-        if (!data) return;
-
-        if (data.eligible) {
-            closeUpgradeModal();
-            document.getElementById('pmTotal').textContent = data.price.replace(/<[^>]*>/g, '');
-            document.getElementById('paymentModal').classList.add('show');
-        } else {
-            closeUpgradeModal();
-            showNotif('Anda belum memenuhi syarat untuk upgrade ke Platinum.', 'error', 5000);
-        }
-    });
-
-    function closePaymentModal() {
-        document.getElementById('paymentModal').classList.remove('show');
-    }
-
-    document.getElementById('paymentModal').addEventListener('click', function(e) {
-        if (e.target === this) closePaymentModal();
-    });
-
-    function prosesBayarUpgrade() {
-        var metode = document.querySelector('input[name="pm_metode"]:checked');
-        if (!metode) {
-            showNotif('Pilih metode pembayaran terlebih dahulu!', 'error');
-            return;
-        }
-
-        var btn = document.querySelector('.pm-bayar');
-        btn.disabled = true;
-        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Memproses...';
-
-        var data = tierData[currentUpgradeTier];
-        if (!data) {
-            showNotif('Data tier tidak ditemukan!', 'error');
-            btn.disabled = false;
-            btn.innerHTML = '<i class="fa-solid fa-check-circle"></i> Bayar Sekarang';
-            return;
-        }
-
-        fetch('{{ route("pelanggan.membership.upgrade") }}', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                'Accept': 'application/json',
-            },
-            body: JSON.stringify({
-                tingkat: data.name,
-                metode: metode.value,
-            }),
-        })
-        .then(function(res) { return res.json(); })
-        .then(function(result) {
-            closePaymentModal();
-            if (result.success) {
-                showNotif(result.message, 'success', 5000);
-                setTimeout(function() { location.reload(); }, 2000);
-            } else {
-                showNotif(result.message, 'error', 5000);
-            }
-        })
-        .catch(function() {
-            closePaymentModal();
-            showNotif('Terjadi kesalahan jaringan. Silakan coba lagi.', 'error', 5000);
-        })
-        .finally(function() {
-            btn.disabled = false;
-            btn.innerHTML = '<i class="fa-solid fa-check-circle"></i> Bayar Sekarang';
-        });
-    }
-
-    function showNotif(msg, type, duration) {
-        var el = document.getElementById('notifToast');
-        el.className = 'notif-toast ' + (type || 'success');
-        document.getElementById('notifToastMsg').textContent = msg;
-        el.classList.add('show');
-        setTimeout(function() { el.classList.remove('show'); }, duration || 3000);
-    }
-
     const now = new Date();
     const options = {
         weekday: 'long',

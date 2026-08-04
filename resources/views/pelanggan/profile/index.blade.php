@@ -311,13 +311,14 @@
         position: relative;
     }
 
-    .form-group .input-icon-wrap i {
+    .form-group .input-icon-wrap > i {
         position: absolute;
         left: 14px;
         top: 50%;
         transform: translateY(-50%);
         color: #bbb;
         font-size: 14px;
+        pointer-events: none;
     }
 
     .form-group .input-icon-wrap .toggle-pw {
@@ -333,6 +334,17 @@
         padding: 4px;
         transition: color 0.2s ease;
         line-height: 1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .form-group .input-icon-wrap .toggle-pw i {
+        display: block;
+        position: static;
+        left: auto;
+        top: auto;
+        transform: none;
     }
 
     .form-group .input-icon-wrap .toggle-pw:hover {
@@ -341,6 +353,11 @@
 
     .form-group .input-icon-wrap .form-control {
         padding-left: 40px;
+    }
+
+    .form-group .input-icon-wrap input[type="password"],
+    .form-group .input-icon-wrap input[type="text"] {
+        padding-right: 44px;
     }
 
     .form-group .input-icon-wrap input[type="password"] ~ .toggle-pw,
@@ -628,7 +645,10 @@
                                     @csrf
                                     <div class="form-group">
                                         <label>Nama Lengkap</label>
-                                        <input type="text" name="nama" class="form-control @error('nama') is-invalid @enderror" value="{{ old('nama', auth()->user()->nama) }}">
+                                        <div class="input-icon-wrap">
+                                            <i class="fa-regular fa-user"></i>
+                                            <input type="text" name="nama" class="form-control @error('nama') is-invalid @enderror" value="{{ old('nama', auth()->user()->nama) }}">
+                                        </div>
                                         @error('nama') <span style="font-size:11px;color:#DC2626;margin-top:4px;display:block;">{{ $message }}</span> @enderror
                                     </div>
                                     <div class="form-group">
@@ -669,7 +689,7 @@
                                         <div class="input-icon-wrap">
                                             <i class="fa-solid fa-lock"></i>
                                             <input type="password" name="current_password" class="form-control @error('current_password') is-invalid @enderror" placeholder="Masukkan password saat ini">
-                                            <button type="button" class="toggle-pw" onclick="togglePassword(this)" tabindex="-1"><i class="fa-regular fa-eye"></i></button>
+                                            <button type="button" class="toggle-pw" onclick="togglePassword(this)" tabindex="-1"><i class="fa-solid fa-eye"></i></button>
                                         </div>
                                         @error('current_password') <span style="font-size:11px;color:#DC2626;margin-top:4px;display:block;">{{ $message }}</span> @enderror
                                     </div>
@@ -678,7 +698,7 @@
                                         <div class="input-icon-wrap">
                                             <i class="fa-solid fa-lock"></i>
                                             <input type="password" name="new_password" class="form-control @error('new_password') is-invalid @enderror" placeholder="Masukkan password baru">
-                                            <button type="button" class="toggle-pw" onclick="togglePassword(this)" tabindex="-1"><i class="fa-regular fa-eye"></i></button>
+                                            <button type="button" class="toggle-pw" onclick="togglePassword(this)" tabindex="-1"><i class="fa-solid fa-eye"></i></button>
                                         </div>
                                         @error('new_password') <span style="font-size:11px;color:#DC2626;margin-top:4px;display:block;">{{ $message }}</span> @enderror
                                     </div>
@@ -687,7 +707,7 @@
                                         <div class="input-icon-wrap">
                                             <i class="fa-solid fa-lock"></i>
                                             <input type="password" name="new_password_confirmation" class="form-control" placeholder="Konfirmasi password baru">
-                                            <button type="button" class="toggle-pw" onclick="togglePassword(this)" tabindex="-1"><i class="fa-regular fa-eye"></i></button>
+                                            <button type="button" class="toggle-pw" onclick="togglePassword(this)" tabindex="-1"><i class="fa-solid fa-eye"></i></button>
                                         </div>
                                     </div>
                                     <button type="submit" class="btn-primary-full">
@@ -719,10 +739,10 @@
         const icon = btn.querySelector('i');
         if (input.type === 'password') {
             input.type = 'text';
-            icon.className = 'fa-regular fa-eye-slash';
+            icon.className = 'fa-solid fa-eye-slash';
         } else {
             input.type = 'password';
-            icon.className = 'fa-regular fa-eye';
+            icon.className = 'fa-solid fa-eye';
         }
     }
 
