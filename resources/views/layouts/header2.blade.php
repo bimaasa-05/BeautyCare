@@ -76,7 +76,7 @@ if (!isset($pageTitle)) {
         </span>
 
         <div class="notif-wrapper" style="position:relative;">
-            <button class="navbar-icon-btn notif-btn" id="notifBell" aria-label="Notifications" data-role="{{ auth()->user()->role }}">
+            <button class="navbar-icon-btn notif-btn" id="notifBell" aria-label="Notifications" data-role="{{ auth()->user()->role }}" data-user-id="{{ auth()->user()->id }}">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                     stroke-linecap="round" stroke-linejoin="round">
                     <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
@@ -220,6 +220,32 @@ document.addEventListener('DOMContentLoaded', function() {
 
     setInterval(loadNotif, 30000);
     loadNotif();
+
+    // Real-time popup: perubahan data kasir/beautycian (admin) & notifikasi baru
+    const POPUP_KEY = 'notifPopupSince_' + (bell.dataset.userId || '0');
+
+    function checkAktivitasBaru() {
+        const since = sessionStorage.getItem(POPUP_KEY) || '';
+        fetch('/notif/aktivitas-baru?since=' + encodeURIComponent(since))
+            .then(r => r.json())
+            .then(d => {
+                if (!since) {
+                    sessionStorage.setItem(POPUP_KEY, d.now);
+                    return;
+                }
+                if (d.items && d.items.length) {
+                    d.items.slice(0, 3).forEach(function (it) {
+                        if (typeof showToast === 'function') showToast(it.message, it.type || 'info');
+                    });
+                    loadNotif();
+                }
+                sessionStorage.setItem(POPUP_KEY, d.now);
+            })
+            .catch(function () {});
+    }
+
+    checkAktivitasBaru();
+    setInterval(checkAktivitasBaru, 5000);
 
     // Profile Dropdown
     const profileTrigger = document.getElementById('profileTrigger');
