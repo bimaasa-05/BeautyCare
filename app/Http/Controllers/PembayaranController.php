@@ -85,8 +85,8 @@ class PembayaranController extends Controller
 
         $metode = $transaksi->pembayaran?->metode ?? $transaksi->metode_byr;
         $expiresAt = in_array($metode, ['QRIS', 'E-Wallet'])
-            ? now()->addMinutes(10)
-            : now()->addHours(24);
+            ? now()->addMinutes(3) //Memulai Hitungan Mundur lagi dalam 3 Menit
+            : now()->addHours(24); //Memulai Hitungan Mundur lagi dalam 24 Jam
 
         $transaksi->pembayaran?->update([
             'status' => 'Menunggu',
