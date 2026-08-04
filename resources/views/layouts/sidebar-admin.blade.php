@@ -263,7 +263,7 @@
             });
         }
 
-        document.querySelectorAll('#sidebar .nav-item, #sidebar .sub-item').forEach(function (item) {
+        document.querySelectorAll('#sidebar .nav-item[href], #sidebar .sub-item').forEach(function (item) {
             item.addEventListener('click', function () {
                 if (window.innerWidth <= 768) {
                     closeSidebar();
