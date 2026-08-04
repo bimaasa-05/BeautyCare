@@ -367,3 +367,22 @@
     font-size: 16px;
   }
 }
+
+/* ---- Kasir & Beautycian (Tailwind pages) ---- */
+@media screen and (max-width: 1024px) {
+  .flex-1.overflow-y-auto.p-8 {
+    padding: 20px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .flex-1.overflow-y-auto.p-8 {
+    padding: 12px;
+  }
+}
+
+@media screen and (max-width: 576px) {
+  .flex-1.overflow-y-auto.p-8 {
+    padding: 8px;
+  }
+}
