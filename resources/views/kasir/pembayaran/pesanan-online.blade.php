@@ -127,8 +127,7 @@
                         </div>
                     </div>
 
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse">
+                    <div class="overflow-x-auto"><table class="w-full text-left border-collapse">
                             <thead>
                                 <tr class="text-[11px] font-bold text-gray-400 uppercase border-b border-gray-100 bg-gray-50/50">
                                     <th class="py-3 px-4">#</th>
@@ -222,7 +221,7 @@
                                 </tr>
                                 @endforelse
                             </tbody>
-                        </table>
+                        </table></div>
                     </div>
                 </div>
             </div>
