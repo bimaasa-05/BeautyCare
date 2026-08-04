@@ -23,7 +23,18 @@
         .booking-item { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid #f5f5f5; flex-wrap: wrap; }
         .booking-item:last-child { border-bottom: none; }
         .booking-item .booking-info { flex: 1; min-width: 0; }
-        .booking-item .booking-time { flex-shrink: 0; }
+        .booking-item         .booking-time { flex-shrink: 0; }
+        .dashboard-grid { align-items: start; }
+        .mini-chart-card .mc-body { min-height: 130px; }
+        .chart-card .chart-body { max-height: 380px; }
+        .jadwal-list { max-height: 240px; overflow-y: auto; }
+        .booking-next-list { max-height: 240px; overflow-y: auto; }
+        .chart-summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 14px; padding-top: 14px; border-top: 1px solid #F3E8F5; }
+        .cs-item { text-align: center; padding: 10px; border-radius: 10px; background: #FDF2F7; }
+        .cs-item .cs-label { font-size: 10px; font-weight: 600; color: var(--gray); text-transform: uppercase; letter-spacing: 0.5px; }
+        .cs-item .cs-value { font-size: 15px; font-weight: 700; color: var(--dark); margin-top: 4px; }
+        .cs-item .cs-sub { font-size: 11px; color: var(--primary); font-weight: 600; margin-top: 2px; }
+        @media (max-width: 576px) { .chart-summary { grid-template-columns: 1fr; } }
         @media (max-width: 768px) {
             .data-table thead { display: none; }
             .data-table tbody tr { display: block; padding: 12px 0; border-bottom: 1px solid var(--border); }
@@ -146,6 +157,47 @@
                         <div class="chart-body">
                             <canvas id="chartLayanan" height="280"></canvas>
                         </div>
+                        <div class="chart-summary">
+                            <div class="cs-item">
+                                <div class="cs-label">Total Layanan</div>
+                                <div class="cs-value" id="csTotal">0</div>
+                                <div class="cs-sub" id="csTotalPeriode">periode ini</div>
+                            </div>
+                            <div class="cs-item">
+                                <div class="cs-label">Hari Tertinggi</div>
+                                <div class="cs-value" id="csMax">0</div>
+                                <div class="cs-sub" id="csMaxLabel"></div>
+                            </div>
+                            <div class="cs-item">
+                                <div class="cs-label">Rata-rata</div>
+                                <div class="cs-value" id="csAvg">0</div>
+                                <div class="cs-sub">per hari</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Booking Berikutnya -->
+                    <div class="mini-chart-card">
+                        <div class="mc-header">
+                            <h3>Booking Berikutnya</h3>
+                            <a href="{{ route('beautycian.jadwal-treatment.index') }}" style="font-size:12px;color:var(--primary);font-weight:600;">Lihat Semua</a>
+                        </div>
+                        <div class="booking-next-list">
+                            @forelse($booking_mendatang->take(3) as $item)
+                            <div style="display:flex;align-items:center;gap:10px;font-size:13px;padding:10px 0;border-bottom:1px solid #f5f5f5;">
+                                <span style="color:var(--primary);font-weight:700;flex-shrink:0;">{{ \Carbon\Carbon::parse($item->jam)->format('H:i') }}</span>
+                                <div style="flex:1;min-width:0;">
+                                    <div style="font-weight:600;color:var(--dark);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ $item->pelanggan?->nm_pelanggan ?? 'Pelanggan #'.$item->id_pelanggan }}</div>
+                                    <div style="font-size:11px;color:var(--gray);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ $item->detail->pluck('layanan.nm_layanan')->implode(', ') ?: '-' }} &bull; {{ \Carbon\Carbon::parse($item->tanggal)->isoFormat('D MMM') }}</div>
+                                </div>
+                                <span class="badge badge-{{ $item->status === 'selesai' ? 'success' : ($item->status === 'diproses' ? 'primary' : ($item->status === 'dikonfirmasi' ? 'info' : 'warning')) }}">{{ $statusLabels[$item->status] ?? ucfirst($item->status) }}</span>
+                            </div>
+                            @empty
+                            <div style="text-align:center;padding:16px;color:var(--gray);font-size:13px;">
+                                Tidak ada booking mendatang
+                            </div>
+                            @endforelse
+                        </div>
                     </div>
 
                     <!-- Mini Charts Right -->
@@ -170,7 +222,7 @@
                                 <h3>Jadwal Perawatan</h3>
                                 <span class="mc-total">{{ $jadwal_hari_ini }}</span>
                             </div>
-                            <div style="display:grid;gap:8px;">
+                            <div class="jadwal-list" style="display:grid;gap:8px;">
                                 @forelse($jadwal_hari_ini_list as $item)
                                 <div style="display:flex;align-items:center;gap:10px;font-size:13px;">
                                     <span style="color:var(--primary);font-weight:600;">{{ \Carbon\Carbon::parse($item->jam)->format('H:i') }}</span>
@@ -181,6 +233,27 @@
                                 @empty
                                 <div style="text-align:center;padding:16px;color:var(--gray);font-size:13px;">
                                     Tidak ada jadwal hari ini
+                                </div>
+                                @endforelse
+                            </div>
+                        </div>
+
+                        <div class="mini-chart-card">
+                            <div class="mc-header">
+                                <h3>Produk Favorit Pelanggan</h3>
+                            </div>
+                            <div class="mc-body" style="display:grid;gap:10px;">
+                                @forelse($produk_favorit as $item)
+                                <div style="display:flex;align-items:center;gap:10px;">
+                                    <span style="color:var(--primary);font-weight:700;flex-shrink:0;font-size:13px;">{{ $maxFavorit > 0 ? round(($item->total / $maxFavorit) * 100) : 0 }}%</span>
+                                    <span style="flex:1;font-size:13px;color:var(--dark);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ $item->nm_item }}</span>
+                                    <div class="stock-bar" style="width:60px;">
+                                        <div class="fill primary" style="width:{{ $maxFavorit > 0 ? round(($item->total / $maxFavorit) * 100) : 0 }}%"></div>
+                                    </div>
+                                </div>
+                                @empty
+                                <div style="text-align:center;padding:16px;color:var(--gray);font-size:13px;">
+                                    Belum ada data produk favorit
                                 </div>
                                 @endforelse
                             </div>
@@ -196,7 +269,7 @@
                             <h3>Riwayat Treatment</h3>
                             <a href="{{ route('beautycian.laporan-reservasi.index') }}">Lihat Semua</a>
                         </div>
-                        <table class="data-table">
+                        <div class="overflow-x-auto"><table class="data-table">
                             <thead>
                                 <tr>
                                     <th>Pelanggan</th>
@@ -221,7 +294,7 @@
                                 </tr>
                                 @endforelse
                             </tbody>
-                        </table>
+                        </table></div>
                     </div>
 
                     <!-- Produk Sering Digunakan -->
@@ -229,7 +302,7 @@
                         <div class="tw-header">
                             <h3>Produk Sering Digunakan</h3>
                         </div>
-                        <table class="data-table">
+                        <div class="overflow-x-auto"><table class="data-table">
                             <thead>
                                 <tr>
                                     <th>Produk</th>
@@ -252,62 +325,7 @@
                                 </tr>
                                 @endforelse
                             </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- Dashboard Bottom Row -->
-                <div class="dashboard-bottom-row">
-
-                    <!-- Produk Favorit -->
-                    <div class="list-widget">
-                        <div class="lw-header">
-                            <h3>Produk Favorit Pelanggan</h3>
-                        </div>
-                        <div class="stock-grid">
-                            @forelse($produk_favorit as $item)
-                            <div class="stock-item">
-                                <div class="stock-icon primary">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" /></svg>
-                                </div>
-                                <div class="stock-info">
-                                    <h4>{{ $item->nm_item }}</h4>
-                                </div>
-                                <div class="stock-bar">
-                                    <div class="fill primary" style="width:{{ $maxFavorit > 0 ? round(($item->total / $maxFavorit) * 100) : 0 }}%"></div>
-                                </div>
-                                <span class="stock-qty">{{ $maxFavorit > 0 ? round(($item->total / $maxFavorit) * 100) : 0 }}%</span>
-                            </div>
-                            @empty
-                            <div style="text-align:center;padding:16px;color:var(--gray);font-size:13px;grid-column:1/-1;">
-                                Belum ada data produk favorit
-                            </div>
-                            @endforelse
-                        </div>
-                    </div>
-
-                    <!-- Booking Mendatang -->
-                    <div class="list-widget">
-                        <div class="lw-header">
-                            <h3>Booking Mendatang</h3>
-                            <a href="{{ route('beautycian.jadwal-treatment.index') }}" style="font-size:13px;color:var(--primary);font-weight:500;">Lihat Semua</a>
-                        </div>
-                        <div class="booking-list">
-                            @forelse($booking_mendatang as $item)
-                            <div class="booking-item">
-                                <img src="https://ui-avatars.com/api/?name={{ urlencode($item->pelanggan?->nm_pelanggan ?? 'User') }}&background=FFE5EF&color=FF4F87&size=40" alt="{{ $item->pelanggan?->nm_pelanggan ?? 'User' }}">
-                                <div class="booking-info">
-                                    <h4>{{ $item->pelanggan?->nm_pelanggan ?? 'Pelanggan #'.$item->id_pelanggan }}</h4>
-                                    <p>{{ $item->detail->pluck('layanan.nm_layanan')->implode(', ') ?: '-' }}</p>
-                                </div>
-                                <span class="booking-time">{{ \Carbon\Carbon::parse($item->tanggal)->isoFormat('D MMM') }} {{ \Carbon\Carbon::parse($item->jam)->format('H:i') }}</span>
-                            </div>
-                            @empty
-                            <div style="text-align:center;padding:24px;color:var(--gray);font-size:13px;">
-                                Tidak ada booking mendatang
-                            </div>
-                            @endforelse
-                        </div>
+                        </table></div>
                     </div>
                 </div>
             </div>
@@ -391,11 +409,27 @@
                 }
             }
         });
+        updateSummary(data, period);
     }
 
     function switchChartPeriod() {
         const period = document.getElementById('chartPeriod').value;
         initChart(period);
+    }
+
+    function updateSummary(data, period) {
+        const labels = data.labels || [];
+        const values = (data.values || []).map(v => Number(v));
+        const total = values.reduce((a, b) => a + b, 0);
+        const max = values.length ? Math.max(...values) : 0;
+        const idx = values.indexOf(max);
+        const avg = values.length ? Math.round(total / values.length) : 0;
+        const periodeText = period === 'month' ? 'bulan ini' : period === 'year' ? 'tahun ini' : 'minggu ini';
+        document.getElementById('csTotal').textContent = total;
+        document.getElementById('csTotalPeriode').textContent = periodeText;
+        document.getElementById('csMax').textContent = max;
+        document.getElementById('csMaxLabel').textContent = max > 0 && labels[idx] ? labels[idx] : '-';
+        document.getElementById('csAvg').textContent = avg;
     }
 
     initChart('{{ request('chart_period', 'week') }}');
