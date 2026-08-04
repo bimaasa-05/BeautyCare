@@ -59,7 +59,7 @@
                 <div class="bg-white rounded-2xl p-6 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] relative overflow-hidden">
                     <div class="float-icon" style="top:-15px;right:-10px;">📅</div>
 
-                    <div class="flex justify-between items-center mb-6">
+                    <div class="flex flex-wrap justify-between items-center gap-2 mb-6">
                         <div>
                             <h3 class="text-[16px] font-bold text-gray-800">
                                 <i class="fa-solid fa-plus-circle text-pink-500 mr-2"></i>Buat Reservasi
@@ -219,7 +219,7 @@
                             </div>
 
                             <div class="mt-4 p-4 bg-gray-50 rounded-xl">
-                                <div class="flex justify-between items-center">
+                                <div class="flex flex-wrap justify-between items-center gap-2">
                                     <span class="text-[13px] font-semibold text-gray-600">Grand Total</span>
                                     <span id="grand-total" class="text-[18px] font-bold text-pink-500">Rp 0</span>
                                 </div>
