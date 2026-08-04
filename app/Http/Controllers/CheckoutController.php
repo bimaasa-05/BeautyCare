@@ -3,12 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\DetailTransaksi;
+use App\Models\Membership;
 use App\Models\Pelanggan;
 use App\Models\Pembayaran;
 use App\Models\Produk;
 use App\Models\PromoKlaim;
 use App\Models\Transaksi;
 use App\Models\Troli;
+use App\Helpers\ActivityLogger;
 use Illuminate\Http\Request;
 
 class CheckoutController extends Controller
@@ -40,27 +42,53 @@ class CheckoutController extends Controller
 
     public function create(Request $request)
     {
-        $items = $this->resolveItems($request);
+        $isMembership = false;
+        $membership = null;
 
-        if (empty($items)) {
-            return redirect()->route('pelanggan.keranjang')->with('error', 'Keranjang Anda kosong.');
+        if ($request->beli_membership) {
+            $member = Membership::where('id_member', $request->beli_membership)
+                ->where('status', 'aktif')
+                ->first();
+
+            if (!$member || (float) $member->harga <= 0) {
+                return redirect()->route('pelanggan.membership')->with('error', 'Paket membership tidak tersedia.');
+            }
+
+            $error = $this->cekSyaratMembership($this->getOrCreatePelanggan(auth()->user()), $member);
+            if ($error) {
+                return redirect()->route('pelanggan.membership')->with('error', $error);
+            }
+
+            $items = $this->membershipItem($member);
+            $membership = $member;
+            $isMembership = true;
+        } else {
+            $items = $this->resolveItems($request);
+
+            if (empty($items)) {
+                return redirect()->route('pelanggan.keranjang')->with('error', 'Keranjang Anda kosong.');
+            }
         }
 
         $subtotal = collect($items)->sum('subtotal');
 
-        $claimedPromos = PromoKlaim::with('promo')
-            ->where('id_user', auth()->id())
-            ->where('status', 'tersedia')
-            ->get()
-            ->filter(function ($klaim) {
-                return $klaim->promo && $klaim->promo->jenis_promo !== 'Paket';
-            });
+        $claimedPromos = $isMembership
+            ? collect()
+            : PromoKlaim::with('promo')
+                ->where('id_user', auth()->id())
+                ->where('status', 'tersedia')
+                ->get()
+                ->filter(function ($klaim) {
+                    return $klaim->promo && $klaim->promo->jenis_promo !== 'Paket';
+                });
 
         $bankTujuan = self::bankTujuan();
 
-        $memberInfo = $this->hitungDiskonMember($this->getOrCreatePelanggan(auth()->user()), $subtotal);
+        $memberInfo = $isMembership
+            ? ['diskon' => 0, 'aktif' => false, 'level' => null, 'diskon_pct' => 0, 'sisa' => 0]
+            : $this->hitungDiskonMember($this->getOrCreatePelanggan(auth()->user()), $subtotal);
 
-        return view('pelanggan.checkout.index', compact('items', 'subtotal', 'claimedPromos', 'bankTujuan', 'memberInfo'));
+        return view('pelanggan.checkout.index', compact('items', 'subtotal', 'claimedPromos', 'bankTujuan', 'memberInfo', 'isMembership', 'membership'));
     }
 
     public function store(Request $request)
@@ -71,6 +99,7 @@ class CheckoutController extends Controller
             'id_promo' => 'nullable|integer',
             'beli' => 'nullable|integer',
             'qty' => 'nullable|integer|min:1',
+            'beli_membership' => 'nullable|integer',
         ]);
 
         $providers = [
@@ -80,45 +109,71 @@ class CheckoutController extends Controller
 
         abort_unless(in_array($request->provider, $providers[$request->metode]), 422);
 
-        $items = $this->resolveItems($request);
-
-        if (empty($items)) {
-            return back()->with('error', 'Tidak ada produk yang valid untuk diproses.');
-        }
-
-        foreach ($items as $item) {
-            $produk = Produk::find($item['id_produk']);
-            if (!$produk || $produk->stok < $item['qty']) {
-                return back()->with('error', 'Stok ' . $item['nm_produk'] . ' tidak mencukupi (sisa ' . ($produk->stok ?? 0) . ').');
-            }
-        }
-
         $user = auth()->user();
         $pelanggan = $this->getOrCreatePelanggan($user);
 
-        $subtotal = collect($items)->sum('subtotal');
-        $idPromo = $request->id_promo;
+        $isMembership = (bool) $request->beli_membership;
 
-        $promoDiskon = $this->hitungPromo($idPromo, $user->id, $subtotal, false);
-        if ($promoDiskon < 0) {
-            return back()->with('error', 'Promo Paket tidak berlaku untuk pembelian produk.');
+        $promoDiskon = 0;
+
+        if ($isMembership) {
+            $member = Membership::where('id_member', $request->beli_membership)
+                ->where('status', 'aktif')
+                ->first();
+
+            if (!$member || (float) $member->harga <= 0) {
+                return back()->with('error', 'Paket membership tidak tersedia.');
+            }
+
+            $error = $this->cekSyaratMembership($pelanggan, $member);
+            if ($error) {
+                return back()->with('error', $error);
+            }
+
+            $items = $this->membershipItem($member);
+            $subtotal = collect($items)->sum('subtotal');
+            $idPromo = null;
+            $diskon = 0;
+            $catatanDiskon = 'Upgrade membership ke ' . $member->tingkat;
+            $total = $subtotal;
+        } else {
+            $items = $this->resolveItems($request);
+
+            if (empty($items)) {
+                return back()->with('error', 'Tidak ada produk yang valid untuk diproses.');
+            }
+
+            foreach ($items as $item) {
+                $produk = Produk::find($item['id_produk']);
+                if (!$produk || $produk->stok < $item['qty']) {
+                    return back()->with('error', 'Stok ' . $item['nm_produk'] . ' tidak mencukupi (sisa ' . ($produk->stok ?? 0) . ').');
+                }
+            }
+
+            $subtotal = collect($items)->sum('subtotal');
+            $idPromo = $request->id_promo;
+
+            $promoDiskon = $this->hitungPromo($idPromo, $user->id, $subtotal, false);
+            if ($promoDiskon < 0) {
+                return back()->with('error', 'Promo Paket tidak berlaku untuk pembelian produk.');
+            }
+
+            $memberInfo = $this->hitungDiskonMember($pelanggan, $subtotal);
+            $memberDiskon = $memberInfo['diskon'];
+
+            $pakaiPromo = $promoDiskon > 0 && $promoDiskon >= $memberDiskon;
+            $diskon = $pakaiPromo ? $promoDiskon : $memberDiskon;
+
+            $catatanDiskon = '';
+            if ($pakaiPromo) {
+                $this->tandaiPromo($idPromo, $user->id);
+                $catatanDiskon = 'Diskon: Promo';
+            } elseif ($memberDiskon > 0) {
+                $catatanDiskon = 'Diskon: Member ' . $memberInfo['level'] . ' ' . (float) $memberInfo['diskon_pct'] . '%';
+            }
+
+            $total = $subtotal - $diskon;
         }
-
-        $memberInfo = $this->hitungDiskonMember($pelanggan, $subtotal);
-        $memberDiskon = $memberInfo['diskon'];
-
-        $pakaiPromo = $promoDiskon > 0 && $promoDiskon >= $memberDiskon;
-        $diskon = $pakaiPromo ? $promoDiskon : $memberDiskon;
-
-        $catatanDiskon = '';
-        if ($pakaiPromo) {
-            $this->tandaiPromo($idPromo, $user->id);
-            $catatanDiskon = 'Diskon: Promo';
-        } elseif ($memberDiskon > 0) {
-            $catatanDiskon = 'Diskon: Member ' . $memberInfo['level'] . ' ' . (float) $memberInfo['diskon_pct'] . '%';
-        }
-
-        $total = $subtotal - $diskon;
 
         $lastId = Transaksi::max('id_transaksi') + 1;
         $noInvoice = 'INV-' . date('Ymd') . '-' . str_pad($lastId, 4, '0', STR_PAD_LEFT);
@@ -141,6 +196,21 @@ class CheckoutController extends Controller
         ]);
 
         foreach ($items as $item) {
+            if (!empty($item['id_member'])) {
+                DetailTransaksi::create([
+                    'id_transaksi' => $transaksi->id_transaksi,
+                    'jenis' => 'Membership',
+                    'id_item' => $item['id_member'],
+                    'nm_item' => $item['nm_produk'],
+                    'qty' => 1,
+                    'harga' => $item['harga_satuan'],
+                    'diskon' => 0,
+                    'subtotal' => $item['subtotal'],
+                    'id_promo' => null,
+                ]);
+                continue;
+            }
+
             $itemSubtotal = $item['subtotal'];
             $itemDiskon = 0;
             $itemIdPromo = null;
@@ -175,9 +245,11 @@ class CheckoutController extends Controller
             'expires_at' => $expiresAt,
         ]);
 
-        if (!$request->beli) {
+        if (!$request->beli && !$isMembership) {
             Troli::where('id_user', $user->id)->delete();
         }
+
+        ActivityLogger::log('Menambahkan', $user->nama . ' membuat pesanan ' . $noInvoice . ' via ' . $request->provider . ' (menunggu pembayaran)', 'Transaksi', $transaksi->id_transaksi);
 
         buatNotif($user->id, 'Pesanan Dibuat', 'Pesanan ' . $noInvoice . ' berhasil dibuat. Silakan selesaikan pembayaran.', 'Transaksi', route('pelanggan.pembayaran.show', $transaksi->id_transaksi));
 
@@ -219,7 +291,7 @@ class CheckoutController extends Controller
                 ? Produk::with('kategori')->find($t->id_produk)
                 : Produk::with('kategori')->where('nm_produk', $t->nm_produk)->first();
 
-            if (!$produk || $produk->status !== 'Tersedia') {
+            if (!$produk || $produk->status !== 'Tersedia' || $produk->stok <= 0) {
                 continue;
             }
 
@@ -240,24 +312,7 @@ class CheckoutController extends Controller
 
     protected function getOrCreatePelanggan($user)
     {
-        $pelanggan = Pelanggan::where('email', $user->email)
-            ->orWhere('nm_pelanggan', $user->nama)
-            ->orWhere('id_user', $user->id)
-            ->first();
-
-        if (!$pelanggan) {
-            $pelanggan = Pelanggan::create([
-                'nm_pelanggan' => $user->nama,
-                'email' => $user->email,
-                'no_hp' => $user->no_hp ?? '',
-                'alamat' => '',
-                'catatan_alergi' => '',
-                'id_user' => $user->id,
-                'id_member' => 1,
-            ]);
-        }
-
-        return $pelanggan;
+        return Pelanggan::dariUserOrCreate($user);
     }
 
     protected function hitungPromo($idPromo, $userId, $subtotal, $markUsed = true)
@@ -318,6 +373,59 @@ class CheckoutController extends Controller
             ->count();
     }
 
+    protected function hitungTotalBelanjaProduk($pelangganId)
+    {
+        return Transaksi::where('id_pelanggan', $pelangganId)
+            ->where('status', 'Lunas')
+            ->whereHas('detail', function ($q) {
+                $q->where('jenis', 'Produk');
+            })
+            ->sum('total');
+    }
+
+    protected function cekSyaratMembership(?Pelanggan $pelanggan, Membership $member): ?string
+    {
+        if (!$pelanggan) {
+            return 'Data pelanggan tidak ditemukan.';
+        }
+
+        $totalTransaksi = $this->hitungPembelianProduk($pelanggan->id_pelanggan);
+        $totalBelanja = $this->hitungTotalBelanjaProduk($pelanggan->id_pelanggan);
+
+        if ($totalTransaksi < (int) $member->min_transaksi || $totalBelanja < (int) $member->min_pembelian) {
+            return 'Anda belum memenuhi syarat upgrade ke ' . $member->tingkat . '. Syarat: min. '
+                . $member->min_transaksi . 'x pembelian produk & min. belanja Rp '
+                . number_format($member->min_pembelian, 0, ',', '.') . '.';
+        }
+
+        $currentAktif = $pelanggan->membershipAktif();
+        if ($currentAktif) {
+            $levels = ['Silver', 'Gold', 'Platinum'];
+            $currentIdx = array_search($currentAktif->tingkat, $levels);
+            $targetIdx = array_search($member->tingkat, $levels);
+            if ($currentIdx !== false && $targetIdx !== false && $targetIdx <= $currentIdx) {
+                return 'Tidak dapat upgrade ke level yang sama atau lebih rendah.';
+            }
+        }
+
+        return null;
+    }
+
+    protected function membershipItem(Membership $member)
+    {
+        $harga = (int) round((float) $member->harga);
+
+        return [[
+            'id_member' => $member->id_member,
+            'nm_produk' => 'Membership ' . $member->tingkat . ' (' . $member->nm_member . ')',
+            'kategori' => 'Membership',
+            'harga_satuan' => $harga,
+            'qty' => 1,
+            'subtotal' => $harga,
+            'stok' => null,
+        ]];
+    }
+
     protected function hitungDiskonMember($pelanggan, $subtotal)
     {
         $result = [
@@ -332,8 +440,8 @@ class CheckoutController extends Controller
             return $result;
         }
 
-        $member = $pelanggan->membership;
-        if (!$member || $member->status !== 'aktif') {
+        $member = $pelanggan->membershipAktif();
+        if (!$member) {
             return $result;
         }
 

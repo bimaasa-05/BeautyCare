@@ -103,10 +103,7 @@ class PelangganDashboardController extends Controller
             ->whereMonth('tanggal', now()->month)
             ->count();
 
-        $pelanggan = Pelanggan::where('email', $user->email)->first();
-        if (!$pelanggan) {
-            $pelanggan = Pelanggan::where('nm_pelanggan', $user->nama)->first();
-        }
+        $pelanggan = Pelanggan::dariUser($user);
         if (!$pelanggan) {
             $pelanggan = Pelanggan::create([
                 'nm_pelanggan' => $user->nama,
@@ -114,6 +111,7 @@ class PelangganDashboardController extends Controller
                 'no_hp' => $user->no_hp ?? '',
                 'alamat' => '',
                 'catatan_alergi' => '',
+                'id_user' => $user->id,
                 'id_member' => null,
             ]);
         }
@@ -121,7 +119,7 @@ class PelangganDashboardController extends Controller
         $memberTingkat = null;
         $memberList = collect();
         if ($pelanggan && $pelanggan->id_member) {
-            $member = Membership::find($pelanggan->id_member);
+            $member = $pelanggan->membershipAktif();
             $memberTingkat = $member ? $member->tingkat : null;
             $memberList = Membership::where('status', 'aktif')->orderBy('id_member')->get();
         }
@@ -134,7 +132,7 @@ class PelangganDashboardController extends Controller
             ->count();
 
         $memberSaatIni = $pelanggan && $pelanggan->id_member
-            ? Membership::find($pelanggan->id_member)
+            ? $pelanggan->membershipAktif()
             : null;
         $semuaMember = Membership::where('status', 'aktif')
             ->orderBy('min_transaksi')

@@ -258,6 +258,16 @@
                             </div>
 
                             <div>
+                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Harga Upgrade (Rp)</label>
+                                <input type="number" name="harga" value="{{ old('harga', 0) }}" min="0"
+                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('harga') border-red-300 @enderror"
+                                    placeholder="Biaya upgrade membership">
+                                @error('harga')
+                                    <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div>
                                 <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Masa Berlaku (hari)</label>
                                 <input type="number" name="masa_berlaku" value="{{ old('masa_berlaku') }}" min="0"
                                     class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('masa_berlaku') border-red-300 @enderror"

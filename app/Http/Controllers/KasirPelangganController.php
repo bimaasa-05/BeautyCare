@@ -45,7 +45,7 @@ class KasirPelangganController extends Controller
             'no_hp' => $request->no_hp,
             'alamat' => $request->alamat,
             'id_member' => $request->id_member,
-            'catatan_alergi' => $request->catatan_alergi,
+            'catatan_alergi' => $request->catatan_alergi ?? '',
         ];
         if ($request->hasFile('foto')) {
             $data['foto'] = $request->file('foto')->store('uploads/pelanggan', 'public');
@@ -85,19 +85,22 @@ class KasirPelangganController extends Controller
             'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
+        $pelanggan = Pelanggan::findOrFail($id);
+        $dataLama = $pelanggan->toArray();
+
         $data = [
             'nm_pelanggan' => $request->nm_pelanggan,
             'email' => $request->email,
             'no_hp' => $request->no_hp,
             'alamat' => $request->alamat,
             'id_member' => $request->id_member,
-            'catatan_alergi' => $request->catatan_alergi,
+            'catatan_alergi' => $request->catatan_alergi ?? '',
         ];
         if ($request->hasFile('foto')) {
             $data['foto'] = $request->file('foto')->store('uploads/pelanggan', 'public');
         }
-        Pelanggan::where('id_pelanggan', $id)->update($data);
-        ActivityLogger::log('Mengubah', auth()->user()->nama . ' mengubah data pelanggan ' . ($request->nm_pelanggan ?? ''), 'Pelanggan', $id, $pelanggan->toArray(), $data);
+        $pelanggan->update($data);
+        ActivityLogger::log('Mengubah', auth()->user()->nama . ' mengubah data pelanggan ' . ($request->nm_pelanggan ?? ''), 'Pelanggan', $id, $dataLama, $data);
         buatNotif(auth()->id(), 'Pelanggan Diperbarui', 'Data pelanggan berhasil diperbarui', 'Lainnya', route('kasir.pelanggan.index'));
 
         return redirect('kasir/pelanggan')->with('message', 'data berhasil di Diupdate');

@@ -26,13 +26,25 @@ class AdminStokController extends Controller
         $totalKeluar = Stok::where('type', 'Keluar')->sum('jumlah');
         $totalMutasi = Stok::count();
 
-        return view('admin.stok.index', compact('stok', 'totalMasuk', 'totalKeluar', 'totalMutasi'));
+        $countMasuk       = Stok::where('type', 'Masuk')->count();
+        $countKeluar      = Stok::where('type', 'Keluar')->count();
+        $countRefund      = Stok::where('type', 'Refund')->count();
+
+        return view('admin.stok.index', compact(
+            'stok',
+            'totalMasuk',
+            'totalKeluar',
+            'totalMutasi',
+            'countMasuk',
+            'countKeluar',
+            'countRefund'
+        ));
     }
 
     public function create()
     {
         $produk   = Produk::orderBy('nm_produk')->get();
-        $supplier = Supplier::orderBy('nm_supplier')->get();
+        $supplier = Supplier::with('produk')->where('status', 'Aktif')->whereNotNull('id_produk')->orderBy('nm_supplier')->get();
 
         return view('admin.stok.create', compact('produk', 'supplier'));
     }
@@ -47,13 +59,15 @@ class AdminStokController extends Controller
             'keterangan'  => 'nullable|string|max:255',
         ]);
 
+        $supplier = Supplier::findOrFail($request->id_supplier);
+
+        if ($supplier->id_produk != $request->id_produk) {
+            return back()->withErrors(['id_produk' => 'Produk harus sesuai dengan produk yang disuplai oleh ' . $supplier->nm_supplier . '.']);
+        }
+
         $produk    = Produk::findOrFail($request->id_produk);
         $stokLama  = $produk->stok;
         $produk->increment('stok', $request->jumlah);
-
-        if (in_array($produk->status, ['Habis', 'Belum Restok']) && $produk->stok > 0) {
-            $produk->update(['status' => 'Tersedia']);
-        }
 
         catatStok(
             $produk->id_produk,
@@ -71,5 +85,56 @@ class AdminStokController extends Controller
 
         return redirect()->route('admin.stok.index')
             ->with('success', 'Stok masuk berhasil dicatat.');
+    }
+
+    public function refundCreate()
+    {
+        $produk   = Produk::orderBy('nm_produk')->get();
+        $supplier = Supplier::with('produk')->where('status', 'Aktif')->whereNotNull('id_produk')->orderBy('nm_supplier')->get();
+
+        return view('admin.stok.refund', compact('produk', 'supplier'));
+    }
+
+    public function refundStore(Request $request)
+    {
+        $request->validate([
+            'id_produk'   => 'required|integer|exists:produk,id_produk',
+            'id_supplier' => 'required|integer|exists:supplier,id_supplier',
+            'tanggal'     => 'nullable|date',
+            'jumlah'      => 'required|integer|min:1',
+            'keterangan'  => 'nullable|string|max:255',
+        ]);
+
+        $supplier = Supplier::findOrFail($request->id_supplier);
+
+        if ($supplier->id_produk != $request->id_produk) {
+            return back()->withErrors(['id_produk' => 'Produk harus sesuai dengan produk yang disuplai oleh ' . $supplier->nm_supplier . '.']);
+        }
+
+        $produk   = Produk::findOrFail($request->id_produk);
+        $stokLama = $produk->stok;
+
+        if ($request->jumlah > $stokLama) {
+            return back()->withErrors(['jumlah' => 'Jumlah refund melebihi stok tersedia (' . $stokLama . ').']);
+        }
+
+        $produk->decrement('stok', $request->jumlah);
+
+        catatStok(
+            $produk->id_produk,
+            'Refund',
+            $request->jumlah,
+            $stokLama,
+            $produk->stok,
+            $request->keterangan ?? 'Barang rusak / tidak sesuai dikembalikan ke supplier',
+            $request->id_supplier,
+            $produk->id_produk,
+            'Refund'
+        );
+
+        buatNotif(auth()->id(), 'Refund Stok', $produk->nm_produk . ' -' . $request->jumlah . ' di-refund ke supplier', 'Lainnya', route('admin.stok.index'));
+
+        return redirect()->route('admin.stok.index')
+            ->with('success', 'Refund stok berhasil dicatat.');
     }
 }

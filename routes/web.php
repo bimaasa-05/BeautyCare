@@ -55,6 +55,7 @@ Route::middleware('auth')->group(function () {
 
     //Notifikasi
     Route::get('/notif/get', [NotifikasiController::class, 'getNotif'])->name('notif.get');
+    Route::get('/notif/aktivitas-baru', [NotifikasiController::class, 'popupAktivitas'])->name('notif.aktivitas-baru');
     Route::get('/{role}/notifikasi/index', [NotifikasiController::class, 'index'])->whereIn('role', ['admin', 'kasir', 'beautycian', 'pelanggan'])->name('notif.index');
     Route::get('/{role}/notifikasi/{id}/read', [NotifikasiController::class, 'markRead'])->whereIn('role', ['admin', 'kasir', 'beautycian', 'pelanggan'])->name('notif.read');
     Route::post('/{role}/notifikasi/mark-all-read', [NotifikasiController::class, 'markAllRead'])->whereIn('role', ['admin', 'kasir', 'beautycian', 'pelanggan'])->name('notif.mark-all-read');
@@ -110,6 +111,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/stok', [AdminStokController::class, 'index'])->name('admin.stok.index');
         Route::get('/admin/stok/create', [AdminStokController::class, 'create'])->name('admin.stok.create');
         Route::post('/admin/stok', [AdminStokController::class, 'store'])->name('admin.stok.store');
+        Route::get('/admin/stok/refund', [AdminStokController::class, 'refundCreate'])->name('admin.stok.refund-create');
+        Route::post('/admin/stok/refund', [AdminStokController::class, 'refundStore'])->name('admin.stok.refund-store');
 
         Route::get('/admin/membership', [AdminMembershipController::class, 'index'])->name('admin.membership.index');
         Route::get('/admin/membership/create', [AdminMembershipController::class, 'create'])->name('admin.membership.create');
@@ -334,7 +337,6 @@ Route::middleware('auth')->group(function () {
 
         //Route Membership
         Route::get('/pelanggan/membership', [MembershipPelangganController::class, 'index'])->name('pelanggan.membership');
-        Route::post('/pelanggan/membership/upgrade', [MembershipPelangganController::class, 'upgrade'])->name('pelanggan.membership.upgrade');
 
         //Route Produk
         Route::get('/pelanggan/produk', [PelangganProdukController::class, 'index'])->name('pelanggan.produk');
