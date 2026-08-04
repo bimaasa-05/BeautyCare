@@ -59,7 +59,13 @@
             font-size: 12px; padding: 6px 14px; border-radius: 100px !important; margin: 0 2px;
         }
         .pagination-custom nav .flex span:first-child, .pagination-custom nav .flex a:first-child { border-radius: 100px !important; }
-    </style>
+    
+        @media (max-width: 768px) {
+            .filter-bar { justify-content: flex-start !important; align-items: stretch !important; }
+            .filter-bar .relative { flex: 1 1 100%; }
+            .filter-bar input, .filter-bar select { width: 100% !important; }
+        }
+</style>
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
@@ -111,7 +117,7 @@
                             </p>
                         </div>
 
-                        <form action="" method="GET" class="flex flex-wrap items-center justify-end gap-2 mb-4">
+                        <form action="" method="GET" class="flex flex-wrap items-center justify-end gap-2 mb-4 filter-bar">
                             <div class="relative">
                                 <i class="fa-solid fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-[12px]"></i>
                                 <input type="text" placeholder="Cari pelanggan..." name="keyword"
@@ -124,8 +130,7 @@
                             </a>
                         </form>
 
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left border-collapse">
+                        <div class="overflow-x-auto"><table class="w-full text-left border-collapse">
                                 <thead>
                                     <tr
                                         class="text-[11px] font-bold text-gray-400 uppercase border-b border-gray-100 bg-pink-50/30">
@@ -218,7 +223,7 @@
                                         </tr>
                                     @endforelse
                                 </tbody>
-                            </table>
+                            </table></div>
                         </div>
 
                         @if ($pelanggan->hasPages())
