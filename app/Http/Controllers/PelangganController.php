@@ -14,8 +14,7 @@ class PelangganController extends Controller
 {
     public function index(Request $request)
     {
-        $user = auth()->user();
-        $id_pelanggan = $user->id;
+        $id_pelanggan = $this->resolveIdPelanggan();
 
         $bookings = Booking::with(['detail.layanan', 'karyawan'])
             ->where('id_pelanggan', $id_pelanggan)
@@ -126,8 +125,10 @@ class PelangganController extends Controller
             $promoKlaim->update(['status' => 'digunakan']);
         }
 
+        $idPelanggan = $this->resolveIdPelanggan();
+
         $booking = Booking::create([
-            'id_pelanggan' => auth()->id(),
+            'id_pelanggan' => $idPelanggan,
             'id_karyawan' => $request->id_karyawan,
             'tanggal' => $request->tanggal,
             'jam' => $request->jam,
@@ -145,7 +146,7 @@ class PelangganController extends Controller
         ]);
 
         \Illuminate\Support\Facades\DB::table('log_booking')->insert([
-            'id_pelanggan' => auth()->id(),
+            'id_pelanggan' => $idPelanggan,
             'tanggal' => $request->tanggal,
         ]);
 
@@ -168,7 +169,7 @@ class PelangganController extends Controller
     {
         $user = auth()->user();
         $booking = Booking::where('id_booking', $id)
-            ->where('id_pelanggan', $user->id)
+            ->where('id_pelanggan', $this->resolveIdPelanggan())
             ->firstOrFail();
 
         $detail = DetailBooking::where('id_booking', $booking->id_booking)->first();
@@ -207,7 +208,7 @@ class PelangganController extends Controller
         ]);
 
         $booking = Booking::where('id_booking', $id)
-            ->where('id_pelanggan', auth()->id())
+            ->where('id_pelanggan', $this->resolveIdPelanggan())
             ->firstOrFail();
 
         $booking->update([
@@ -239,7 +240,7 @@ class PelangganController extends Controller
     public function destroy($id)
     {
         $booking = Booking::where('id_booking', $id)
-            ->where('id_pelanggan', auth()->id())
+            ->where('id_pelanggan', $this->resolveIdPelanggan())
             ->firstOrFail();
 
         DetailBooking::where('id_booking', $booking->id_booking)->delete();
@@ -258,7 +259,7 @@ class PelangganController extends Controller
         }
 
         $bookings = Booking::whereIn('id_booking', $ids)
-            ->where('id_pelanggan', auth()->id())
+            ->where('id_pelanggan', $this->resolveIdPelanggan())
             ->get();
 
         foreach ($bookings as $booking) {
@@ -272,5 +273,17 @@ class PelangganController extends Controller
             'success' => true,
             'message' => count($ids) . ' booking berhasil dihapus!',
         ]);
+    }
+
+    private function resolveIdPelanggan()
+    {
+        $user = auth()->user();
+        if ($user->dataPelanggan) {
+            return $user->dataPelanggan->id_pelanggan;
+        }
+        return Pelanggan::firstOrCreate(
+            ['id_user' => $user->id],
+            ['nm_pelanggan' => $user->nama, 'email' => $user->email, 'no_hp' => $user->no_hp ?? '']
+        )->id_pelanggan;
     }
 }
