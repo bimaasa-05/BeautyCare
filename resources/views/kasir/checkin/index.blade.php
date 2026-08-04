@@ -111,12 +111,12 @@
                         </div>
                     </div>
 
-                    <form action="" method="GET" class="flex justify-end mb-4">
-                        <div class="relative">
+                    <form action="" method="GET" class="flex flex-wrap justify-end mb-4 gap-2">
+                        <div class="relative w-full md:w-auto">
                             <i class="fa-solid fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-[12px]"></i>
                             <input type="text" placeholder="Cari nama, no. HP, atau ID booking..."
                                 name="keyword"
-                                class="bg-gray-50 border border-gray-100 text-[12px] rounded-full pl-9 pr-4 py-2 w-[260px] focus:outline-none focus:border-pink-300 transition-all placeholder-gray-400"
+                                class="bg-gray-50 border border-gray-100 text-[12px] rounded-full pl-9 pr-4 py-2 w-full md:w-[260px] focus:outline-none focus:border-pink-300 transition-all placeholder-gray-400"
                                 value="{{ request()->keyword }}">
                         </div>
                     </form>
@@ -127,8 +127,7 @@
                         </div>
                     @endif
 
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse">
+                    <div class="overflow-x-auto"><table class="w-full text-left border-collapse">
                             <thead>
                                 <tr class="text-[11px] font-bold text-gray-400 uppercase border-b border-gray-100 bg-pink-50/30">
                                     <th class="py-3 px-4 w-10">#</th>
@@ -245,7 +244,7 @@
                                     </tr>
                                 @endforelse
                             </tbody>
-                        </table>
+                        </table></div>
                     </div>
 
                     @if ($reservasi->hasPages())
