@@ -48,7 +48,7 @@
                 <div class="bg-white rounded-2xl p-6 shadow-[0_2px_10px_-4px rgba(0,0,0,0.05)] relative overflow-hidden">
                     <div class="float-icon" style="top:-15px;right:-10px;">🧾</div>
 
-                    <div class="flex justify-between items-center mb-6">
+                    <div class="flex flex-wrap justify-between items-center gap-2 mb-6">
                         <div>
                             <h3 class="text-[16px] font-bold text-gray-800">
                                 <i class="fa-solid fa-receipt text-pink-500 mr-2"></i>Detail Transaksi
@@ -69,7 +69,7 @@
                             <h4 class="text-[12px] font-semibold text-gray-500 uppercase tracking-wider mb-3">
                                 <i class="fa-regular fa-circle-info text-pink-400 mr-1"></i>Informasi Transaksi
                             </h4>
-                            <table class="w-full text-[13px]">
+                            <div class="overflow-x-auto"><table class="w-full text-[13px]">
                                 <tr>
                                     <td class="py-1.5 text-gray-400 w-28">Invoice</td>
                                     <td class="py-1.5 font-mono font-semibold text-gray-700">{{ $transaksi->no_invoice }}</td>
@@ -101,14 +101,14 @@
                                     <td class="py-1.5 text-gray-400">Catatan</td>
                                     <td class="py-1.5 text-gray-600">{{ $transaksi->catatan ?? '-' }}</td>
                                 </tr>
-                            </table>
+                            </table></div>
                         </div>
 
                         <div class="p-4 bg-gradient-to-br from-sky-50 to-white rounded-xl border border-sky-100">
                             <h4 class="text-[12px] font-semibold text-gray-500 uppercase tracking-wider mb-3">
                                 <i class="fa-solid fa-user text-sky-400 mr-1"></i>Pelanggan & Kasir
                             </h4>
-                            <table class="w-full text-[13px]">
+                            <div class="overflow-x-auto"><table class="w-full text-[13px]">
                                 <tr>
                                     <td class="py-1.5 text-gray-400 w-28">Pelanggan</td>
                                     <td class="py-1.5 font-semibold text-gray-700">{{ $transaksi->pelanggan->nm_pelanggan ?? 'Umum' }}</td>
@@ -121,7 +121,7 @@
                                     <td class="py-1.5 text-gray-400 border-t border-sky-100/50 pt-2">Kasir</td>
                                     <td class="py-1.5 font-semibold text-gray-700 border-t border-sky-100/50 pt-2">{{ $transaksi->user->nama ?? '-' }}</td>
                                 </tr>
-                            </table>
+                            </table></div>
                         </div>
                     </div>
 
@@ -129,7 +129,7 @@
                         <h4 class="text-[12px] font-semibold text-gray-500 uppercase tracking-wider mb-3">
                             <i class="fa-solid fa-money-bill-1 text-emerald-400 mr-1"></i>Rincian Pembayaran
                         </h4>
-                        <table class="w-full text-[13px]">
+                        <div class="overflow-x-auto"><table class="w-full text-[13px]">
                             <tr>
                                 <td class="py-1.5 text-gray-400 w-36">Subtotal</td>
                                 <td class="py-1.5 text-right text-gray-700">Rp {{ number_format($transaksi->subtotal, 0, ',', '.') }}</td>
@@ -154,7 +154,7 @@
                                 <td class="py-1.5 text-gray-400">Kembali</td>
                                 <td class="py-1.5 text-right text-emerald-600 font-medium">Rp {{ number_format($transaksi->kembali, 0, ',', '.') }}</td>
                             </tr>
-                        </table>
+                        </table></div>
                     </div>
 
                     @if ($transaksi->metode_byr == 'Transfer')
@@ -162,7 +162,7 @@
                         <h4 class="text-[12px] font-semibold text-gray-500 uppercase tracking-wider mb-3">
                             <i class="fa-solid fa-building-columns text-blue-400 mr-1"></i>Detail Pembayaran {{ $transaksi->metode_byr }}
                         </h4>
-                        <table class="w-full text-[13px]">
+                        <div class="overflow-x-auto"><table class="w-full text-[13px]">
                             @if ($transaksi->atas_nama)
                             <tr>
                                 <td class="py-1.5 text-gray-400 w-36">Atas Nama</td>
@@ -210,7 +210,7 @@
                                 </td>
                             </tr>
                             @endif
-                        </table>
+                        </table></div>
                     </div>
                     @endif
                 </div>
