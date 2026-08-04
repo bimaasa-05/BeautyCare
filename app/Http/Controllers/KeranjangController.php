@@ -30,7 +30,9 @@ class KeranjangController extends Controller
             ->where('status', 'tersedia')
             ->get()
             ->filter(function ($klaim) {
-                return $klaim->promo && $klaim->promo->jenis_promo !== 'Paket';
+                return $klaim->promo
+                    && $klaim->promo->jenis_promo !== 'Paket'
+                    && $klaim->promo->selesai > now()->format('Y-m-d');
             });
 
         return view('pelanggan.keranjang.index', compact('troli', 'total', 'claimedPromos'));
@@ -45,6 +47,19 @@ class KeranjangController extends Controller
             ->get();
 
         return view('pelanggan.keranjang.history', compact('transaksis'));
+    }
+
+    public function show($id)
+    {
+        $item = Troli::where('id', $id)
+            ->where('id_user', auth()->id())
+            ->firstOrFail();
+
+        $produk = $item->id_produk
+            ? Produk::with('kategori')->find($item->id_produk)
+            : Produk::with('kategori')->where('nm_produk', $item->nm_produk)->first();
+
+        return view('pelanggan.keranjang.detail', compact('item', 'produk'));
     }
 
     public function store(Request $request)
@@ -226,6 +241,12 @@ class KeranjangController extends Controller
                 ->first();
             if ($promoKlaim) {
                 $promo = $promoKlaim->promo;
+                if ($promo->selesai <= now()->format('Y-m-d')) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Promo sudah berakhir dan tidak dapat digunakan',
+                    ], 400);
+                }
                 if ($promo->jenis_promo === 'Paket') {
                     return response()->json([
                         'success' => false,

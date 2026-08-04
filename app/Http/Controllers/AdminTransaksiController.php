@@ -97,7 +97,7 @@ class AdminTransaksiController extends Controller
         $no_invoice = 'INV-' . date('Ymd') . '-' . str_pad($lastId, 4, '0', STR_PAD_LEFT);
 
         $data = [
-            'id_booking'   => $lastId,
+            'id_booking'   => null,
             'id_pelanggan' => $request->id_pelanggan,
             'id_user'      => auth()->user()->id,
             'no_invoice'   => $no_invoice,

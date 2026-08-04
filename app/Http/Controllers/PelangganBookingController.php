@@ -88,7 +88,9 @@ class PelangganBookingController extends Controller
             ->where('status', 'tersedia')
             ->get()
             ->filter(function ($klaim) {
-                return $klaim->promo && $klaim->promo->jenis_promo !== 'Buy 1 Get 1';
+                return $klaim->promo
+                    && $klaim->promo->jenis_promo !== 'Buy 1 Get 1'
+                    && $klaim->promo->selesai > now()->format('Y-m-d');
             });
 
         return view('pelanggan.booking.create', compact('layanans', 'karyawans', 'diskonMember', 'claimedPromos'));
@@ -121,6 +123,10 @@ class PelangganBookingController extends Controller
 
             if (!$promoKlaim) {
                 return redirect()->back()->withErrors('Promo tidak tersedia atau sudah digunakan');
+            }
+
+            if ($promoKlaim->promo->selesai <= now()->format('Y-m-d')) {
+                return redirect()->back()->withErrors('Promo sudah berakhir dan tidak dapat digunakan');
             }
 
             if ($promoKlaim->promo->jenis_promo === 'Buy 1 Get 1') {
