@@ -22,6 +22,11 @@
             margin: 0 auto;
             min-height: 297mm;
         }
+        @media (max-width: 768px) {
+            .invoice-page { max-width: 100%; min-height: 0; }
+            .invoice-header-flex { flex-direction: column; align-items: flex-start; gap: 16px; }
+            .invoice-header-flex .text-right { text-align: left; }
+        }
         .invoice-card {
             background: #fff;
             border-radius: 0;
@@ -74,7 +79,7 @@
     <div class="invoice-page p-4 sm:p-8">
         <div class="invoice-card p-6 sm:p-10">
 
-            <div class="flex justify-between items-start border-b-2 border-[#FF4F87] pb-6 mb-6">
+            <div class="flex justify-between items-start border-b-2 border-[#FF4F87] pb-6 mb-6 invoice-header-flex">
                 <div>
                     <h1 class="text-[28px] font-extrabold text-[#FF4F87] tracking-wide m-0">BEAUTYCARE</h1>
                     <p class="text-[12px] text-gray-500 mt-1">Salon &amp; Beauty Treatment</p>
@@ -87,7 +92,7 @@
                 </div>
             </div>
 
-            <div class="flex justify-between mb-8 pb-6 border-b border-dashed border-gray-200">
+            <div class="flex flex-wrap justify-between gap-2 mb-8 pb-6 border-b border-dashed border-gray-200">
                 <div>
                     <p class="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1">Kepada</p>
                     <p class="text-[15px] font-semibold text-gray-800">{{ $transaksi->pelanggan->nm_pelanggan ?? 'Umum' }}</p>
@@ -99,7 +104,7 @@
                     @endif
                 </div>
                 <div class="text-right">
-                    <table class="text-[12px]">
+                    <div class="overflow-x-auto"><table class="text-[12px]">
                         <tr>
                             <td class="text-gray-400 pr-4">Tanggal</td>
                             <td class="font-semibold text-gray-700">{{ \Carbon\Carbon::parse($transaksi->tanggal)->isoFormat('D MMMM YYYY') }}</td>
@@ -126,7 +131,7 @@
                             <td class="font-semibold text-gray-700">{{ $transaksi->user->nama }}</td>
                         </tr>
                         @endif
-                    </table>
+                    </table></div>
                 </div>
             </div>
 
@@ -134,7 +139,7 @@
                 <h3 class="text-[12px] font-bold text-[#FF4F87] uppercase tracking-[1px] mb-4 pb-2 border-b-2 border-[#FF4F87]">
                     Detail Layanan & Produk
                 </h3>
-                <table class="w-full text-left item-table">
+                <div class="overflow-x-auto"><table class="w-full text-left item-table">
                     <thead>
                         <tr>
                             <th style="width:5%;text-align:center;">#</th>
@@ -159,11 +164,11 @@
                             </tr>
                         @endforelse
                     </tbody>
-                </table>
+                </table></div>
             </div>
 
             <div class="flex justify-end mb-8">
-                <table class="w-64 summary-table">
+                <div class="overflow-x-auto"><table class="w-64 summary-table">
                     <tr>
                         <td class="text-gray-500">Subtotal</td>
                         <td>Rp {{ number_format($transaksi->subtotal, 0, ',', '.') }}</td>
@@ -190,11 +195,11 @@
                         <td class="text-gray-500">Kembali</td>
                         <td class="text-green-600">Rp {{ number_format($transaksi->kembali, 0, ',', '.') }}</td>
                     </tr>
-                </table>
+                </table></div>
             </div>
 
             <div class="mb-8 p-4 bg-gray-50 rounded-lg border border-gray-100">
-                <table class="w-full text-[12px]">
+                <div class="overflow-x-auto"><table class="w-full text-[12px]">
                     <tr>
                         <td class="text-gray-400 w-28">Metode</td>
                         <td class="font-semibold text-gray-700">{{ $transaksi->metode_byr }}</td>
@@ -252,7 +257,7 @@
                         <td class="text-gray-600">{{ $transaksi->catatan }}</td>
                     </tr>
                     @endif
-                </table>
+                </table></div>
             </div>
 
             @if ($transaksi->bukti_bayar)
