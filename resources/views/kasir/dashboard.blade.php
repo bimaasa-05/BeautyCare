@@ -372,7 +372,7 @@
                             <a href="{{ route('kasir.transaksi.index') }}">Lihat Semua</a>
                         </div>
                         <div class="table-scroll">
-                            <table class="data-table">
+                            <div class="overflow-x-auto"><table class="data-table">
                                 <thead>
                                     <tr>
                                         <th>Item</th>
@@ -399,7 +399,7 @@
                                         </tr>
                                     @endforelse
                                 </tbody>
-                            </table>
+                            </table></div>
                         </div>
                     </div>
 
@@ -409,7 +409,7 @@
                             <a href="{{ route('kasir.laporan.index') }}">Detail</a>
                         </div>
                         <div class="table-scroll">
-                            <table class="data-table">
+                            <div class="overflow-x-auto"><table class="data-table">
                                 <thead>
                                     <tr>
                                         <th>Metode</th>
@@ -436,7 +436,7 @@
                                         </tr>
                                     @endforelse
                                 </tbody>
-                            </table>
+                            </table></div>
                         </div>
                     </div>
                 </div>
