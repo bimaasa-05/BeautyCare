@@ -41,7 +41,13 @@
             font-size: 12px; padding: 6px 14px; border-radius: 100px !important; margin: 0 2px;
         }
         .pagination-custom nav .flex span:first-child, .pagination-custom nav .flex a:first-child { border-radius: 100px !important; }
-    </style>
+    
+        @media (max-width: 768px) {
+            .filter-bar { justify-content: flex-start !important; align-items: stretch !important; }
+            .filter-bar .relative { flex: 1 1 100%; }
+            .filter-bar input, .filter-bar select { width: 100% !important; }
+        }
+</style>
 </head>
 <body>
     <div class="dashboard-layout">
@@ -178,7 +184,7 @@
                                 </div>
                             </div>
 
-                            <form method="GET" action="{{ route('kasir.laporan.index') }}" class="flex flex-wrap items-center justify-end gap-2 mb-4">
+                            <form method="GET" action="{{ route('kasir.laporan.index') }}" class="flex flex-wrap items-center justify-end gap-2 mb-4 filter-bar">
                                 <input type="hidden" name="periode" value="{{ $periode }}">
                                 <div class="relative">
                                     <i data-lucide="search" class="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
@@ -203,8 +209,7 @@
                                 @endif
                             </form>
 
-                            <div class="overflow-x-auto">
-                                <table class="w-full text-left border-collapse">
+                            <div class="overflow-x-auto"><table class="w-full text-left border-collapse">
                                     <thead>
                                         <tr class="text-xs font-bold text-gray-400 uppercase border-b border-gray-100 bg-pink-50/30">
                                             <th class="py-3 px-4 w-10">#</th>
@@ -281,7 +286,7 @@
                                             </tr>
                                         @endforelse
                                     </tbody>
-                                </table>
+                                </table></div>
                             </div>
 
                             @if ($transaksi->hasPages())
