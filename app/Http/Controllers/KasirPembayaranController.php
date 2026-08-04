@@ -14,13 +14,11 @@ class KasirPembayaranController extends Controller
 {
     public function index(Request $request)
     {
-        $bookedIds = Transaksi::whereNotNull('id_booking')->pluck('id_booking');
-
         $search = $request->keyword;
 
         $reservasiSelesai = Booking::with(['pelanggan', 'detail.layanan'])
             ->whereIn('status', ['diproses', 'selesai'])
-            ->whereNotIn('id_booking', $bookedIds)
+            ->whereDoesntHave('transaksi')
             ->when($search, function ($query, $search) {
                 return $query->whereHas('pelanggan', function ($q) use ($search) {
                     $q->where('nm_pelanggan', 'like', "%{$search}%")
@@ -30,7 +28,7 @@ class KasirPembayaranController extends Controller
             ->orderBy('tanggal', 'desc')
             ->get();
 
-        $totalTagihan = Booking::whereIn('status', ['diproses', 'selesai'])->whereNotIn('id_booking', $bookedIds)
+        $totalTagihan = Booking::whereIn('status', ['diproses', 'selesai'])->whereDoesntHave('transaksi')
             ->when($search, function ($query, $search) {
                 return $query->whereHas('pelanggan', function ($q) use ($search) {
                     $q->where('nm_pelanggan', 'like', "%{$search}%")
@@ -56,8 +54,7 @@ class KasirPembayaranController extends Controller
             return redirect()->route('kasir.pembayaran.index')->with('error', 'Booking belum check-in, tidak bisa diproses');
         }
 
-        $transaksiExists = Transaksi::where('id_booking', $id)->exists();
-        if ($transaksiExists) {
+        if ($booking->transaksi()->exists()) {
             return redirect()->route('kasir.pembayaran.index')->with('error', 'Booking ini sudah memiliki pembayaran');
         }
 
@@ -92,8 +89,7 @@ class KasirPembayaranController extends Controller
 
         $booking = Booking::with(['pelanggan', 'detail.layanan'])->findOrFail($request->id_booking);
 
-        $transaksiExists = Transaksi::where('id_booking', $request->id_booking)->exists();
-        if ($transaksiExists) {
+        if ($booking->transaksi()->exists()) {
             return redirect()->route('kasir.pembayaran.index')->with('error', 'Booking ini sudah memiliki pembayaran');
         }
 

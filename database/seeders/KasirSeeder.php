@@ -264,7 +264,7 @@ class KasirSeeder extends Seeder
             $noInv = 'INV-' . date('Ymd', strtotime($date)) . '-' . str_pad($invoiceNum++, 4, '0', STR_PAD_LEFT);
 
             $transaksi = Transaksi::create([
-                'id_booking' => $idx + 1,
+                'id_booking' => null,
                 'id_pelanggan' => $pelangganId,
                 'id_user' => $userId,
                 'no_invoice' => $noInv,

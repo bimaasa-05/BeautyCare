@@ -322,14 +322,6 @@
 
     .pm-merchant {
         margin-top: 14px;
-        display: inline-flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 4px;
-        padding: 8px 18px;
-        background: #FFF5F8;
-        border: 1px solid #FFE5EF;
-        border-radius: 12px;
     }
 
     .pm-merchant-name {
@@ -338,6 +330,7 @@
         color: var(--dark);
         display: flex;
         align-items: center;
+        justify-content: center;
         gap: 6px;
     }
 
@@ -348,6 +341,7 @@
     .pm-merchant-id {
         font-size: 11px;
         color: var(--gray);
+        margin-top: 2px;
     }
 
     .pm-nominal {
@@ -707,19 +701,6 @@
         font-size: 11px;
         color: var(--gray);
     }
-
-    .bukti-file-name {
-        margin-top: 10px;
-        padding: 8px 12px;
-        border-radius: 10px;
-        background: #ECFDF5;
-        border: 1px solid #A7F3D0;
-        font-size: 12px;
-        font-weight: 600;
-        color: #047857;
-        text-align: center;
-        word-break: break-all;
-    }
     </style>
 </head>
 
@@ -825,15 +806,11 @@
                             <form action="{{ route('pelanggan.pembayaran.bukti', $transaksi->id_transaksi) }}" method="POST" enctype="multipart/form-data" id="formBukti">
                                 @csrf
                                 <input type="file" name="bukti_bayar" id="inpBukti" accept="image/jpeg,image/png,image/jpg" class="bukti-input" onchange="pilihBukti(this)">
-                                <div class="bukti-pick" onclick="document.getElementById('inpBukti').click()">
+                                <div class="bukti-pick" id="buktiPick" onclick="document.getElementById('inpBukti').click()">
                                     <i class="fa-solid fa-image"></i>
                                     <span id="buktiLabel">{{ $transaksi->bukti_bayar ? 'Ganti Gambar Bukti' : 'Pilih Gambar Bukti' }}</span>
                                     <small>JPG / PNG, maks 2 MB</small>
                                 </div>
-                                <div class="bukti-file-name" id="buktiFileName" style="display:none;"></div>
-                                <button type="submit" class="btn-pay btn-pay-confirm" id="btnUnggahBukti" disabled>
-                                    <i class="fa-solid fa-upload"></i> {{ $transaksi->bukti_bayar ? 'Ganti Bukti Bayar' : 'Unggah Bukti Bayar' }}
-                                </button>
                             </form>
                         </div>
                     </div>
@@ -898,18 +875,13 @@
     var expiredShown = false;
 
     function pilihBukti(input) {
+        if (!input.files || !input.files[0]) return;
         var label = document.getElementById('buktiLabel');
-        var name = document.getElementById('buktiFileName');
-        var btn = document.getElementById('btnUnggahBukti');
-        if (input.files && input.files[0]) {
-            label.textContent = 'Ganti Gambar Bukti';
-            name.style.display = 'block';
-            name.textContent = 'Terpilih: ' + input.files[0].name;
-            btn.disabled = false;
-        } else {
-            name.style.display = 'none';
-            btn.disabled = true;
-        }
+        var pick = document.getElementById('buktiPick');
+        label.textContent = 'Mengunggah bukti bayar...';
+        pick.style.pointerEvents = 'none';
+        pick.style.opacity = '0.6';
+        document.getElementById('formBukti').submit();
     }
 
     function showExpiredModal() {

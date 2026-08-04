@@ -76,6 +76,30 @@ class MembershipPelangganController extends Controller
             $nextTier = $semuaMember->first();
         }
 
+        $levels = ['Silver', 'Gold', 'Platinum'];
+        $isMaxTier = $memberSaatIni && $memberSaatIni->tingkat === end($levels);
+        $progressBelanja = 0;
+        $progressTransaksi = 0;
+        $sisaBelanja = 0;
+        $sisaTransaksi = 0;
+
+        $targetBelanja = $isMaxTier ? $memberSaatIni->min_pembelian : ($nextTier?->min_pembelian ?? 0);
+        $targetTransaksi = $isMaxTier ? $memberSaatIni->min_transaksi : ($nextTier?->min_transaksi ?? 0);
+
+        if ($isMaxTier) {
+            $progressBelanja = 100;
+            $progressTransaksi = 100;
+        } elseif ($nextTier) {
+            $progressBelanja = $nextTier->min_pembelian > 0
+                ? (int) min(100, round($totalBelanja / $nextTier->min_pembelian * 100))
+                : 0;
+            $progressTransaksi = $nextTier->min_transaksi > 0
+                ? (int) min(100, round($totalTransaksi / $nextTier->min_transaksi * 100))
+                : 0;
+            $sisaBelanja = max(0, $nextTier->min_pembelian - $totalBelanja);
+            $sisaTransaksi = max(0, $nextTier->min_transaksi - $totalTransaksi);
+        }
+
         return view('pelanggan.membership.index', compact(
             'totalTransaksi',
             'totalBelanja',
@@ -83,7 +107,14 @@ class MembershipPelangganController extends Controller
             'memberSaatIni',
             'semuaMember',
             'nextTier',
-            'pelanggan'
+            'pelanggan',
+            'isMaxTier',
+            'progressBelanja',
+            'progressTransaksi',
+            'sisaBelanja',
+            'sisaTransaksi',
+            'targetBelanja',
+            'targetTransaksi'
         ));
     }
 

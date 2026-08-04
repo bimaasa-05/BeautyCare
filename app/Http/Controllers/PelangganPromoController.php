@@ -12,7 +12,10 @@ class PelangganPromoController extends Controller
     {
         $today = now()->format('Y-m-d');
         $promos = Promo::where('mulai', '<=', $today)
-            ->where('selesai', '>=', $today)
+            ->where('selesai', '>', $today)
+            ->orderBy('id_promo', 'desc')
+            ->get();
+        $riwayatPromos = Promo::where('selesai', '<=', $today)
             ->orderBy('id_promo', 'desc')
             ->get();
         $claimedIds = PromoKlaim::where('id_user', auth()->id())
@@ -24,7 +27,7 @@ class PelangganPromoController extends Controller
             ->pluck('id_promo')
             ->toArray();
 
-        return view('pelanggan.promo.index', compact('promos', 'claimedIds', 'usedIds'));
+        return view('pelanggan.promo.index', compact('promos', 'riwayatPromos', 'claimedIds', 'usedIds'));
     }
 
     public function claim(Request $request)
@@ -47,7 +50,7 @@ class PelangganPromoController extends Controller
 
         $promo = Promo::find($idPromo);
         $today = now()->format('Y-m-d');
-        if (!$promo || $promo->status !== 'Tersedia' || $promo->mulai > $today || $promo->selesai < $today) {
+        if (!$promo || $promo->status !== 'Tersedia' || $promo->mulai > $today || $promo->selesai <= $today) {
             return response()->json(['success' => false, 'message' => 'Promo tidak tersedia']);
         }
 
