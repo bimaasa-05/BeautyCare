@@ -906,9 +906,9 @@
         var h = Math.floor(diff / 3600000);
         var m = Math.floor((diff % 3600000) / 60000);
         var s = Math.floor((diff % 60000) / 1000);
-        var pad = function(n) { return n < 10 ? '0' + n : n; };
+        var pad = function(n) { return n < 3 ? '0' + n : n; };
         el.textContent = pad(h) + ':' + pad(m) + ':' + pad(s);
-        if (diff < 300000) el.classList.add('warning');
+        if (diff < 100000) el.classList.add('warning');
     }
 
     if (expiresAt) {
