@@ -199,7 +199,7 @@
                             <label class="text-[13px] font-semibold text-gray-700 block mb-2">Tipe Pelanggan</label>
                             @if ($isWalkin)
                                 <div class="flex items-center gap-4">
-                                    <span class="text-amber-500 bg-amber-50 px-3 py-1 rounded-full text-[12px] font-semibold">Walk-in</span>
+                                    <span class="text-amber-500 bg-amber-50 px-3 py-1 rounded-full text-[12px] font-semibold whitespace-nowrap">Walk-in</span>
                                     <label class="flex items-center gap-2 text-[13px] text-gray-700 cursor-pointer">
                                         <input type="checkbox" name="konversi_online" value="1" onchange="toggleKonversi()">
                                         Konversi ke Online (Buat Akun)
