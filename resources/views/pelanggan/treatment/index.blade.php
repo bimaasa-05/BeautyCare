@@ -772,8 +772,10 @@
                                         </span>
                                     </td>
                                     <td data-label="Aksi" style="text-align:center;">
-                                        <a href="{{ route('pelanggan.treatment.detail', ['id' => $booking->id_booking, 'status' => request('status')]) }}" class="action-btn detail" title="Detail booking"><i class="fa-regular fa-eye"></i></a>
-                                        <a href="{{ route('pelanggan.treatment.detail', ['id' => $booking->id_booking, 'status' => request('status')]) }}" class="action-btn print" title="Cetak" onclick="window.open(this.href+((this.href.includes('?'))?'&':'?')+'print=1','_blank','width=900,height=650');return false;"><i class="fa-solid fa-print"></i></a>
+                                        <div style="display:inline-flex;align-items:center;justify-content:center;gap:8px;flex-wrap:nowrap;">
+                                            <a href="{{ route('pelanggan.treatment.detail', ['id' => $booking->id_booking, 'status' => request('status')]) }}" class="action-btn detail" title="Detail booking"><i class="fa-regular fa-eye"></i></a>
+                                            <a href="{{ route('pelanggan.treatment.detail', ['id' => $booking->id_booking, 'status' => request('status')]) }}" class="action-btn print" title="Cetak" onclick="window.open(this.href+((this.href.includes('?'))?'&':'?')+'print=1','_blank','width=900,height=650');return false;"><i class="fa-solid fa-print"></i></a>
+                                        </div>
                                     </td>
                                 </tr>
                                 @empty
