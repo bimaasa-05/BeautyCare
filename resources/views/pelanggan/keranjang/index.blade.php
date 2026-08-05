@@ -1081,9 +1081,7 @@
                                 <div class="kc-body">
                                     <div class="kc-nama">{{ $item->nm_produk }}</div>
                                     <div class="kc-kategori">{{ $item->kategori }}</div>
-                                    @if($stok <= 0)
-                                <div class="kc-stok-badge"><i class="fa-solid fa-triangle-exclamation"></i> Stok Habis</div>
-                                @endif
+                                    <div class="kc-stok-badge" id="stok-badge-{{ $item->id }}" style="{{ $stok <= 0 ? '' : 'display:none;' }}"><i class="fa-solid fa-triangle-exclamation"></i> <span id="stok-badge-text-{{ $item->id }}">Stok Habis</span></div>
                                 <div class="kc-divider"></div>
 
                                     <div class="kc-harga">Rp {{ number_format($item->harga_satuan, 0, ',', '.') }}
@@ -1091,11 +1089,11 @@
 
                                     <div class="kc-qty-row">
                                         <div class="kc-qty-control">
-                                            <button onclick="updateQty({{ $item->id }}, -1)"><i
+                                            <button id="btn-minus-{{ $item->id }}" onclick="updateQty({{ $item->id }}, -1)"><i
                                                     class="fa-solid fa-minus"></i></button>
                                             <span class="kc-qty-val"
                                                 id="qty-{{ $item->id }}">{{ $item->qty }}</span>
-                                            <button onclick="updateQty({{ $item->id }}, 1)"><i
+                                            <button id="btn-plus-{{ $item->id }}" onclick="updateQty({{ $item->id }}, 1)"><i
                                                     class="fa-solid fa-plus"></i></button>
                                         </div>
                                         <div class="kc-subtotal">
@@ -1131,7 +1129,7 @@
                             <a href="{{ route('pelanggan.produk') }}" class="btn-belanja btn-belanja-outline">
                                 <i class="fa-solid fa-arrow-left"></i> Lanjut Belanja
                             </a>
-                            <a href="{{ route('pelanggan.checkout') }}" class="btn-belanja {{ $sisaAktif <= 0 ? 'disabled' : '' }}" {{ $sisaAktif <= 0 ? 'aria-disabled="true"' : '' }}>
+                            <a href="{{ route('pelanggan.checkout') }}" id="btnCheckout" class="btn-belanja {{ $sisaAktif <= 0 ? 'disabled' : '' }}" {{ $sisaAktif <= 0 ? 'aria-disabled="true"' : '' }}>
                                 <i class="fa-solid fa-credit-card"></i> Checkout
                             </a>
                         </div>
@@ -1189,12 +1187,13 @@
         }
 
         function updateQty(id, delta) {
-            if ((keranjangStok[id] || 0) <= 0) return;
+            var stok = keranjangStok[id] || 0;
+            if (stok <= 0) return;
 
         var valEl = document.getElementById('qty-' + id);
             var curr = parseInt(valEl.textContent);
             var newQty = curr + delta;
-            if (newQty < 1) return;
+            if (newQty < 1 || newQty > stok) return;
 
             var csrf = document.querySelector('meta[name="csrf-token"]').content;
 
@@ -1213,6 +1212,7 @@
                 })
                 .then(function(data) {
                     if (data.success) {
+                        if (typeof data.stok === 'number') keranjangStok[id] = data.stok;
                         valEl.textContent = newQty;
 
                         var totalEl = document.getElementById('total-item-' + id);
@@ -1220,9 +1220,78 @@
 
                         var grandEl = document.getElementById('grandTotal');
                         grandEl.textContent = 'Rp ' + formatAngka(data.total_all);
+
+                        updateQtyButtons(id, newQty);
+                    } else {
+                        refreshStok();
                     }
                 });
         }
+
+        function updateQtyButtons(id, qty) {
+            var stok = keranjangStok[id] || 0;
+            var minus = document.getElementById('btn-minus-' + id);
+            var plus = document.getElementById('btn-plus-' + id);
+            if (minus) minus.disabled = stok <= 0 || qty <= 1;
+            if (plus) plus.disabled = stok <= 0 || qty >= stok;
+        }
+
+        function updateCheckoutState(items) {
+            var btn = document.getElementById('btnCheckout');
+            if (!btn) return;
+            var aktif = 0;
+            (items || []).forEach(function(it) {
+                if (it.stok > 0 && it.qty > 0) aktif++;
+            });
+            var disabled = aktif <= 0;
+            btn.classList.toggle('disabled', disabled);
+            if (disabled) {
+                btn.setAttribute('aria-disabled', 'true');
+                btn.removeAttribute('href');
+            } else {
+                btn.removeAttribute('aria-disabled');
+                btn.setAttribute('href', '{{ route('pelanggan.checkout') }}');
+            }
+        }
+
+        function refreshStok() {
+            fetch('{{ route('pelanggan.keranjang.stok') }}', {
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                })
+                .then(function(r) { return r.json(); })
+                .then(function(data) {
+                    if (!data.success) return;
+                    data.items.forEach(function(it) {
+                        keranjangStok[it.id] = it.stok;
+                        var valEl = document.getElementById('qty-' + it.id);
+                        if (!valEl) return;
+                        valEl.textContent = it.qty;
+                        updateQtyButtons(it.id, it.qty);
+
+                        var totalEl = document.getElementById('total-item-' + it.id);
+                        if (totalEl) totalEl.textContent = 'Rp ' + formatAngka(it.total_item);
+
+                        var badge = document.getElementById('stok-badge-' + it.id);
+                        if (badge) badge.style.display = it.stok <= 0 ? 'inline-flex' : 'none';
+                    });
+                    var grandEl = document.getElementById('grandTotal');
+                    if (grandEl) grandEl.textContent = 'Rp ' + formatAngka(data.total_all);
+                    updateCheckoutState(data.items);
+                })
+                .catch(function() {});
+        }
+
+        Object.keys(keranjangStok).forEach(function(id) {
+            var valEl = document.getElementById('qty-' + id);
+            if (valEl) updateQtyButtons(parseInt(id), parseInt(valEl.textContent));
+        });
+
+        setInterval(refreshStok, 10000);
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden) refreshStok();
+        });
+        window.addEventListener('focus', refreshStok);
+        refreshStok();
 
         var hapusMode = false;
         var deleteMode = 'single';
