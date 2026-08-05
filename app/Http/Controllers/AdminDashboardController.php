@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\DB;
 
 class AdminDashboardController extends Controller
 {
-    public function index()
+    protected function getDashboardData()
     {
         $tahun = date('Y');
         $bulan = date('m');
@@ -239,7 +239,7 @@ class AdminDashboardController extends Controller
             return 'Rp ' . number_format($amount, 0, ',', '.');
         };
 
-        return view('admin.dashboard', compact(
+        return compact(
             'totalPendapatan', 'totalBooking', 'totalPelanggan',
             'totalKaryawan', 'produkTerjual',
             'pendapatanGrowth', 'bookingGrowth', 'pelangganGrowth',
@@ -254,6 +254,66 @@ class AdminDashboardController extends Controller
             'stokTerisi', 'stokMenipisPct', 'stokHabisPct',
             'bookingTerbaru',
             'fmt'
-        ));
+        );
+    }
+
+    public function index()
+    {
+        $data = $this->getDashboardData();
+        extract($data);
+
+        return view('admin.dashboard', $data);
+    }
+
+    public function data()
+    {
+        $data = $this->getDashboardData();
+        extract($data);
+
+        return response()->json([
+            'stats' => [
+                'totalPendapatan' => $fmt($totalPendapatan),
+                'pendapatanGrowth' => $pendapatanGrowth,
+                'totalBooking' => number_format($totalBooking),
+                'bookingGrowth' => $bookingGrowth,
+                'totalPelanggan' => number_format($totalPelanggan),
+                'pelangganGrowth' => $pelangganGrowth,
+                'totalKaryawan' => number_format($totalKaryawan),
+                'karyawanGrowth' => $karyawanGrowth,
+                'produkTerjual' => number_format($produkTerjual),
+                'produkTerjualGrowth' => $produkTerjualGrowth,
+            ],
+            'charts' => [
+                'labels' => $chartLabels,
+                'revenue' => $chartRevenueData,
+            ],
+            'donut' => [
+                'values' => array_values($layananBookingMinggu),
+                'labels' => array_keys($layananBookingMinggu),
+                'total' => $totalBookingMinggu,
+            ],
+            'jadwalHariIni' => [
+                'total' => $jadwalHariIni->count(),
+                'html' => view('partials.dashboard.jadwal-hari-ini', compact('jadwalHariIni'))->render(),
+            ],
+            'layananTerlaris' => [
+                'html' => view('partials.dashboard.layanan-terlaris', ['items' => $layananTerlaris, 'fmt' => $fmt])->render(),
+            ],
+            'produkTerlaris' => [
+                'html' => view('partials.dashboard.produk-terlaris', ['items' => $produkTerlaris, 'fmt' => $fmt])->render(),
+            ],
+            'karyawanAktif' => [
+                'html' => view('partials.dashboard.karyawan-aktif', compact('karyawanAktif'))->render(),
+            ],
+            'ringkasanStok' => [
+                'html' => view('partials.dashboard.ringkasan-stok', compact('ringkasanStok'))->render(),
+            ],
+            'bookingTerbaru' => [
+                'html' => view('partials.dashboard.booking-terbaru', compact('bookingTerbaru'))->render(),
+            ],
+            'notifStok' => [
+                'html' => view('partials.dashboard.notif-stok', compact('notifStok'))->render(),
+            ],
+        ]);
     }
 }
