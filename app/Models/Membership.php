@@ -21,6 +21,9 @@ class Membership extends Model
         'masa_berlaku',
         'deskripsi',
         'status',
+        'jml_konsultasi',
+        'prioritas_booking',
+        'undangan_event',
     ];
 
     public function pelanggan()
