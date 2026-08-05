@@ -19,6 +19,7 @@
 | D | Fase D | Pembayaran Online Reservasi | Belum mulai | ~4–5 jam |
 | 07 | Perbaikan | Expired/Timer/Timeline/QRIS (`07-PERBAIKAN-PEMBAYARAN-EXPIRED.md`) | Rencana disusun | ~2 jam |
 | 08 | Fitur | Diskon Membership (`08-FITUR-DISKON-MEMBERSHIP.md`) | Rencana disusun | ~2–3 jam |
+| 09 | Fase E | Midtrans: QRIS Dinamis + E-Wallet (`09-FASE-E-MIDTRANS-TRANSAKSI-NYATA.md`) | Rencana disusun | ~5–6 jam + QA |
 
 ---
 
