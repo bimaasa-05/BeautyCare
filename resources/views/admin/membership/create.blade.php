@@ -281,6 +281,48 @@
                                 @enderror
                             </div>
 
+                            <div class="bg-pink-50/60 border border-pink-100 rounded-xl p-4">
+                                <p class="text-[13px] font-bold text-gray-800 mb-0.5">Keuntungan Paket</p>
+                                <p class="text-[12px] text-gray-400 mb-3">Atur fasilitas yang didapat pelanggan dari paket ini</p>
+
+                                <div class="mb-4">
+                                    <label class="text-[12px] font-semibold text-gray-700 block mb-1.5">Gratis Konsultasi per Bulan</label>
+                                    <input type="text" inputmode="numeric" name="jml_konsultasi" value="{{ (int) old('jml_konsultasi', 0) }}"
+                                        data-format-number
+                                        class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('jml_konsultasi') border-red-300 @enderror"
+                                        placeholder="0">
+                                    @error('jml_konsultasi')
+                                        <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                <div class="flex items-center justify-between gap-3 py-3 border-t border-pink-100">
+                                    <div>
+                                        <p class="text-[13px] font-semibold text-gray-700">Prioritas Booking</p>
+                                        <p class="text-[11px] text-gray-400">Pelanggan mendapat prioritas pemesanan jadwal treatment</p>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer shrink-0">
+                                        <input type="checkbox" name="prioritas_booking" value="1"
+                                            {{ old('prioritas_booking') ? 'checked' : '' }}
+                                            class="sr-only peer">
+                                        <div class="w-11 h-6 bg-gray-200 rounded-full peer-checked:bg-[#de3b7c] peer-checked:after:translate-x-5 after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border after:border-gray-300 after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
+                                    </label>
+                                </div>
+
+                                <div class="flex items-center justify-between gap-3 py-3 border-t border-pink-100">
+                                    <div>
+                                        <p class="text-[13px] font-semibold text-gray-700">Undangan Event Eksklusif</p>
+                                        <p class="text-[11px] text-gray-400">Pelanggan mendapat undangan event spesial BeautyCare</p>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer shrink-0">
+                                        <input type="checkbox" name="undangan_event" value="1"
+                                            {{ old('undangan_event') ? 'checked' : '' }}
+                                            class="sr-only peer">
+                                        <div class="w-11 h-6 bg-gray-200 rounded-full peer-checked:bg-[#de3b7c] peer-checked:after:translate-x-5 after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border after:border-gray-300 after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
+                                    </label>
+                                </div>
+                            </div>
+
                             <div>
                                 <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Deskripsi</label>
                                 <textarea name="deskripsi" rows="3"
