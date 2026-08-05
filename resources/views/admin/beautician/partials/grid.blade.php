@@ -36,8 +36,8 @@
             <span class="text-[#de3b7c] font-bold text-[13px] mb-0.5 text-center leading-snug">{{ $tgl($b->tgl_lahir) }}</span>
             <span class="text-[10px] text-gray-400 font-medium">Tanggal Lahir</span>
         </div>
-        <div class="bg-[#fdf2f8] rounded-2xl py-2.5 px-2 flex flex-col items-center justify-center min-w-0">
-            <span class="text-[#de3b7c] font-bold text-[13px] mb-0.5 text-center leading-snug truncate w-full" title="Rp {{ number_format($b->gaji, 0, ',', '.') }}">Rp {{ number_format($b->gaji, 0, ',', '.') }}</span>
+        <div class="bg-[#fdf2f8] rounded-2xl py-2.5 px-2 flex flex-col items-center justify-center min-w-0 col-span-2 sm:col-span-1">
+            <span class="text-[#de3b7c] font-bold text-[13px] mb-0.5 text-center leading-snug line-clamp-2 w-full break-words" title="Rp {{ number_format($b->gaji, 0, ',', '.') }}">Rp {{ number_format($b->gaji, 0, ',', '.') }}</span>
             <span class="text-[10px] text-gray-400 font-medium">Gaji</span>
         </div>
         <div class="bg-[#fdf2f8] rounded-2xl py-2.5 px-2 flex flex-col items-center justify-center min-w-0 col-span-2 sm:col-span-1">
