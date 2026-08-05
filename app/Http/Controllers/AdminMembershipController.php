@@ -37,26 +37,32 @@ class AdminMembershipController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nm_member'    => 'required|string|max:100',
-            'tingkat'      => 'required|string|max:50',
-            'diskon'       => 'required|numeric|min:0|max:100',
-            'min_transaksi' => 'required|integer|min:0',
-            'min_pembelian' => 'required|numeric|min:0',
-            'harga'        => 'required|numeric|min:0',
-            'masa_berlaku' => 'required|integer|min:0',
-            'deskripsi'    => 'nullable|string|max:500',
+            'nm_member'       => 'required|string|max:100',
+            'tingkat'         => 'required|string|max:50',
+            'diskon'          => 'required|numeric|min:0|max:100',
+            'min_transaksi'   => 'required|integer|min:0',
+            'min_pembelian'   => 'required|numeric|min:0',
+            'harga'           => 'required|numeric|min:0',
+            'masa_berlaku'    => 'required|integer|min:0',
+            'deskripsi'       => 'nullable|string|max:500',
+            'jml_konsultasi'  => 'nullable|integer|min:0',
+            'prioritas_booking' => 'nullable|boolean',
+            'undangan_event'  => 'nullable|boolean',
         ]);
 
         Membership::create([
-            'nm_member'    => $request->nm_member,
-            'tingkat'      => $request->tingkat,
-            'diskon'       => $request->diskon,
-            'min_transaksi' => $request->min_transaksi,
-            'min_pembelian' => $request->min_pembelian,
-            'harga'        => $request->harga ?: 0,
-            'masa_berlaku' => $request->masa_berlaku,
-            'deskripsi'    => $request->deskripsi,
-            'status'       => $request->masa_berlaku > 0 ? 'aktif' : 'non_aktif',
+            'nm_member'       => $request->nm_member,
+            'tingkat'         => $request->tingkat,
+            'diskon'          => $request->diskon,
+            'min_transaksi'   => $request->min_transaksi,
+            'min_pembelian'   => $request->min_pembelian,
+            'harga'           => $request->harga ?: 0,
+            'masa_berlaku'    => $request->masa_berlaku,
+            'deskripsi'       => $request->deskripsi,
+            'status'          => $request->masa_berlaku > 0 ? 'aktif' : 'non_aktif',
+            'jml_konsultasi'  => $request->input('jml_konsultasi', 0),
+            'prioritas_booking' => $request->boolean('prioritas_booking'),
+            'undangan_event'  => $request->boolean('undangan_event'),
         ]);
 
         buatNotif(auth()->id(), 'Membership Ditambahkan', 'Paket membership ' . $request->nm_member . ' (' . $request->tingkat . ') berhasil ditambahkan', 'Lainnya', route('admin.membership.index'));
@@ -75,28 +81,34 @@ class AdminMembershipController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'nm_member'    => 'required|string|max:100',
-            'tingkat'      => 'required|string|max:50',
-            'diskon'       => 'required|numeric|min:0|max:100',
-            'min_transaksi' => 'required|integer|min:0',
-            'min_pembelian' => 'required|numeric|min:0',
-            'harga'        => 'required|numeric|min:0',
-            'masa_berlaku' => 'required|integer|min:0',
-            'deskripsi'    => 'nullable|string|max:500',
+            'nm_member'       => 'required|string|max:100',
+            'tingkat'         => 'required|string|max:50',
+            'diskon'          => 'required|numeric|min:0|max:100',
+            'min_transaksi'   => 'required|integer|min:0',
+            'min_pembelian'   => 'required|numeric|min:0',
+            'harga'           => 'required|numeric|min:0',
+            'masa_berlaku'    => 'required|integer|min:0',
+            'deskripsi'       => 'nullable|string|max:500',
+            'jml_konsultasi'  => 'nullable|integer|min:0',
+            'prioritas_booking' => 'nullable|boolean',
+            'undangan_event'  => 'nullable|boolean',
         ]);
 
         $membership = Membership::findOrFail($id);
 
         $membership->update([
-            'nm_member'    => $request->nm_member,
-            'tingkat'      => $request->tingkat,
-            'diskon'       => $request->diskon,
-            'min_transaksi' => $request->min_transaksi,
-            'min_pembelian' => $request->min_pembelian,
-            'harga'        => $request->harga ?: 0,
-            'masa_berlaku' => $request->masa_berlaku,
-            'deskripsi'    => $request->deskripsi,
-            'status'       => $request->masa_berlaku > 0 ? 'aktif' : 'non_aktif',
+            'nm_member'       => $request->nm_member,
+            'tingkat'         => $request->tingkat,
+            'diskon'          => $request->diskon,
+            'min_transaksi'   => $request->min_transaksi,
+            'min_pembelian'   => $request->min_pembelian,
+            'harga'           => $request->harga ?: 0,
+            'masa_berlaku'    => $request->masa_berlaku,
+            'deskripsi'       => $request->deskripsi,
+            'status'          => $request->masa_berlaku > 0 ? 'aktif' : 'non_aktif',
+            'jml_konsultasi'  => $request->input('jml_konsultasi', 0),
+            'prioritas_booking' => $request->boolean('prioritas_booking'),
+            'undangan_event'  => $request->boolean('undangan_event'),
         ]);
 
         buatNotif(auth()->id(), 'Membership Diperbarui', 'Paket membership ' . $membership->nm_member . ' berhasil diperbarui', 'Lainnya', route('admin.membership.edit', $membership->id_member));

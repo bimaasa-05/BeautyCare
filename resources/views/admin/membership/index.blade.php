@@ -1023,6 +1023,15 @@
                                 <div class="mt-benefit-item">
                                     <i class="fa-solid fa-money-bill-wave"></i> Harga Upgrade: Rp {{ number_format($item->harga, 0, ',', '.') }}
                                 </div>
+                                <div class="mt-benefit-item">
+                                    <i class="fa-solid fa-comments"></i> Gratis konsultasi {{ (int) $item->jml_konsultasi }}x/bulan
+                                </div>
+                                <div class="mt-benefit-item">
+                                    <i class="fa-solid fa-calendar-check"></i> Prioritas booking
+                                </div>
+                                <div class="mt-benefit-item">
+                                    <i class="fa-solid fa-star"></i> Undangan event eksklusif
+                                </div>
                             </div>
                             <div class="mt-syarat">
                                 <div class="mt-syarat-row">
