@@ -229,7 +229,7 @@
 
                             <div>
                                 <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Diskon (%)</label>
-                                <input type="number" name="diskon" value="{{ old('diskon', 0) }}" step="0.01" min="0" max="100"
+                                <input type="number" name="diskon" value="{{ (float) old('diskon', 0) }}" step="0.01" min="0" max="100"
                                     class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('diskon') border-red-300 @enderror"
                                     placeholder="Masukkan diskon">
                                 @error('diskon')
@@ -239,7 +239,8 @@
 
                             <div>
                                 <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Min. Transaksi</label>
-                                <input type="number" name="min_transaksi" value="{{ old('min_transaksi', 0) }}" min="0"
+                                <input type="text" inputmode="numeric" name="min_transaksi" value="{{ old('min_transaksi', 0) }}"
+                                    data-format-number
                                     class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('min_transaksi') border-red-300 @enderror"
                                     placeholder="Minimal jumlah transaksi">
                                 @error('min_transaksi')
@@ -249,9 +250,10 @@
 
                             <div>
                                 <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Min. Pembelian (Rp)</label>
-                                <input type="number" name="min_pembelian" value="{{ old('min_pembelian', 0) }}" min="0"
+                                <input type="text" inputmode="numeric" data-rupiah-display="#minPembelianHidden"
                                     class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('min_pembelian') border-red-300 @enderror"
                                     placeholder="Minimal total pembelian">
+                                <input type="hidden" name="min_pembelian" id="minPembelianHidden" value="{{ old('min_pembelian', 0) }}">
                                 @error('min_pembelian')
                                     <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
                                 @enderror
@@ -259,9 +261,10 @@
 
                             <div>
                                 <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Harga Upgrade (Rp)</label>
-                                <input type="number" name="harga" value="{{ old('harga', 0) }}" min="0"
+                                <input type="text" inputmode="numeric" data-rupiah-display="#hargaHidden"
                                     class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('harga') border-red-300 @enderror"
                                     placeholder="Biaya upgrade membership">
+                                <input type="hidden" name="harga" id="hargaHidden" value="{{ old('harga', 0) }}">
                                 @error('harga')
                                     <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
                                 @enderror
@@ -269,7 +272,8 @@
 
                             <div>
                                 <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Masa Berlaku (hari)</label>
-                                <input type="number" name="masa_berlaku" value="{{ old('masa_berlaku') }}" min="0"
+                                <input type="text" inputmode="numeric" name="masa_berlaku" value="{{ old('masa_berlaku') }}"
+                                    data-format-number
                                     class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('masa_berlaku') border-red-300 @enderror"
                                     placeholder="Masukkan masa berlaku dalam hari">
                                 @error('masa_berlaku')
@@ -330,6 +334,39 @@
                 select.name = '';
                 inputBaru.name = 'tingkat';
             }
+        });
+
+        function formatAngka(el) {
+            const digits = el.value.replace(/\D/g, '');
+            el.value = digits === '' ? '' : Number(digits).toLocaleString('id-ID');
+        }
+
+        document.querySelectorAll('[data-rupiah-display]').forEach(function(display) {
+            const hidden = document.querySelector(display.getAttribute('data-rupiah-display'));
+            if (!hidden) return;
+            const num = parseFloat(hidden.value);
+            if (!isNaN(num)) {
+                hidden.value = String(Math.round(num));
+                display.value = Math.round(num).toLocaleString('id-ID');
+            }
+            display.addEventListener('input', function() {
+                const digits = this.value.replace(/\D/g, '');
+                hidden.value = digits;
+                this.value = digits === '' ? '' : Number(digits).toLocaleString('id-ID');
+            });
+        });
+
+        document.querySelectorAll('[data-format-number]').forEach(function(el) {
+            formatAngka(el);
+            el.addEventListener('input', function() {
+                formatAngka(this);
+            });
+        });
+
+        document.getElementById('membershipForm').addEventListener('submit', function() {
+            document.querySelectorAll('[data-format-number]').forEach(function(el) {
+                el.value = el.value.replace(/\D/g, '');
+            });
         });
 
         const now = new Date();
