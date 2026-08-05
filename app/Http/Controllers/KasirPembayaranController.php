@@ -113,6 +113,7 @@ class KasirPembayaranController extends Controller
             'id_booking' => $request->id_booking,
             'id_pelanggan' => $booking->id_pelanggan,
             'id_user' => auth()->id(),
+            'id_kasir' => auth()->id(),
             'no_invoice' => $no_invoice,
             'tanggal' => date('Y-m-d'),
             'subtotal' => $total,
@@ -216,7 +217,7 @@ class KasirPembayaranController extends Controller
                     }
                 }
 
-                $transaksi->update(['status' => 'Lunas']);
+                $transaksi->update(['status' => 'Lunas', 'id_kasir' => auth()->id()]);
 
                 if ($transaksi->pembayaran) {
                     $transaksi->pembayaran->update([
