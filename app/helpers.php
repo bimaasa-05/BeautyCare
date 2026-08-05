@@ -84,6 +84,21 @@ if (!function_exists('hitungMutasiStokBaru')) {
     }
 }
 
+if (!function_exists('formatRupiahSingkat')) {
+    function formatRupiahSingkat($nominal)
+    {
+        $nominal = (float) $nominal;
+        $satuan = '';
+        $nilai = $nominal;
+        if ($nominal >= 1000000000000) { $nilai = $nominal / 1000000000000; $satuan = ' t'; }
+        elseif ($nominal >= 1000000000) { $nilai = $nominal / 1000000000; $satuan = ' m'; }
+        elseif ($nominal >= 1000000) { $nilai = $nominal / 1000000; $satuan = ' jt'; }
+        elseif ($nominal >= 1000) { $nilai = $nominal / 1000; $satuan = ' rb'; }
+        $desimal = ($nilai < 100 && floor($nilai) != $nilai) ? 1 : 0;
+        return 'Rp ' . number_format($nilai, $desimal, ',', '.') . $satuan;
+    }
+}
+
 if (!function_exists('catatStok')) {    function catatStok($idProduk, $type, $jumlah, $stokSebelum, $stokSesudah, $keterangan = '', $idSupplier = null, $refId = null, $refType = null)
     {
         try {
