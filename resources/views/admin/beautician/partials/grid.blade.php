@@ -68,6 +68,9 @@
                 title="Jadwal hanya dapat diakses saat status Tersedia"
                 class="flex-1 bg-gray-100 text-gray-400 font-bold text-[13px] py-2.5 rounded-2xl text-center inline-flex items-center justify-center cursor-not-allowed">Jadwal</button>
         @endif
+        <a href="{{ route('admin.beautician.show', $b->id_karyawan) }}"
+            class="w-10 h-10 flex items-center justify-center text-sky-500 bg-sky-50 border border-sky-100 hover:bg-sky-100 rounded-2xl transition-colors"
+            title="Lihat Detail"><i class="fa-solid fa-eye text-[13px]"></i></a>
         <a href="{{ route('admin.beautician.edit', $b->id_karyawan) }}"
             class="w-10 h-10 flex items-center justify-center text-amber-500 bg-amber-50 border border-amber-100 hover:bg-amber-100 rounded-2xl transition-colors"><i
                 class="fa-solid fa-pen-to-square text-[13px]"></i></a>
