@@ -179,7 +179,7 @@
                                 </div>
                                 <div class="ph-text">
                                     <h3>Data Beautician</h3>
-                                    <p>Pusat pengelolaan tim dan administrasi karyawan! Di halaman ini, Anda memiliki akses penuh untuk memastikan data setiap anggota tim tercatat dengan baik. Anda bisa dengan mudah memperbarui informasi staf, mengatur rincian gaji, hingga mencatat bonus performa mereka. Mari kelola administrasi tim dengan rapi dan aman, agar hak karyawan selalu terpenuhi tepat waktu!</p>
+                                    <p>Kelola tim dan administrasi karyawan: perbarui informasi staf, atur rincian gaji, dan catat komisi performa mereka dengan mudah dan aman.</p>
                                 </div>
                             </div>
                         </div>
