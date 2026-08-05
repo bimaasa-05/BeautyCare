@@ -229,7 +229,7 @@
 
                             <div>
                                 <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Diskon (%)</label>
-                                <input type="number" name="diskon" value="{{ old('diskon', 0) }}" step="0.01" min="0" max="100"
+                                <input type="number" name="diskon" value="{{ (float) old('diskon', 0) }}" step="0.01" min="0" max="100"
                                     class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('diskon') border-red-300 @enderror"
                                     placeholder="Masukkan diskon">
                                 @error('diskon')
@@ -239,7 +239,8 @@
 
                             <div>
                                 <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Min. Transaksi</label>
-                                <input type="number" name="min_transaksi" value="{{ old('min_transaksi', 0) }}" min="0"
+                                <input type="text" inputmode="numeric" name="min_transaksi" value="{{ old('min_transaksi', 0) }}"
+                                    data-format-number
                                     class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('min_transaksi') border-red-300 @enderror"
                                     placeholder="Minimal jumlah transaksi">
                                 @error('min_transaksi')
@@ -249,9 +250,10 @@
 
                             <div>
                                 <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Min. Pembelian (Rp)</label>
-                                <input type="number" name="min_pembelian" value="{{ old('min_pembelian', 0) }}" min="0"
+                                <input type="text" inputmode="numeric" data-rupiah-display="#minPembelianHidden"
                                     class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('min_pembelian') border-red-300 @enderror"
                                     placeholder="Minimal total pembelian">
+                                <input type="hidden" name="min_pembelian" id="minPembelianHidden" value="{{ old('min_pembelian', 0) }}">
                                 @error('min_pembelian')
                                     <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
                                 @enderror
@@ -259,9 +261,10 @@
 
                             <div>
                                 <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Harga Upgrade (Rp)</label>
-                                <input type="number" name="harga" value="{{ old('harga', 0) }}" min="0"
+                                <input type="text" inputmode="numeric" data-rupiah-display="#hargaHidden"
                                     class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('harga') border-red-300 @enderror"
                                     placeholder="Biaya upgrade membership">
+                                <input type="hidden" name="harga" id="hargaHidden" value="{{ old('harga', 0) }}">
                                 @error('harga')
                                     <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
                                 @enderror
@@ -269,12 +272,55 @@
 
                             <div>
                                 <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Masa Berlaku (hari)</label>
-                                <input type="number" name="masa_berlaku" value="{{ old('masa_berlaku') }}" min="0"
+                                <input type="text" inputmode="numeric" name="masa_berlaku" value="{{ old('masa_berlaku') }}"
+                                    data-format-number
                                     class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('masa_berlaku') border-red-300 @enderror"
                                     placeholder="Masukkan masa berlaku dalam hari">
                                 @error('masa_berlaku')
                                     <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
                                 @enderror
+                            </div>
+
+                            <div class="bg-pink-50/60 border border-pink-100 rounded-xl p-4">
+                                <p class="text-[13px] font-bold text-gray-800 mb-0.5">Keuntungan Paket</p>
+                                <p class="text-[12px] text-gray-400 mb-3">Atur fasilitas yang didapat pelanggan dari paket ini</p>
+
+                                <div class="mb-4">
+                                    <label class="text-[12px] font-semibold text-gray-700 block mb-1.5">Gratis Konsultasi per Bulan</label>
+                                    <input type="text" inputmode="numeric" name="jml_konsultasi" value="{{ (int) old('jml_konsultasi', 0) }}"
+                                        data-format-number
+                                        class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('jml_konsultasi') border-red-300 @enderror"
+                                        placeholder="0">
+                                    @error('jml_konsultasi')
+                                        <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                <div class="flex items-center justify-between gap-3 py-3 border-t border-pink-100">
+                                    <div>
+                                        <p class="text-[13px] font-semibold text-gray-700">Prioritas Booking</p>
+                                        <p class="text-[11px] text-gray-400">Pelanggan mendapat prioritas pemesanan jadwal treatment</p>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer shrink-0">
+                                        <input type="checkbox" name="prioritas_booking" value="1"
+                                            {{ old('prioritas_booking') ? 'checked' : '' }}
+                                            class="sr-only peer">
+                                        <div class="w-11 h-6 bg-gray-200 rounded-full peer-checked:bg-[#de3b7c] peer-checked:after:translate-x-5 after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border after:border-gray-300 after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
+                                    </label>
+                                </div>
+
+                                <div class="flex items-center justify-between gap-3 py-3 border-t border-pink-100">
+                                    <div>
+                                        <p class="text-[13px] font-semibold text-gray-700">Undangan Event Eksklusif</p>
+                                        <p class="text-[11px] text-gray-400">Pelanggan mendapat undangan event spesial BeautyCare</p>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer shrink-0">
+                                        <input type="checkbox" name="undangan_event" value="1"
+                                            {{ old('undangan_event') ? 'checked' : '' }}
+                                            class="sr-only peer">
+                                        <div class="w-11 h-6 bg-gray-200 rounded-full peer-checked:bg-[#de3b7c] peer-checked:after:translate-x-5 after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border after:border-gray-300 after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
+                                    </label>
+                                </div>
                             </div>
 
                             <div>
@@ -330,6 +376,39 @@
                 select.name = '';
                 inputBaru.name = 'tingkat';
             }
+        });
+
+        function formatAngka(el) {
+            const digits = el.value.replace(/\D/g, '');
+            el.value = digits === '' ? '' : Number(digits).toLocaleString('id-ID');
+        }
+
+        document.querySelectorAll('[data-rupiah-display]').forEach(function(display) {
+            const hidden = document.querySelector(display.getAttribute('data-rupiah-display'));
+            if (!hidden) return;
+            const num = parseFloat(hidden.value);
+            if (!isNaN(num)) {
+                hidden.value = String(Math.round(num));
+                display.value = Math.round(num).toLocaleString('id-ID');
+            }
+            display.addEventListener('input', function() {
+                const digits = this.value.replace(/\D/g, '');
+                hidden.value = digits;
+                this.value = digits === '' ? '' : Number(digits).toLocaleString('id-ID');
+            });
+        });
+
+        document.querySelectorAll('[data-format-number]').forEach(function(el) {
+            formatAngka(el);
+            el.addEventListener('input', function() {
+                formatAngka(this);
+            });
+        });
+
+        document.getElementById('membershipForm').addEventListener('submit', function() {
+            document.querySelectorAll('[data-format-number]').forEach(function(el) {
+                el.value = el.value.replace(/\D/g, '');
+            });
         });
 
         const now = new Date();
