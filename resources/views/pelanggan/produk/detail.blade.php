@@ -724,6 +724,21 @@
         .page-header-premium { padding: 22px 20px; }
         .pd-info { padding: 20px; }
         .pd-media .pd-img, .pd-media .pd-img-placeholder { min-height: 300px; }
+        .cart-notif { left: 16px; right: 16px; max-width: none; }
+    }
+
+    @media (max-width: 480px) {
+        .pd-nama { font-size: 18px; }
+        .pd-price { font-size: 24px; }
+        .pd-price-wrap { padding: 14px 16px; }
+        .pd-subtotal { flex-wrap: wrap; padding: 12px 14px; }
+        .pd-subtotal .pds-nominal { font-size: 18px; }
+        .pd-qty { gap: 10px; }
+        .pd-media { min-height: 240px; }
+        .pd-media .pd-img, .pd-media .pd-img-placeholder { min-height: 240px; }
+        .pd-media .pd-img-placeholder { font-size: 52px; }
+        .page-header-premium .ph-text h3 { font-size: 17px; }
+        .page-header-premium .ph-icon-wrap { width: 44px; height: 44px; border-radius: 13px; font-size: 18px; }
     }
     </style>
 </head>

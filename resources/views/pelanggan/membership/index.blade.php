@@ -775,7 +775,7 @@
                         <div class="sm-icon belanja">
                             <i class="fa-solid fa-wallet"></i>
                         </div>
-                        <div class="sm-value">Rp {{ number_format($totalBelanja, 0, ',', '.') }}</div>
+                        <div class="sm-value">{{ formatRupiahSingkat($totalBelanja) }}</div>
                         <div class="sm-label">Total Belanja</div>
                     </div>
                     <div class="stat-member-card">
@@ -824,7 +824,7 @@
                     <div class="pg-row">
                         <div class="pg-label">
                             <span>Total Belanja</span>
-                            <span><strong>Rp {{ number_format($totalBelanja, 0, ',', '.') }}</strong> / Rp {{ number_format($targetBelanja, 0, ',', '.') }}</span>
+                            <span><strong>{{ formatRupiahSingkat($totalBelanja) }}</strong> / {{ formatRupiahSingkat($targetBelanja) }}</span>
                         </div>
                         <div class="pg-bar">
                             <div class="pg-fill {{ $progressBelanja >= 100 ? 'full' : '' }}" data-width="{{ $progressBelanja }}"></div>
@@ -842,7 +842,7 @@
                     @if(!$isMaxTier)
                     <div class="pg-info">
                         <i class="fa-solid fa-circle-info"></i>
-                        Tinggal Rp {{ number_format($sisaBelanja, 0, ',', '.') }} atau {{ $sisaTransaksi }} transaksi lagi untuk naik ke {{ $nextTier->tingkat }}!
+                        Tinggal {{ formatRupiahSingkat($sisaBelanja) }} atau {{ $sisaTransaksi }} transaksi lagi untuk naik ke {{ $nextTier->tingkat }}!
                     </div>
                     @else
                     <div class="pg-info">
@@ -932,9 +932,9 @@
                                         @endif
                                     </div>
                                     <div class="mt-syarat-row">
-                                        <span><i class="fa-solid fa-wallet"></i> Min. Belanja Rp {{ number_format($member->min_pembelian, 0, ',', '.') }}</span>
+                                        <span><i class="fa-solid fa-wallet"></i> Min. Belanja {{ formatRupiahSingkat($member->min_pembelian) }}</span>
                                         @if($showSyarat)
-                                        <span class="mt-syarat-status {{ $meetsBelanja ? 'ok' : 'kurang' }}">{{ $meetsBelanja ? 'Terpenuhi' : 'Kurang Rp ' . number_format($kurangBelanja, 0, ',', '.') }}</span>
+                                        <span class="mt-syarat-status {{ $meetsBelanja ? 'ok' : 'kurang' }}">{{ $meetsBelanja ? 'Terpenuhi' : 'Kurang ' . formatRupiahSingkat($kurangBelanja) }}</span>
                                         @endif
                                     </div>
                                 </div>

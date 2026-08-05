@@ -598,6 +598,8 @@
     <script>
     const chartMonths = @json($chartMonths);
     const chartCounts = @json($chartCounts);
+    const chartYearMonths = @json($chartYearMonths);
+    const chartYearCounts = @json($chartYearCounts);
 
     function renderChart(months) {
         const container = document.getElementById('chartBars');
@@ -605,9 +607,15 @@
         container.innerHTML = '';
         labelContainer.innerHTML = '';
 
-        const start = Math.max(0, chartMonths.length - months);
-        const subsetMonths = chartMonths.slice(start);
-        const subsetCounts = chartCounts.slice(start);
+        let subsetMonths, subsetCounts;
+        if (months === 12) {
+            subsetMonths = chartYearMonths;
+            subsetCounts = chartYearCounts;
+        } else {
+            const start = Math.max(0, chartMonths.length - months);
+            subsetMonths = chartMonths.slice(start);
+            subsetCounts = chartCounts.slice(start);
+        }
         const maxVal = Math.max(...subsetCounts, 1);
 
         const gridValues = [];
