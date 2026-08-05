@@ -106,7 +106,10 @@ class KeranjangController extends Controller
             ->first();
 
         if ($existing) {
-            $existing->increment('qty', $qty);
+            $produk = Produk::where('nm_produk', $request->nm_produk)->first();
+            $stok = $produk ? (int) $produk->stok : 0;
+
+            $existing->qty = min($existing->qty + $qty, max(1, $stok));
             $existing->total_harga = $existing->harga_satuan * $existing->qty;
             $existing->save();
         } else {
@@ -167,8 +170,55 @@ class KeranjangController extends Controller
 
         return response()->json([
             'success' => true,
+            'stok' => $stok,
             'total_item' => $item->total_harga,
             'total_all' => $totalAll,
+        ]);
+    }
+
+    public function stokRefresh()
+    {
+        $troli = Troli::where('id_user', auth()->id())->get();
+        $stokMap = $this->stokTroli($troli);
+
+        $items = [];
+        $totalAll = 0;
+
+        foreach ($troli as $tItem) {
+            $stok = $stokMap[$tItem->id] ?? 0;
+
+            if ($stok > 0) {
+                $qtyBaru = min((int) $tItem->qty, $stok);
+                if ($qtyBaru < 1) {
+                    $qtyBaru = 1;
+                }
+            } else {
+                $qtyBaru = 0;
+            }
+
+            if ((int) $tItem->qty !== $qtyBaru) {
+                $tItem->qty = $qtyBaru;
+                $tItem->total_harga = $tItem->harga_satuan * $qtyBaru;
+                $tItem->save();
+            }
+
+            $totalItem = $stok > 0 ? $tItem->total_harga : 0;
+            if ($stok > 0) {
+                $totalAll += $totalItem;
+            }
+
+            $items[] = [
+                'id' => (int) $tItem->id,
+                'stok' => $stok,
+                'qty' => $qtyBaru,
+                'total_item' => (int) $totalItem,
+            ];
+        }
+
+        return response()->json([
+            'success' => true,
+            'items' => $items,
+            'total_all' => (int) $totalAll,
         ]);
     }
 
@@ -190,7 +240,7 @@ class KeranjangController extends Controller
         return response()->json([
             'success' => true,
             'message' => count($ids) . ' produk berhasil dihapus!',
-            'total_all' => $total_all,
+            'total_all' => $totalAll,
             'count' => $count,
         ]);
     }
