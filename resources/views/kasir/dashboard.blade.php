@@ -672,6 +672,14 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    layout: {
+                        padding: {
+                            left: 0,
+                            right: 0,
+                            top: 0,
+                            bottom: 0
+                        }
+                    },
                     animation: {
                         y: {
                             type: 'number',
@@ -724,15 +732,18 @@
                             beginAtZero: true,
                             grid: {
                                 color: '#F9EEF4',
-                                borderDash: [3, 3]
+                                borderDash: [3, 3],
+                                drawTicks: false
                             },
                             ticks: {
                                 maxTicksLimit: 5,
+                                maxWidth: 70,
+                                padding: 6,
                                 callback: function(value) {
-                                    if (max >= 1000000000) return 'Rp' + (value / 1000000000).toFixed(1) + 'M';
-                                    if (max >= 1000000) return 'Rp' + (value / 1000000).toFixed(1) + 'jt';
-                                    if (max >= 1000) return 'Rp' + (value / 1000).toFixed(0) + 'rb';
-                                    return 'Rp' + value;
+                                    if (max >= 1000000000) return (value / 1000000000).toFixed(1) + 'M';
+                                    if (max >= 1000000) return (value / 1000000).toFixed(1) + 'jt';
+                                    if (max >= 1000) return (value / 1000).toFixed(0) + 'rb';
+                                    return value;
                                 }
                             }
                         }
@@ -845,6 +856,13 @@
             canvas.height = Math.round(h * dpr);
             canvas.style.width = w + 'px';
             canvas.style.height = h + 'px';
+            const yScale = inst.scales && inst.scales.y;
+            if (yScale && yScale.width > 0) {
+                inst.options.layout = inst.options.layout || {};
+                inst.options.layout.padding = inst.options.layout.padding || {};
+                inst.options.layout.padding.left = 0;
+                inst.options.layout.padding.right = Math.ceil(yScale.width) + 8;
+            }
             inst.resize(w, h);
         }
 

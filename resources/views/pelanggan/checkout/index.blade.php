@@ -516,9 +516,19 @@
                                 <p>Periksa pesanan Anda lalu pilih metode pembayaran</p>
                             </div>
                         </div>
-                        <a href="{{ $isMembership ? route('pelanggan.membership') : route('pelanggan.keranjang') }}" class="btn-back">
-                            <i class="fa-solid fa-arrow-left"></i> {{ $isMembership ? 'Kembali ke Membership' : 'Kembali ke Keranjang' }}
+                        @if($isMembership)
+                        <a href="{{ route('pelanggan.membership') }}" class="btn-back">
+                            <i class="fa-solid fa-arrow-left"></i> Kembali ke Membership
                         </a>
+                        @elseif(request('beli'))
+                        <a href="{{ route('pelanggan.produk.detail', request('beli')) }}" class="btn-back">
+                            <i class="fa-solid fa-arrow-left"></i> Kembali ke Produk
+                        </a>
+                        @else
+                        <a href="{{ route('pelanggan.keranjang') }}" class="btn-back">
+                            <i class="fa-solid fa-arrow-left"></i> Kembali ke Keranjang
+                        </a>
+                        @endif
                     </div>
                 </div>
 
