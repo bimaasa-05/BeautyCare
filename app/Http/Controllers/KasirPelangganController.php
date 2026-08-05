@@ -100,6 +100,14 @@ class KasirPelangganController extends Controller
             $data['foto'] = $request->file('foto')->store('uploads/pelanggan', 'public');
         }
         $pelanggan->update($data);
+        if ($pelanggan->id_user) {
+            $pelanggan->user()->update([
+                'nama' => $request->nm_pelanggan,
+                'email' => $request->email,
+                'no_hp' => $request->no_hp,
+                'alamat' => $request->alamat,
+            ]);
+        }
         ActivityLogger::log('Mengubah', auth()->user()->nama . ' mengubah data pelanggan ' . ($request->nm_pelanggan ?? ''), 'Pelanggan', $id, $dataLama, $data);
         buatNotif(auth()->id(), 'Pelanggan Diperbarui', 'Data pelanggan berhasil diperbarui', 'Lainnya', route('kasir.pelanggan.index'));
 

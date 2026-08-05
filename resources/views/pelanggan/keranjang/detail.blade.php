@@ -526,6 +526,20 @@
         .dc-info { padding: 20px; }
         .dc-media .dc-img, .dc-media .dc-img-placeholder { min-height: 260px; }
     }
+
+    @media (max-width: 480px) {
+        .dc-nama { font-size: 18px; }
+        .dc-price { font-size: 22px; }
+        .dc-price-wrap { padding: 14px 16px; }
+        .dc-subtotal { flex-wrap: wrap; padding: 12px 14px; }
+        .dc-subtotal .dcs-nominal { font-size: 19px; }
+        .dc-qty-row { gap: 10px; }
+        .dc-media { min-height: 220px; }
+        .dc-media .dc-img, .dc-media .dc-img-placeholder { min-height: 220px; }
+        .dc-media .dc-img-placeholder { font-size: 48px; }
+        .page-header-premium .ph-text h3 { font-size: 17px; }
+        .page-header-premium .ph-icon-wrap { width: 44px; height: 44px; border-radius: 13px; font-size: 18px; }
+    }
     </style>
 </head>
 

@@ -169,11 +169,24 @@ class PelangganDashboardController extends Controller
             $chartCounts[] = $count;
         }
 
+        $chartYearMonths = [];
+        $chartYearCounts = [];
+        for ($m = 1; $m <= now()->month; $m++) {
+            $date = now()->copy()->startOfYear()->addMonths($m - 1);
+            $count = DB::table('log_booking')
+                ->where('id_pelanggan', $userId)
+                ->whereYear('tanggal', $date->year)
+                ->whereMonth('tanggal', $date->month)
+                ->count();
+            $chartYearMonths[] = $date->format('M');
+            $chartYearCounts[] = $count;
+        }
+
         return view('pelanggan.dashboard', compact(
             'promos', 'layanans', 'kategoriLayanan', 'produks',
             'totalBooking', 'bookingAktif', 'riwayatTreatment', 'kunjunganBulanIni',
             'memberTingkat', 'memberList',
-            'chartMonths', 'chartCounts',
+            'chartMonths', 'chartCounts', 'chartYearMonths', 'chartYearCounts',
             'riwayatTreatments', 'bookingMendatang',
             'layananFavorit', 'produkTerlaris',
             'totalBelanja', 'totalTransaksi', 'memberSaatIni',
