@@ -139,6 +139,14 @@
             gap: 10px;
         }
 
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            margin-bottom: 24px;
+            align-items: stretch;
+        }
+
         .chart-card {
             display: flex;
             flex-direction: column;
@@ -148,12 +156,24 @@
             position: relative;
             width: 100%;
             flex: 1;
-            min-height: 280px;
+            min-height: 320px;
         }
 
         .chart-body canvas {
-            width: 100% !important;
-            height: 100% !important;
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .chart-empty-msg {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: #999;
         }
 
         .mini-chart-card {
@@ -166,7 +186,12 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            min-height: 220px;
+            min-height: 200px;
+        }
+
+        .card-scroll {
+            max-height: 320px;
+            overflow-y: auto;
         }
 
         .table-scroll {
@@ -313,6 +338,7 @@
                         </div>
                         <div class="chart-body">
                             <canvas id="chartPendapatan"></canvas>
+                            <span id="salesEmptyMsg" class="chart-empty-msg" style="display:none;">Belum ada data penjualan</span>
                         </div>
                     </div>
 
@@ -617,7 +643,18 @@
             const ctx = document.getElementById('chartPendapatan').getContext('2d');
             const max = revenue.length > 0 ? Math.max(...revenue) : 0;
             const stagger = labels.length > 0 ? 1600 / labels.length : 0;
+            const canvas = document.getElementById('chartPendapatan');
+            const emptyMsg = document.getElementById('salesEmptyMsg');
+            const isEmpty = labels.length === 0 || revenue.every(v => Number(v) === 0);
             if (salesChartInstance) salesChartInstance.destroy();
+            if (isEmpty) {
+                if (canvas) canvas.style.display = 'none';
+                if (emptyMsg) emptyMsg.style.display = 'flex';
+                salesChartInstance = null;
+                return;
+            }
+            if (canvas) canvas.style.display = 'block';
+            if (emptyMsg) emptyMsg.style.display = 'none';
             salesChartInstance = new Chart(ctx, {
                 type: 'bar',
                 data: {
@@ -627,7 +664,9 @@
                         data: revenue,
                         backgroundColor: '#8B5CF6',
                         borderRadius: { topLeft: 6, topRight: 6 },
-                        barPercentage: 0.5
+                        barPercentage: 0.55,
+                        categoryPercentage: 0.75,
+                        maxBarThickness: 50
                     }]
                 },
                 options: {
@@ -682,6 +721,7 @@
                             border: {
                                 display: false
                             },
+                            beginAtZero: true,
                             grid: {
                                 color: '#F9EEF4',
                                 borderDash: [3, 3]
@@ -774,6 +814,7 @@
             const heading = document.querySelector('#periodSelect').closest('.chart-card').querySelector('.chart-header h3');
             if (heading) heading.textContent = 'Grafik Penjualan ' + (periodNames[period] || period);
             initSalesChart(data.labels, data.values);
+            fitSalesChart();
         }
 
         function updatePaymentChart(period) {
@@ -783,10 +824,83 @@
             const heading = document.querySelector('#paymentPeriodSelect').closest('.mini-chart-card').querySelector('.mc-header h3');
             if (heading) heading.textContent = 'Metode Pembayaran ' + (periodNames[period] || period);
             initPaymentChart(data.labels, data.values);
+            fitPaymentChart();
         }
 
         initSalesChart(salesChartLabels, salesChartRevenue);
         initPaymentChart(paymentLabels, paymentValues);
+
+        function fitChart(canvasId, getInstance) {
+            const canvas = document.getElementById(canvasId);
+            const inst = getInstance();
+            if (!canvas || !inst) return;
+            const rect = canvas.parentElement.getBoundingClientRect();
+            if (rect.width <= 0 || rect.height <= 0) return;
+            const w = Math.round(rect.width);
+            const h = Math.round(rect.height);
+            const cur = canvas.getBoundingClientRect();
+            if (Math.abs(cur.width - w) <= 2 && Math.abs(cur.height - h) <= 2) return;
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = Math.round(w * dpr);
+            canvas.height = Math.round(h * dpr);
+            canvas.style.width = w + 'px';
+            canvas.style.height = h + 'px';
+            inst.resize(w, h);
+        }
+
+        function fitSalesChart() {
+            fitChart('chartPendapatan', function () { return salesChartInstance; });
+        }
+
+        function fitPaymentChart() {
+            fitChart('chartPembayaran', function () { return paymentChartInstance; });
+        }
+
+        function fitAllCharts() {
+            fitSalesChart();
+            fitPaymentChart();
+        }
+
+        function bindChartResize(canvasId, getInstance) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas || !canvas.parentElement || typeof ResizeObserver === 'undefined') return;
+            new ResizeObserver(function () {
+                fitChart(canvasId, getInstance);
+            }).observe(canvas.parentElement);
+        }
+
+        function watchChartSize(canvasId, getInstance) {
+            let checks = 0;
+            const timer = setInterval(function () {
+                const canvas = document.getElementById(canvasId);
+                const inst = getInstance();
+                if (canvas && inst) {
+                    const rect = canvas.parentElement.getBoundingClientRect();
+                    const cur = canvas.getBoundingClientRect();
+                    if (Math.abs(cur.height - rect.height) > 2 || Math.abs(cur.width - rect.width) > 2) {
+                        fitChart(canvasId, getInstance);
+                    }
+                }
+                checks++;
+                if (checks >= 8) clearInterval(timer);
+            }, 1000);
+        }
+
+        bindChartResize('chartPendapatan', function () { return salesChartInstance; });
+        bindChartResize('chartPembayaran', function () { return paymentChartInstance; });
+
+        requestAnimationFrame(fitAllCharts);
+        setTimeout(fitAllCharts, 300);
+
+        if (document.fonts && document.fonts.ready) {
+            document.fonts.ready.then(fitAllCharts);
+        }
+
+        window.addEventListener('load', fitAllCharts);
+        window.addEventListener('resize', fitAllCharts);
+
+        watchChartSize('chartPendapatan', function () { return salesChartInstance; });
+        watchChartSize('chartPembayaran', function () { return paymentChartInstance; });
     </script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
 </body>
