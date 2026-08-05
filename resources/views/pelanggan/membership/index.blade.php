@@ -961,7 +961,7 @@
                                     <i class="fa-regular fa-circle-check"></i> Level Saat Ini
                                 </button>
                                 @elseif ($meetsSyarat && $canUpgrade)
-                                <a href="{{ route('pelanggan.checkout', ['beli_membership' => $member->id_member]) }}" class="mt-btn primary" style="display:block;">{{ $isRenewal ? 'Perpanjang ke ' . $member->tingkat : 'Upgrade ke ' . $member->tingkat }}</a>
+                                <a href="{{ route('pelanggan.pembayaran.membership', ['beli_membership' => $member->id_member]) }}" class="mt-btn primary" style="display:block;">{{ $isRenewal ? 'Perpanjang ke ' . $member->tingkat : 'Upgrade Sekarang' }}</a>
                                 @elseif ($canUpgrade)
                                 <button class="mt-btn outline" disabled style="opacity:0.5;cursor:not-allowed;">
                                     <i class="fa-solid fa-lock"></i> Belum Memenuhi Syarat
