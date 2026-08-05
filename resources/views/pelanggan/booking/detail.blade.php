@@ -133,6 +133,33 @@
         .detail-card .dc-section-sub { margin-left: 0; }
         .header-back-detail { align-items: flex-start; }
         .action-bar-bottom { flex-wrap: wrap; }
+        .services-table thead { display: none; }
+        .services-table tbody tr {
+            display: block;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin-bottom: 10px;
+        }
+        .services-table tbody td {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            padding: 6px 0;
+            border: none;
+            font-size: 13px;
+        }
+        .services-table tbody td::before {
+            content: attr(data-label);
+            font-weight: 600;
+            color: var(--gray);
+            font-size: 11px;
+            text-transform: uppercase;
+            flex-shrink: 0;
+        }
+        .price-summary { padding: 18px 16px; }
+        .price-summary .ps-row .ps-value { text-align: right; }
     }
 
     @media (max-width: 576px) {
@@ -504,13 +531,13 @@
                                     $totalSubtotal += $d->subtotal;
                                 @endphp
                                 <tr>
-                                    <td style="color:var(--gray);">{{ $i + 1 }}</td>
-                                    <td>
+                                    <td data-label="No" style="color:var(--gray);">{{ $i + 1 }}</td>
+                                    <td data-label="Layanan">
                                         <span style="font-weight:600;">{{ $d->layanan ? $d->layanan->nm_layanan : '-' }}</span>
                                     </td>
-                                    <td style="text-align:right;">Rp {{ number_format($d->harga, 0, ',', '.') }}</td>
-                                    <td style="text-align:right;color:#DC2626;">- Rp {{ number_format($d->diskon, 0, ',', '.') }}</td>
-                                    <td style="text-align:right;font-weight:600;">Rp {{ number_format($d->subtotal, 0, ',', '.') }}</td>
+                                    <td data-label="Harga" style="text-align:right;">Rp {{ number_format($d->harga, 0, ',', '.') }}</td>
+                                    <td data-label="Diskon" style="text-align:right;color:#DC2626;">- Rp {{ number_format($d->diskon, 0, ',', '.') }}</td>
+                                    <td data-label="Subtotal" style="text-align:right;font-weight:600;">Rp {{ number_format($d->subtotal, 0, ',', '.') }}</td>
                                 </tr>
                                 @endforeach
                             </tbody>
