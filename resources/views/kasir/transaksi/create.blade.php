@@ -51,7 +51,7 @@
 
             <div class="flex-1 overflow-y-auto p-8">
                 <div class="bg-white rounded-2xl p-6 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] relative overflow-hidden">
-                    <div class="float-icon" style="top:-15px;right:-10px;">ðŸ§¾</div>
+                    <div class="float-icon" style="top:-15px;right:-10px;">🧾</div>
 
                     <div class="flex flex-wrap justify-between items-center gap-2 mb-6">
                         <div>
@@ -143,7 +143,7 @@
                                         {{ old('metode_byr') == 'Tunai' ? 'checked' : '' }}
                                         onchange="togglePaymentMethod('Tunai')">
                                     <div class="p-4 rounded-xl border-2 border-gray-100 peer-checked:border-pink-400 peer-checked:bg-pink-50/50 hover:border-pink-200 transition-all text-center">
-                                        <div class="text-2xl mb-1">ðŸ’µ</div>
+                                        <div class="text-2xl mb-1">💵</div>
                                         <div class="text-[12px] font-semibold text-gray-600 peer-checked:text-pink-500">Tunai</div>
                                     </div>
                                 </label>
@@ -152,7 +152,7 @@
                                         {{ old('metode_byr') == 'Transfer' ? 'checked' : '' }}
                                         onchange="togglePaymentMethod('Transfer')">
                                     <div class="p-4 rounded-xl border-2 border-gray-100 peer-checked:border-pink-400 peer-checked:bg-pink-50/50 hover:border-pink-200 transition-all text-center">
-                                        <div class="text-2xl mb-1">ðŸ¦</div>
+                                        <div class="text-2xl mb-1">🏦</div>
                                         <div class="text-[12px] font-semibold text-gray-600 peer-checked:text-pink-500">Transfer</div>
                                     </div>
                                 </label>
@@ -161,7 +161,7 @@
                                         {{ old('metode_byr') == 'Debit' ? 'checked' : '' }}
                                         onchange="togglePaymentMethod('Debit')">
                                     <div class="p-4 rounded-xl border-2 border-gray-100 peer-checked:border-pink-400 peer-checked:bg-pink-50/50 hover:border-pink-200 transition-all text-center">
-                                        <div class="text-2xl mb-1">ðŸ’³</div>
+                                        <div class="text-2xl mb-1">💳</div>
                                         <div class="text-[12px] font-semibold text-gray-600 peer-checked:text-pink-500">Debit</div>
                                     </div>
                                 </label>
@@ -531,7 +531,7 @@
 
             if (member && tingkat) {
                 infoEl.classList.remove('hidden');
-                infoText.textContent = 'Member ' + tingkat + ' â€” Diskon ' + diskonPct + '%';
+                infoText.textContent = 'Member ' + tingkat + ' — Diskon ' + diskonPct + '%';
             } else {
                 infoEl.classList.add('hidden');
                 infoText.textContent = '';
@@ -543,7 +543,7 @@
         // ========== Item Functions ==========
         function getItemTemplate(index) {
             return `
-            <div class="item-row flex items-center gap-3 mb-3 p-3 bg-gray-50 rounded-xl border border-gray-100 flex-wrap" data-index="${index}">
+            <div class="item-row flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-3 p-3 bg-gray-50 rounded-xl border border-gray-100" data-index="${index}">
                 <input type="hidden" name="items[${index}][jenis]" class="item-jenis-hidden" value="Layanan">
                 <input type="hidden" name="items[${index}][id_item]" class="item-id-hidden" value="">
                 <input type="hidden" name="items[${index}][nm_item]" class="item-nama-hidden" value="">
@@ -551,22 +551,22 @@
                 <input type="hidden" name="items[${index}][harga]" class="item-harga-hidden" value="0">
                 <input type="hidden" name="items[${index}][subtotal]" class="item-subtotal-hidden" value="0">
 
-                <select class="form-input-custom item-jenis-select !w-[120px] !py-2 !text-[12px] flex-shrink-0"
+                <select class="form-input-custom item-jenis-select w-full sm:!w-[120px] !py-2 !text-[12px] sm:flex-shrink-0"
                     onchange="onJenisChange(this)">
                     <option value="Layanan">Layanan</option>
                     <option value="Produk">Produk</option>
                 </select>
-                <select class="form-input-custom item-select !w-full !py-2 !text-[12px]"
+                <select class="form-input-custom item-select w-full sm:!flex-1 sm:!min-w-0 !py-2 !text-[12px]"
                     onchange="onItemChange(this)">
                     <option value="">-- Pilih --</option>
                 </select>
-                <span class="item-harga-display text-[12px] text-gray-600 font-medium w-24 text-right flex-shrink-0">Rp 0</span>
+                <span class="item-harga-display text-[12px] text-gray-600 font-medium w-full sm:w-24 text-right sm:flex-shrink-0">Rp 0</span>
                 <input type="number" value="1" min="1"
-                    class="form-input-custom item-qty !w-16 !py-2 !text-[12px] text-center flex-shrink-0"
+                    class="form-input-custom item-qty w-full sm:!w-16 !py-2 !text-[12px] text-center sm:flex-shrink-0"
                     oninput="onQtyChange(this)">
-                <span class="item-subtotal-display text-[13px] text-pink-600 font-bold w-32 text-right flex-shrink-0">Rp 0</span>
+                <span class="item-subtotal-display text-[13px] text-pink-600 font-bold w-full sm:w-32 text-right sm:flex-shrink-0">Rp 0</span>
                 <button type="button" onclick="removeItemRow(this)"
-                    class="w-7 h-7 flex items-center justify-center text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors flex-shrink-0">
+                    class="w-7 h-7 flex items-center justify-center text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors sm:flex-shrink-0">
                     <i class="fa-regular fa-trash-can text-xs"></i>
                 </button>
             </div>`;
@@ -582,7 +582,7 @@
                     const stok = item.stok || 0;
                     return `<option value="${item[idField]}" data-nama="${item[nmField]}" data-harga="${item[priceField] || 0}" data-stok="${stok}">${item[nmField]} | Rp ${Number(item[priceField] || 0).toLocaleString('id-ID')} | Stok: ${stok}</option>`;
                 }
-                return `<option value="${item[idField]}" data-nama="${item[nmField]}" data-harga="${item[priceField] || 0}">${item[nmField]} â€” Rp ${Number(item[priceField] || 0).toLocaleString('id-ID')}</option>`;
+                return `<option value="${item[idField]}" data-nama="${item[nmField]}" data-harga="${item[priceField] || 0}">${item[nmField]} — Rp ${Number(item[priceField] || 0).toLocaleString('id-ID')}</option>`;
             }).join('');
         }
 
@@ -753,7 +753,7 @@
         function updateTimerDisplay(el) {
             const menit = Math.floor(timerSeconds / 60);
             const detik = timerSeconds % 60;
-            el.textContent = 'â±ï¸ ' + String(menit).padStart(2, '0') + ':' + String(detik).padStart(2, '0');
+            el.textContent = '⏱️ ' + String(menit).padStart(2, '0') + ':' + String(detik).padStart(2, '0');
             el.style.color = timerSeconds <= 10 ? '#EF4444' : '#666666';
         }
 
@@ -764,7 +764,7 @@
             }
             document.querySelectorAll('[id^="timer-"]').forEach(function(el) {
                 el.classList.add('hidden');
-                el.textContent = 'â±ï¸ 01:00';
+                el.textContent = '⏱️ 01:00';
                 el.style.color = '#666666';
             });
         }
