@@ -214,11 +214,18 @@ class AdminPelangganController extends Controller
         $pelanggan->update($data);
 
         if ($pelanggan->id_user) {
-            $pelanggan->user()->update([
+            $userData = [
                 'nama'  => $request->nm_pelanggan,
                 'email' => $request->email,
                 'no_hp' => $request->no_hp,
-            ]);
+            ];
+            if (!empty($data['foto'])) {
+                $userData['foto'] = $data['foto'];
+            }
+            if (array_key_exists('alamat', $data)) {
+                $userData['alamat'] = $data['alamat'];
+            }
+            $pelanggan->user()->update($userData);
         }
 
         buatNotif(auth()->id(), 'Pelanggan Diperbarui', 'Data pelanggan ' . $pelanggan->nm_pelanggan . ' berhasil diperbarui', 'Lainnya', route('admin.pelanggan.edit', $pelanggan->id_pelanggan));
