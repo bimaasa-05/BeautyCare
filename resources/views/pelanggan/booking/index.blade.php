@@ -1329,9 +1329,6 @@
                             <span class="tf-dot"></span>
                             Menampilkan {{ $bookings->count() }} booking
                         </div>
-                        <div class="tf-pagination">
-                            <button class="page-btn active">1</button>
-                        </div>
                     </div>
                 </div>
             </div>
