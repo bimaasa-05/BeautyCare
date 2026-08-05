@@ -63,6 +63,7 @@ Route::middleware('auth')->group(function () {
     //Akses Login -- Rolee --- Admin
     Route::middleware(['role:admin'])->group(function () {
         Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
+        Route::get('/admin/dashboard/data', [AdminDashboardController::class, 'data'])->name('admin.dashboard.data');
 
         Route::get('/admin/users', [AdminUserController::class, 'index'])->name('admin.user.index');
         Route::get('/admin/users/create', [AdminUserController::class, 'create'])->name('admin.user.create');
