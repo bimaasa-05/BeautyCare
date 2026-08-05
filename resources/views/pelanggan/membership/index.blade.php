@@ -869,33 +869,18 @@
                             'Gold' => 'Untuk member setia dengan transaksi minimal 5x',
                             'Platinum' => 'Untuk member VIP dengan transaksi minimal 15x',
                         ];
-                        $tierBenefits = [
-                            'Silver' => [
-                                ['text' => 'Diskon 5% semua layanan', 'active' => true],
-                                ['text' => 'Gratis konsultasi 1x/bulan', 'active' => true],
-                                ['text' => 'Prioritas booking', 'active' => false],
-                                ['text' => 'Undangan event eksklusif', 'active' => false],
-                            ],
-                            'Gold' => [
-                                ['text' => 'Diskon 10% semua layanan', 'active' => true],
-                                ['text' => 'Gratis konsultasi 2x/bulan', 'active' => true],
-                                ['text' => 'Prioritas booking', 'active' => true],
-                                ['text' => 'Undangan event eksklusif', 'active' => false],
-                            ],
-                            'Platinum' => [
-                                ['text' => 'Diskon 20% semua layanan', 'active' => true],
-                                ['text' => 'Gratis konsultasi 4x/bulan', 'active' => true],
-                                ['text' => 'Prioritas booking', 'active' => true],
-                                ['text' => 'Undangan event eksklusif', 'active' => true],
-                            ],
-                        ];
                     @endphp
 
                     @foreach ($semuaMember as $member)
                         @php
                             $icon = $tierIcons[$member->tingkat] ?? ['icon' => 'fa-solid fa-medal', 'banner' => 'silver'];
                             $subtitle = $tierSubtitles[$member->tingkat] ?? '';
-                            $benefits = $tierBenefits[$member->tingkat] ?? [];
+                            $benefits = [
+                                ['text' => 'Diskon ' . (float) $member->diskon . '% semua layanan', 'active' => true],
+                                ['text' => 'Gratis konsultasi ' . (int) $member->jml_konsultasi . 'x/bulan', 'active' => (int) $member->jml_konsultasi > 0],
+                                ['text' => 'Prioritas booking', 'active' => (bool) $member->prioritas_booking],
+                                ['text' => 'Undangan event eksklusif', 'active' => (bool) $member->undangan_event],
+                            ];
                             $isCurrent = $memberSaatIni && $memberSaatIni->id_member === $member->id_member;
                             $isRenewal = $memberKadaluarsa && $memberKadaluarsa->id_member === $member->id_member;
                             $meetsTransaksi = $totalTransaksi >= $member->min_transaksi;
