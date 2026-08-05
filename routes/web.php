@@ -84,6 +84,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/beautician', [AdminBeautycianController::class, 'index'])->name('admin.beautician.index');
         Route::get('/admin/beautician/create', [AdminBeautycianController::class, 'create'])->name('admin.beautician.create');
         Route::post('/admin/beautician', [AdminBeautycianController::class, 'store'])->name('admin.beautician.store');
+        Route::get('/admin/beautician/{beautician}', [AdminBeautycianController::class, 'show'])->name('admin.beautician.show');
         Route::get('/admin/beautician/{beautician}/edit', [AdminBeautycianController::class, 'edit'])->name('admin.beautician.edit');
         Route::put('/admin/beautician/{beautician}', [AdminBeautycianController::class, 'update'])->name('admin.beautician.update');
         Route::delete('/admin/beautician/{beautician}', [AdminBeautycianController::class, 'destroy'])->name('admin.beautician.destroy');

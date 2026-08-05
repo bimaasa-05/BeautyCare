@@ -66,6 +66,12 @@ class AdminBeautycianController extends Controller
             ->with('success', 'Beautician berhasil ditambahkan.');
     }
 
+    public function show(Karyawan $beautician)
+    {
+        $beautician->load('user');
+        return view('admin.beautician.show', compact('beautician'));
+    }
+
     public function edit(Karyawan $beautician)
     {
         $beautician->load('user');
