@@ -394,7 +394,22 @@ Route::middleware('auth')->group(function () {
                 'email' => 'required|email|max:255|unique:users,email,' . auth()->id(),
                 'no_hp' => 'required|string|max:20',
             ]);
-            auth()->user()->update($req->only(['nama', 'email', 'no_hp']));
+            $user = auth()->user();
+            $emailLama = $user->email;
+            $namaLama = $user->nama;
+            $user->update($req->only(['nama', 'email', 'no_hp']));
+            $pelanggan = \App\Models\Pelanggan::where('id_user', $user->id)
+                ->orWhere('email', $emailLama)
+                ->orWhere('nm_pelanggan', $namaLama)
+                ->first();
+            if ($pelanggan) {
+                $pelanggan->update([
+                    'nm_pelanggan' => $req->nama,
+                    'email' => $req->email,
+                    'no_hp' => $req->no_hp,
+                    'id_user' => $pelanggan->id_user ?: $user->id,
+                ]);
+            }
             buatNotif(auth()->id(), 'Profil Diperbarui', 'Data profil Anda berhasil diperbarui.', 'Lainnya', route('pelanggan.profile'));
             return back()->with('success', 'Profil berhasil diperbarui!');
         })->name('pelanggan.profile.update');
