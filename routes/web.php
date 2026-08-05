@@ -156,6 +156,11 @@ Route::middleware('auth')->group(function () {
             auth()->user()->update(['password' => bcrypt($req->new_password)]);
             return back()->with('success', 'Password berhasil diperbarui!');
         })->name('admin.profile.update-password');
+        Route::post('/admin/profile/update-alamat', function (\Illuminate\Http\Request $req) {
+            $req->validate(['alamat' => 'nullable|string|max:500']);
+            auth()->user()->update(['alamat' => $req->alamat ?? '']);
+            return back()->with('success', 'Alamat berhasil diperbarui!');
+        })->name('admin.profile.update-alamat');
         Route::get('/admin/reservasi', [AdminReservasiController::class, 'index'])->name('admin.reservasi.index');
         Route::get('/admin/reservasi/create', [AdminReservasiController::class, 'create'])->name('admin.reservasi.create');
         Route::post('/admin/reservasi', [AdminReservasiController::class, 'store'])->name('admin.reservasi.store');
@@ -264,6 +269,11 @@ Route::middleware('auth')->group(function () {
             auth()->user()->update(['password' => bcrypt($req->new_password)]);
             return back()->with('success', 'Password berhasil diperbarui!');
         })->name('kasir.profile.update-password');
+        Route::post('/kasir/profile/update-alamat', function (\Illuminate\Http\Request $req) {
+            $req->validate(['alamat' => 'nullable|string|max:500']);
+            auth()->user()->update(['alamat' => $req->alamat ?? '']);
+            return back()->with('success', 'Alamat berhasil diperbarui!');
+        })->name('kasir.profile.update-alamat');
     });
     //--------------------------------------------------
     //Route BeautyCian
@@ -289,6 +299,11 @@ Route::middleware('auth')->group(function () {
             auth()->user()->update(['password' => bcrypt($req->new_password)]);
             return back()->with('message', 'Password berhasil diperbarui!');
         })->name('beautycian.profile.update-password');
+        Route::post('/beautycian/profile/update-alamat', function (\Illuminate\Http\Request $req) {
+            $req->validate(['alamat' => 'nullable|string|max:500']);
+            auth()->user()->update(['alamat' => $req->alamat ?? '']);
+            return back()->with('message', 'Alamat berhasil diperbarui!');
+        })->name('beautycian.profile.update-alamat');
 
         //Route Jadwal Treatment
         Route::get('/beautycian/jadwal-treatment', [BeatycianJadwalTreatmentController::class, 'index'])->name('beautycian.jadwal-treatment.index');
@@ -374,55 +389,11 @@ Route::middleware('auth')->group(function () {
         Route::get('/pelanggan/pesanan/{transaksi}', [App\Http\Controllers\PesananController::class, 'show'])->name('pelanggan.pesanan.show');
 
         //Route Profile
-        Route::get('/pelanggan/profile', function () {
-            return view('pelanggan.profile.index');
-        })->name('pelanggan.profile');
-
-        Route::post('/pelanggan/profile/update-foto', function (\Illuminate\Http\Request $req) {
-            $req->validate(['foto' => 'required|image|mimes:jpeg,png,jpg|max:2048']);
-            $user = auth()->user();
-            $file = $req->file('foto');
-            $path = $file->store('profile-pelanggan', 'public');
-            $user->update(['foto' => $path]);
-            buatNotif($user->id, 'Foto Profil Diperbarui', 'Foto profil Anda berhasil diperbarui.', 'Lainnya', route('pelanggan.profile'));
-            return back()->with('success', 'Foto profil berhasil diperbarui!');
-        })->name('pelanggan.profile.update-foto');
-
-        Route::post('/pelanggan/profile/update', function (\Illuminate\Http\Request $req) {
-            $req->validate([
-                'nama' => 'required|string|max:255',
-                'email' => 'required|email|max:255|unique:users,email,' . auth()->id(),
-                'no_hp' => 'required|string|max:20',
-            ]);
-            $user = auth()->user();
-            $emailLama = $user->email;
-            $namaLama = $user->nama;
-            $user->update($req->only(['nama', 'email', 'no_hp']));
-            $pelanggan = \App\Models\Pelanggan::where('id_user', $user->id)
-                ->orWhere('email', $emailLama)
-                ->orWhere('nm_pelanggan', $namaLama)
-                ->first();
-            if ($pelanggan) {
-                $pelanggan->update([
-                    'nm_pelanggan' => $req->nama,
-                    'email' => $req->email,
-                    'no_hp' => $req->no_hp,
-                    'id_user' => $pelanggan->id_user ?: $user->id,
-                ]);
-            }
-            buatNotif(auth()->id(), 'Profil Diperbarui', 'Data profil Anda berhasil diperbarui.', 'Lainnya', route('pelanggan.profile'));
-            return back()->with('success', 'Profil berhasil diperbarui!');
-        })->name('pelanggan.profile.update');
-
-        Route::post('/pelanggan/profile/update-password', function (\Illuminate\Http\Request $req) {
-            $req->validate([
-                'current_password' => 'required|current_password',
-                'new_password' => 'required|string|min:8|confirmed',
-            ]);
-            auth()->user()->update(['password' => bcrypt($req->new_password)]);
-            buatNotif(auth()->id(), 'Password Diperbarui', 'Password akun Anda berhasil diperbarui.', 'Lainnya', route('pelanggan.profile'));
-            return back()->with('success', 'Password berhasil diperbarui!');
-        })->name('pelanggan.profile.update-password');
+        Route::get('/pelanggan/profile', [App\Http\Controllers\PelangganProfileController::class, 'index'])->name('pelanggan.profile');
+        Route::post('/pelanggan/profile/update-alamat', [App\Http\Controllers\PelangganProfileController::class, 'updateAlamat'])->name('pelanggan.profile.update-alamat');
+        Route::post('/pelanggan/profile/update-foto', [App\Http\Controllers\PelangganProfileController::class, 'updateFoto'])->name('pelanggan.profile.update-foto');
+        Route::post('/pelanggan/profile/update', [App\Http\Controllers\PelangganProfileController::class, 'update'])->name('pelanggan.profile.update');
+        Route::post('/pelanggan/profile/update-password', [App\Http\Controllers\PelangganProfileController::class, 'updatePassword'])->name('pelanggan.profile.update-password');
     });
     //--------------------------------------------------
 });

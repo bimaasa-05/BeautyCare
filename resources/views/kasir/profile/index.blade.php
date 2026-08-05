@@ -84,6 +84,8 @@
         .form-group .input-icon-wrap .form-control { padding-left: 40px; }
         .btn-primary-full { width: 100%; padding: 12px 24px; border-radius: 12px; border: none; background: linear-gradient(135deg, var(--primary), #FF7BA6); color: #fff; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; font-family: 'Inter', sans-serif; box-shadow: 0 4px 16px rgba(255, 79, 135, 0.25); }
         .btn-primary-full:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(255, 79, 135, 0.35); }
+        .btn-outline { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 24px; border-radius: 12px; border: 1.5px solid var(--border); background: var(--white); color: var(--gray); font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; font-family: 'Inter', sans-serif; }
+        .btn-outline:hover { border-color: var(--primary); color: var(--primary); background: var(--hover); }
         .info-row { display: flex; align-items: center; padding: 14px 0; border-bottom: 1px solid #F5F5F5; }
         .info-row:last-child { border-bottom: none; }
         .info-row .ir-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; margin-right: 14px; }
@@ -171,6 +173,36 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="profile-card" style="margin-top:24px;">
+                            <div class="pc-header">
+                                <div class="pc-icon"><i class="fa-solid fa-location-dot"></i></div>
+                                <div class="pc-title" style="flex:1;">Alamat</div>
+                                <button type="button" id="btn-edit-alamat" class="btn-outline" style="padding:6px 16px;font-size:12px;" onclick="toggleEditAlamat()"><i class="fa-regular fa-pen-to-square"></i> Edit</button>
+                            </div>
+                            <div class="pc-body" id="view-alamat" style="padding:8px 24px;">
+                                <div class="info-row">
+                                    <div class="ir-icon" style="background:#EDE9FE;color:#7C3AED;"><i class="fa-solid fa-map-location-dot"></i></div>
+                                    <div class="ir-content">
+                                        <div class="ir-label">Alamat Lengkap</div>
+                                        <div class="ir-value">{{ auth()->user()->alamat ?? '-' }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="pc-body" id="edit-alamat" style="display:none;">
+                                <form action="{{ route('kasir.profile.update-alamat') }}" method="POST">
+                                    @csrf
+                                    <div class="form-group">
+                                        <label>Alamat</label>
+                                        <textarea name="alamat" class="form-control @error('alamat') is-invalid @enderror" rows="3" placeholder="Masukkan alamat lengkap">{{ old('alamat', auth()->user()->alamat) }}</textarea>
+                                        @error('alamat') <span style="font-size:11px;color:#DC2626;margin-top:4px;display:block;">{{ $message }}</span> @enderror
+                                    </div>
+                                    <div style="display:flex;gap:10px;">
+                                        <button type="submit" class="btn-primary-full" style="flex:1;"><i class="fa-regular fa-floppy-disk"></i> Simpan</button>
+                                        <button type="button" class="btn-outline" onclick="toggleEditAlamat()" style="flex:1;justify-content:center;">Batal</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
                     </div>
                     <div>
                         <div class="profile-card">
@@ -237,6 +269,17 @@
         </main>
     </div>
     <script>
+        function toggleEditAlamat() {
+            const view = document.getElementById('view-alamat');
+            const edit = document.getElementById('edit-alamat');
+            const btn = document.getElementById('btn-edit-alamat');
+            const editing = edit.style.display !== 'none';
+            edit.style.display = editing ? 'none' : 'block';
+            view.style.display = editing ? 'block' : 'none';
+            btn.innerHTML = editing
+                ? '<i class="fa-regular fa-pen-to-square"></i> Edit'
+                : '<i class="fa-solid fa-xmark"></i> Batal';
+        }
         function previewAndSubmit(input) {
             if (input.files && input.files[0]) {
                 const reader = new FileReader();

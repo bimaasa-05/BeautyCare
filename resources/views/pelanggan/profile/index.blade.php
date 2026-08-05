@@ -550,6 +550,15 @@
                 </div>
                 @endif
 
+                @if(session('error'))
+                <div class="alert-premium" style="background:linear-gradient(135deg,#FEF2F2,#FEE2E2);border:1px solid #FECACA;color:#991B1B;">
+                    <div class="alert-icon" style="background:#FECACA;color:#DC2626;">
+                        <i class="fa-solid fa-circle-exclamation"></i>
+                    </div>
+                    {{ session('error') }}
+                </div>
+                @endif
+
                 @if($errors->any())
                 <div class="alert-premium" style="background:linear-gradient(135deg,#FEF2F2,#FEE2E2);border:1px solid #FECACA;color:#991B1B;">
                     <div class="alert-icon" style="background:#FECACA;color:#DC2626;">
@@ -628,6 +637,88 @@
                                         <div class="ir-value">{{ auth()->user()->created_at ? \Carbon\Carbon::parse(auth()->user()->created_at)->isoFormat('D MMMM YYYY') : '-' }}</div>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+
+                        <div class="profile-card" style="margin-top:24px;">
+                            <div class="pc-header">
+                                <div class="pc-icon">
+                                    <i class="fa-solid fa-location-dot"></i>
+                                </div>
+                                <div class="pc-title" style="flex:1;">Alamat</div>
+                                <button type="button" id="btn-edit-alamat" class="btn-outline" style="padding:6px 16px;font-size:12px;" onclick="toggleEdit('alamat')">
+                                    <i class="fa-regular fa-pen-to-square"></i> Edit
+                                </button>
+                            </div>
+                            <div class="pc-body" id="view-alamat" style="padding:8px 24px;">
+                                <div class="info-row">
+                                    <div class="ir-icon" style="background:#EDE9FE;color:#7C3AED;">
+                                        <i class="fa-solid fa-map-location-dot"></i>
+                                    </div>
+                                    <div class="ir-content">
+                                        <div class="ir-label">Alamat Lengkap</div>
+                                        <div class="ir-value">{{ $pelanggan->alamat ?? '-' }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="pc-body" id="edit-alamat" style="display:none;">
+                                <form action="{{ route('pelanggan.profile.update-alamat') }}" method="POST">
+                                    @csrf
+                                    <div class="form-group">
+                                        <label>Alamat</label>
+                                        <textarea name="alamat" class="form-control @error('alamat') is-invalid @enderror" rows="3" placeholder="Masukkan alamat lengkap">{{ old('alamat', $pelanggan->alamat ?? '') }}</textarea>
+                                        @error('alamat') <span style="font-size:11px;color:#DC2626;margin-top:4px;display:block;">{{ $message }}</span> @enderror
+                                    </div>
+                                    <div style="display:flex;gap:10px;">
+                                        <button type="submit" class="btn-primary-full" style="flex:1;">
+                                            <i class="fa-regular fa-floppy-disk"></i> Simpan
+                                        </button>
+                                        <button type="button" class="btn-outline" onclick="toggleEdit('alamat')" style="flex:1;justify-content:center;">
+                                            Batal
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                        <div class="profile-card" style="margin-top:24px;">
+                            <div class="pc-header">
+                                <div class="pc-icon">
+                                    <i class="fa-solid fa-allergies"></i>
+                                </div>
+                                <div class="pc-title" style="flex:1;">Catatan Alergi</div>
+                                <button type="button" id="btn-edit-alergi" class="btn-outline" style="padding:6px 16px;font-size:12px;" onclick="toggleEdit('alergi')">
+                                    <i class="fa-regular fa-pen-to-square"></i> Edit
+                                </button>
+                            </div>
+                            <div class="pc-body" id="view-alergi" style="padding:8px 24px;">
+                                <div class="info-row">
+                                    <div class="ir-icon" style="background:#FCE7F3;color:#DB2777;">
+                                        <i class="fa-solid fa-allergies"></i>
+                                    </div>
+                                    <div class="ir-content">
+                                        <div class="ir-label">Catatan Alergi</div>
+                                        <div class="ir-value">{{ $pelanggan->catatan_alergi ?? '-' }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="pc-body" id="edit-alergi" style="display:none;">
+                                <form action="{{ route('pelanggan.profile.update-alamat') }}" method="POST">
+                                    @csrf
+                                    <div class="form-group">
+                                        <label>Catatan Alergi</label>
+                                        <textarea name="catatan_alergi" class="form-control @error('catatan_alergi') is-invalid @enderror" rows="3" placeholder="Contoh: alergi terhadap produk berbahan dasar alkohol">{{ old('catatan_alergi', $pelanggan->catatan_alergi ?? '') }}</textarea>
+                                        @error('catatan_alergi') <span style="font-size:11px;color:#DC2626;margin-top:4px;display:block;">{{ $message }}</span> @enderror
+                                    </div>
+                                    <div style="display:flex;gap:10px;">
+                                        <button type="submit" class="btn-primary-full" style="flex:1;">
+                                            <i class="fa-regular fa-floppy-disk"></i> Simpan
+                                        </button>
+                                        <button type="button" class="btn-outline" onclick="toggleEdit('alergi')" style="flex:1;justify-content:center;">
+                                            Batal
+                                        </button>
+                                    </div>
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -744,6 +835,18 @@
             input.type = 'password';
             icon.className = 'fa-solid fa-eye';
         }
+    }
+
+    function toggleEdit(key) {
+        const view = document.getElementById('view-' + key);
+        const edit = document.getElementById('edit-' + key);
+        const btn = document.getElementById('btn-edit-' + key);
+        const editing = edit.style.display !== 'none';
+        edit.style.display = editing ? 'none' : 'block';
+        view.style.display = editing ? 'block' : 'none';
+        btn.innerHTML = editing
+            ? '<i class="fa-regular fa-pen-to-square"></i> Edit'
+            : '<i class="fa-solid fa-xmark"></i> Batal';
     }
 
     const now = new Date();

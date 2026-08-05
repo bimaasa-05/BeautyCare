@@ -50,6 +50,8 @@
         .form-group .input-icon-wrap .form-control { padding-left: 40px; }
         .btn-primary-full { width: 100%; padding: 12px 24px; border-radius: 12px; border: none; background: linear-gradient(135deg, var(--primary), #FF7BA6); color: #fff; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; font-family: 'Poppins', sans-serif; box-shadow: 0 4px 16px rgba(255, 79, 135, 0.25); display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
         .btn-primary-full:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(255, 79, 135, 0.35); }
+        .btn-outline { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 24px; border-radius: 12px; border: 1.5px solid var(--border); background: var(--white); color: var(--gray); font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; font-family: 'Poppins', sans-serif; }
+        .btn-outline:hover { border-color: var(--primary); color: var(--primary); background: var(--hover); }
         .info-row { display: flex; align-items: center; padding: 14px 0; border-bottom: 1px solid #F5F5F5; }
         .info-row:last-child { border-bottom: none; }
         .info-row .ir-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-right: 14px; }
@@ -87,6 +89,15 @@
                         </div>
                     </div>
                 </div>
+
+                @if(session('message'))
+                <div class="alert-premium" style="background:linear-gradient(135deg,#ECFDF5,#D1FAE5);border:1px solid #A7F3D0;color:#065F46;margin-bottom:20px;">
+                    <div class="alert-icon" style="background:#A7F3D0;color:#059669;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                    </div>
+                    {{ session('message') }}
+                </div>
+                @endif
 
                 @if($errors->any())
                 <div class="alert-premium" style="background:linear-gradient(135deg,#FEF2F2,#FEE2E2);border:1px solid #FECACA;color:#991B1B;margin-bottom:20px;">
@@ -149,6 +160,43 @@
                                     </div>
                                     <div class="ir-content"><div class="ir-label">Bergabung</div><div class="ir-value">{{ auth()->user()->created_at ? \Carbon\Carbon::parse(auth()->user()->created_at)->isoFormat('D MMMM YYYY') : '-' }}</div></div>
                                 </div>
+                            </div>
+                        </div>
+                        <div class="profile-card" style="margin-top:24px;">
+                            <div class="pc-header">
+                                <div class="pc-icon">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                                </div>
+                                <div class="pc-title" style="flex:1;">Alamat</div>
+                                <button type="button" id="btn-edit-alamat" class="btn-outline" style="padding:6px 16px;font-size:12px;" onclick="toggleEditAlamat()">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                                    Edit
+                                </button>
+                            </div>
+                            <div class="pc-body" id="view-alamat" style="padding:8px 24px;">
+                                <div class="info-row">
+                                    <div class="ir-icon" style="background:#EDE9FE;color:#7C3AED;">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                                    </div>
+                                    <div class="ir-content">
+                                        <div class="ir-label">Alamat Lengkap</div>
+                                        <div class="ir-value">{{ auth()->user()->alamat ?? '-' }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="pc-body" id="edit-alamat" style="display:none;">
+                                <form action="{{ route('beautycian.profile.update-alamat') }}" method="POST">
+                                    @csrf
+                                    <div class="form-group">
+                                        <label>Alamat</label>
+                                        <textarea name="alamat" class="form-control @error('alamat') is-invalid @enderror" rows="3" placeholder="Masukkan alamat lengkap">{{ old('alamat', auth()->user()->alamat) }}</textarea>
+                                        @error('alamat') <span style="font-size:11px;color:#DC2626;margin-top:4px;display:block;">{{ $message }}</span> @enderror
+                                    </div>
+                                    <div style="display:flex;gap:10px;">
+                                        <button type="submit" class="btn-primary-full" style="flex:1;">Simpan</button>
+                                        <button type="button" class="btn-outline" onclick="toggleEditAlamat()" style="flex:1;">Batal</button>
+                                    </div>
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -237,6 +285,17 @@
         </main>
     </div>
     <script>
+        function toggleEditAlamat() {
+            const view = document.getElementById('view-alamat');
+            const edit = document.getElementById('edit-alamat');
+            const btn = document.getElementById('btn-edit-alamat');
+            const editing = edit.style.display !== 'none';
+            edit.style.display = editing ? 'none' : 'block';
+            view.style.display = editing ? 'block' : 'none';
+            btn.innerHTML = editing
+                ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Edit'
+                : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Batal';
+        }
         function previewAndSubmit(input) {
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
