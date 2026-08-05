@@ -228,9 +228,9 @@
                                     <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
                                 </svg>
                             </div>
-                            <span class="stat-change {{ $pendapatanGrowth >= 0 ? 'up' : 'down' }}">{{ $pendapatanGrowth >= 0 ? '+' : '' }}{{ $pendapatanGrowth }}%</span>
+                            <span id="stat-pendapatan-growth" class="stat-change {{ $pendapatanGrowth >= 0 ? 'up' : 'down' }}">{{ $pendapatanGrowth >= 0 ? '+' : '' }}{{ $pendapatanGrowth }}%</span>
                         </div>
-                        <div class="stat-value">{{ $fmt($totalPendapatan) }}</div>
+                        <div id="stat-pendapatan" class="stat-value">{{ $fmt($totalPendapatan) }}</div>
                         <div class="stat-label">Total Pendapatan</div>
                     </div>
 
@@ -245,9 +245,9 @@
                                     <line x1="3" y1="10" x2="21" y2="10" />
                                 </svg>
                             </div>
-                            <span class="stat-change {{ $bookingGrowth >= 0 ? 'up' : 'down' }}">{{ $bookingGrowth >= 0 ? '+' : '' }}{{ $bookingGrowth }}%</span>
+                            <span id="stat-booking-growth" class="stat-change {{ $bookingGrowth >= 0 ? 'up' : 'down' }}">{{ $bookingGrowth >= 0 ? '+' : '' }}{{ $bookingGrowth }}%</span>
                         </div>
-                        <div class="stat-value">{{ number_format($totalBooking) }}</div>
+                        <div id="stat-booking" class="stat-value">{{ number_format($totalBooking) }}</div>
                         <div class="stat-label">Total Booking</div>
                     </div>
 
@@ -261,9 +261,9 @@
                                     <polyline points="17 11 19 13 23 9" />
                                 </svg>
                             </div>
-                            <span class="stat-change {{ $pelangganGrowth >= 0 ? 'up' : 'down' }}">{{ $pelangganGrowth >= 0 ? '+' : '' }}{{ $pelangganGrowth }}%</span>
+                            <span id="stat-pelanggan-growth" class="stat-change {{ $pelangganGrowth >= 0 ? 'up' : 'down' }}">{{ $pelangganGrowth >= 0 ? '+' : '' }}{{ $pelangganGrowth }}%</span>
                         </div>
-                        <div class="stat-value">{{ number_format($totalPelanggan) }}</div>
+                        <div id="stat-pelanggan" class="stat-value">{{ number_format($totalPelanggan) }}</div>
                         <div class="stat-label">Total Pelanggan</div>
                     </div>
 
@@ -277,9 +277,9 @@
                                     <line x1="12" y1="17" x2="12" y2="21" />
                                 </svg>
                             </div>
-                            <span class="stat-change {{ $karyawanGrowth >= 0 ? 'up' : 'down' }}">{{ $karyawanGrowth >= 0 ? '+' : '' }}{{ $karyawanGrowth }}%</span>
+                            <span id="stat-karyawan-growth" class="stat-change {{ $karyawanGrowth >= 0 ? 'up' : 'down' }}">{{ $karyawanGrowth >= 0 ? '+' : '' }}{{ $karyawanGrowth }}%</span>
                         </div>
-                        <div class="stat-value">{{ number_format($totalKaryawan) }}</div>
+                        <div id="stat-karyawan" class="stat-value">{{ number_format($totalKaryawan) }}</div>
                         <div class="stat-label">Total Karyawan</div>
                     </div>
 
@@ -293,9 +293,9 @@
                                     <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
                                 </svg>
                             </div>
-                            <span class="stat-change {{ $produkTerjualGrowth >= 0 ? 'up' : 'down' }}">{{ $produkTerjualGrowth >= 0 ? '+' : '' }}{{ $produkTerjualGrowth }}%</span>
+                            <span id="stat-produk-growth" class="stat-change {{ $produkTerjualGrowth >= 0 ? 'up' : 'down' }}">{{ $produkTerjualGrowth >= 0 ? '+' : '' }}{{ $produkTerjualGrowth }}%</span>
                         </div>
-                        <div class="stat-value">{{ number_format($produkTerjual) }}</div>
+                        <div id="stat-produk" class="stat-value">{{ number_format($produkTerjual) }}</div>
                         <div class="stat-label">Produk Terjual</div>
                     </div>
                 </div>
@@ -329,28 +329,10 @@
                         <div class="mini-chart-card">
                             <div class="mc-header">
                                 <h3>Jadwal Hari Ini</h3>
-                                <span class="mc-total">{{ $jadwalHariIni->count() }}</span>
+                                <span id="jadwal-hari-ini-total" class="mc-total">{{ $jadwalHariIni->count() }}</span>
                             </div>
-                            <div class="grid gap-2 sm:gap-2.5">
-                                @forelse($jadwalHariIni as $j)
-                                <div class="flex flex-wrap sm:flex-nowrap items-center gap-x-2 gap-y-1 text-sm">
-                                    <span style="color:var(--primary);font-weight:600;">{{ substr($j->jam, 0, 5) }}</span>
-                                    <span style="color:var(--gray);">-</span>
-                                    <span class="flex-1 min-w-0">{{ $j->pelanggan->nm_pelanggan ?? 'N/A' }} - {{ $j->detail->first()->layanan->nm_layanan ?? 'Booking' }}</span>
-                                    @php
-                                        $badge = match($j->status) {
-                                            'Confirmed', 'Dikonfirmasi' => 'badge-success',
-                                            'Pending', 'Menunggu' => 'badge-warning',
-                                            'Completed', 'Selesai' => 'badge-info',
-                                            'Dibatalkan' => 'badge-danger',
-                                            default => 'badge-secondary'
-                                        };
-                                    @endphp
-                                    <span class="badge {{ $badge }}">{{ $j->status }}</span>
-                                </div>
-                                @empty
-                                <div style="text-align:center;padding:16px;color:var(--gray);font-size:13px;">Tidak ada jadwal untuk hari ini</div>
-                                @endforelse
+                            <div id="jadwal-hari-ini-list" class="grid gap-2 sm:gap-2.5">
+                                @include('partials.dashboard.jadwal-hari-ini', ['jadwalHariIni' => $jadwalHariIni])
                             </div>
                         </div>
                     </div>
@@ -372,20 +354,8 @@
                                     <th>Pendapatan</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                @forelse($layananTerlaris as $lt)
-                                <tr>
-                                    <td data-label="Layanan">
-                                        <div class="td-flex">{{ $lt->nm_item }}</div>
-                                    </td>
-                                    <td data-label="Terjual">{{ $lt->total_qty }}</td>
-                                    <td data-label="Pendapatan">{{ $fmt($lt->total_subtotal) }}</td>
-                                </tr>
-                                @empty
-                                <tr>
-                                    <td data-label="Layanan" colspan="3" style="text-align:center;color:var(--gray);">Belum ada data transaksi</td>
-                                </tr>
-                                @endforelse
+                            <tbody id="layanan-terlaris-body">
+                                @include('partials.dashboard.layanan-terlaris', ['items' => $layananTerlaris, 'fmt' => $fmt])
                             </tbody>
                         </table>
                     </div>
@@ -404,20 +374,8 @@
                                     <th>Pendapatan</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                @forelse($produkTerlaris as $pt)
-                                <tr>
-                                    <td data-label="Produk">
-                                        <div class="td-flex">{{ $pt->nm_item }}</div>
-                                    </td>
-                                    <td data-label="Terjual">{{ $pt->total_qty }}</td>
-                                    <td data-label="Pendapatan">{{ $fmt($pt->total_subtotal) }}</td>
-                                </tr>
-                                @empty
-                                <tr>
-                                    <td data-label="Produk" colspan="3" style="text-align:center;color:var(--gray);">Belum ada data transaksi</td>
-                                </tr>
-                                @endforelse
+                            <tbody id="produk-terlaris-body">
+                                @include('partials.dashboard.produk-terlaris', ['items' => $produkTerlaris, 'fmt' => $fmt])
                             </tbody>
                         </table>
                     </div>
@@ -431,26 +389,8 @@
                             <h3>Karyawan Aktif</h3>
                             <a href="{{ route('admin.beautician.index') }}" style="font-size:13px;color:var(--primary);font-weight:500;">Lihat Semua</a>
                         </div>
-                        <div class="employee-grid">
-                            @forelse($karyawanAktif as $k)
-                            <div class="employee-card">
-                                @if ($k->user->foto ?? null)
-                                <img src="{{ asset('storage/' . $k->user->foto) }}"
-                                    alt="{{ $k->user->nama ?? 'Karyawan' }}"
-                                    style="width:36px;height:36px;border-radius:50%;object-fit:cover;">
-                                @else
-                                <img src="https://ui-avatars.com/api/?name={{ urlencode($k->user->nama ?? 'Karyawan') }}&background=FFE5EF&color=FF4F87&size=36"
-                                    alt="{{ $k->user->nama ?? 'Karyawan' }}">
-                                @endif
-                                <div class="ec-info">
-                                    <h4>{{ $k->user->nama ?? 'Karyawan' }}</h4>
-                                    <p>{{ $k->jabatan }}</p>
-                                </div>
-                                <span class="ec-status online"></span>
-                            </div>
-                            @empty
-                            <div style="text-align:center;padding:16px;color:var(--gray);font-size:13px;grid-column:1/-1;">Tidak ada karyawan aktif</div>
-                            @endforelse
+                        <div id="karyawan-aktif-grid" class="employee-grid">
+                            @include('partials.dashboard.karyawan-aktif', ['karyawanAktif' => $karyawanAktif])
                         </div>
                     </div>
 
@@ -460,41 +400,8 @@
                             <h3>Ringkasan Stok</h3>
                             <a href="{{ route('admin.produk.index') }}" style="font-size:13px;color:var(--primary);font-weight:500;">Kelola</a>
                         </div>
-                        <div class="stock-grid">
-                            @forelse($ringkasanStok as $s)
-                            @php
-                                $maxStok = max(50, $s->stok);
-                                $pct = round(($s->stok / $maxStok) * 100);
-                                if ($s->stok <= 0) { $color = 'danger'; $pct = 0; }
-                                elseif ($s->stok <= 10) { $color = 'info'; }
-                                elseif ($s->stok <= 20) { $color = 'warning'; }
-                                else { $color = 'success'; }
-                            @endphp
-                            <div class="stock-item">
-                                <div class="stock-icon {{ $color }}">
-                                    @if ($s->foto)
-                                    <img src="{{ asset('storage/' . $s->foto) }}" alt="{{ $s->nm_produk }}"
-                                        style="width:34px;height:34px;border-radius:10px;object-fit:cover;">
-                                    @else
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path
-                                            d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
-                                    </svg>
-                                    @endif
-                                </div>
-                                <div class="stock-info">
-                                    <h4>{{ $s->nm_produk }}</h4>
-                                    <p>{{ $s->kategori->nm_produk ?? 'Tanpa Kategori' }}</p>
-                                </div>
-                                <div class="stock-bar">
-                                    <div class="fill {{ $color }}" style="width:{{ $pct }}%"></div>
-                                </div>
-                                <span class="stock-qty">{{ $s->stok }}</span>
-                            </div>
-                            @empty
-                            <div style="text-align:center;padding:16px;color:var(--gray);font-size:13px;grid-column:1/-1;">Tidak ada produk</div>
-                            @endforelse
+                        <div id="ringkasan-stok-grid" class="stock-grid">
+                            @include('partials.dashboard.ringkasan-stok', ['ringkasanStok' => $ringkasanStok])
                         </div>
                     </div>
 
@@ -504,29 +411,8 @@
                             <h3>Booking Terbaru</h3>
                             <a href="{{ route('admin.reservasi.index') }}" style="font-size:13px;color:var(--primary);font-weight:500;">Lihat Semua</a>
                         </div>
-                        <div class="booking-list">
-                            @forelse($bookingTerbaru as $b)
-                            <div class="booking-item">
-                                @php
-                                    $userFoto = $b->pelanggan->user->foto ?? null;
-                                @endphp
-                                @if ($userFoto)
-                                <img src="{{ asset('storage/' . $userFoto) }}"
-                                    alt="{{ $b->pelanggan->nm_pelanggan ?? 'Customer' }}"
-                                    style="width:40px;height:40px;border-radius:50%;object-fit:cover;">
-                                @else
-                                <img src="https://ui-avatars.com/api/?name={{ urlencode($b->pelanggan->nm_pelanggan ?? 'Customer') }}&background=FFE5EF&color=FF4F87&size=40"
-                                    alt="{{ $b->pelanggan->nm_pelanggan ?? 'Customer' }}">
-                                @endif
-                                <div class="booking-info">
-                                    <h4>{{ $b->pelanggan->nm_pelanggan ?? 'N/A' }}</h4>
-                                    <p>{{ $b->detail->first()->layanan->nm_layanan ?? 'Booking' }}</p>
-                                </div>
-                                <span class="booking-time">{{ \Carbon\Carbon::parse($b->tanggal)->format('d/m') }} {{ substr($b->jam, 0, 5) }}</span>
-                            </div>
-                            @empty
-                            <div style="text-align:center;padding:16px;color:var(--gray);font-size:13px;">Belum ada booking</div>
-                            @endforelse
+                        <div id="booking-terbaru-list" class="booking-list">
+                            @include('partials.dashboard.booking-terbaru', ['bookingTerbaru' => $bookingTerbaru])
                         </div>
                     </div>
 
@@ -536,70 +422,8 @@
                             <h3>Notifikasi Stok</h3>
                             <a href="{{ route('admin.stok.index') }}" style="font-size:13px;color:var(--primary);font-weight:500;">Kelola</a>
                         </div>
-                        <div class="stock-grid card-scroll" style="flex:1;">
-                            @forelse($notifStok as $p)
-                            @php
-                                $stok = (int) $p->stok;
-                                if ($stok <= 0) {
-                                    $iconClass = 'danger';
-                                    $barClass = 'danger';
-                                    $barW = 0;
-                                } elseif ($stok <= 10) {
-                                    $iconClass = 'danger';
-                                    $barClass = 'danger';
-                                    $barW = max(5, ($stok / 50) * 100);
-                                } elseif ($stok <= 20) {
-                                    $iconClass = 'warning';
-                                    $barClass = 'warning';
-                                    $barW = ($stok / 50) * 100;
-                                } else {
-                                    $iconClass = 'success';
-                                    $barClass = 'success';
-                                    $barW = min(100, ($stok / 50) * 100);
-                                }
-                            @endphp
-                            <div class="stock-item">
-                                <div class="stock-icon {{ $iconClass }}">
-                                    @if ($stok <= 0)
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <circle cx="12" cy="12" r="10" />
-                                        <line x1="15" y1="9" x2="9" y2="15" />
-                                        <line x1="9" y1="9" x2="15" y2="15" />
-                                    </svg>
-                                    @elseif ($stok <= 20)
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
-                                        <line x1="12" y1="9" x2="12" y2="13" />
-                                        <line x1="12" y1="17" x2="12.01" y2="17" />
-                                    </svg>
-                                    @else
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-                                        <polyline points="22 4 12 14.01 9 11.01" />
-                                    </svg>
-                                    @endif
-                                </div>
-                                <div class="stock-info">
-                                    <h4>{{ $p->nm_produk }}</h4>
-                                    <p>{{ $p->kategori->nm_produk ?? 'Tanpa Kategori' }} -
-                                        @if ($stok <= 0)
-                                        <span style="color:var(--danger);font-weight:600;">Stok Habis - Wajib Restok!</span>
-                                        @else
-                                        Sisa {{ $stok }}
-                                        @endif
-                                    </p>
-                                </div>
-                                <div class="stock-bar">
-                                    <div class="fill {{ $barClass }}" style="width:{{ $barW }}%"></div>
-                                </div>
-                                <span class="stock-qty">{{ $stok }}</span>
-                            </div>
-                            @empty
-                            <div style="text-align:center;padding:24px;color:var(--gray);font-size:13px;">Semua stok dalam kondisi baik</div>
-                            @endforelse
+                        <div id="notif-stok-grid" class="stock-grid card-scroll" style="flex:1;">
+                            @include('partials.dashboard.notif-stok', ['notifStok' => $notifStok])
                         </div>
                     </div>
                 </div>
@@ -621,7 +445,7 @@
     const maxRev = chartRevenue.length > 0 ? Math.max(...chartRevenue) : 0;
 
     const ctx = document.getElementById('chartPendapatan').getContext('2d');
-    new Chart(ctx, {
+    const pendapatanChart = new Chart(ctx, {
         type: 'line',
         data: {
             labels: chartLabels,
@@ -683,18 +507,21 @@
         });
 
     const donutCanvas = document.getElementById('chartBookingDonut');
-    if (donutCanvas) {
-        const values = JSON.parse(donutCanvas.getAttribute('data-values') || '[]');
-        const labels = JSON.parse(donutCanvas.getAttribute('data-labels') || '[]');
-        const colors = ['#EC4899','#8B5CF6','#F59E0B','#10B981','#3B82F6','#EF4444','#14B8A6','#F97316','#6366F1','#84CC16'];
-        if (values.length > 0) {
-            new Chart(donutCanvas.getContext('2d'), {
+    const donutColors = ['#EC4899','#8B5CF6','#F59E0B','#10B981','#3B82F6','#EF4444','#14B8A6','#F97316','#6366F1','#84CC16'];
+    let bookingDonutChart = null;
+    function initDonut(values, labels) {
+        if (donutCanvas && donutCanvas.parentNode.querySelector('span')) {
+            donutCanvas.parentNode.innerHTML = '';
+            donutCanvas.parentNode.appendChild(donutCanvas);
+        }
+        if (!bookingDonutChart) {
+            bookingDonutChart = new Chart(donutCanvas.getContext('2d'), {
                 type: 'doughnut',
                 data: {
                     labels: labels,
                     datasets: [{
                         data: values,
-                        backgroundColor: colors.slice(0, labels.length),
+                        backgroundColor: donutColors.slice(0, labels.length),
                         borderWidth: 2,
                         borderColor: '#fff'
                     }]
@@ -734,6 +561,18 @@
                 }
             });
         } else {
+            bookingDonutChart.data.labels = labels;
+            bookingDonutChart.data.datasets[0].data = values;
+            bookingDonutChart.data.datasets[0].backgroundColor = donutColors.slice(0, labels.length);
+            bookingDonutChart.update();
+        }
+    }
+    if (donutCanvas) {
+        const values = JSON.parse(donutCanvas.getAttribute('data-values') || '[]');
+        const labels = JSON.parse(donutCanvas.getAttribute('data-labels') || '[]');
+        if (values.length > 0) {
+            initDonut(values, labels);
+        } else {
             donutCanvas.parentNode.innerHTML = '<span style="font-size:12px;color:#999;">Tidak ada data</span>';
         }
     }
@@ -742,6 +581,78 @@
     function pilihPeriode(el) {
         window.location.href = '?' + el.dataset.param + '=' + el.value;
     }
+    </script>
+    <script>
+    const DASHBOARD_URL = "{{ route('admin.dashboard.data') }}";
+    const REFRESH_INTERVAL = 30000;
+
+    function updateGrowth(id, value) {
+        const node = document.getElementById(id);
+        if (!node) return;
+        node.textContent = (value >= 0 ? '+' : '') + value + '%';
+        node.classList.remove('up', 'down');
+        node.classList.add(value >= 0 ? 'up' : 'down');
+    }
+
+    function refreshDashboard() {
+        fetch(DASHBOARD_URL, {
+            headers: {
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(res => res.json())
+        .then(data => {
+            const s = data.stats;
+            const setText = (id, val) => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = val;
+            };
+            setText('stat-pendapatan', s.totalPendapatan);
+            setText('stat-booking', s.totalBooking);
+            setText('stat-pelanggan', s.totalPelanggan);
+            setText('stat-karyawan', s.totalKaryawan);
+            setText('stat-produk', s.produkTerjual);
+            updateGrowth('stat-pendapatan-growth', s.pendapatanGrowth);
+            updateGrowth('stat-booking-growth', s.bookingGrowth);
+            updateGrowth('stat-pelanggan-growth', s.pelangganGrowth);
+            updateGrowth('stat-karyawan-growth', s.karyawanGrowth);
+            updateGrowth('stat-produk-growth', s.produkTerjualGrowth);
+
+            if (pendapatanChart) {
+                pendapatanChart.data.labels = data.charts.labels;
+                pendapatanChart.data.datasets[0].data = data.charts.revenue;
+                pendapatanChart.update('none');
+            }
+
+            if (donutCanvas) {
+                const v = data.donut.values;
+                if (v.length > 0) {
+                    initDonut(v, data.donut.labels);
+                } else {
+                    donutCanvas.parentNode.innerHTML = '<span style="font-size:12px;color:#999;">Tidak ada data</span>';
+                }
+            }
+
+            setText('jadwal-hari-ini-total', data.jadwalHariIni.total);
+            setHTML('jadwal-hari-ini-list', data.jadwalHariIni.html);
+            setHTML('layanan-terlaris-body', data.layananTerlaris.html);
+            setHTML('produk-terlaris-body', data.produkTerlaris.html);
+            setHTML('karyawan-aktif-grid', data.karyawanAktif.html);
+            setHTML('ringkasan-stok-grid', data.ringkasanStok.html);
+            setHTML('booking-terbaru-list', data.bookingTerbaru.html);
+            setHTML('notif-stok-grid', data.notifStok.html);
+        })
+        .catch(err => console.warn('Dashboard refresh gagal:', err));
+    }
+
+    function setHTML(id, html) {
+        const el = document.getElementById(id);
+        if (el) el.innerHTML = html;
+    }
+
+    refreshDashboard();
+    setInterval(refreshDashboard, REFRESH_INTERVAL);
     </script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
 </body>
