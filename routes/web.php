@@ -345,6 +345,7 @@ Route::middleware('auth')->group(function () {
 
         //Route Keranjang
         Route::get('/pelanggan/keranjang', [App\Http\Controllers\KeranjangController::class, 'index'])->name('pelanggan.keranjang');
+        Route::get('/pelanggan/keranjang/stok', [App\Http\Controllers\KeranjangController::class, 'stokRefresh'])->name('pelanggan.keranjang.stok');
         Route::get('/pelanggan/keranjang/history', [App\Http\Controllers\KeranjangController::class, 'history'])->name('pelanggan.keranjang.history');
         Route::get('/pelanggan/keranjang/{id}', [App\Http\Controllers\KeranjangController::class, 'show'])->name('pelanggan.keranjang.detail')->whereNumber('id');
         Route::post('/pelanggan/keranjang', [App\Http\Controllers\KeranjangController::class, 'store'])->name('pelanggan.keranjang.store');
@@ -358,6 +359,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/pelanggan/checkout', [App\Http\Controllers\CheckoutController::class, 'store'])->name('pelanggan.checkout.store');
 
         //Route Pembayaran Online
+        Route::get('/pelanggan/pembayaran/membership', [App\Http\Controllers\CheckoutController::class, 'pembayaranMembership'])->name('pelanggan.pembayaran.membership');
         Route::get('/pelanggan/pembayaran/{transaksi}', [App\Http\Controllers\PembayaranController::class, 'show'])->name('pelanggan.pembayaran.show');
         Route::get('/pelanggan/pembayaran/{transaksi}/berhasil', [App\Http\Controllers\PembayaranController::class, 'berhasil'])->name('pelanggan.pembayaran.berhasil');
         Route::get('/pelanggan/pembayaran/{transaksi}/status', [App\Http\Controllers\PembayaranController::class, 'status'])->name('pelanggan.pembayaran.status');

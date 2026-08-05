@@ -91,6 +91,32 @@ class CheckoutController extends Controller
         return view('pelanggan.checkout.index', compact('items', 'subtotal', 'claimedPromos', 'bankTujuan', 'memberInfo', 'isMembership', 'membership'));
     }
 
+    public function pembayaranMembership(Request $request)
+    {
+        if (!$request->beli_membership) {
+            return redirect()->route('pelanggan.membership')->with('error', 'Pilih paket membership terlebih dahulu.');
+        }
+
+        $member = Membership::where('id_member', $request->beli_membership)
+            ->where('status', 'aktif')
+            ->first();
+
+        if (!$member || (float) $member->harga <= 0) {
+            return redirect()->route('pelanggan.membership')->with('error', 'Paket membership tidak tersedia.');
+        }
+
+        $error = $this->cekSyaratMembership($this->getOrCreatePelanggan(auth()->user()), $member);
+        if ($error) {
+            return redirect()->route('pelanggan.membership')->with('error', $error);
+        }
+
+        $items = $this->membershipItem($member);
+        $subtotal = collect($items)->sum('subtotal');
+        $bankTujuan = self::bankTujuan();
+
+        return view('pelanggan.pembayaran.pembayaran-membership', compact('member', 'items', 'subtotal', 'bankTujuan'));
+    }
+
     public function store(Request $request)
     {
         $request->validate([
