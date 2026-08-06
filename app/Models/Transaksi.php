@@ -15,6 +15,7 @@ class Transaksi extends Model
         'sumber',
         'id_pelanggan',
         'id_user',
+        'id_kasir',
         'no_invoice',
         'tanggal',
         'subtotal',

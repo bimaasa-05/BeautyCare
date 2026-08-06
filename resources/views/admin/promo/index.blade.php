@@ -215,13 +215,23 @@
                             <div
                                 class="bg-gradient-to-r from-[#EC4899] to-[#BE185D] p-5 flex items-center justify-between">
                                 <div>
-                                    <span
-                                        class="text-[10px] font-bold text-pink-100 bg-white/20 px-2 py-0.5 rounded-full">{{ $promo->jenis_promo }}</span>
+                                    <div class="flex items-center gap-1.5">
+                                        <span
+                                            class="text-[10px] font-bold text-pink-100 bg-white/20 px-2 py-0.5 rounded-full">{{ $promo->jenis_promo }}</span>
+                                        @if($promo->kode_promo)
+                                            <span class="text-[10px] font-bold text-pink-200 bg-white/10 px-2 py-0.5 rounded-full border border-white/20">{{ $promo->kode_promo }}</span>
+                                        @endif
+                                    </div>
                                     <h3 class="text-white font-bold text-base mt-2">{{ $promo->nm_promo }}</h3>
                                 </div>
                                 <div class="text-right">
-                                    <p class="text-4xl font-extrabold text-white">{{ $promo->nilai }}%</p>
-                                    <p class="text-pink-100 text-xs">diskon</p>
+                                    @if($promo->jenis_promo == 'Diskon')
+                                        <p class="text-4xl font-extrabold text-white">{{ $promo->nilai }}%</p>
+                                        <p class="text-pink-100 text-xs">diskon</p>
+                                    @else
+                                        <p class="text-xl font-extrabold text-white">Rp {{ number_format($promo->nilai, 0, ',', '.') }}</p>
+                                        <p class="text-pink-100 text-xs">{{ $promo->jenis_promo == 'Cashback' ? 'cashback' : ($promo->jenis_promo == 'Paket' ? 'harga paket' : 'nilai promo') }}</p>
+                                    @endif
                                 </div>
                             </div>
                             <div class="p-4">
@@ -234,6 +244,19 @@
                                         <p class="text-[10px] text-gray-400 mb-0.5">Hingga</p>
                                         <p class="text-xs font-bold text-gray-700">{{ \Carbon\Carbon::parse($promo->selesai)->format('d M Y') }}</p>
                                     </div>
+                                </div>
+                                @if($promo->deskripsi)
+                                    <p class="text-[11px] text-gray-500 mb-3 line-clamp-2">{{ $promo->deskripsi }}</p>
+                                @endif
+                                <div class="flex flex-wrap items-center gap-1.5 mb-3">
+                                    <span
+                                        class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-pink-50 text-pink-500 border border-pink-100">{{ $promo->targetLabel() }}</span>
+                                    @if($promo->promoLayanan_count > 0)
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-violet-50 text-violet-500 border border-violet-100"><i class="fa-solid fa-spa mr-1"></i>{{ $promo->promoLayanan_count }} layanan</span>
+                                    @endif
+                                    @if($promo->promoProduk_count > 0)
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-sky-50 text-sky-500 border border-sky-100 text-[10px] font-semibold"><i class="fa-solid fa-box mr-1"></i>{{ $promo->promoProduk_count }} produk</span>
+                                    @endif
                                 </div>
                                 <div class="flex items-center justify-between">
                                     <span

@@ -19,9 +19,9 @@ class KasirTransaksiController extends Controller
         $metode = $request->metode;
         $userId = auth()->id();
 
-        $TotalTransaksi = Transaksi::where('id_user', $userId)->count();
+        $TotalTransaksi = Transaksi::where('id_kasir', $userId)->count();
         $transaksi = Transaksi::with('pelanggan')
-            ->where('id_user', $userId)
+            ->where('id_kasir', $userId)
             ->when($search, function ($query, $search) {
                 return $query->where('no_invoice', 'like', "%{$search}%")
                     ->orWhere('tanggal', 'like', "%{$search}%");
@@ -93,6 +93,7 @@ class KasirTransaksiController extends Controller
             'id_booking' => null,
             'id_pelanggan' => $request->id_pelanggan,
             'id_user' => auth()->user()->id,
+            'id_kasir' => auth()->user()->id,
             'no_invoice' => $no_invoice,
             'tanggal' => $request->tanggal,
             'subtotal' => $request->subtotal,
@@ -276,6 +277,10 @@ class KasirTransaksiController extends Controller
 
         $transaksiLama = Transaksi::findOrFail($id);
         $dataLama = $transaksiLama->toArray();
+
+        if (!$transaksiLama->id_kasir) {
+            $data['id_kasir'] = auth()->id();
+        }
 
         Transaksi::where('id_transaksi', $id)->update($data);
 

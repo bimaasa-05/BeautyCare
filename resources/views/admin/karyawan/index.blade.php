@@ -178,21 +178,21 @@
                                     </span>
                                 </div>
                                 <div class="ph-text">
-                                    <h3>Data Beautician</h3>
-                                    <p>Pusat pengelolaan tim dan administrasi karyawan! Di halaman ini, Anda memiliki akses penuh untuk memastikan data setiap anggota tim tercatat dengan baik. Anda bisa dengan mudah memperbarui informasi staf, mengatur rincian gaji, hingga mencatat bonus performa mereka. Mari kelola administrasi tim dengan rapi dan aman, agar hak karyawan selalu terpenuhi tepat waktu!</p>
+                                    <h3>Data Karyawan</h3>
+                                    <p>Kelola tim dan administrasi karyawan: perbarui informasi staf, atur rincian gaji dan komisi, serta pantau status ketersediaan karyawan secara real-time.</p>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="flex justify-between items-center mb-6 flex-wrap gap-3">
-                        <p class="text-[13px] font-medium text-gray-400">{{ $beautician->count() }} beautician terdaftar
+                        <p class="text-[13px] font-medium text-gray-400">{{ $beautician->count() }} karyawan terdaftar
                         </p>
 
                         <div class="flex items-center gap-3">
                             <div class="relative">
                                 <i
                                     class="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
-                                <input type="text" id="searchBeautician" placeholder="Cari beautician..."
+                                <input type="text" id="searchBeautician" placeholder="Cari karyawan..."
                                     class="bg-white border border-gray-200 text-[12px] rounded-full pl-9 pr-4 py-2 w-full sm:w-[200px] lg:w-[220px] focus:outline-none focus:border-pink-300 transition-all placeholder-gray-400 shadow-sm">
                             </div>
                             <div class="relative filter-beautician">
@@ -228,7 +228,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <a href="{{ route('admin.beautician.create') }}"
+                            <a href="{{ route('admin.karyawan.create') }}"
                                 class="flex items-center gap-2 bg-[#de3b7c] text-white text-[12px] font-semibold px-4 py-2 rounded-full hover:bg-[#c62f6b] transition-colors shadow-sm">
                                 <i class="fa-solid fa-plus"></i> Tambah
                             </a>
@@ -236,7 +236,7 @@
                     </div>
 
                     <div id="beauticianGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-                        @include('admin.beautician.partials.grid')
+                        @include('admin.karyawan.partials.grid')
                     </div>
 
                 </div>
@@ -255,7 +255,7 @@
         }
 
         function fetchBeautician() {
-            fetch('{{ route('admin.beautician.index') }}?' + getFilterParamsBeautician(), {
+            fetch('{{ route('admin.karyawan.index') }}?' + getFilterParamsBeautician(), {
                 headers: { 'X-Requested-With': 'XMLHttpRequest' }
             })
                 .then(res => res.text())
@@ -299,6 +299,9 @@
             day: 'numeric'
         };
         document.getElementById('currentDate').textContent = now.toLocaleDateString('id-ID', options);
+
+        // Auto-refresh status otomatis (Tersedia/Sibuk) tanpa reload halaman
+        setInterval(fetchBeautician, 45000);
     </script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
 </body>
