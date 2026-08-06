@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\ActivityLogger;
 use App\Models\Transaksi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -146,6 +147,10 @@ class PembayaranController extends Controller
 
         $transaksi->update(['status' => 'Dibatalkan']);
         $transaksi->pembayaran?->update(['status' => 'Dibatalkan']);
+
+        $nama = $transaksi->user->nama ?? 'Pelanggan';
+        buatNotifRole('kasir', 'Pesanan Dibatalkan', $nama . ' membatalkan pesanan ' . $transaksi->no_invoice . '.', 'Transaksi', route('kasir.pembayaran.pesanan-online'));
+        ActivityLogger::log('Menghapus', $nama . ' membatalkan pesanan ' . $transaksi->no_invoice, 'Transaksi', $transaksi->id_transaksi);
 
         buatNotif($transaksi->id_user, 'Pesanan Dibatalkan', 'Pesanan ' . $transaksi->no_invoice . ' berhasil dibatalkan.', 'Transaksi', route('pelanggan.pesanan.show', $transaksi->id_transaksi));
 
