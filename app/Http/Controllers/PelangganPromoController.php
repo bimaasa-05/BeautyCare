@@ -11,13 +11,18 @@ class PelangganPromoController extends Controller
     public function index()
     {
         $today = now()->format('Y-m-d');
+        $user = auth()->user();
         $promos = Promo::where('mulai', '<=', $today)
             ->where('selesai', '>', $today)
             ->orderBy('id_promo', 'desc')
-            ->get();
+            ->get()
+            ->filter(fn ($promo) => $promo->berlakuUntuk($user))
+            ->values();
         $riwayatPromos = Promo::where('selesai', '<=', $today)
             ->orderBy('id_promo', 'desc')
-            ->get();
+            ->get()
+            ->filter(fn ($promo) => $promo->berlakuUntuk($user))
+            ->values();
         $claimedIds = PromoKlaim::where('id_user', auth()->id())
             ->whereIn('status', ['tersedia', 'digunakan'])
             ->pluck('id_promo')
@@ -52,6 +57,9 @@ class PelangganPromoController extends Controller
         $today = now()->format('Y-m-d');
         if (!$promo || $promo->status !== 'Tersedia' || $promo->mulai > $today || $promo->selesai <= $today) {
             return response()->json(['success' => false, 'message' => 'Promo tidak tersedia']);
+        }
+        if (!$promo->berlakuUntuk(auth()->user())) {
+            return response()->json(['success' => false, 'message' => 'Promo tidak berlaku untuk Anda']);
         }
 
         PromoKlaim::create([
