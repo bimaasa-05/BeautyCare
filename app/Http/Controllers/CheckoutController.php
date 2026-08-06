@@ -130,8 +130,9 @@ class CheckoutController extends Controller
         $items = $this->membershipItem($member);
         $subtotal = collect($items)->sum('subtotal');
         $bankTujuan = self::bankTujuan();
+        $isRenewal = (int) $this->getOrCreatePelanggan(auth()->user())->id_member === (int) $member->id_member;
 
-        return view('pelanggan.pembayaran.pembayaran-membership', compact('member', 'items', 'subtotal', 'bankTujuan'));
+        return view('pelanggan.pembayaran.pembayaran-membership', compact('member', 'items', 'subtotal', 'bankTujuan', 'isRenewal'));
     }
 
     public function store(Request $request)
@@ -177,7 +178,8 @@ class CheckoutController extends Controller
             $subtotal = collect($items)->sum('subtotal');
             $idPromo = null;
             $diskon = 0;
-            $catatanDiskon = 'Upgrade membership ke ' . $member->tingkat;
+            $isRenewal = (int) $pelanggan->id_member === (int) $member->id_member;
+            $catatanDiskon = ($isRenewal ? 'Perpanjang' : 'Upgrade') . ' membership ke ' . $member->tingkat;
             $total = $subtotal;
         } else {
             $items = $this->resolveItems($request);
@@ -444,6 +446,11 @@ class CheckoutController extends Controller
             return 'Data pelanggan tidak ditemukan.';
         }
 
+        $isRenewal = (int) $pelanggan->id_member === (int) $member->id_member;
+        if ($isRenewal) {
+            return null;
+        }
+
         $totalTransaksi = $this->hitungPembelianProduk($pelanggan->id_pelanggan);
         $totalBelanja = $this->hitungTotalBelanjaProduk($pelanggan->id_pelanggan);
 
@@ -458,8 +465,8 @@ class CheckoutController extends Controller
             $levels = ['Silver', 'Gold', 'Platinum'];
             $currentIdx = array_search($currentAktif->tingkat, $levels);
             $targetIdx = array_search($member->tingkat, $levels);
-            if ($currentIdx !== false && $targetIdx !== false && $targetIdx <= $currentIdx) {
-                return 'Tidak dapat upgrade ke level yang sama atau lebih rendah.';
+            if ($currentIdx !== false && $targetIdx !== false && $targetIdx < $currentIdx) {
+                return 'Tidak dapat membeli level yang lebih rendah dari membership aktif.';
             }
         }
 

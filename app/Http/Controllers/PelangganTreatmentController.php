@@ -28,7 +28,7 @@ class PelangganTreatmentController extends Controller
 
     public function show($id)
     {
-        $booking = Booking::with(['detail.layanan', 'karyawan', 'transaksi', 'pelanggan', 'riwayatTreatment'])
+        $booking = Booking::with(['detail.layanan', 'karyawan.karyawan', 'transaksi', 'pelanggan', 'riwayatTreatment'])
             ->where('id_booking', $id)
             ->where('id_pelanggan', $this->resolveIdPelanggan())
             ->whereIn('status', ['selesai', 'dibatalkan'])

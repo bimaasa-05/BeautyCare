@@ -906,14 +906,14 @@
                                 ['text' => 'Undangan event eksklusif', 'active' => (bool) $member->undangan_event],
                             ];
                             $isCurrent = $memberSaatIni && $memberSaatIni->id_member === $member->id_member;
-                            $isRenewal = $memberKadaluarsa && $memberKadaluarsa->id_member === $member->id_member;
+                            $isOwnTier = $isCurrent || ($memberKadaluarsa && $memberKadaluarsa->id_member === $member->id_member);
                             $meetsTransaksi = $totalTransaksi >= $member->min_transaksi;
                             $meetsBelanja = $totalBelanja >= $member->min_pembelian;
                             $meetsSyarat = $meetsTransaksi && $meetsBelanja;
                             $kurangTransaksi = max(0, $member->min_transaksi - $totalTransaksi);
                             $kurangBelanja = max(0, $member->min_pembelian - $totalBelanja);
                             $canUpgrade = !$isCurrent && !$memberSaatIni;
-                            $showSyarat = !$isCurrent && !$memberSaatIni;
+                            $showSyarat = !$isOwnTier && !$memberSaatIni;
                             if ($memberSaatIni) {
                                 $levels = ['Silver', 'Gold', 'Platinum'];
                                 $currentIdx = array_search($memberSaatIni->tingkat, $levels);
@@ -965,12 +965,14 @@
                                 <div class="mt-validity">
                                     <i class="fa-regular fa-clock"></i> Masa Berlaku {{ $member->masa_berlaku }} hari
                                 </div>
-                                @if ($isCurrent)
-                                <button class="mt-btn current">
-                                    <i class="fa-regular fa-circle-check"></i> Level Saat Ini
-                                </button>
+                                @if ($isOwnTier)
+                                <a href="{{ route('pelanggan.pembayaran.membership', ['beli_membership' => $member->id_member]) }}" class="mt-btn primary" style="display:block;">
+                                    <i class="fa-regular fa-clock"></i> {{ $isCurrent ? 'Perpanjang Masa Aktif' : 'Perpanjang ke ' . $member->tingkat }}
+                                </a>
                                 @elseif ($meetsSyarat && $canUpgrade)
-                                <a href="{{ route('pelanggan.pembayaran.membership', ['beli_membership' => $member->id_member]) }}" class="mt-btn primary" style="display:block;">{{ $isRenewal ? 'Perpanjang ke ' . $member->tingkat : 'Upgrade Sekarang' }}</a>
+                                <a href="{{ route('pelanggan.pembayaran.membership', ['beli_membership' => $member->id_member]) }}" class="mt-btn primary" style="display:block;">
+                                    <i class="fa-solid fa-arrow-up"></i> Upgrade Sekarang
+                                </a>
                                 @elseif ($canUpgrade)
                                 <button class="mt-btn outline" disabled style="opacity:0.5;cursor:not-allowed;">
                                     <i class="fa-solid fa-lock"></i> Belum Memenuhi Syarat
