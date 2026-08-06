@@ -7,6 +7,7 @@ use App\Models\Membership;
 use App\Models\Pelanggan;
 use App\Models\Pembayaran;
 use App\Models\Produk;
+use App\Models\Promo;
 use App\Models\PromoKlaim;
 use App\Models\Transaksi;
 use App\Models\Troli;
@@ -78,8 +79,16 @@ class CheckoutController extends Controller
                 ->where('id_user', auth()->id())
                 ->where('status', 'tersedia')
                 ->get()
-                ->filter(function ($klaim) {
-                    return $klaim->promo && $klaim->promo->jenis_promo !== 'Paket';
+                ->filter(function ($klaim) use ($items) {
+                    if (!$klaim->promo || $klaim->promo->jenis_promo === 'Paket') {
+                        return false;
+                    }
+                    if (!$klaim->promo->berlakuUntuk(auth()->user())) {
+                        return false;
+                    }
+                    return collect($items)->contains(
+                        fn ($item) => $klaim->promo->itemEligible('Produk', $item['id_produk'] ?? 0)
+                    );
                 });
 
         $bankTujuan = self::bankTujuan();
@@ -179,9 +188,12 @@ class CheckoutController extends Controller
             $subtotal = collect($items)->sum('subtotal');
             $idPromo = $request->id_promo;
 
-            $promoDiskon = $this->hitungPromo($idPromo, $user->id, $subtotal, false);
-            if ($promoDiskon < 0) {
+            $promoDiskon = $this->hitungPromo($idPromo, $user->id, $items, false);
+            if ($promoDiskon === -1) {
                 return back()->with('error', 'Promo Paket tidak berlaku untuk pembelian produk.');
+            }
+            if ($promoDiskon === -2) {
+                return back()->with('error', 'Promo yang dipilih tidak berlaku untuk produk yang dibeli.');
             }
 
             $memberInfo = $this->hitungDiskonMember($pelanggan, $subtotal);
@@ -341,7 +353,7 @@ class CheckoutController extends Controller
         return Pelanggan::dariUserOrCreate($user);
     }
 
-    protected function hitungPromo($idPromo, $userId, $subtotal, $markUsed = true)
+    protected function hitungPromo($idPromo, $userId, $items, $markUsed = true)
     {
         if (!$idPromo) {
             return 0;
@@ -358,17 +370,26 @@ class CheckoutController extends Controller
         }
 
         $promo = $promoKlaim->promo;
-        $diskon = 0;
+
+        if (!$promo->berlakuUntuk(\App\Models\User::find($userId))) {
+            return -2;
+        }
 
         if ($promo->jenis_promo === 'Paket') {
             return -1;
         }
 
-        if ($promo->jenis_promo === 'Diskon') {
-            $diskon = (int) round($subtotal * $promo->nilai / 100);
-        } else {
-            $diskon = (int) round(min($promo->nilai, $subtotal));
+        $eligibleItems = array_values(array_map(function ($item) {
+            $item['jenis'] = 'Produk';
+            $item['id_item'] = $item['id_produk'] ?? 0;
+            return $item;
+        }, array_filter($items, fn ($item) => $promo->itemEligible('Produk', $item['id_produk'] ?? 0))));
+
+        if (empty($eligibleItems)) {
+            return -2;
         }
+
+        $diskon = (int) round($promo->hitungDiskon($eligibleItems));
 
         if ($markUsed) {
             $this->tandaiPromo($idPromo, $userId);
