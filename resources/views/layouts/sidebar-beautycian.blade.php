@@ -133,7 +133,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     document.querySelectorAll('#sidebar .nav-item').forEach(function(item) {
         item.addEventListener('click', function() {
-            if (window.innerWidth <= 768) closeSidebar();
+            if (window.innerWidth <= 1024) closeSidebar();
         });
     });
 });
