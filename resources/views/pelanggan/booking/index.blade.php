@@ -491,6 +491,46 @@
         box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
     }
 
+    .btn-batal {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 7px 16px;
+        border-radius: 100px;
+        background: #FEE2E2;
+        color: #DC2626;
+        font-size: 11px;
+        font-weight: 600;
+        font-family: 'Poppins', sans-serif;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .btn-batal:hover {
+        background: #FECACA;
+        transform: scale(1.05);
+        box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
+    }
+
+    .aksi-kosong {
+        font-size: 11px;
+        color: #ccc;
+        font-style: italic;
+    }
+
+    /* ─── Info Alert Premium ─── */
+    .alert-premium.error {
+        background: linear-gradient(135deg, #FEF2F2, #FEE2E2);
+        border: 1px solid #FECACA;
+        color: #991B1B;
+    }
+
+    .alert-premium.error .alert-icon {
+        background: #FECACA;
+        color: #DC2626;
+    }
+
     /* ─── Empty State ─── */
     .empty-state {
         padding: 60px 20px;
@@ -760,131 +800,6 @@
         box-shadow: 0 6px 20px rgba(220, 38, 38, 0.35);
     }
 
-    /* ─── Select All Wrap ─── */
-    .select-all-wrap {
-        display: none;
-        align-items: center;
-        gap: 8px;
-        padding: 6px 14px;
-        border-radius: 10px;
-        background: var(--hover);
-        border: 1.5px solid var(--border);
-        font-size: 12px;
-        font-weight: 600;
-        color: var(--gray);
-        cursor: pointer;
-        transition: all 0.2s ease;
-        font-family: 'Poppins', sans-serif;
-        user-select: none;
-    }
-
-    .select-all-wrap.show {
-        display: inline-flex;
-    }
-
-    .select-all-wrap:hover {
-        border-color: var(--primary);
-        color: var(--primary);
-    }
-
-    .select-all-wrap input[type="checkbox"] {
-        width: 16px;
-        height: 16px;
-        accent-color: var(--primary);
-        cursor: pointer;
-        margin: 0;
-    }
-
-    .select-all-wrap label {
-        cursor: pointer;
-    }
-
-    .btn-hapus-sebagian {
-        padding: 9px 20px;
-        border-radius: 100px;
-        border: 1.5px solid #fecaca;
-        background: linear-gradient(135deg, #fff5f5, #fff);
-        color: #dc2626;
-        font-size: 12px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.25s ease;
-        font-family: 'Poppins', sans-serif;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        box-shadow: 0 2px 8px rgba(239, 68, 68, 0.06);
-    }
-
-    .btn-hapus-sebagian:hover {
-        background: linear-gradient(135deg, #fef2f2, #fff5f5);
-        border-color: #f87171;
-        box-shadow: 0 4px 16px rgba(239, 68, 68, 0.12);
-        transform: translateY(-1px);
-    }
-
-    .btn-hapus-sebagian.active {
-        background: linear-gradient(135deg, #ef4444, #dc2626);
-        color: #fff;
-        border-color: transparent;
-        box-shadow: 0 4px 16px rgba(239, 68, 68, 0.3);
-    }
-
-    .btn-hapus-sebagian.active:hover {
-        background: linear-gradient(135deg, #dc2626, #b91c1c);
-        box-shadow: 0 6px 24px rgba(239, 68, 68, 0.4);
-        transform: translateY(-2px);
-    }
-
-    #btnBatalHapus {
-        border-color: #e2e8f0;
-        background: linear-gradient(135deg, #f8fafc, #fff);
-        color: #64748b;
-        box-shadow: none;
-    }
-
-    #btnBatalHapus:hover {
-        border-color: #cbd5e1;
-        background: linear-gradient(135deg, #f1f5f9, #f8fafc);
-        color: #475569;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-        transform: translateY(-1px);
-    }
-
-    .td-checkbox {
-        display: none;
-        text-align: center;
-        vertical-align: middle;
-    }
-
-    .td-checkbox.show {
-        display: table-cell;
-    }
-
-    .td-checkbox input[type="checkbox"] {
-        width: 16px;
-        height: 16px;
-        accent-color: var(--primary);
-        cursor: pointer;
-    }
-
-    #thCheckbox {
-        display: none;
-        width: 40px;
-        text-align: center;
-    }
-
-    #thCheckbox.show {
-        display: table-cell;
-    }
-
-    #thCheckbox input[type="checkbox"] {
-        width: 16px;
-        height: 16px;
-        accent-color: var(--primary);
-        cursor: pointer;
-    }
-
     /* ─── Toast Notification ─── */
     .booking-notif {
         position: fixed;
@@ -1032,17 +947,6 @@
         }
         .booking-table tbody td:first-child { padding-left: 0; }
         .booking-table tbody td:last-child { padding-right: 0; }
-        .booking-table tbody td.td-checkbox {
-            display: none;
-        }
-        .booking-table tbody td.td-checkbox.show {
-            display: flex;
-            justify-content: center;
-            padding: 4px 0;
-        }
-        .td-checkbox.show::before {
-            content: none;
-        }
 
         .page-header-premium { padding: 22px 20px; }
         .bc-header { padding: 16px; }
@@ -1056,8 +960,6 @@
     @media (max-width: 576px) {
         .page-header-premium .ph-text h3 { font-size: 17px; }
         .page-header-premium .ph-icon-wrap { width: 44px; height: 44px; border-radius: 13px; font-size: 18px; }
-        .select-all-wrap { width: 100%; justify-content: flex-end; }
-        .bc-actions .btn-hapus-sebagian { flex: 1; justify-content: center; }
         .bc-actions .btn-primary-rounded { flex: 1; justify-content: center; }
     }
     </style>
@@ -1191,6 +1093,24 @@
                 </div>
                 @endif
 
+                @if(session('error'))
+                <div class="alert-premium error">
+                    <div class="alert-icon">
+                        <i class="fa-solid fa-circle-exclamation"></i>
+                    </div>
+                    {{ session('error') }}
+                </div>
+                @endif
+
+                @if($activeBooking)
+                <div class="alert-premium error">
+                    <div class="alert-icon">
+                        <i class="fa-solid fa-hourglass-half"></i>
+                    </div>
+                    Anda masih memiliki booking aktif (#BK{{ str_pad($activeBooking->id_booking, 3, '0', STR_PAD_LEFT) }}) dengan status <strong>{{ ucfirst($activeBooking->status) }}</strong>. Anda baru dapat membuat booking baru setelah booking ini selesai.
+                </div>
+                @endif
+
                 <!-- ═══ Booking Card Premium ═══ -->
                 <div class="booking-card-premium">
                     <div class="bc-header">
@@ -1208,19 +1128,11 @@
                                 <i class="fa-solid fa-search si-icon"></i>
                                 <input type="text" id="searchBooking" placeholder="Cari booking..." oninput="cariBooking()">
                             </div>
-                            <div class="select-all-wrap" id="selectAllWrap">
-                                <input type="checkbox" id="cbSelectAll" onchange="toggleAll(event)">
-                                <label for="cbSelectAll">Pilih Semua</label>
-                            </div>
-                            <button class="btn-hapus-sebagian" id="btnBatalHapus" onclick="toggleHapusMode()" style="display:none;">
-                                <i class="fa-solid fa-xmark"></i> Batal
-                            </button>
-                            <button class="btn-hapus-sebagian" id="btnHapusSebagian" onclick="onHapusBtnClick()">
-                                <i class="fa-solid fa-check-square"></i> Hapus Sebagian
-                            </button>
+                            @if(!$activeBooking)
                             <a href="{{ route('pelanggan.booking.create') }}" class="btn-primary-rounded">
                                 <i class="fa-solid fa-plus"></i> Booking Baru
                             </a>
+                            @endif
                         </div>
                     </div>
 
@@ -1228,9 +1140,6 @@
                         <table class="booking-table">
                             <thead>
                                 <tr>
-                                    <th id="thCheckbox">
-                                        <input type="checkbox" id="cbSelectAllHeader" onchange="toggleAll(event)">
-                                    </th>
                                     <th>ID Booking</th>
                                     <th>Tanggal</th>
                                     <th>Jam</th>
@@ -1244,9 +1153,6 @@
                             <tbody>
                                  @forelse($bookings as $booking)
                                  <tr>
-                                     <td class="td-checkbox">
-                                         <input type="checkbox" class="cb-hapus" value="{{ $booking->id_booking }}">
-                                     </td>
                                      <td>
                                          <span class="booking-id-badge">
                                             <i class="fa-solid fa-receipt" style="font-size:10px;"></i>
@@ -1295,18 +1201,19 @@
                                     </td>
                                     <td data-label="Aksi" style="text-align:center;">
                                         <div class="flex items-center justify-center gap-1.5">
-                                            <a href="{{ route('pelanggan.booking.detail', $booking->id_booking) }}" class="action-btn edit" title="Detail booking">
-                                                <i class="fa-regular fa-eye"></i>
-                                            </a>
-                                            <button onclick="confirmDelete({{ $booking->id_booking }})" class="action-btn delete" title="Hapus booking">
-                                                <i class="fa-regular fa-trash-can"></i>
+                                            @if($booking->status === 'menunggu')
+                                            <button onclick="confirmCancel({{ $booking->id_booking }})" class="btn-batal" title="Batalkan booking">
+                                                <i class="fa-solid fa-xmark"></i> Batalkan
                                             </button>
+                                            @else
+                                            <span class="aksi-kosong">-</span>
+                                            @endif
                                         </div>
                                     </td>
                                 </tr>
                                 @empty
                                  <tr>
-                                     <td colspan="9">
+                                     <td colspan="8">
                                          <div class="empty-state">
                                             <div class="es-illustration">
                                                 <i class="fa-regular fa-calendar-xmark"></i>
@@ -1341,20 +1248,20 @@
         <span id="bookingNotifMsg">Berhasil!</span>
     </div>
 
-    <!-- ═══ Modal Delete Premium ═══ -->
+    <!-- ═══ Modal Batalkan Premium ═══ -->
     <div id="deleteModal" class="modal-premium">
         <div class="modal-box">
             <form id="deleteForm" method="POST">
                 @csrf
                 @method('DELETE')
                 <div class="modal-icon-wrap">
-                    <i class="fa-regular fa-trash-can"></i>
+                    <i class="fa-regular fa-calendar-xmark"></i>
                 </div>
-                <h3 id="modalDeleteTitle">Hapus Booking</h3>
-                <p id="modalDeleteBody">Apakah Anda yakin ingin menghapus booking ini?<br>Tindakan ini tidak dapat dibatalkan.</p>
+                <h3 id="modalDeleteTitle">Batalkan Booking</h3>
+                <p id="modalDeleteBody">Apakah Anda yakin ingin membatalkan booking ini?<br>Tindakan ini tidak dapat dibatalkan.</p>
                 <div class="modal-actions">
-                    <button type="button" onclick="closeDeleteModal()" class="btn-cancel">Batal</button>
-                    <button type="submit" class="btn-danger">Ya, Hapus</button>
+                    <button type="button" onclick="closeDeleteModal()" class="btn-cancel">Tidak Jadi</button>
+                    <button type="submit" class="btn-danger">Ya, Batalkan</button>
                 </div>
             </form>
         </div>
@@ -1364,13 +1271,12 @@
     let deleteId = null;
     const deleteBaseUrl = '{{ url('/pelanggan/booking') }}';
 
-    function confirmDelete(id) {
-        deleteMode = 'single';
+    function confirmCancel(id) {
         deleteId = id;
         const form = document.getElementById('deleteForm');
         form.action = deleteBaseUrl + '/' + id;
-        document.getElementById('modalDeleteTitle').textContent = 'Hapus Booking';
-        document.getElementById('modalDeleteBody').innerHTML = 'Apakah Anda yakin ingin menghapus booking ini?<br>Tindakan ini tidak dapat dibatalkan.';
+        document.getElementById('modalDeleteTitle').textContent = 'Batalkan Booking';
+        document.getElementById('modalDeleteBody').innerHTML = 'Apakah Anda yakin ingin membatalkan booking ini?<br>Tindakan ini tidak dapat dibatalkan.';
         const modal = document.getElementById('deleteModal');
         modal.classList.add('show');
     }
@@ -1387,14 +1293,6 @@
 
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') closeDeleteModal();
-    });
-
-    document.getElementById('deleteForm').addEventListener('submit', function(e) {
-        if (deleteMode === 'batch') {
-            e.preventDefault();
-            closeDeleteModal();
-            hapusTerpilih();
-        }
     });
 
     const now = new Date();
@@ -1429,100 +1327,6 @@
                 infoEl.innerHTML = '<span class="tf-dot"></span> Menampilkan ' + rows.length + ' booking';
             }
         }
-    }
-
-    // ═══ Hapus Sebagian ═══
-    var hapusMode = false;
-    var deleteMode = 'single';
-
-    function onHapusBtnClick() {
-        if (hapusMode) {
-            confirmBatchDelete();
-        } else {
-            toggleHapusMode();
-        }
-    }
-
-    function confirmBatchDelete() {
-        var selected = [];
-        document.querySelectorAll('.cb-hapus:checked').forEach(function(cb) {
-            selected.push(cb.value);
-        });
-        if (selected.length === 0) {
-            showNotif('Pilih booking yang ingin dihapus.');
-            return;
-        }
-        deleteMode = 'batch';
-        document.getElementById('modalDeleteTitle').textContent = 'Hapus Booking';
-        document.getElementById('modalDeleteBody').innerHTML = 'Apakah Anda yakin ingin menghapus ' + selected.length + ' booking ini?<br>Tindakan ini tidak dapat dibatalkan.';
-        document.getElementById('deleteModal').classList.add('show');
-    }
-
-    function toggleHapusMode() {
-        hapusMode = !hapusMode;
-        var btn = document.getElementById('btnHapusSebagian');
-        var btnBatal = document.getElementById('btnBatalHapus');
-        var tds = document.querySelectorAll('.td-checkbox');
-        var th = document.getElementById('thCheckbox');
-        var cbs = document.querySelectorAll('.cb-hapus');
-        var selectAllWrap = document.getElementById('selectAllWrap');
-        var cbSelectAll = document.getElementById('cbSelectAll');
-
-        tds.forEach(function(td) { td.classList.toggle('show', hapusMode); });
-        th.classList.toggle('show', hapusMode);
-
-        if (hapusMode) {
-            btn.innerHTML = '<i class="fa-solid fa-trash-can"></i> Hapus';
-            btn.classList.add('active');
-            selectAllWrap.classList.add('show');
-            cbSelectAll.checked = false;
-        } else {
-            btn.innerHTML = '<i class="fa-solid fa-check-square"></i> Hapus Sebagian';
-            btn.classList.remove('active');
-            cbs.forEach(function(cb) { cb.checked = false; });
-            selectAllWrap.classList.remove('show');
-            cbSelectAll.checked = false;
-        }
-        btnBatal.style.display = hapusMode ? 'inline-flex' : 'none';
-    }
-
-    function toggleAll(e) {
-        var checked = e.target.checked;
-        document.querySelectorAll('.cb-hapus').forEach(function(cb) {
-            cb.checked = checked;
-        });
-        var headerCheckbox = document.getElementById('cbSelectAllHeader');
-        if (headerCheckbox) headerCheckbox.checked = checked;
-    }
-
-    function hapusTerpilih() {
-        var selected = [];
-        document.querySelectorAll('.cb-hapus:checked').forEach(function(cb) {
-            selected.push(cb.value);
-        });
-        if (selected.length === 0) {
-            showNotif('Pilih booking yang ingin dihapus.');
-            return;
-        }
-
-        var csrf = document.querySelector('meta[name="csrf-token"]').content;
-
-        fetch('/pelanggan/booking/batch', {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': csrf
-            },
-            body: JSON.stringify({ ids: selected })
-        })
-        .then(function(r) { return r.json(); })
-        .then(function(data) {
-            if (data.success) {
-                toggleHapusMode();
-                showNotif(data.message);
-                location.reload();
-            }
-        });
     }
 
     function showNotif(msg) {
