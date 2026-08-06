@@ -10,6 +10,7 @@ use App\Models\Pelanggan;
 use App\Models\Membership;
 use App\Models\PromoKlaim;
 use App\Helpers\ActivityLogger;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -196,6 +197,17 @@ class PelangganBookingController extends Controller
             ->firstOrFail();
 
         return view('pelanggan.booking.detail', compact('booking'));
+    }
+
+    public function pdf($id)
+    {
+        $booking = Booking::with(['detail.layanan', 'karyawan'])
+            ->where('id_booking', $id)
+            ->where('id_pelanggan', $this->resolveIdPelanggan())
+            ->firstOrFail();
+
+        $pdf = Pdf::loadView('pelanggan.booking.pdf', compact('booking'));
+        return $pdf->download('Detail-Booking-BK' . str_pad($booking->id_booking, 3, '0', STR_PAD_LEFT) . '.pdf');
     }
 
     public function edit($id)
