@@ -46,10 +46,10 @@ class NotifikasiController extends Controller
         $items = [];
 
         if ($since) {
-            // Popup realtime hanya untuk admin: perubahan data oleh kasir/beautycian
+            // Popup realtime untuk admin: perubahan data oleh kasir/beautycian/pelanggan
             if ($user->role === 'admin') {
                 $aktivitas = RiwayatAktivitas::with('user')
-                    ->whereIn('role', ['kasir', 'beautycian'])
+                    ->whereIn('role', ['kasir', 'beautycian', 'pelanggan'])
                     ->where('created_at', '>', $since)
                     ->orderByDesc('created_at')
                     ->take(5)
@@ -62,11 +62,13 @@ class NotifikasiController extends Controller
                         'type' => 'success',
                     ];
                 }
-                // Role lain: biarkan popup notifikasi yang sudah ada (sesuai permintaan user)
             } else {
+                // Role lain: tampilkan notifikasi dari AKTOR LAIN saja
+                // (aksi sendiri tidak perlu muncul sebagai toast, tetap tercatat di bell & aktivitas admin)
                 $notif = Notifikasi::with('aktor')
                     ->where('id_user', $user->id)
                     ->where('created_at', '>', $since)
+                    ->where('aktor_id', '!=', $user->id)
                     ->latest()
                     ->take(5)
                     ->get();
