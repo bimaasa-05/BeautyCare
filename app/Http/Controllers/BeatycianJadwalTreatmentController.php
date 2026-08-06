@@ -61,11 +61,14 @@ class BeatycianJadwalTreatmentController extends Controller
 
         if ($booking->status === 'dikonfirmasi') {
             $booking->update(['status' => 'diproses']);
+            ActivityLogger::log('Mengubah Status', auth()->user()->nama . ' memulai treatment booking #' . $booking->id_booking, 'Reservasi', $booking->id_booking);
             return back()->with('message', 'Treatment telah dimulai!');
         }
 
         if ($booking->status === 'diproses') {
             $booking->update(['status' => 'selesai']);
+            ActivityLogger::log('Mengubah Status', auth()->user()->nama . ' menyelesaikan treatment booking #' . $booking->id_booking, 'Reservasi', $booking->id_booking);
+            $this->notifTreatmentSelesai($booking);
             return back()->with('message', 'Treatment telah selesai!');
         }
 
@@ -120,6 +123,7 @@ class BeatycianJadwalTreatmentController extends Controller
         if ($booking->status === 'diproses' || $booking->status === 'selesai') {
             $booking->update(['status' => 'selesai']);
             ActivityLogger::log('Mengubah Status', auth()->user()->nama . ' menyelesaikan treatment booking #' . $booking->id_booking, 'Reservasi', $booking->id_booking);
+            $this->notifTreatmentSelesai($booking);
             return back()->with('message', 'Treatment telah diselesaikan!');
         }
 
@@ -225,6 +229,21 @@ class BeatycianJadwalTreatmentController extends Controller
 
         ActivityLogger::log('Menambahkan', auth()->user()->nama . ' menyimpan dokumentasi treatment booking #' . $booking->id_booking, 'Dokumentasi', $booking->id_booking);
 
+        $this->notifTreatmentSelesai($booking);
+
         return back()->with('message', 'Dokumentasi treatment berhasil disimpan!');
+    }
+
+    private function notifTreatmentSelesai($booking)
+    {
+        $nama = $booking->pelanggan->nm_pelanggan ?? 'Pelanggan';
+        $isi = 'Treatment ' . $nama . ' telah diselesaikan.';
+
+        buatNotifRole('kasir', 'Treatment Selesai', $isi, 'Booking', route('kasir.checkin.index'));
+
+        $pelanggan = $booking->pelanggan;
+        if ($pelanggan && $pelanggan->id_user) {
+            buatNotif($pelanggan->id_user, 'Treatment Selesai', 'Treatment Anda telah selesai. Terima kasih!', 'Booking', route('pelanggan.booking'));
+        }
     }
 }
