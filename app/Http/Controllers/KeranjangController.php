@@ -26,14 +26,29 @@ class KeranjangController extends Controller
             ]);
         }
 
+        $troliProdukIds = [];
+        foreach ($troli as $tItem) {
+            $produk = $tItem->id_produk
+                ? Produk::find($tItem->id_produk)
+                : Produk::where('nm_produk', $tItem->nm_produk)->first();
+            if ($produk) {
+                $troliProdukIds[] = $produk->id_produk;
+            }
+        }
+
         $claimedPromos = PromoKlaim::with('promo')
             ->where('id_user', auth()->id())
             ->where('status', 'tersedia')
             ->get()
-            ->filter(function ($klaim) {
-                return $klaim->promo
-                    && $klaim->promo->jenis_promo !== 'Paket'
-                    && $klaim->promo->selesai > now()->format('Y-m-d');
+            ->filter(function ($klaim) use ($troliProdukIds) {
+                if (!$klaim->promo
+                    || $klaim->promo->jenis_promo === 'Paket'
+                    || $klaim->promo->selesai <= now()->format('Y-m-d')
+                    || !$klaim->promo->berlakuUntuk(auth()->user())) {
+                    return false;
+                }
+                return collect($troliProdukIds)
+                    ->contains(fn ($idProduk) => $klaim->promo->itemEligible('Produk', $idProduk));
             });
 
         return view('pelanggan.keranjang.index', compact('troli', 'total', 'claimedPromos', 'produkStok'));
