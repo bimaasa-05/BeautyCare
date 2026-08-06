@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Helpers\ActivityLogger;
 use App\Models\Booking;
 use App\Models\DetailBooking;
 use App\Models\Layanan;
@@ -153,6 +154,12 @@ class PelangganController extends Controller
         }
 
         buatNotif(auth()->id(), 'Booking Baru', 'Booking treatment berhasil dibuat', 'Booking', route('pelanggan.booking'));
+
+        if ($booking->id_karyawan) {
+            buatNotif($booking->id_karyawan, 'Jadwal Treatment Baru', 'Booking baru oleh ' . auth()->user()->nama . ' pada ' . $booking->tanggal . ' ' . $booking->jam . '.', 'Booking', url('/beautycian/jadwal-treatment'));
+        }
+
+        ActivityLogger::log('Menambahkan', auth()->user()->nama . ' membuat booking baru', 'Booking', $booking->id_booking);
 
         $admins = \App\Models\User::where('role', 'admin')->get();
         foreach ($admins as $admin) {
