@@ -35,15 +35,29 @@ class PelangganDashboardController extends Controller
         $userId = auth()->id();
         $user = auth()->user();
 
-        $bookingAktif = Booking::where('id_pelanggan', $userId)
+        $pelanggan = Pelanggan::dariUser($user);
+        if (!$pelanggan) {
+            $pelanggan = Pelanggan::create([
+                'nm_pelanggan' => $user->nama,
+                'email' => $user->email,
+                'no_hp' => $user->no_hp ?? '',
+                'alamat' => '',
+                'catatan_alergi' => '',
+                'id_user' => $user->id,
+                'id_member' => null,
+            ]);
+        }
+        $idPelanggan = $pelanggan->id_pelanggan;
+
+        $bookingAktif = Booking::where('id_pelanggan', $idPelanggan)
             ->whereIn('status', ['menunggu', 'dikonfirmasi', 'diproses'])
             ->count();
-        $riwayatTreatment = Booking::where('id_pelanggan', $userId)
+        $riwayatTreatment = Booking::where('id_pelanggan', $idPelanggan)
             ->where('status', 'selesai')
             ->count();
 
         $riwayatTreatments = Booking::with(['detail.layanan', 'karyawan'])
-            ->where('id_pelanggan', $userId)
+            ->where('id_pelanggan', $idPelanggan)
             ->where('status', 'selesai')
             ->orderBy('tanggal', 'desc')
             ->orderBy('jam', 'desc')
@@ -51,7 +65,7 @@ class PelangganDashboardController extends Controller
             ->get();
 
         $bookingMendatang = Booking::with(['detail.layanan', 'karyawan'])
-            ->where('id_pelanggan', $userId)
+            ->where('id_pelanggan', $idPelanggan)
             ->whereIn('status', ['menunggu', 'dikonfirmasi', 'diproses'])
             ->whereDate('tanggal', '>=', now())
             ->orderBy('tanggal', 'asc')
@@ -60,7 +74,7 @@ class PelangganDashboardController extends Controller
             ->get();
 
         $favoritLayananIds = DetailBooking::select('id_layanan')
-            ->whereHas('booking', fn($q) => $q->where('id_pelanggan', $userId))
+            ->whereHas('booking', fn($q) => $q->where('id_pelanggan', $idPelanggan))
             ->groupBy('id_layanan')
             ->orderByRaw('COUNT(*) DESC')
             ->limit(4)
@@ -104,19 +118,7 @@ class PelangganDashboardController extends Controller
             ->whereMonth('tanggal', now()->month)
             ->count();
 
-        $pelanggan = Pelanggan::dariUser($user);
-        if (!$pelanggan) {
-            $pelanggan = Pelanggan::create([
-                'nm_pelanggan' => $user->nama,
-                'email' => $user->email,
-                'no_hp' => $user->no_hp ?? '',
-                'alamat' => '',
-                'catatan_alergi' => '',
-                'id_user' => $user->id,
-                'id_member' => null,
-            ]);
-        }
-        $totalBooking = DB::table('log_booking')->where('id_pelanggan', $userId)->count();
+        $totalBooking = DB::table('log_booking')->where('id_pelanggan', $idPelanggan)->count();
         $memberTingkat = null;
         $memberList = collect();
         if ($pelanggan && $pelanggan->id_member) {
@@ -162,7 +164,7 @@ class PelangganDashboardController extends Controller
         for ($i = 11; $i >= 0; $i--) {
             $date = now()->startOfMonth()->subMonths($i);
             $count = DB::table('log_booking')
-                ->where('id_pelanggan', $userId)
+                ->where('id_pelanggan', $idPelanggan)
                 ->whereYear('tanggal', $date->year)
                 ->whereMonth('tanggal', $date->month)
                 ->count();
@@ -175,7 +177,7 @@ class PelangganDashboardController extends Controller
         for ($m = 1; $m <= now()->month; $m++) {
             $date = now()->copy()->startOfYear()->addMonths($m - 1);
             $count = DB::table('log_booking')
-                ->where('id_pelanggan', $userId)
+                ->where('id_pelanggan', $idPelanggan)
                 ->whereYear('tanggal', $date->year)
                 ->whereMonth('tanggal', $date->month)
                 ->count();
