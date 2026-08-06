@@ -65,10 +65,14 @@ class NotifikasiController extends Controller
             } else {
                 // Role lain: tampilkan notifikasi dari AKTOR LAIN saja
                 // (aksi sendiri tidak perlu muncul sebagai toast, tetap tercatat di bell & aktivitas admin)
+                // Notifikasi sistem dari cron (aktor_id NULL) tetap popup agar info penting tidak terlewat
                 $notif = Notifikasi::with('aktor')
                     ->where('id_user', $user->id)
                     ->where('created_at', '>', $since)
-                    ->where('aktor_id', '!=', $user->id)
+                    ->where(function ($q) use ($user) {
+                        $q->where('aktor_id', '!=', $user->id)
+                            ->orWhereNull('aktor_id');
+                    })
                     ->latest()
                     ->take(5)
                     ->get();
