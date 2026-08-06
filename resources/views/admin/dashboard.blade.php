@@ -387,7 +387,7 @@
                     <div class="list-widget">
                         <div class="lw-header">
                             <h3>Karyawan Aktif</h3>
-                            <a href="{{ route('admin.beautician.index') }}" style="font-size:13px;color:var(--primary);font-weight:500;">Lihat Semua</a>
+                            <a href="{{ route('admin.karyawan.index') }}" style="font-size:13px;color:var(--primary);font-weight:500;">Lihat Semua</a>
                         </div>
                         <div id="karyawan-aktif-grid" class="employee-grid">
                             @include('partials.dashboard.karyawan-aktif', ['karyawanAktif' => $karyawanAktif])

@@ -31,6 +31,10 @@ class PelangganBookingController extends Controller
         $selesai = $bookings->where('status', 'selesai')->count();
         $dibatalkan = $bookings->where('status', 'dibatalkan')->count();
 
+        $activeBooking = Booking::where('id_pelanggan', $id_pelanggan)
+            ->whereIn('status', ['menunggu', 'dikonfirmasi', 'diproses'])
+            ->first();
+
         $search = $request->search;
 
         if ($search) {
@@ -57,12 +61,17 @@ class PelangganBookingController extends Controller
             'dikonfirmasi',
             'selesai',
             'dibatalkan',
+            'activeBooking',
             'search'
         ));
     }
 
     public function create()
     {
+        if ($this->hasActiveBooking()) {
+            return redirect()->route('pelanggan.booking')->with('error', 'Anda masih memiliki booking yang belum selesai. Selesaikan booking Anda terlebih dahulu sebelum membuat booking baru.');
+        }
+
         $layanans = Layanan::where('status', 'Tersedia')->get();
         $karyawans = Karyawan::with('user')
             ->whereHas('user', fn($q) => $q->where('role', 'beautycian'))
@@ -95,6 +104,10 @@ class PelangganBookingController extends Controller
 
     public function store(Request $request)
     {
+        if ($this->hasActiveBooking()) {
+            return redirect()->route('pelanggan.booking')->with('error', 'Anda masih memiliki booking yang belum selesai. Selesaikan booking Anda terlebih dahulu sebelum membuat booking baru.');
+        }
+
         $request->validate([
             'id_layanan' => 'required|array',
             'id_layanan.*' => 'integer|exists:layanan,id_layanan',
@@ -110,6 +123,7 @@ class PelangganBookingController extends Controller
         ]);
 
         $idPromo = $request->id_promo;
+        $promo = null;
 
         if ($idPromo) {
             $promoKlaim = PromoKlaim::with('promo')
@@ -122,12 +136,27 @@ class PelangganBookingController extends Controller
                 return redirect()->back()->withErrors('Promo tidak tersedia atau sudah digunakan');
             }
 
-            if ($promoKlaim->promo->selesai <= now()->format('Y-m-d')) {
+            $promo = $promoKlaim->promo;
+
+            if ($promo->selesai <= now()->format('Y-m-d')) {
                 return redirect()->back()->withErrors('Promo sudah berakhir dan tidak dapat digunakan');
             }
 
-            if ($promoKlaim->promo->jenis_promo === 'Buy 1 Get 1') {
-                return redirect()->back()->withErrors('Promo ' . $promoKlaim->promo->nm_promo . ' (Buy 1 Get 1) hanya berlaku untuk produk, bukan layanan');
+            if ($promo->jenis_promo === 'Buy 1 Get 1') {
+                return redirect()->back()->withErrors('Promo ' . $promo->nm_promo . ' (Buy 1 Get 1) hanya berlaku untuk produk, bukan layanan');
+            }
+
+            if (!$promo->berlakuUntuk(auth()->user())) {
+                return redirect()->back()->withErrors('Promo ' . $promo->nm_promo . ' tidak berlaku untuk Anda');
+            }
+
+            $eligibleLayanan = array_values(array_filter(
+                $request->id_layanan,
+                fn ($idLayanan) => $promo->itemEligible('Layanan', $idLayanan)
+            ));
+
+            if (empty($eligibleLayanan)) {
+                return redirect()->back()->withErrors('Promo ' . $promo->nm_promo . ' tidak berlaku untuk layanan yang dipilih');
             }
 
             $promoKlaim->update(['status' => 'digunakan']);
@@ -151,7 +180,15 @@ class PelangganBookingController extends Controller
         foreach ($idLayanans as $i => $idLayanan) {
             $harga = (float) ($hargas[$i] ?? 0);
             $diskon = (float) ($diskons[$i] ?? 0);
-            $subtotal = $harga - $diskon;
+
+            if ($promo) {
+                $diskon = $promo->itemEligible('Layanan', $idLayanan)
+                    ? (float) $promo->hitungDiskon([['jenis' => 'Layanan', 'id_item' => $idLayanan, 'subtotal' => $harga]])
+                    : 0;
+            }
+
+            $diskon = min($diskon, $harga);
+            $subtotal = max(0, $harga - $diskon);
 
             DetailBooking::create([
                 'id_booking' => $booking->id_booking,
@@ -189,6 +226,7 @@ class PelangganBookingController extends Controller
         return redirect()->route('pelanggan.booking')->with('success', 'Booking berhasil dibuat!');
     }
 
+<<<<<<< HEAD
     public function show($id)
     {
         $booking = Booking::with(['detail.layanan', 'karyawan'])
@@ -210,6 +248,8 @@ class PelangganBookingController extends Controller
         return $pdf->download('Detail-Booking-BK' . str_pad($booking->id_booking, 3, '0', STR_PAD_LEFT) . '.pdf');
     }
 
+=======
+>>>>>>> cad6e891473db047bf1f360cceb97f1c2e5a278f
     public function edit($id)
     {
         $booking = Booking::where('id_booking', $id)
@@ -225,6 +265,7 @@ class PelangganBookingController extends Controller
             ->get();
 
         $diskonMember = 0;
+        $user = auth()->user();
         $pelanggan = Pelanggan::dariUser($user);
         if ($pelanggan && $pelanggan->id_member) {
             $member = $pelanggan->membershipAktif();
@@ -300,31 +341,39 @@ class PelangganBookingController extends Controller
             ->where('id_pelanggan', $this->resolveIdPelanggan())
             ->firstOrFail();
 
+<<<<<<< HEAD
         $karyawanId = $booking->id_karyawan;
 
         DetailBooking::where('id_booking', $booking->id_booking)->delete();
         $booking->delete();
+=======
+        if ($booking->status !== 'menunggu') {
+            return redirect()->route('pelanggan.booking')->with('error', 'Booking hanya dapat dibatalkan saat statusnya masih menunggu.');
+        }
+>>>>>>> cad6e891473db047bf1f360cceb97f1c2e5a278f
 
-        ActivityLogger::log('Menghapus', auth()->user()->nama . ' menghapus booking #' . $id, 'Booking', $id);
+        $booking->update(['status' => 'dibatalkan']);
 
-        buatNotif(auth()->id(), 'Booking Dihapus', 'Booking treatment berhasil dihapus', 'Booking', route('pelanggan.booking'));
+        ActivityLogger::log('Membatalkan', auth()->user()->nama . ' membatalkan booking #' . $id, 'Booking', $id);
 
-        buatNotifRole('kasir', 'Booking Dibatalkan', auth()->user()->nama . ' membatalkan booking #' . $id . '.', 'Booking', route('kasir.reservasi.index'));
+        buatNotif(auth()->id(), 'Booking Dibatalkan', 'Booking treatment berhasil dibatalkan', 'Booking', route('pelanggan.booking'));
 
+<<<<<<< HEAD
         if ($karyawanId) {
             buatNotif($karyawanId, 'Booking Dibatalkan', auth()->user()->nama . ' membatalkan booking #' . $id . '.', 'Booking', url('/beautycian/jadwal-treatment'));
         }
 
         return redirect()->route('pelanggan.booking')->with('success', 'Booking berhasil dihapus!');
+=======
+        return redirect()->route('pelanggan.booking')->with('success', 'Booking berhasil dibatalkan!');
+>>>>>>> cad6e891473db047bf1f360cceb97f1c2e5a278f
     }
 
-    public function batchDestroy(Request $request)
+    private function hasActiveBooking()
     {
-        $ids = $request->input('ids', []);
-        if (!is_array($ids) || empty($ids)) {
-            return response()->json(['success' => false, 'message' => 'Tidak ada booking yang dipilih.']);
-        }
+        $idPelanggan = $this->resolveIdPelanggan();
 
+<<<<<<< HEAD
         $bookings = Booking::whereIn('id_booking', $ids)
             ->where('id_pelanggan', $this->resolveIdPelanggan())
             ->get();
@@ -355,6 +404,11 @@ class PelangganBookingController extends Controller
             'success' => true,
             'message' => count($ids) . ' booking berhasil dihapus!',
         ]);
+=======
+        return Booking::where('id_pelanggan', $idPelanggan)
+            ->whereIn('status', ['menunggu', 'dikonfirmasi', 'diproses'])
+            ->exists();
+>>>>>>> cad6e891473db047bf1f360cceb97f1c2e5a278f
     }
 
     private function resolveIdPelanggan()
