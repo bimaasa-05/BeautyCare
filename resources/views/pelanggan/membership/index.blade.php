@@ -221,6 +221,30 @@
         margin: 4px 0 0;
     }
 
+    .member-status-card .ms-countdown {
+        font-weight: 700;
+        color: #fff;
+        background: rgba(255,255,255,0.2);
+        border: 1px solid rgba(255,255,255,0.25);
+        border-radius: 100px;
+        padding: 2px 10px;
+        display: inline-block;
+        margin-left: 4px;
+        font-variant-numeric: tabular-nums;
+    }
+
+    .member-status-card .ms-countdown.warning {
+        background: rgba(251,191,36,0.25);
+        border-color: rgba(251,191,36,0.6);
+        color: #FDE68A;
+        animation: msCountdownPulse 1s ease-in-out infinite;
+    }
+
+    @keyframes msCountdownPulse {
+        0%, 100% { box-shadow: 0 0 0 0 rgba(251,191,36,0.35); }
+        50% { box-shadow: 0 0 0 6px rgba(251,191,36,0); }
+    }
+
     .member-status-card .ms-level {
         display: inline-flex;
         align-items: center;
@@ -743,7 +767,7 @@
                                 @if($memberSaatIni)
                                     <p>
                                         @if($masaAkhir)
-                                            Berlaku s.d. {{ $masaAkhir->isoFormat('D MMM YYYY') }} &middot; Sisa {{ $sisaHariMember }} hari
+                                            Berlaku s.d. {{ $masaAkhir->isoFormat('D MMM YYYY') }} &middot; Sisa <span id="masaBerlakuCountdown" class="ms-countdown">{{ $sisaHariMember }} hari</span>
                                         @else
                                             Anda saat ini terdaftar sebagai member aktif BeautyCare
                                         @endif
@@ -1040,6 +1064,45 @@
         var width = parseInt(fill.getAttribute('data-width')) || 0;
         setTimeout(function() { fill.style.width = width + '%'; }, 200);
     });
+
+    var sisaDetik = {{ $sisaDetikMember }};
+    var countdownEl = document.getElementById('masaBerlakuCountdown');
+    if (countdownEl && sisaDetik > 0) {
+        var batasWaspada = 10 * 60;
+        var endAt = Date.now() + sisaDetik * 1000;
+
+        function formatCountdown(sisa) {
+            var hari = Math.floor(sisa / 86400);
+            var jam = Math.floor(sisa % 86400 / 3600);
+            var menit = Math.floor(sisa % 3600 / 60);
+            var detik = sisa % 60;
+
+            if (hari >= 1) return hari + ' hari ' + jam + ' jam';
+            if (sisa >= batasWaspada) return jam + ' jam ' + menit + ' menit';
+            return menit + ' menit ' + detik + ' detik';
+        }
+
+        function updateCountdown() {
+            var sisa = Math.max(0, Math.floor((endAt - Date.now()) / 1000));
+
+            if (sisa <= 0) {
+                clearInterval(countdownInterval);
+                location.reload();
+                return;
+            }
+
+            countdownEl.textContent = formatCountdown(sisa);
+
+            if (sisa < batasWaspada) {
+                countdownEl.classList.add('warning');
+            } else {
+                countdownEl.classList.remove('warning');
+            }
+        }
+
+        updateCountdown();
+        var countdownInterval = setInterval(updateCountdown, 1000);
+    }
     </script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
 </body>
