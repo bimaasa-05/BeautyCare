@@ -38,8 +38,14 @@ class BookingReminder extends Command
             ->get()
             ->each(function ($booking) {
                 $booking->update(['reminder_h1' => true]);
+
+                $pelangganUser = $booking->pelanggan?->id_user;
+                if (!$pelangganUser) {
+                    return;
+                }
+
                 buatNotif(
-                    $booking->id_pelanggan,
+                    $pelangganUser,
                     'Reminder: Treatment Besok',
                     'Halo! Anda memiliki jadwal treatment besok, ' . Carbon::parse($booking->tanggal)->format('d M Y') . ' pukul ' . $booking->jam . '. Jangan lupa datang ya!',
                     'Booking',
@@ -57,8 +63,14 @@ class BookingReminder extends Command
             ->get()
             ->each(function ($booking) {
                 $booking->update(['reminder_jam' => true]);
+
+                $pelangganUser = $booking->pelanggan?->id_user;
+                if (!$pelangganUser) {
+                    return;
+                }
+
                 buatNotif(
-                    $booking->id_pelanggan,
+                    $pelangganUser,
                     'Jadwal Treatment dalam 2 Jam',
                     'Jadwal treatment Anda hari ini pukul ' . $booking->jam . ' sudah dekat. Mohon bersiap ya!',
                     'Booking',
@@ -72,8 +84,14 @@ class BookingReminder extends Command
             ->get()
             ->each(function ($booking) {
                 $booking->update(['status' => 'dibatalkan']);
+
+                $pelangganUser = $booking->pelanggan?->id_user;
+                if (!$pelangganUser) {
+                    return;
+                }
+
                 buatNotif(
-                    $booking->id_pelanggan,
+                    $pelangganUser,
                     'Booking Dibatalkan Otomatis',
                     'Booking Anda tanggal ' . Carbon::parse($booking->tanggal)->format('d M Y') . ' pukul ' . $booking->jam . ' dibatalkan karena tidak dikonfirmasi.',
                     'Booking',
