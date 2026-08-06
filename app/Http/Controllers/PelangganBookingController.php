@@ -252,6 +252,8 @@ class PelangganBookingController extends Controller
             ->where('id_pelanggan', $this->resolveIdPelanggan())
             ->firstOrFail();
 
+        $karyawanLama = $booking->id_karyawan;
+
         $booking->update([
             'id_karyawan' => $request->id_karyawan,
             'tanggal' => $request->tanggal,
@@ -277,6 +279,16 @@ class PelangganBookingController extends Controller
 
         buatNotifRole('kasir', 'Booking Diperbarui', auth()->user()->nama . ' mengubah booking #' . $id . ' menjadi ' . $request->tanggal . ' ' . $request->jam . '.', 'Booking', route('kasir.reservasi.index'));
 
+        if ($karyawanLama !== $request->id_karyawan) {
+            if ($request->id_karyawan) {
+                buatNotif($request->id_karyawan, 'Jadwal Treatment Baru', 'Booking baru oleh ' . auth()->user()->nama . ' pada ' . $request->tanggal . ' ' . $request->jam . '.', 'Booking', url('/beautycian/jadwal-treatment'));
+            }
+
+            if ($karyawanLama) {
+                buatNotif($karyawanLama, 'Booking Dipindahkan', 'Booking ' . auth()->user()->nama . ' dipindahkan ke terapis lain.', 'Booking', url('/beautycian/jadwal-treatment'));
+            }
+        }
+
         ActivityLogger::log('Mengubah', auth()->user()->nama . ' mengubah booking #' . $id, 'Booking', $id);
 
         return redirect()->route('pelanggan.booking')->with('success', 'Booking berhasil diperbarui!');
@@ -288,6 +300,8 @@ class PelangganBookingController extends Controller
             ->where('id_pelanggan', $this->resolveIdPelanggan())
             ->firstOrFail();
 
+        $karyawanId = $booking->id_karyawan;
+
         DetailBooking::where('id_booking', $booking->id_booking)->delete();
         $booking->delete();
 
@@ -296,6 +310,10 @@ class PelangganBookingController extends Controller
         buatNotif(auth()->id(), 'Booking Dihapus', 'Booking treatment berhasil dihapus', 'Booking', route('pelanggan.booking'));
 
         buatNotifRole('kasir', 'Booking Dibatalkan', auth()->user()->nama . ' membatalkan booking #' . $id . '.', 'Booking', route('kasir.reservasi.index'));
+
+        if ($karyawanId) {
+            buatNotif($karyawanId, 'Booking Dibatalkan', auth()->user()->nama . ' membatalkan booking #' . $id . '.', 'Booking', url('/beautycian/jadwal-treatment'));
+        }
 
         return redirect()->route('pelanggan.booking')->with('success', 'Booking berhasil dihapus!');
     }
@@ -311,7 +329,14 @@ class PelangganBookingController extends Controller
             ->where('id_pelanggan', $this->resolveIdPelanggan())
             ->get();
 
+        $perKaryawan = [];
+
         foreach ($bookings as $booking) {
+            $karyawanId = $booking->id_karyawan;
+            if ($karyawanId) {
+                $perKaryawan[$karyawanId] = ($perKaryawan[$karyawanId] ?? 0) + 1;
+            }
+
             DetailBooking::where('id_booking', $booking->id_booking)->delete();
             $booking->delete();
         }
@@ -319,6 +344,10 @@ class PelangganBookingController extends Controller
         buatNotif(auth()->id(), 'Booking Dihapus', count($ids) . ' booking berhasil dihapus', 'Booking', route('pelanggan.booking'));
 
         buatNotifRole('kasir', 'Booking Dibatalkan', auth()->user()->nama . ' membatalkan ' . count($ids) . ' booking.', 'Booking', route('kasir.reservasi.index'));
+
+        foreach ($perKaryawan as $karyawanId => $jumlah) {
+            buatNotif($karyawanId, 'Booking Dibatalkan', auth()->user()->nama . ' membatalkan ' . $jumlah . ' booking Anda.', 'Booking', url('/beautycian/jadwal-treatment'));
+        }
 
         ActivityLogger::log('Menghapus', auth()->user()->nama . ' menghapus ' . count($ids) . ' booking', 'Booking');
 
