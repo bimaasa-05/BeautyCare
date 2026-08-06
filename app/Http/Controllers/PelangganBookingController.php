@@ -129,6 +129,19 @@ class PelangganBookingController extends Controller
                 return redirect()->back()->withErrors('Promo ' . $promoKlaim->promo->nm_promo . ' (Buy 1 Get 1) hanya berlaku untuk produk, bukan layanan');
             }
 
+            if (!$promoKlaim->promo->berlakuUntuk(auth()->user())) {
+                return redirect()->back()->withErrors('Promo ' . $promoKlaim->promo->nm_promo . ' tidak berlaku untuk Anda');
+            }
+
+            $eligibleLayanan = array_values(array_filter(
+                $request->id_layanan,
+                fn ($idLayanan) => $promoKlaim->promo->itemEligible('Layanan', $idLayanan)
+            ));
+
+            if (empty($eligibleLayanan)) {
+                return redirect()->back()->withErrors('Promo ' . $promoKlaim->promo->nm_promo . ' tidak berlaku untuk layanan yang dipilih');
+            }
+
             $promoKlaim->update(['status' => 'digunakan']);
         }
 
@@ -209,6 +222,7 @@ class PelangganBookingController extends Controller
             ->get();
 
         $diskonMember = 0;
+        $user = auth()->user();
         $pelanggan = Pelanggan::dariUser($user);
         if ($pelanggan && $pelanggan->id_member) {
             $member = $pelanggan->membershipAktif();
