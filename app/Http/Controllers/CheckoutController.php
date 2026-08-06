@@ -89,6 +89,14 @@ class CheckoutController extends Controller
                     return collect($items)->contains(
                         fn ($item) => $klaim->promo->itemEligible('Produk', $item['id_produk'] ?? 0)
                     );
+                })
+                ->map(function ($klaim) use ($items) {
+                    $eligibleItems = array_values(array_filter(
+                        $items,
+                        fn ($item) => $klaim->promo->itemEligible('Produk', $item['id_produk'] ?? 0)
+                    ));
+                    $klaim->diskon_pakai = (int) round($klaim->promo->hitungDiskon($eligibleItems));
+                    return $klaim;
                 });
 
         $bankTujuan = self::bankTujuan();
