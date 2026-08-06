@@ -25,7 +25,7 @@ class AdminDashboardController extends Controller
 
         $totalPelanggan = Pelanggan::count();
 
-        $totalKaryawan = Karyawan::count();
+        $totalKaryawan = Karyawan::whereHas('user', fn ($q) => $q->whereIn('role', ['kasir', 'beautycian']))->count();
 
         $produkTerjual = DetailTransaksi::where('jenis', 'produk')->sum('qty');
 
@@ -200,7 +200,8 @@ class AdminDashboardController extends Controller
             ->get();
 
         $karyawanAktif = Karyawan::with('user')
-            ->where('status', 'Tersedia')
+            ->whereHas('user', fn ($q) => $q->whereIn('role', ['kasir', 'beautycian']))
+            ->where('status', '!=', 'Libur')
             ->get();
 
         $ringkasanStok = Produk::with('kategori')
