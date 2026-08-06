@@ -109,6 +109,7 @@ class PelangganBookingController extends Controller
         ]);
 
         $idPromo = $request->id_promo;
+        $promo = null;
 
         if ($idPromo) {
             $promoKlaim = PromoKlaim::with('promo')
@@ -121,25 +122,27 @@ class PelangganBookingController extends Controller
                 return redirect()->back()->withErrors('Promo tidak tersedia atau sudah digunakan');
             }
 
-            if ($promoKlaim->promo->selesai <= now()->format('Y-m-d')) {
+            $promo = $promoKlaim->promo;
+
+            if ($promo->selesai <= now()->format('Y-m-d')) {
                 return redirect()->back()->withErrors('Promo sudah berakhir dan tidak dapat digunakan');
             }
 
-            if ($promoKlaim->promo->jenis_promo === 'Buy 1 Get 1') {
-                return redirect()->back()->withErrors('Promo ' . $promoKlaim->promo->nm_promo . ' (Buy 1 Get 1) hanya berlaku untuk produk, bukan layanan');
+            if ($promo->jenis_promo === 'Buy 1 Get 1') {
+                return redirect()->back()->withErrors('Promo ' . $promo->nm_promo . ' (Buy 1 Get 1) hanya berlaku untuk produk, bukan layanan');
             }
 
-            if (!$promoKlaim->promo->berlakuUntuk(auth()->user())) {
-                return redirect()->back()->withErrors('Promo ' . $promoKlaim->promo->nm_promo . ' tidak berlaku untuk Anda');
+            if (!$promo->berlakuUntuk(auth()->user())) {
+                return redirect()->back()->withErrors('Promo ' . $promo->nm_promo . ' tidak berlaku untuk Anda');
             }
 
             $eligibleLayanan = array_values(array_filter(
                 $request->id_layanan,
-                fn ($idLayanan) => $promoKlaim->promo->itemEligible('Layanan', $idLayanan)
+                fn ($idLayanan) => $promo->itemEligible('Layanan', $idLayanan)
             ));
 
             if (empty($eligibleLayanan)) {
-                return redirect()->back()->withErrors('Promo ' . $promoKlaim->promo->nm_promo . ' tidak berlaku untuk layanan yang dipilih');
+                return redirect()->back()->withErrors('Promo ' . $promo->nm_promo . ' tidak berlaku untuk layanan yang dipilih');
             }
 
             $promoKlaim->update(['status' => 'digunakan']);
@@ -163,7 +166,15 @@ class PelangganBookingController extends Controller
         foreach ($idLayanans as $i => $idLayanan) {
             $harga = (float) ($hargas[$i] ?? 0);
             $diskon = (float) ($diskons[$i] ?? 0);
-            $subtotal = $harga - $diskon;
+
+            if ($promo) {
+                $diskon = $promo->itemEligible('Layanan', $idLayanan)
+                    ? (float) $promo->hitungDiskon([['jenis' => 'Layanan', 'id_item' => $idLayanan, 'subtotal' => $harga]])
+                    : 0;
+            }
+
+            $diskon = min($diskon, $harga);
+            $subtotal = max(0, $harga - $diskon);
 
             DetailBooking::create([
                 'id_booking' => $booking->id_booking,
