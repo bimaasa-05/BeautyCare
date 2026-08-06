@@ -574,9 +574,9 @@
                             <a href="{{ route('pelanggan.booking') }}" class="btn-back-detail">
                                 <i class="fa-solid fa-arrow-left"></i> Kembali
                             </a>
-                            <button onclick="window.print()" class="btn-print-detail">
-                                <i class="fa-solid fa-print"></i> Cetak
-                            </button>
+                            <a href="{{ route('pelanggan.booking.pdf', $booking->id_booking) }}" class="btn-print-detail">
+                                <i class="fa-solid fa-file-pdf"></i> Unduh PDF
+                            </a>
                         </div>
                     </div>
                 </div>
