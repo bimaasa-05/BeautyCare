@@ -1,5 +1,7 @@
 @forelse ($beautician as $b)
 @php($tgl = fn ($t) => $t ? \Carbon\Carbon::parse($t)->format('d M Y') : '-')
+@php($isBeautician = ($b->user?->role ?? '') === 'beautycian')
+@php($statusRiil = $isBeautician ? ($b->status === 'Libur' ? 'Libur' : ($sibukIds->contains($b->id_user) ? 'Sibuk' : 'Tersedia')) : null)
 <div class="bg-white rounded-3xl p-6 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] border border-pink-50/50">
     <div class="flex justify-between items-start mb-6">
         <div class="flex items-center gap-3 min-w-0">
@@ -18,9 +20,11 @@
                 <p class="text-[12px] text-gray-400 mt-0.5 truncate">{{ $b->user?->role ?? '-' }}</p>
             </div>
         </div>
-        @if ($b->status == 'Tersedia')
+        @if (!$isBeautician)
+            <span class="px-2.5 py-1 bg-violet-50 text-violet-500 font-semibold text-[11px] rounded-lg border border-violet-100 whitespace-nowrap">Staf</span>
+        @elseif ($statusRiil == 'Tersedia')
             <span class="px-2.5 py-1 bg-emerald-50 text-emerald-500 font-semibold text-[11px] rounded-lg border border-emerald-100 whitespace-nowrap">Tersedia</span>
-        @elseif ($b->status == 'Sibuk')
+        @elseif ($statusRiil == 'Sibuk')
             <span class="px-2.5 py-1 bg-orange-50 text-orange-500 font-semibold text-[11px] rounded-lg border border-orange-100 whitespace-nowrap">Sibuk</span>
         @else
             <span class="px-2.5 py-1 bg-gray-100 text-gray-500 font-semibold text-[11px] rounded-lg border border-gray-200 whitespace-nowrap">Libur</span>
@@ -60,22 +64,22 @@
     </div>
 
     <div class="flex gap-2.5">
-        @if ($b->status == 'Tersedia')
+        @if ($isBeautician && $statusRiil == 'Tersedia')
             <a href="{{ route('admin.reservasi.index', ['id_karyawan' => $b->id_user]) }}"
                 class="flex-1 bg-[#fdf2f8] text-[#de3b7c] font-bold text-[13px] py-2.5 rounded-2xl hover:bg-pink-100 transition-colors text-center inline-flex items-center justify-center">Jadwal</a>
         @else
             <button type="button" disabled
-                title="Jadwal hanya dapat diakses saat status Tersedia"
+                title="{{ $isBeautician ? 'Jadwal hanya dapat diakses saat status Tersedia' : 'Jadwal hanya tersedia untuk karyawan' }}"
                 class="flex-1 bg-gray-100 text-gray-400 font-bold text-[13px] py-2.5 rounded-2xl text-center inline-flex items-center justify-center cursor-not-allowed">Jadwal</button>
         @endif
-        <a href="{{ route('admin.beautician.show', $b->id_karyawan) }}"
+        <a href="{{ route('admin.karyawan.show', $b->id_karyawan) }}"
             class="w-10 h-10 flex items-center justify-center text-sky-500 bg-sky-50 border border-sky-100 hover:bg-sky-100 rounded-2xl transition-colors"
             title="Lihat Detail"><i class="fa-solid fa-eye text-[13px]"></i></a>
-        <a href="{{ route('admin.beautician.edit', $b->id_karyawan) }}"
+        <a href="{{ route('admin.karyawan.edit', $b->id_karyawan) }}"
             class="w-10 h-10 flex items-center justify-center text-amber-500 bg-amber-50 border border-amber-100 hover:bg-amber-100 rounded-2xl transition-colors"><i
                 class="fa-solid fa-pen-to-square text-[13px]"></i></a>
-        <form action="{{ route('admin.beautician.destroy', $b->id_karyawan) }}" method="POST"
-            onsubmit="return confirm('Yakin ingin menghapus beautician ini?')" class="inline">
+        <form action="{{ route('admin.karyawan.destroy', $b->id_karyawan) }}" method="POST"
+            onsubmit="return confirm('Yakin ingin menghapus karyawan ini?')" class="inline">
             @csrf
             @method('DELETE')
             <button type="submit"
@@ -88,7 +92,7 @@
 <div class="col-span-3 flex items-center justify-center py-16">
     <div class="text-center">
         <i class="fa-regular fa-face-frown text-5xl text-gray-300 mb-4"></i>
-        <p class="text-gray-400 text-[13px] font-medium">Belum ada data beautician</p>
+        <p class="text-gray-400 text-[13px] font-medium">Belum ada data karyawan</p>
     </div>
 </div>
 @endforelse
