@@ -176,6 +176,7 @@
                                                     'Promo' => 'bg-purple-50 text-purple-600 border-purple-100',
                                                     'Stok' => 'bg-amber-50 text-amber-600 border-amber-100',
                                                     'Transaksi' => 'bg-emerald-50 text-emerald-600 border-emerald-100',
+                                                    'Membership' => 'bg-violet-50 text-violet-600 border-violet-100',
                                                     default => 'bg-gray-50 text-gray-500 border-gray-100'
                                                 };
                                             @endphp
