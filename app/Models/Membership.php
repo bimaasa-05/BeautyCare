@@ -37,7 +37,7 @@ class Membership extends Model
             return null;
         }
 
-        return Carbon::parse($tglMulai)->addDays((int) $this->masa_berlaku);
+        return Carbon::parse($tglMulai)->addDays((int) $this->masa_berlaku)->endOfDay();
     }
 
     public function sudahKadaluarsa(?string $tglMulai): bool
@@ -51,7 +51,7 @@ class Membership extends Model
             return true;
         }
 
-        return $akhir->startOfDay()->lt(Carbon::today());
+        return now()->greaterThan($akhir);
     }
 
     public function sisaHari(?string $tglMulai): int
@@ -61,8 +61,18 @@ class Membership extends Model
         }
 
         $akhir = $this->tanggalBerakhir($tglMulai);
-        $sisa = (int) ceil(Carbon::today()->diffInDays($akhir->startOfDay(), false));
 
-        return max(0, $sisa);
+        return max(0, (int) now()->startOfDay()->diffInDays($akhir->copy()->startOfDay()));
+    }
+
+    public function sisaWaktu(?string $tglMulai): int
+    {
+        if ((int) $this->masa_berlaku <= 0 || !$tglMulai) {
+            return 0;
+        }
+
+        $akhir = $this->tanggalBerakhir($tglMulai);
+
+        return max(0, (int) floor(now()->diffInSeconds($akhir)));
     }
 }

@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Tambah Beautician - BeautyCare</title>
+    <title>Edit Karyawan - BeautyCare</title>
     @include('partials.head-meta')
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -173,8 +173,8 @@
                             </span>
                         </div>
                         <div class="ph-text">
-                            <h3>Tambah Beautician</h3>
-                            <p>Tambahkan tenaga beautician baru.</p>
+                            <h3>Edit Karyawan</h3>
+                            <p>Ubah data karyawan yang sudah ada.</p>
                         </div>
                     </div>
                 </div>
@@ -182,38 +182,31 @@
                 <div class="bg-white rounded-2xl p-6 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)]">
                     <div class="flex justify-between items-center mb-6">
                         <div>
-                            <h3 class="text-[16px] font-bold text-gray-800">Tambah Beautician</h3>
-                            <p class="text-[12px] text-gray-400 mt-0.5">Buat data beautician baru</p>
+                            <h3 class="text-[16px] font-bold text-gray-800">Edit Karyawan</h3>
+                            <p class="text-[12px] text-gray-400 mt-0.5">Ubah data karyawan</p>
                         </div>
-                        <a href="{{ route('admin.beautician.index') }}"
+                        <a href="{{ route('admin.karyawan.index') }}"
                             class="flex items-center gap-2 border border-gray-200 text-gray-600 text-[12px] font-medium px-4 py-2 rounded-full hover:bg-gray-50 transition-colors">
                             <i class="fa-solid fa-arrow-left"></i> Kembali
                         </a>
                     </div>
 
-                    <form action="{{ route('admin.beautician.store') }}" method="POST">
+                    <form action="{{ route('admin.karyawan.update', $beautician->id_karyawan) }}" method="POST">
                         @csrf
+                        @method('PUT')
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                             <div>
-                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">User <span class="text-red-400">*</span></label>
-                                <select name="id_user"
-                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all @error('id_user') border-red-300 @enderror" required>
-                                    <option value="" disabled selected>Pilih user</option>
-                                    @foreach ($users as $user)
-                                        <option value="{{ $user->id }}" {{ old('id_user') == $user->id ? 'selected' : '' }}>
-                                            {{ $user->nama }} ({{ $user->role }})
-                                        </option>
-                                    @endforeach
-                                </select>
-                                @error('id_user')
-                                    <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
-                                @enderror
+                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">User</label>
+                                <input type="text" value="{{ $beautician->user?->nama ?? 'User tidak ditemukan' }} ({{ $beautician->user?->email ?? '' }})"
+                                    class="w-full bg-gray-100 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 cursor-not-allowed text-gray-500"
+                                    disabled>
+                                <input type="hidden" name="id_user" value="{{ $beautician->id_user }}">
                             </div>
 
                             <div>
                                 <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">NIP</label>
-                                <input type="text" name="NIP" value="{{ old('NIP') }}"
+                                <input type="text" name="NIP" value="{{ old('NIP', $beautician->NIP) }}"
                                     class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('NIP') border-red-300 @enderror"
                                     placeholder="Masukkan NIP">
                                 @error('NIP')
@@ -223,7 +216,7 @@
 
                             <div>
                                 <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Karyawan/Kerjaan</label>
-                                <input type="text" name="jabatan" value="{{ old('jabatan') }}"
+                                <input type="text" name="jabatan" value="{{ old('jabatan', $beautician->jabatan) }}"
                                     class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('jabatan') border-red-300 @enderror"
                                     placeholder="Contoh: Hair & Coloring, Facial, Nail Art">
                                 @error('jabatan')
@@ -233,7 +226,7 @@
 
                             <div>
                                 <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Tanggal Lahir</label>
-                                <input type="date" name="tgl_lahir" value="{{ old('tgl_lahir') }}"
+                                <input type="date" name="tgl_lahir" value="{{ old('tgl_lahir', $beautician->tgl_lahir) }}"
                                     class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('tgl_lahir') border-red-300 @enderror">
                                 @error('tgl_lahir')
                                     <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
@@ -242,7 +235,7 @@
 
                             <div>
                                 <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Tanggal Masuk</label>
-                                <input type="date" name="tgl_masuk" value="{{ old('tgl_masuk') }}"
+                                <input type="date" name="tgl_masuk" value="{{ old('tgl_masuk', $beautician->tgl_masuk) }}"
                                     class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('tgl_masuk') border-red-300 @enderror">
                                 @error('tgl_masuk')
                                     <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
@@ -251,7 +244,7 @@
 
                             <div>
                                 <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Gaji</label>
-                                <input type="number" step="0.01" name="gaji" value="{{ old('gaji') }}"
+                                <input type="number" step="0.01" name="gaji" value="{{ old('gaji', $beautician->gaji) }}"
                                     class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('gaji') border-red-300 @enderror"
                                     placeholder="Masukkan gaji">
                                 @error('gaji')
@@ -261,7 +254,7 @@
 
                             <div>
                                 <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Komisi (%)</label>
-                                <input type="number" step="0.01" name="komisi" value="{{ old('komisi') }}"
+                                <input type="number" step="0.01" name="komisi" value="{{ old('komisi', $beautician->komisi) }}"
                                     class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('komisi') border-red-300 @enderror"
                                     placeholder="Masukkan komisi">
                                 @error('komisi')
@@ -273,7 +266,7 @@
                                 <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Alamat</label>
                                 <textarea name="alamat" rows="2"
                                     class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('alamat') border-red-300 @enderror"
-                                    placeholder="Masukkan alamat">{{ old('alamat') }}</textarea>
+                                    placeholder="Masukkan alamat">{{ old('alamat', $beautician->alamat) }}</textarea>
                                 @error('alamat')
                                     <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
                                 @enderror
@@ -283,10 +276,10 @@
                                 <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Status</label>
                                 <select name="status"
                                     class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all @error('status') border-red-300 @enderror">
-                                    <option value="" disabled selected>Pilih status</option>
-                                    <option value="Tersedia" {{ old('status') == 'Tersedia' ? 'selected' : '' }}>Tersedia</option>
-                                    <option value="Sibuk" {{ old('status') == 'Sibuk' ? 'selected' : '' }}>Sibuk</option>
-                                    <option value="Libur" {{ old('status') == 'Libur' ? 'selected' : '' }}>Libur</option>
+                                    <option value="" disabled>Pilih status</option>
+                                    <option value="Tersedia" {{ old('status', $beautician->status) == 'Tersedia' ? 'selected' : '' }}>Tersedia</option>
+                                    <option value="Sibuk" {{ old('status', $beautician->status) == 'Sibuk' ? 'selected' : '' }}>Sibuk</option>
+                                    <option value="Libur" {{ old('status', $beautician->status) == 'Libur' ? 'selected' : '' }}>Libur</option>
                                 </select>
                                 @error('status')
                                     <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
@@ -297,9 +290,9 @@
                         <div class="flex items-center gap-3 mt-6 pt-5 border-t border-gray-100">
                             <button type="submit"
                                 class="flex items-center gap-2 bg-[#de3b7c] text-white text-[13px] font-semibold px-6 py-2.5 rounded-full hover:bg-[#c62f6b] transition-colors shadow-sm">
-                                <i class="fa-solid fa-floppy-disk"></i> Simpan
+                                <i class="fa-solid fa-floppy-disk"></i> Update
                             </button>
-                            <a href="{{ route('admin.beautician.index') }}"
+                            <a href="{{ route('admin.karyawan.index') }}"
                                 class="flex items-center gap-2 border border-gray-200 text-gray-600 text-[13px] font-medium px-6 py-2.5 rounded-full hover:bg-gray-50 transition-colors">
                                 Batal
                             </a>

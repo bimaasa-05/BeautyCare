@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Detail Beautician - BeautyCare</title>
+    <title>Detail Karyawan - BeautyCare</title>
     @include('partials.head-meta')
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -148,15 +148,15 @@
                                     <i class="fa-solid fa-user-pen"></i>
                                 </div>
                                 <div class="ph-text">
-                                    <h3>Detail Beautician</h3>
-                                    <p>Informasi lengkap data karyawan beautician.</p>
+                                    <h3>Detail Karyawan</h3>
+                                    <p>Informasi lengkap data karyawan.</p>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <div class="no-print mb-5">
-                        <a href="{{ route('admin.beautician.index') }}"
+                        <a href="{{ route('admin.karyawan.index') }}"
                             class="inline-flex items-center gap-2 text-[13px] font-semibold text-gray-500 hover:text-gray-700 transition-colors">
                             <i class="fa-solid fa-arrow-left"></i> Kembali
                         </a>
@@ -179,9 +179,13 @@
                                 <p class="text-pink-100 text-[13px] font-medium mt-1 uppercase tracking-wide">{{ $beautician->user?->role ?? '-' }}</p>
                                 <div class="mt-3 flex flex-wrap justify-center sm:justify-start gap-2">
                                     <span class="px-3 py-1 rounded-full text-[11px] font-semibold bg-white/20 text-white backdrop-blur">NIP: {{ $beautician->NIP ?? '-' }}</span>
-                                    @if ($beautician->status == 'Tersedia')
+                                    @php($isBeautician = ($beautician->user?->role ?? '') === 'beautycian')
+                                    @php($statusRiil = $isBeautician ? ($beautician->status === 'Libur' ? 'Libur' : ($sibukIds->contains($beautician->id_user) ? 'Sibuk' : 'Tersedia')) : null)
+                                    @if (!$isBeautician)
+                                        <span class="px-3 py-1 rounded-full text-[11px] font-semibold bg-violet-100 text-violet-700">Staf</span>
+                                    @elseif ($statusRiil == 'Tersedia')
                                         <span class="px-3 py-1 rounded-full text-[11px] font-semibold bg-emerald-100 text-emerald-700">Tersedia</span>
-                                    @elseif ($beautician->status == 'Sibuk')
+                                    @elseif ($statusRiil == 'Sibuk')
                                         <span class="px-3 py-1 rounded-full text-[11px] font-semibold bg-orange-100 text-orange-700">Sibuk</span>
                                     @else
                                         <span class="px-3 py-1 rounded-full text-[11px] font-semibold bg-gray-200 text-gray-600">Libur</span>

@@ -613,7 +613,7 @@
                                         <select class="co-select" name="id_promo" id="coPromo" onchange="hitungRingkasan()">
                                             <option value="">— Tanpa Promo —</option>
                                             @foreach($claimedPromos as $cp)
-                                            <option value="{{ $cp->id_promo }}" data-jenis="{{ $cp->promo->jenis_promo }}" data-nilai="{{ $cp->promo->nilai }}">
+                                            <option value="{{ $cp->id_promo }}" data-jenis="{{ $cp->promo->jenis_promo }}" data-nilai="{{ $cp->promo->nilai }}" data-diskon="{{ $cp->diskon_pakai }}">
                                                 {{ $cp->promo->nm_promo }} ({{ $cp->promo->jenis_promo == 'Diskon' ? $cp->promo->nilai.'%' : 'Rp '.number_format($cp->promo->nilai,0,',','.') }})
                                             </option>
                                             @endforeach
@@ -715,7 +715,10 @@
             var selected = select.options[select.selectedIndex];
             var jenis = selected.getAttribute('data-jenis');
             var nilai = parseFloat(selected.getAttribute('data-nilai'));
-            if (jenis === 'Diskon') {
+            var diskonServer = parseInt(selected.getAttribute('data-diskon'));
+            if (!isNaN(diskonServer)) {
+                promoDiskon = diskonServer;
+            } else if (jenis === 'Diskon') {
                 promoDiskon = Math.round(subtotal * nilai / 100);
             } else {
                 promoDiskon = Math.round(Math.min(nilai, subtotal));
