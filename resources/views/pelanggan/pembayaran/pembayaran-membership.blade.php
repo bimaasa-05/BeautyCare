@@ -507,7 +507,7 @@
                             </div>
                             <div class="ph-text">
                                 <h3>Pembayaran Membership</h3>
-                                <p>Pilih metode pembayaran untuk mengaktifkan membership {{ $member->tingkat }} Anda</p>
+                                <p>Pilih metode pembayaran untuk {{ !empty($isRenewal) ? 'memperpanjang' : 'mengaktifkan' }} membership {{ $member->tingkat }} Anda</p>
                             </div>
                         </div>
                         <a href="{{ route('pelanggan.membership') }}" class="btn-back">
@@ -548,7 +548,7 @@
                                 <div class="pc-icon"><i class="fa-solid fa-gem"></i></div>
                                 <div>
                                     <div class="pc-title">Ringkasan Membership</div>
-                                    <div class="pc-subtitle">Paket membership {{ $member->tingkat }} siap diaktifkan</div>
+                                    <div class="pc-subtitle">Paket membership {{ $member->tingkat }} {{ !empty($isRenewal) ? 'akan diperpanjang' : 'siap diaktifkan' }}</div>
                                 </div>
                             </div>
                             <div class="pc-body">
@@ -574,6 +574,12 @@
 
                                 <div class="pm-divider"></div>
 
+                                @if(!empty($isRenewal))
+                                <div class="pm-row">
+                                    <span><i class="fa-regular fa-clock" style="color: var(--primary); width: 16px; margin-right: 4px;"></i> Perpanjang masa aktif tanpa syarat minimum</span>
+                                    <span class="pm-syarat"><i class="fa-solid fa-check"></i> Perpanjang</span>
+                                </div>
+                                @else
                                 <div class="pm-row">
                                     <span><i class="fa-solid fa-bag-shopping" style="color: var(--primary); width: 16px; margin-right: 4px;"></i> Min. {{ $member->min_transaksi }}x Pembelian Produk</span>
                                     <span class="pm-syarat"><i class="fa-solid fa-check"></i> Terpenuhi</span>
@@ -582,6 +588,7 @@
                                     <span><i class="fa-solid fa-wallet" style="color: var(--primary); width: 16px; margin-right: 4px;"></i> Min. Belanja Rp {{ number_format($member->min_pembelian, 0, ',', '.') }}</span>
                                     <span class="pm-syarat"><i class="fa-solid fa-check"></i> Terpenuhi</span>
                                 </div>
+                                @endif
 
                                 <div class="pm-divider"></div>
 
