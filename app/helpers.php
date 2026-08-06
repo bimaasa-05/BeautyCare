@@ -21,6 +21,16 @@ if (!function_exists('buatNotif')) {
     }
 }
 
+if (!function_exists('buatNotifRole')) {
+    function buatNotifRole($role, $judul, $isi, $type = 'Lainnya', $url = null)
+    {
+        $penerima = \App\Models\User::where('role', $role)->get();
+        foreach ($penerima as $p) {
+            buatNotif($p->id, $judul, $isi, $type, $url);
+        }
+    }
+}
+
 if (!function_exists('hitungPerubahanData')) {
     function hitungPerubahanData()
     {
