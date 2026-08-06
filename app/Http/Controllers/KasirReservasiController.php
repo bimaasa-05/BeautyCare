@@ -161,6 +161,14 @@ class KasirReservasiController extends Controller
 
         buatNotif(auth()->user()->id, 'Reservasi Diperbarui', 'Reservasi #' . str_pad($id, 3, '0', STR_PAD_LEFT) . ' berhasil diperbarui', 'Booking', route('kasir.reservasi.index'));
 
+        if ($request->id_karyawan) {
+            buatNotif($request->id_karyawan, 'Jadwal Treatment Diperbarui', 'Reservasi untuk ' . ($bookingLama->pelanggan->nm_pelanggan ?? 'Pelanggan') . ' diubah menjadi ' . $request->tanggal . ' ' . $request->jam . '.', 'Booking', url('/beautycian/jadwal-treatment'));
+        }
+
+        if ($bookingLama->id_karyawan && $bookingLama->id_karyawan != $request->id_karyawan) {
+            buatNotif($bookingLama->id_karyawan, 'Booking Dipindahkan', 'Booking ' . ($bookingLama->pelanggan->nm_pelanggan ?? '-') . ' dipindahkan ke terapis lain.', 'Booking', url('/beautycian/jadwal-treatment'));
+        }
+
         return redirect('kasir/reservasi')->with('message', 'Reservasi berhasil diperbarui');
     }
 
@@ -193,11 +201,24 @@ class KasirReservasiController extends Controller
     public function destroy($id)
     {
         $booking = Booking::findOrFail($id);
+        $pelangganUser = $booking->pelanggan?->id_user;
+        $karyawanId = $booking->id_karyawan;
+        $nmPelanggan = $booking->pelanggan?->nm_pelanggan ?? '-';
+        $tanggalJam = $booking->tanggal . ' ' . $booking->jam;
+
         ActivityLogger::log('Menghapus', auth()->user()->nama . ' menghapus reservasi #' . str_pad($id, 3, '0', STR_PAD_LEFT), 'Reservasi', $id);
         DetailBooking::where('id_booking', $id)->delete();
         $booking->delete();
 
         buatNotif(auth()->user()->id, 'Reservasi Dihapus', 'Reservasi #' . str_pad($id, 3, '0', STR_PAD_LEFT) . ' berhasil dihapus', 'Booking', route('kasir.reservasi.index'));
+
+        if ($karyawanId) {
+            buatNotif($karyawanId, 'Reservasi Dibatalkan', 'Reservasi ' . $nmPelanggan . ' (' . $tanggalJam . ') dibatalkan oleh kasir.', 'Booking', url('/beautycian/jadwal-treatment'));
+        }
+
+        if ($pelangganUser) {
+            buatNotif($pelangganUser, 'Reservasi Dibatalkan', 'Reservasi Anda pada ' . $tanggalJam . ' dibatalkan oleh kasir.', 'Booking', route('pelanggan.booking'));
+        }
 
         return redirect('/kasir/reservasi')->with('message', 'Reservasi berhasil dihapus');
     }
