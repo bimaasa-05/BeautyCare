@@ -81,6 +81,10 @@ class KasirReservasiController extends Controller
 
         buatNotif(auth()->user()->id, 'Reservasi Baru', 'Reservasi untuk ' . ($booking->pelanggan->nm_pelanggan ?? 'Pelanggan') . ' berhasil dibuat', 'Booking', route('kasir.reservasi.show', $booking->id_booking));
 
+        if ($booking->id_karyawan) {
+            buatNotif($booking->id_karyawan, 'Jadwal Treatment Baru', 'Reservasi untuk ' . ($booking->pelanggan->nm_pelanggan ?? 'Pelanggan') . ' pada ' . $booking->tanggal . ' ' . $booking->jam . '.', 'Booking', url('/beautycian/jadwal-treatment'));
+        }
+
         $admins = \App\Models\User::where('role', 'admin')->get();
         foreach ($admins as $admin) {
             buatNotif($admin->id, 'Reservasi Baru', 'Reservasi baru oleh ' . auth()->user()->nama . ' untuk ' . ($booking->pelanggan->nm_pelanggan ?? 'Pelanggan'), 'Booking', url('/admin/dashboard'));
@@ -173,6 +177,15 @@ class KasirReservasiController extends Controller
         ActivityLogger::log('Mengubah Status', auth()->user()->nama . ' mengkonfirmasi reservasi #' . str_pad($id, 3, '0', STR_PAD_LEFT), 'Reservasi', $id);
 
         buatNotif(auth()->id(), 'Booking Dikonfirmasi', 'Booking ' . ($booking->pelanggan->nm_pelanggan ?? '-') . ' telah dikonfirmasi', 'Booking', route('kasir.reservasi.show', $id));
+
+        $pelanggan = $booking->pelanggan;
+        if ($pelanggan && $pelanggan->id_user) {
+            buatNotif($pelanggan->id_user, 'Booking Dikonfirmasi', 'Booking treatment Anda telah dikonfirmasi untuk ' . $booking->tanggal . ' ' . $booking->jam . '.', 'Booking', route('pelanggan.booking'));
+        }
+
+        if ($booking->id_karyawan) {
+            buatNotif($booking->id_karyawan, 'Booking Dikonfirmasi', 'Booking ' . ($pelanggan->nm_pelanggan ?? '-') . ' telah dikonfirmasi. Segera siapkan treatment.', 'Booking', url('/beautycian/jadwal-treatment'));
+        }
 
         return redirect()->back()->with('success', 'Booking berhasil dikonfirmasi');
     }
