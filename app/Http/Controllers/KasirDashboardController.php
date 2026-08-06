@@ -34,12 +34,12 @@ class KasirDashboardController extends Controller
             default => date('Y-m-d', strtotime('-7 days')),
         };
 
-        $pendapatanHariIni = (float) Transaksi::where('id_user', $userId)
+        $pendapatanHariIni = (float) Transaksi::where('id_kasir', $userId)
             ->whereDate('tanggal', $today)
             ->where('status', 'Lunas')
             ->sum('total');
 
-        $pendapatanKemarin = (float) Transaksi::where('id_user', $userId)
+        $pendapatanKemarin = (float) Transaksi::where('id_kasir', $userId)
             ->whereDate('tanggal', $yesterday)
             ->where('status', 'Lunas')
             ->sum('total');
@@ -48,11 +48,11 @@ class KasirDashboardController extends Controller
             ? round((($pendapatanHariIni - $pendapatanKemarin) / $pendapatanKemarin) * 100)
             : ($pendapatanHariIni > 0 ? 100 : 0);
 
-        $transaksiHariIni = Transaksi::where('id_user', $userId)
+        $transaksiHariIni = Transaksi::where('id_kasir', $userId)
             ->whereDate('tanggal', $today)
             ->count();
 
-        $transaksiKemarin = Transaksi::where('id_user', $userId)
+        $transaksiKemarin = Transaksi::where('id_kasir', $userId)
             ->whereDate('tanggal', $yesterday)
             ->count();
 
@@ -60,13 +60,13 @@ class KasirDashboardController extends Controller
             ? round((($transaksiHariIni - $transaksiKemarin) / $transaksiKemarin) * 100)
             : ($transaksiHariIni > 0 ? 100 : 0);
 
-        $pelangganHariIni = Transaksi::where('id_user', $userId)
+        $pelangganHariIni = Transaksi::where('id_kasir', $userId)
             ->whereDate('tanggal', $today)
             ->whereNotNull('id_pelanggan')
             ->distinct('id_pelanggan')
             ->count('id_pelanggan');
 
-        $pelangganKemarin = Transaksi::where('id_user', $userId)
+        $pelangganKemarin = Transaksi::where('id_kasir', $userId)
             ->whereDate('tanggal', $yesterday)
             ->whereNotNull('id_pelanggan')
             ->distinct('id_pelanggan')
@@ -76,11 +76,11 @@ class KasirDashboardController extends Controller
             ? round((($pelangganHariIni - $pelangganKemarin) / $pelangganKemarin) * 100)
             : ($pelangganHariIni > 0 ? 100 : 0);
 
-        $pesananPending = Transaksi::where('id_user', $userId)
+        $pesananPending = Transaksi::where('id_kasir', $userId)
             ->where('status', 'Pending')
             ->count();
 
-        $pendingKemarin = Transaksi::where('id_user', $userId)
+        $pendingKemarin = Transaksi::where('id_kasir', $userId)
             ->whereDate('tanggal', $yesterday)
             ->where('status', 'Pending')
             ->count();
@@ -90,13 +90,13 @@ class KasirDashboardController extends Controller
             : ($pesananPending > 0 && $pendingKemarin == 0 ? 100 : 0);
 
         $produkTerjual = (int) DetailTransaksi::join('transaksi', 'transaksi.id_transaksi', '=', 'detail_transaksi.id_transaksi')
-            ->where('transaksi.id_user', $userId)
+            ->where('transaksi.id_kasir', $userId)
             ->whereDate('transaksi.tanggal', $today)
             ->where('detail_transaksi.jenis', 'produk')
             ->sum('detail_transaksi.qty');
 
         $produkTerjualKemarin = (int) DetailTransaksi::join('transaksi', 'transaksi.id_transaksi', '=', 'detail_transaksi.id_transaksi')
-            ->where('transaksi.id_user', $userId)
+            ->where('transaksi.id_kasir', $userId)
             ->whereDate('transaksi.tanggal', $yesterday)
             ->where('detail_transaksi.jenis', 'produk')
             ->sum('detail_transaksi.qty');
@@ -122,7 +122,7 @@ class KasirDashboardController extends Controller
         ];
 
         $paymentData = Transaksi::select('metode_byr', DB::raw('COUNT(*) as total'), DB::raw('COALESCE(SUM(total),0) as jumlah'))
-            ->where('id_user', $userId)
+            ->where('id_kasir', $userId)
             ->where('status', 'Lunas')
             ->whereBetween('tanggal', [$paymentPeriodStart, $today])
             ->groupBy('metode_byr')
@@ -133,7 +133,7 @@ class KasirDashboardController extends Controller
         $paymentValues = $paymentData->pluck('total')->map(fn($v) => (int) $v)->toArray();
 
         $transaksiTerbaru = Transaksi::with('pelanggan')
-            ->where('id_user', $userId)
+            ->where('id_kasir', $userId)
             ->whereBetween('tanggal', [$periodStart, $today])
             ->orderBy('id_transaksi', 'desc')
             ->limit(10)
@@ -147,7 +147,7 @@ class KasirDashboardController extends Controller
                 DB::raw('SUM(detail_transaksi.subtotal) as total_subtotal')
             )
             ->join('transaksi', 'transaksi.id_transaksi', '=', 'detail_transaksi.id_transaksi')
-            ->where('transaksi.id_user', $userId)
+            ->where('transaksi.id_kasir', $userId)
             ->whereBetween('transaksi.tanggal', [$periodStart, $today])
             ->groupBy('detail_transaksi.id_item', 'detail_transaksi.nm_item', 'detail_transaksi.jenis')
             ->orderByDesc('total_qty')
@@ -159,7 +159,7 @@ class KasirDashboardController extends Controller
                 DB::raw('COUNT(*) as jumlah'),
                 DB::raw('COALESCE(SUM(total),0) as total')
             )
-            ->where('id_user', $userId)
+            ->where('id_kasir', $userId)
             ->whereBetween('tanggal', [$paymentPeriodStart, $today])
             ->groupBy('metode_byr')
             ->orderBy('jumlah', 'desc')
@@ -172,7 +172,7 @@ class KasirDashboardController extends Controller
             ->get();
 
         $riwayatTransaksi = Transaksi::with('pelanggan')
-            ->where('id_user', $userId)
+            ->where('id_kasir', $userId)
             ->orderBy('id_transaksi', 'desc')
             ->limit(10)
             ->get();
@@ -239,7 +239,7 @@ class KasirDashboardController extends Controller
         };
 
         $data = Transaksi::select('metode_byr', DB::raw('COUNT(*) as total'), DB::raw('COALESCE(SUM(total),0) as jumlah'))
-            ->where('id_user', $userId)
+            ->where('id_kasir', $userId)
             ->where('status', 'Lunas')
             ->whereBetween('tanggal', [$start, $today])
             ->groupBy('metode_byr')
@@ -260,7 +260,7 @@ class KasirDashboardController extends Controller
                 DB::raw('DATE(tanggal) as label'),
                 DB::raw('COALESCE(SUM(total),0) as total')
             )
-            ->where('id_user', $userId)
+            ->where('id_kasir', $userId)
             ->where('status', 'Lunas')
             ->whereBetween('tanggal', [$start, $end])
             ->groupBy(DB::raw('DATE(tanggal)'))

@@ -799,7 +799,7 @@
                                     <select name="id_promo" id="id_promo" style="display:none">
                                         <option value="">— Tanpa Promo —</option>
                                         @foreach($claimedPromos as $cp)
-                                        <option value="{{ $cp->id_promo }}" data-jenis="{{ $cp->promo->jenis_promo }}" data-nilai="{{ $cp->promo->nilai }}" data-label="{{ $cp->promo->nm_promo }} ({{ $cp->promo->jenis_promo == 'Diskon' ? $cp->promo->nilai.'%' : 'Rp '.number_format($cp->promo->nilai,0,',','.') }})">
+                                        <option value="{{ $cp->id_promo }}" data-jenis="{{ $cp->promo->jenis_promo }}" data-nilai="{{ $cp->promo->nilai }}" data-layanan="{{ $cp->promo->promoLayanan->pluck('id_layanan')->implode(',') }}" data-label="{{ $cp->promo->nm_promo }} ({{ $cp->promo->jenis_promo == 'Diskon' ? $cp->promo->nilai.'%' : 'Rp '.number_format($cp->promo->nilai,0,',','.') }})">
                                             {{ $cp->promo->nm_promo }} ({{ $cp->promo->jenis_promo == 'Diskon' ? $cp->promo->nilai.'%' : 'Rp '.number_format($cp->promo->nilai,0,',','.') }})
                                         </option>
                                         @endforeach
@@ -880,12 +880,17 @@
         return 'Rp ' + angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
     }
 
-    function hitungDiskon(harga) {
+    function hitungDiskon(harga, idLayanan) {
         const promoSelect = document.getElementById('id_promo');
         if (promoSelect && promoSelect.value) {
             const selected = promoSelect.options[promoSelect.selectedIndex];
             const jenis = selected.getAttribute('data-jenis');
             const nilai = parseFloat(selected.getAttribute('data-nilai'));
+            const layananList = (selected.getAttribute('data-layanan') || '')
+                .split(',').map(Number).filter(function (n) { return n; });
+            if (layananList.length && layananList.indexOf(parseInt(idLayanan)) === -1) {
+                return 0;
+            }
             if (jenis === 'Diskon') {
                 return Math.round(harga * nilai / 100);
             }
@@ -941,7 +946,7 @@
         noMsg.style.display = 'none';
 
         selectedServices.forEach(function(svc, i) {
-            const diskon = hitungDiskon(svc.harga);
+            const diskon = hitungDiskon(svc.harga, svc.id_layanan);
             const subtotal = svc.harga - diskon;
 
             var row = document.createElement('tr');
@@ -981,7 +986,7 @@
         var totalDiskon = 0;
 
         selectedServices.forEach(function(svc) {
-            var diskon = hitungDiskon(svc.harga);
+            var diskon = hitungDiskon(svc.harga, svc.id_layanan);
             totalHarga += svc.harga;
             totalDiskon += diskon;
         });
