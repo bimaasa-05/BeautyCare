@@ -265,7 +265,7 @@
 
         document.querySelectorAll('#sidebar .nav-item[href], #sidebar .sub-item').forEach(function (item) {
             item.addEventListener('click', function () {
-                if (window.innerWidth <= 768) {
+                if (window.innerWidth <= 1024) {
                     closeSidebar();
                 }
             });
