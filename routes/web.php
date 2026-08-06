@@ -178,6 +178,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/admin/transaksi', [AdminTransaksiController::class, 'store'])->name('admin.transaksi.store');
         Route::get('/admin/transaksi/{id}', [AdminTransaksiController::class, 'show'])->name('admin.transaksi.show');
         Route::get('/admin/transaksi/{id}/invoice', [AdminTransaksiController::class, 'invoice'])->name('admin.transaksi.invoice');
+        Route::get('/admin/transaksi/{id}/invoice-pdf', [AdminTransaksiController::class, 'invoicePdf'])->name('admin.transaksi.invoice-pdf');
         Route::get('/admin/transaksi/{id}/edit', [AdminTransaksiController::class, 'edit'])->name('admin.transaksi.edit');
         Route::put('/admin/transaksi/{id}', [AdminTransaksiController::class, 'update'])->name('admin.transaksi.update');
         Route::delete('/admin/transaksi/{id}', [AdminTransaksiController::class, 'destroy'])->name('admin.transaksi.destroy');
@@ -240,6 +241,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/kasir/pembayaran/{id}', [KasirPembayaranController::class, 'show'])->name('kasir.pembayaran.show');
         Route::get('/kasir/invoice', [KasirTransaksiController::class, 'invoiceIndex'])->name('kasir.invoice.index');
         Route::get('/kasir/invoice/{id}', [KasirTransaksiController::class, 'invoice'])->name('kasir.invoice.show');
+        Route::get('/kasir/invoice/{id}/pdf', [KasirTransaksiController::class, 'invoicePdf'])->name('kasir.invoice.pdf');
         Route::get('/kasir/riwayat-transaksi', [KasirRiwayatTransaksiController::class, 'index'])->name('kasir.riwayat-transaksi.index');
         Route::get('/kasir/riwayat-transaksi/{id}', [KasirRiwayatTransaksiController::class, 'show'])->name('kasir.riwayat-transaksi.show');
 
@@ -336,6 +338,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/pelanggan/booking/create', [PelangganBookingController::class, 'create'])->name('pelanggan.booking.create');
         Route::post('/pelanggan/booking', [PelangganBookingController::class, 'store'])->name('pelanggan.booking.store');
         Route::get('/pelanggan/booking/{id}/detail', [PelangganBookingController::class, 'show'])->name('pelanggan.booking.detail');
+        Route::get('/pelanggan/booking/{id}/pdf', [PelangganBookingController::class, 'pdf'])->name('pelanggan.booking.pdf');
         Route::get('/pelanggan/booking/{id}/edit', [PelangganBookingController::class, 'edit'])->name('pelanggan.booking.edit');
         Route::put('/pelanggan/booking/{id}', [PelangganBookingController::class, 'update'])->name('pelanggan.booking.update');
         Route::delete('/pelanggan/booking/batch', [PelangganBookingController::class, 'batchDestroy'])->name('pelanggan.booking.batch');
@@ -347,6 +350,7 @@ Route::middleware('auth')->group(function () {
         //Route Treatment
         Route::get('/pelanggan/treatment', [PelangganTreatmentController::class, 'index'])->name('pelanggan.treatment');
         Route::get('/pelanggan/treatment/{id}', [PelangganTreatmentController::class, 'show'])->name('pelanggan.treatment.detail');
+        Route::get('/pelanggan/treatment/{id}/pdf', [PelangganTreatmentController::class, 'pdf'])->name('pelanggan.treatment.pdf');
 
         //Route Promo
         Route::get('/pelanggan/promo', [App\Http\Controllers\PelangganPromoController::class, 'index'])->name('pelanggan.promo');
