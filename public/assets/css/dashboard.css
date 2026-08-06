@@ -547,9 +547,10 @@
 /* ---- Dashboard Grid ---- */
 .dashboard-grid {
   display: grid;
-  grid-template-columns: 2fr 1fr;
+  grid-template-columns: 2.6fr 1.4fr;
   gap: 20px;
   margin-bottom: 24px;
+  align-items: stretch;
 }
 
 /* ---- Chart Card ---- */
@@ -599,12 +600,13 @@
 .chart-card .chart-body {
   position: relative;
   width: 100%;
-  flex: 1;
-  min-height: 280px;
-  max-height: 320px;
+  height: 420px;
+  min-height: 420px;
+  flex: 1 1 auto;
 }
 
 .chart-card .chart-body canvas {
+  display: block;
   width: 100% !important;
   height: 100% !important;
 }
@@ -1249,11 +1251,12 @@
 /* ---- Toast Notifications ---- */
 .toast-container {
   position: fixed;
-  top: 20px;
-  right: 20px;
+  top: 16px;
+  right: 16px;
   z-index: 99999;
   display: flex;
   flex-direction: column;
+  align-items: flex-end;
   gap: 10px;
   pointer-events: none;
 }
@@ -1261,22 +1264,23 @@
 .toast-item {
   background: var(--white);
   border-radius: var(--radius-lg);
-  padding: 16px 20px;
+  padding: 14px 18px;
   box-shadow: 0 8px 30px rgba(0,0,0,0.12);
   display: flex;
   align-items: center;
   gap: 12px;
-  min-width: 320px;
-  max-width: 420px;
+  width: max-content;
+  min-width: 240px;
+  max-width: calc(100vw - 32px);
   pointer-events: auto;
-  transform: translateX(120%);
+  transform: translateY(12px);
   opacity: 0;
-  transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.35);
+  transition: transform 0.35s ease, opacity 0.35s ease;
   border-left: 4px solid var(--success);
 }
 
 .toast-item.show {
-  transform: translateX(0);
+  transform: translateY(0);
   opacity: 1;
 }
 

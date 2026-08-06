@@ -211,6 +211,10 @@ class PelangganBookingController extends Controller
 
         buatNotif(auth()->id(), 'Booking Baru', 'Booking treatment berhasil dibuat', 'Booking', route('pelanggan.booking'));
 
+        if ($booking->id_karyawan) {
+            buatNotif($booking->id_karyawan, 'Jadwal Treatment Baru', 'Booking baru oleh ' . auth()->user()->nama . ' pada ' . $booking->tanggal . ' ' . $booking->jam . '.', 'Booking', url('/beautycian/jadwal-treatment'));
+        }
+
         ActivityLogger::log('Menambahkan', auth()->user()->nama . ' membuat booking baru', 'Booking', $booking->id_booking);
 
         $admins = \App\Models\User::where('role', 'admin')->get();
@@ -286,6 +290,8 @@ class PelangganBookingController extends Controller
         );
 
         buatNotif(auth()->id(), 'Booking Diperbarui', 'Booking treatment berhasil diperbarui', 'Booking', route('pelanggan.booking'));
+
+        buatNotifRole('kasir', 'Booking Diperbarui', auth()->user()->nama . ' mengubah booking #' . $id . ' menjadi ' . $request->tanggal . ' ' . $request->jam . '.', 'Booking', route('kasir.reservasi.index'));
 
         ActivityLogger::log('Mengubah', auth()->user()->nama . ' mengubah booking #' . $id, 'Booking', $id);
 
