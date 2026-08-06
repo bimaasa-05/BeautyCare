@@ -21,7 +21,8 @@ class PelangganDashboardController extends Controller
         $promos = Promo::where('status', 'Tersedia')
             ->whereDate('selesai', '>', now())
             ->orderBy('id_promo', 'desc')
-            ->get();
+            ->get()
+            ->filter(fn ($promo) => $promo->berlakuUntuk(auth()->user()));
         $layanans = Layanan::where('status', 'Tersedia')
             ->orderBy('id_layanan', 'asc')
             ->get();
