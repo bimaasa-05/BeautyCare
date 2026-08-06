@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Membership;
+use App\Models\Notifikasi;
 use App\Models\Pelanggan;
 use App\Models\Transaksi;
 use Illuminate\Support\Facades\Auth;
@@ -34,6 +35,7 @@ class MembershipPelangganController extends Controller
         $diskonMember = 0;
         $masaAkhir = null;
         $sisaHariMember = 0;
+        $sisaDetikMember = 0;
 
         if ($pelanggan) {
             $totalTransaksi = Transaksi::where('id_pelanggan', $pelanggan->id_pelanggan)
@@ -55,11 +57,32 @@ class MembershipPelangganController extends Controller
                 if ($member) {
                     $masaAkhir = $member->tanggalBerakhir($pelanggan->tgl_mulai_member);
                     $sisaHariMember = $member->sisaHari($pelanggan->tgl_mulai_member);
+                    $sisaDetikMember = $member->sisaWaktu($pelanggan->tgl_mulai_member);
 
                     $memberAktif = $pelanggan->membershipAktif();
                     if ($memberAktif) {
                         $memberSaatIni = $memberAktif;
                         $diskonMember = $memberAktif->diskon;
+
+                        if ($sisaDetikMember > 0 && $sisaDetikMember < 600) {
+                            $menitSisa = max(1, (int) ceil($sisaDetikMember / 60));
+                            $judul = 'Membership Akan Berakhir';
+                            $sudahAda = Notifikasi::forUser($user->id)
+                                ->where('type', 'Membership')
+                                ->where('judul', $judul)
+                                ->where('created_at', '>', now()->subDay())
+                                ->exists();
+
+                            if (!$sudahAda) {
+                                buatNotif(
+                                    $user->id,
+                                    $judul,
+                                    "Membership {$memberAktif->tingkat} Anda akan berakhir dalam {$menitSisa} menit. Segera perpanjang agar keuntungan member tetap aktif!",
+                                    'Membership',
+                                    route('pelanggan.membership')
+                                );
+                            }
+                        }
                     } else {
                         $memberKadaluarsa = $member;
                     }
@@ -123,6 +146,7 @@ class MembershipPelangganController extends Controller
             'memberKadaluarsa',
             'masaAkhir',
             'sisaHariMember',
+            'sisaDetikMember',
             'semuaMember',
             'nextTier',
             'pelanggan',

@@ -1,6 +1,6 @@
 <!-- Sidebar Admin -->
 @php
-    $masterDataActive = request()->routeIs('admin.user.index', 'admin.pelanggan.index', 'admin.beautician.index', 'admin.supplier.index');
+    $masterDataActive = request()->routeIs('admin.user.index', 'admin.pelanggan.index', 'admin.karyawan.index', 'admin.supplier.index');
     $layananProdukActive = request()->routeIs('admin.layanan.index', 'admin.kategori.index', 'admin.produk.index', 'admin.stok.*');
 @endphp
 <aside class="sidebar" id="sidebar">
@@ -74,9 +74,9 @@
                 <a href="{{ route('admin.pelanggan.index') }}"
                     class="sub-item {{ request()->routeIs('admin.pelanggan.index') ? 'active' : '' }}"
                     title="Kelola data pelanggan yang terdaftar">Data Pelanggan</a>
-                <a href="{{ route('admin.beautician.index') }}"
-                    class="sub-item {{ request()->routeIs('admin.beautician.index') ? 'active' : '' }}"
-                    title="Kelola data beautician / terapis">Data Beautician</a>
+                <a href="{{ route('admin.karyawan.index') }}"
+                    class="sub-item {{ request()->routeIs('admin.karyawan.index') ? 'active' : '' }}"
+                    title="Kelola data karyawan: gaji, komisi, dan status">Data Karyawan</a>
                 <a href="{{ route('admin.supplier.index') }}"
                     class="sub-item {{ request()->routeIs('admin.supplier.index') ? 'active' : '' }}"
                     title="Kelola data supplier">Data Supplier</a>

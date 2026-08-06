@@ -81,7 +81,9 @@ class PelangganController extends Controller
             ->where('status', 'tersedia')
             ->get()
             ->filter(function ($klaim) {
-                return $klaim->promo && $klaim->promo->jenis_promo !== 'Buy 1 Get 1';
+                return $klaim->promo
+                    && $klaim->promo->jenis_promo !== 'Buy 1 Get 1'
+                    && $klaim->promo->berlakuUntuk(auth()->user());
             });
 
         return view('pelanggan.booking.create', compact('layanans', 'karyawans', 'diskonMember', 'claimedPromos'));
@@ -100,9 +102,8 @@ class PelangganController extends Controller
             'id_promo' => 'nullable|integer|exists:promo,id_promo',
         ]);
 
-        $diskon = (int) str_replace('.', '', $request->diskon ?? '0');
         $harga = (int) str_replace('.', '', $request->harga);
-        $subtotal = $harga - $diskon;
+        $diskon = (int) str_replace('.', '', $request->diskon ?? '0');
         $idPromo = $request->id_promo;
 
         if ($idPromo) {
@@ -116,12 +117,28 @@ class PelangganController extends Controller
                 return redirect()->back()->withErrors('Promo tidak tersedia atau sudah digunakan');
             }
 
-            if ($promoKlaim->promo->jenis_promo === 'Buy 1 Get 1') {
-                return redirect()->back()->withErrors('Promo ' . $promoKlaim->promo->nm_promo . ' (Buy 1 Get 1) hanya berlaku untuk produk, bukan layanan');
+            $promo = $promoKlaim->promo;
+
+            if ($promo->jenis_promo === 'Buy 1 Get 1') {
+                return redirect()->back()->withErrors('Promo ' . $promo->nm_promo . ' (Buy 1 Get 1) hanya berlaku untuk produk, bukan layanan');
             }
+
+            if (!$promo->berlakuUntuk(auth()->user())) {
+                return redirect()->back()->withErrors('Promo ' . $promo->nm_promo . ' tidak berlaku untuk Anda');
+            }
+
+            if (!$promo->itemEligible('Layanan', $request->id_layanan)) {
+                return redirect()->back()->withErrors('Promo ' . $promo->nm_promo . ' tidak berlaku untuk layanan yang dipilih');
+            }
+
+            $diskon = (int) round($promo->hitungDiskon([
+                ['jenis' => 'Layanan', 'id_item' => $request->id_layanan, 'subtotal' => $harga],
+            ]));
 
             $promoKlaim->update(['status' => 'digunakan']);
         }
+
+        $subtotal = max(0, $harga - $diskon);
 
         $idPelanggan = $this->resolveIdPelanggan();
 

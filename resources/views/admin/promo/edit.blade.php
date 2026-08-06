@@ -205,6 +205,16 @@
                             </div>
 
                             <div>
+                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Kode Promo</label>
+                                <input type="text" name="kode_promo" value="{{ old('kode_promo', $promo->kode_promo) }}"
+                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('kode_promo') border-red-300 @enderror"
+                                    placeholder="Kosongkan untuk kode otomatis (mis. DSK-001)">
+                                @error('kode_promo')
+                                    <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div>
                                 <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Jenis Promo</label>
                                 <select name="jenis_promo"
                                     class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all @error('jenis_promo') border-red-300 @enderror">
@@ -221,11 +231,21 @@
                             </div>
 
                             <div>
-                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Nilai</label>
+                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Nilai <span id="nilaiHint" class="text-gray-400 font-normal"></span></label>
                                 <input type="number" name="nilai" value="{{ old('nilai', $promo->nilai) }}" step="0.01" min="0"
                                     class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('nilai') border-red-300 @enderror"
                                     placeholder="Masukkan nilai promo">
                                 @error('nilai')
+                                    <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div>
+                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Deskripsi / Syarat Promo</label>
+                                <textarea name="deskripsi" rows="3"
+                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('deskripsi') border-red-300 @enderror"
+                                    placeholder="Contoh: Diskon 20% untuk semua perawatan wajah, berlaku s/d akhir bulan">{{ old('deskripsi', $promo->deskripsi) }}</textarea>
+                                @error('deskripsi')
                                     <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
@@ -262,6 +282,78 @@
                                     <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
+
+                            <div class="border-t border-gray-100 pt-5">
+                                <label class="text-[13px] font-semibold text-gray-700 block mb-3">Berlaku Untuk Pelanggan</label>
+                                <div class="space-y-2">
+                                    <label class="flex items-center gap-2 text-[13px] text-gray-700 cursor-pointer">
+                                        <input type="radio" name="target" value="semua" {{ old('target', $promo->target) == 'semua' ? 'checked' : '' }}
+                                            class="accent-pink-500" onchange="toggleTargetPelanggan()">
+                                        Semua Pelanggan
+                                    </label>
+                                    <label class="flex items-center gap-2 text-[13px] text-gray-700 cursor-pointer">
+                                        <input type="radio" name="target" value="membership" {{ old('target', $promo->target) == 'membership' ? 'checked' : '' }}
+                                            class="accent-pink-500" onchange="toggleTargetPelanggan()">
+                                        Khusus Membership Aktif
+                                    </label>
+                                    <label class="flex items-center gap-2 text-[13px] text-gray-700 cursor-pointer">
+                                        <input type="radio" name="target" value="pilih" {{ old('target', $promo->target) == 'pilih' ? 'checked' : '' }}
+                                            class="accent-pink-500" onchange="toggleTargetPelanggan()">
+                                        Pilih Pelanggan Tertentu
+                                    </label>
+                                </div>
+                                <div id="targetPelangganWrap" class="mt-3 {{ old('target', $promo->target) == 'pilih' ? '' : 'hidden' }}">
+                                    <div class="max-h-52 overflow-y-auto border border-gray-200 rounded-xl p-3 space-y-1.5 bg-gray-50">
+                                        @forelse($pelanggans as $pelanggan)
+                                            <label class="flex items-center gap-2 text-[12px] text-gray-600 cursor-pointer hover:bg-white px-2 py-1 rounded-lg transition-colors">
+                                                <input type="checkbox" name="id_pelanggan[]" value="{{ $pelanggan->id_pelanggan }}"
+                                                    class="accent-pink-500"
+                                                    {{ in_array($pelanggan->id_pelanggan, old('id_pelanggan', $promo->targetPelanggan->pluck('id_pelanggan')->all()) ?? []) ? 'checked' : '' }}>
+                                                {{ $pelanggan->nm_pelanggan }}
+                                            </label>
+                                        @empty
+                                            <p class="text-[12px] text-gray-400 text-center py-2">Belum ada pelanggan</p>
+                                        @endforelse
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="border-t border-gray-100 pt-5">
+                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Berlaku Untuk Item</label>
+                                <p class="text-[11px] text-gray-400 mb-3">Kosongkan semua jika promo berlaku untuk semua produk & layanan.</p>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <p class="text-[12px] font-semibold text-gray-500 mb-2"><i class="fa-solid fa-spa text-pink-400 mr-1"></i> Layanan</p>
+                                        <div class="max-h-52 overflow-y-auto border border-gray-200 rounded-xl p-3 space-y-1.5 bg-gray-50">
+                                            @forelse($layanans as $layanan)
+                                                <label class="flex items-center gap-2 text-[12px] text-gray-600 cursor-pointer hover:bg-white px-2 py-1 rounded-lg transition-colors">
+                                                    <input type="checkbox" name="id_layanan[]" value="{{ $layanan->id_layanan }}"
+                                                        class="accent-pink-500"
+                                                        {{ in_array($layanan->id_layanan, old('id_layanan', $promo->promoLayanan->pluck('id_layanan')->all()) ?? []) ? 'checked' : '' }}>
+                                                    {{ $layanan->nm_layanan }}
+                                                </label>
+                                            @empty
+                                                <p class="text-[12px] text-gray-400 text-center py-2">Belum ada layanan</p>
+                                            @endforelse
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <p class="text-[12px] font-semibold text-gray-500 mb-2"><i class="fa-solid fa-box text-pink-400 mr-1"></i> Produk</p>
+                                        <div class="max-h-52 overflow-y-auto border border-gray-200 rounded-xl p-3 space-y-1.5 bg-gray-50">
+                                            @forelse($produks as $produk)
+                                                <label class="flex items-center gap-2 text-[12px] text-gray-600 cursor-pointer hover:bg-white px-2 py-1 rounded-lg transition-colors">
+                                                    <input type="checkbox" name="id_produk[]" value="{{ $produk->id_produk }}"
+                                                        class="accent-pink-500"
+                                                        {{ in_array($produk->id_produk, old('id_produk', $promo->promoProduk->pluck('id_produk')->all()) ?? []) ? 'checked' : '' }}>
+                                                    {{ $produk->nm_produk }}
+                                                </label>
+                                            @empty
+                                                <p class="text-[12px] text-gray-400 text-center py-2">Belum ada produk</p>
+                                            @endforelse
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="flex items-center gap-3 mt-6 pt-5 border-t border-gray-100">
@@ -290,6 +382,32 @@
         };
         const dateEl = document.getElementById('currentDate');
         if (dateEl) dateEl.textContent = now.toLocaleDateString('id-ID', options);
+
+        const hints = {
+            'Diskon': '(persen)',
+            'Cashback': '(Rp)',
+            'Paket': '(Rp)',
+            'Buy 1 Get 1': '(Rp)',
+            'Lainnya': '(Rp)',
+        };
+
+        function updateNilaiHint() {
+            const el = document.getElementById('nilaiHint');
+            if (!el) return;
+            const sel = document.querySelector('select[name="jenis_promo"]');
+            el.textContent = sel && sel.value ? (hints[sel.value] || '(Rp)') : '';
+        }
+
+        function toggleTargetPelanggan() {
+            const wrap = document.getElementById('targetPelangganWrap');
+            if (!wrap) return;
+            const val = document.querySelector('input[name="target"]:checked');
+            wrap.classList.toggle('hidden', !val || val.value !== 'pilih');
+        }
+
+        const jenisSel = document.querySelector('select[name="jenis_promo"]');
+        if (jenisSel) jenisSel.addEventListener('change', updateNilaiHint);
+        updateNilaiHint();
     </script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
 </body>
