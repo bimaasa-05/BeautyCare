@@ -661,8 +661,8 @@
                             </div>
                             <div class="ph-stat-divider"></div>
                             <div class="ph-stat-item">
-                                <div class="ph-stat-num">{{ $bookings->where('status', 'menunggu')->count() }}</div>
-                                <div class="ph-stat-label">Menunggu</div>
+                                <div class="ph-stat-num">{{ $bookings->where('status', 'dibatalkan')->count() }}</div>
+                                <div class="ph-stat-label">Dibatalkan</div>
                             </div>
                         </div>
                     </div>
@@ -673,21 +673,6 @@
                        class="filter-tab {{ !request('status') ? 'active' : '' }}">
                         <span class="ft-dot" style="background: var(--primary);"></span>
                         Semua
-                    </a>
-                    <a href="{{ route('pelanggan.treatment', ['status' => 'menunggu']) }}"
-                       class="filter-tab {{ request('status') === 'menunggu' ? 'active' : '' }}">
-                        <span class="ft-dot" style="background: #D97706;"></span>
-                        Menunggu
-                    </a>
-                    <a href="{{ route('pelanggan.treatment', ['status' => 'dikonfirmasi']) }}"
-                       class="filter-tab {{ request('status') === 'dikonfirmasi' ? 'active' : '' }}">
-                        <span class="ft-dot" style="background: #2563EB;"></span>
-                        Dikonfirmasi
-                    </a>
-                    <a href="{{ route('pelanggan.treatment', ['status' => 'diproses']) }}"
-                       class="filter-tab {{ request('status') === 'diproses' ? 'active' : '' }}">
-                        <span class="ft-dot" style="background: #9333EA;"></span>
-                        Diproses
                     </a>
                     <a href="{{ route('pelanggan.treatment', ['status' => 'selesai']) }}"
                        class="filter-tab {{ request('status') === 'selesai' ? 'active' : '' }}">
@@ -774,7 +759,6 @@
                                     <td data-label="Aksi" style="text-align:center;">
                                         <div style="display:inline-flex;align-items:center;justify-content:center;gap:8px;flex-wrap:nowrap;">
                                             <a href="{{ route('pelanggan.treatment.detail', ['id' => $booking->id_booking, 'status' => request('status')]) }}" class="action-btn detail" title="Detail booking"><i class="fa-regular fa-eye"></i></a>
-                                            <a href="{{ route('pelanggan.treatment.detail', ['id' => $booking->id_booking, 'status' => request('status')]) }}" class="action-btn print" title="Cetak" onclick="window.open(this.href+((this.href.includes('?'))?'&':'?')+'print=1','_blank','width=900,height=650');return false;"><i class="fa-solid fa-print"></i></a>
                                         </div>
                                     </td>
                                 </tr>
