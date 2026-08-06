@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detail Treatment - BeautyCare</title>
+    @php $printMode = request('print') === '1'; @endphp
     @include('partials.head-meta')
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -112,10 +113,80 @@
         body { background: white; }
         header, .header2, .main-content > .header2, .dashboard-content > .page-header-premium { display: none !important; }
     }
+
+    /* ─── Print Mode (tab baru) ─── */
+    body.print-mode .sidebar,
+    body.print-mode .sidebar-overlay,
+    body.print-mode .header2,
+    body.print-mode .action-bar {
+        display: none !important;
+    }
+
+    body.print-mode .main-content {
+        margin-left: 0 !important;
+        padding: 0 !important;
+    }
+
+    body.print-mode .dashboard-content {
+        padding: 24px !important;
+    }
+
+    .print-brand {
+        margin-bottom: 20px;
+        padding-bottom: 16px;
+        border-bottom: 2px solid var(--primary);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .print-brand .pb-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .print-brand .pb-logo {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, var(--primary), #FF7BA6);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        font-weight: 800;
+        flex-shrink: 0;
+    }
+
+    .print-brand .pb-title {
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--dark);
+    }
+
+    .print-brand .pb-sub {
+        font-size: 12px;
+        color: var(--gray);
+    }
+
+    .print-brand .pb-meta {
+        font-size: 11px;
+        color: var(--gray);
+        text-align: right;
+    }
+
+    @media (max-width: 576px) {
+        .print-brand { flex-direction: column; align-items: flex-start; }
+        .print-brand .pb-meta { text-align: left; }
+    }
     </style>
 </head>
 
-<body>
+<body class="{{ $printMode ? 'print-mode' : '' }}">
     <div class="dashboard-layout">
         @include('layouts.sidebar')
 
@@ -123,6 +194,21 @@
             @include('layouts.header2')
 
             <div class="dashboard-content">
+                @if($printMode)
+                <div class="print-brand">
+                    <div class="pb-left">
+                        <div class="pb-logo">BC</div>
+                        <div>
+                            <div class="pb-title">BeautyCare</div>
+                            <div class="pb-sub">Detail Treatment #BK{{ str_pad($booking->id_booking, 3, '0', STR_PAD_LEFT) }}</div>
+                        </div>
+                    </div>
+                    <div class="pb-meta">
+                        Dicetak pada<br>{{ now()->format('d M Y H:i') }}
+                    </div>
+                </div>
+                @endif
+
                 <div class="detail-card" id="printArea">
                     <div class="dc-header">
                         <div class="dc-title-wrap">
@@ -302,9 +388,9 @@
                     <a href="{{ route('pelanggan.treatment', ['status' => request('status')]) }}" class="btn-action btn-back">
                         <i class="fa-solid fa-arrow-left"></i> Kembali
                     </a>
-                    <button onclick="window.print()" class="btn-action btn-print">
+                    <a href="{{ route('pelanggan.treatment.detail', ['id' => $booking->id_booking, 'print' => 1]) }}" target="_blank" class="btn-action btn-print">
                         <i class="fa-solid fa-print"></i> Cetak
-                    </button>
+                    </a>
                 </div>
             </div>
         </main>
@@ -315,11 +401,6 @@
     const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
     const dateEl = document.getElementById('currentDate');
     if (dateEl) dateEl.textContent = now.toLocaleDateString('id-ID', options);
-
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('print') === '1') {
-        window.print();
-    }
     </script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
 </body>
