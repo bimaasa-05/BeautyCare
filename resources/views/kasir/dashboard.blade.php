@@ -139,31 +139,18 @@
             gap: 10px;
         }
 
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 20px;
-            margin-bottom: 24px;
-            align-items: stretch;
-        }
-
-        .chart-card {
-            display: flex;
-            flex-direction: column;
-        }
-
         .chart-body {
             position: relative;
             width: 100%;
-            flex: 1;
-            min-height: 320px;
+            height: 420px;
+            min-height: 420px;
+            flex: 1 1 auto;
         }
 
         .chart-body canvas {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
+            display: block;
+            width: 100% !important;
+            height: 100% !important;
         }
 
         .chart-empty-msg {
@@ -174,11 +161,6 @@
             justify-content: center;
             font-size: 12px;
             color: #999;
-        }
-
-        .mini-chart-card {
-            display: flex;
-            flex-direction: column;
         }
 
         .mini-chart-card .mc-body {
@@ -672,14 +654,6 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    layout: {
-                        padding: {
-                            left: 0,
-                            right: 0,
-                            top: 0,
-                            bottom: 0
-                        }
-                    },
                     animation: {
                         y: {
                             type: 'number',
@@ -722,7 +696,10 @@
                                 drawBorder: false
                             },
                             ticks: {
-                                maxRotation: 0
+                                autoSkip: true,
+                                maxRotation: 45,
+                                minRotation: 0,
+                                maxTicksLimit: 12
                             }
                         },
                         y: {
@@ -730,6 +707,7 @@
                                 display: false
                             },
                             beginAtZero: true,
+                            grace: '6%',
                             grid: {
                                 color: '#F9EEF4',
                                 borderDash: [3, 3],
@@ -825,7 +803,6 @@
             const heading = document.querySelector('#periodSelect').closest('.chart-card').querySelector('.chart-header h3');
             if (heading) heading.textContent = 'Grafik Penjualan ' + (periodNames[period] || period);
             initSalesChart(data.labels, data.values);
-            fitSalesChart();
         }
 
         function updatePaymentChart(period) {
@@ -835,90 +812,10 @@
             const heading = document.querySelector('#paymentPeriodSelect').closest('.mini-chart-card').querySelector('.mc-header h3');
             if (heading) heading.textContent = 'Metode Pembayaran ' + (periodNames[period] || period);
             initPaymentChart(data.labels, data.values);
-            fitPaymentChart();
         }
 
         initSalesChart(salesChartLabels, salesChartRevenue);
         initPaymentChart(paymentLabels, paymentValues);
-
-        function fitChart(canvasId, getInstance) {
-            const canvas = document.getElementById(canvasId);
-            const inst = getInstance();
-            if (!canvas || !inst) return;
-            const rect = canvas.parentElement.getBoundingClientRect();
-            if (rect.width <= 0 || rect.height <= 0) return;
-            const w = Math.round(rect.width);
-            const h = Math.round(rect.height);
-            const cur = canvas.getBoundingClientRect();
-            if (Math.abs(cur.width - w) <= 2 && Math.abs(cur.height - h) <= 2) return;
-            const dpr = window.devicePixelRatio || 1;
-            canvas.width = Math.round(w * dpr);
-            canvas.height = Math.round(h * dpr);
-            canvas.style.width = w + 'px';
-            canvas.style.height = h + 'px';
-            const yScale = inst.scales && inst.scales.y;
-            if (yScale && yScale.width > 0) {
-                inst.options.layout = inst.options.layout || {};
-                inst.options.layout.padding = inst.options.layout.padding || {};
-                inst.options.layout.padding.left = 0;
-                inst.options.layout.padding.right = Math.ceil(yScale.width) + 8;
-            }
-            inst.resize(w, h);
-        }
-
-        function fitSalesChart() {
-            fitChart('chartPendapatan', function () { return salesChartInstance; });
-        }
-
-        function fitPaymentChart() {
-            fitChart('chartPembayaran', function () { return paymentChartInstance; });
-        }
-
-        function fitAllCharts() {
-            fitSalesChart();
-            fitPaymentChart();
-        }
-
-        function bindChartResize(canvasId, getInstance) {
-            const canvas = document.getElementById(canvasId);
-            if (!canvas || !canvas.parentElement || typeof ResizeObserver === 'undefined') return;
-            new ResizeObserver(function () {
-                fitChart(canvasId, getInstance);
-            }).observe(canvas.parentElement);
-        }
-
-        function watchChartSize(canvasId, getInstance) {
-            let checks = 0;
-            const timer = setInterval(function () {
-                const canvas = document.getElementById(canvasId);
-                const inst = getInstance();
-                if (canvas && inst) {
-                    const rect = canvas.parentElement.getBoundingClientRect();
-                    const cur = canvas.getBoundingClientRect();
-                    if (Math.abs(cur.height - rect.height) > 2 || Math.abs(cur.width - rect.width) > 2) {
-                        fitChart(canvasId, getInstance);
-                    }
-                }
-                checks++;
-                if (checks >= 8) clearInterval(timer);
-            }, 1000);
-        }
-
-        bindChartResize('chartPendapatan', function () { return salesChartInstance; });
-        bindChartResize('chartPembayaran', function () { return paymentChartInstance; });
-
-        requestAnimationFrame(fitAllCharts);
-        setTimeout(fitAllCharts, 300);
-
-        if (document.fonts && document.fonts.ready) {
-            document.fonts.ready.then(fitAllCharts);
-        }
-
-        window.addEventListener('load', fitAllCharts);
-        window.addEventListener('resize', fitAllCharts);
-
-        watchChartSize('chartPendapatan', function () { return salesChartInstance; });
-        watchChartSize('chartPembayaran', function () { return paymentChartInstance; });
     </script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
 </body>
