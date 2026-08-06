@@ -80,7 +80,9 @@ class PelangganController extends Controller
             ->where('status', 'tersedia')
             ->get()
             ->filter(function ($klaim) {
-                return $klaim->promo && $klaim->promo->jenis_promo !== 'Buy 1 Get 1';
+                return $klaim->promo
+                    && $klaim->promo->jenis_promo !== 'Buy 1 Get 1'
+                    && $klaim->promo->berlakuUntuk(auth()->user());
             });
 
         return view('pelanggan.booking.create', compact('layanans', 'karyawans', 'diskonMember', 'claimedPromos'));
