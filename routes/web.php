@@ -39,7 +39,6 @@ use App\Http\Controllers\BeautycianDashboardController;
 use App\Http\Controllers\PelangganDashboardController;
 use App\Http\Controllers\PelangganTreatmentController;
 use App\Http\Controllers\PelangganBookingController;
-use App\Http\Controllers\PelangganReservasiController;
 use App\Http\Controllers\PelangganProdukController;
 use Illuminate\Support\Facades\Route;
 
@@ -334,14 +333,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/pelanggan/booking', [PelangganBookingController::class, 'index'])->name('pelanggan.booking');
         Route::get('/pelanggan/booking/create', [PelangganBookingController::class, 'create'])->name('pelanggan.booking.create');
         Route::post('/pelanggan/booking', [PelangganBookingController::class, 'store'])->name('pelanggan.booking.store');
-        Route::get('/pelanggan/booking/{id}/detail', [PelangganBookingController::class, 'show'])->name('pelanggan.booking.detail');
         Route::get('/pelanggan/booking/{id}/edit', [PelangganBookingController::class, 'edit'])->name('pelanggan.booking.edit');
         Route::put('/pelanggan/booking/{id}', [PelangganBookingController::class, 'update'])->name('pelanggan.booking.update');
-        Route::delete('/pelanggan/booking/batch', [PelangganBookingController::class, 'batchDestroy'])->name('pelanggan.booking.batch');
         Route::delete('/pelanggan/booking/{id}', [PelangganBookingController::class, 'destroy'])->name('pelanggan.booking.destroy');
-
-        //Route Reservasi
-        Route::get('/pelanggan/reservasi', [PelangganReservasiController::class, 'index'])->name('pelanggan.reservasi');
 
         //Route Treatment
         Route::get('/pelanggan/treatment', [PelangganTreatmentController::class, 'index'])->name('pelanggan.treatment');
