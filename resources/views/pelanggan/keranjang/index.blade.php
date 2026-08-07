@@ -641,9 +641,12 @@
         }
 
         .keranjang-footer {
-            background: var(--white);
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             border-radius: 20px;
-            box-shadow: 0 2px 12px -4px rgba(0, 0, 0, 0.06);
+            border: 1px solid rgba(255, 79, 135, 0.08);
+            box-shadow: 0 2px 12px -4px rgba(0, 0, 0, 0.06), 0 -10px 35px -8px rgba(0, 0, 0, 0.22);
             padding: 24px 32px;
             margin-top: 20px;
             display: flex;
@@ -651,6 +654,9 @@
             justify-content: space-between;
             flex-wrap: wrap;
             gap: 16px;
+            position: sticky;
+            bottom: 0;
+            z-index: 30;
         }
 
         .keranjang-footer .kf-total-label {
