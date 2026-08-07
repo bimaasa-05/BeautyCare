@@ -310,6 +310,12 @@
                                                     onchange="applyFilterUser()">
                                                 Suspend
                                             </label>
+                                            <label
+                                                class="flex items-center gap-2 text-[12px] text-gray-700 cursor-pointer">
+                                                <input type="radio" name="filter_status" value="menunggu_persetujuan"
+                                                    onchange="applyFilterUser()">
+                                                Menunggu Persetujuan
+                                            </label>
                                         </div>
                                     </div>
                                 </div>

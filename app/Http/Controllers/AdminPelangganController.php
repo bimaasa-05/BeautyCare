@@ -261,7 +261,7 @@ class AdminPelangganController extends Controller
 
     public function toggleStatus(User $user)
     {
-        if ($user->status === 'suspend' || $user->status === 'non_aktif') {
+        if (in_array($user->status, ['suspend', 'non_aktif', 'menunggu_persetujuan'])) {
             $user->status = 'aktif';
             $user->suspend_until = null;
         } else {
