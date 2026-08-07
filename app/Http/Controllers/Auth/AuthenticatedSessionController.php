@@ -35,8 +35,11 @@ class AuthenticatedSessionController extends Controller
             Auth::guard('web')->logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();
+            $pesan = $user->status === 'menunggu_persetujuan'
+                ? 'Akun Anda sedang menunggu persetujuan admin. Silakan hubungi admin.'
+                : 'Akun Anda belum diaktifkan oleh admin. Silakan hubungi admin.';
             return back()->withErrors([
-                'email' => 'Akun Anda belum diaktifkan oleh admin. Silakan hubungi admin.',
+                'email' => $pesan,
             ]);
         }
 
