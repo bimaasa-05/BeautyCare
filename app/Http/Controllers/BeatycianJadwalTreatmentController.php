@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Booking;
 use App\Models\RiwayatTreatment;
 use App\Helpers\ActivityLogger;
+use Carbon\Carbon;
 
 class BeatycianJadwalTreatmentController extends Controller
 {
@@ -101,6 +102,20 @@ class BeatycianJadwalTreatmentController extends Controller
             ->whereDate('tanggal', $today)
             ->orderBy('jam')
             ->get();
+
+        $now = Carbon::now();
+
+        $akanDimulai = $akanDimulai->map(function ($b) use ($now) {
+            $jamMulai = Carbon::parse($b->jam);
+            $b->terlambatMenit = $jamMulai->lessThan($now) ? (int) $jamMulai->diffInMinutes($now) : 0;
+            return $b;
+        });
+
+        $sedangBerjalan = $sedangBerjalan->map(function ($b) use ($now) {
+            $jamMulai = Carbon::parse($b->jam);
+            $b->berjalanMenit = $jamMulai->lessThan($now) ? (int) $jamMulai->diffInMinutes($now) : 0;
+            return $b;
+        });
 
         $totalAkanDimulai = $akanDimulai->count();
         $totalDiproses = $sedangBerjalan->count();
