@@ -81,7 +81,7 @@ class KasirReservasiController extends Controller
 
         buatNotif(auth()->user()->id, 'Reservasi Baru', 'Reservasi untuk ' . ($booking->pelanggan->nm_pelanggan ?? 'Pelanggan') . ' berhasil dibuat', 'Booking', route('kasir.reservasi.show', $booking->id_booking));
 
-        if ($booking->id_karyawan) {
+        if ($booking->id_karyawan && $booking->status === 'dikonfirmasi') {
             buatNotif($booking->id_karyawan, 'Jadwal Treatment Baru', 'Reservasi untuk ' . ($booking->pelanggan->nm_pelanggan ?? 'Pelanggan') . ' pada ' . $booking->tanggal . ' ' . $booking->jam . '.', 'Booking', url('/beautycian/jadwal-treatment'));
         }
 
@@ -161,11 +161,11 @@ class KasirReservasiController extends Controller
 
         buatNotif(auth()->user()->id, 'Reservasi Diperbarui', 'Reservasi #' . str_pad($id, 3, '0', STR_PAD_LEFT) . ' berhasil diperbarui', 'Booking', route('kasir.reservasi.index'));
 
-        if ($request->id_karyawan) {
+        if ($request->id_karyawan && $request->status === 'dikonfirmasi') {
             buatNotif($request->id_karyawan, 'Jadwal Treatment Diperbarui', 'Reservasi untuk ' . ($bookingLama->pelanggan->nm_pelanggan ?? 'Pelanggan') . ' diubah menjadi ' . $request->tanggal . ' ' . $request->jam . '.', 'Booking', url('/beautycian/jadwal-treatment'));
         }
 
-        if ($bookingLama->id_karyawan && $bookingLama->id_karyawan != $request->id_karyawan) {
+        if ($bookingLama->id_karyawan && $bookingLama->id_karyawan != $request->id_karyawan && $request->status === 'dikonfirmasi') {
             buatNotif($bookingLama->id_karyawan, 'Booking Dipindahkan', 'Booking ' . ($bookingLama->pelanggan->nm_pelanggan ?? '-') . ' dipindahkan ke terapis lain.', 'Booking', url('/beautycian/jadwal-treatment'));
         }
 
