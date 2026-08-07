@@ -22,20 +22,20 @@ class AdminProdukController extends Controller
 
     public function store(Request $request)
     {
-        $request->merge([
-            'harga_beli' => (int) str_replace('.', '', $request->harga_beli),
-            'harga_jual' => (int) str_replace('.', '', $request->harga_jual),
-        ]);
-
         $request->validate([
             'id_kategori_produk' => 'required|integer|exists:kategori_produk,id_kategori_produk',
             'nm_produk'          => 'required|string|max:50',
             'satuan'             => 'required|string|max:50',
-            'harga_beli'         => 'required|numeric',
-            'harga_jual'         => 'required|numeric',
+            'harga_beli'         => 'required|string|regex:/^[0-9.,]+$/',
+            'harga_jual'         => 'required|string|regex:/^[0-9.,]+$/',
             'stok'               => 'required|integer',
             'status'             => 'required|string|in:Tersedia,Habis,Belum Restok',
             'deskripsi'          => 'nullable|string',
+        ]);
+
+        $request->merge([
+            'harga_beli' => (int) str_replace('.', '', $request->harga_beli),
+            'harga_jual' => (int) str_replace('.', '', $request->harga_jual),
         ]);
 
         $data = $request->all();
@@ -61,20 +61,20 @@ class AdminProdukController extends Controller
 
     public function update(Request $request, Produk $produk)
     {
-        $request->merge([
-            'harga_beli' => (int) str_replace('.', '', $request->harga_beli),
-            'harga_jual' => (int) str_replace('.', '', $request->harga_jual),
-        ]);
-
         $request->validate([
             'id_kategori_produk' => 'required|integer|exists:kategori_produk,id_kategori_produk',
             'nm_produk'          => 'required|string|max:50',
             'satuan'             => 'required|string|max:50',
-            'harga_beli'         => 'required|numeric',
-            'harga_jual'         => 'required|numeric',
+            'harga_beli'         => 'required|string|regex:/^[0-9.,]+$/',
+            'harga_jual'         => 'required|string|regex:/^[0-9.,]+$/',
             'stok'               => 'required|integer',
             'status'             => 'required|string|in:Tersedia,Habis,Belum Restok',
             'deskripsi'          => 'nullable|string',
+        ]);
+
+        $request->merge([
+            'harga_beli' => (int) str_replace('.', '', $request->harga_beli),
+            'harga_jual' => (int) str_replace('.', '', $request->harga_jual),
         ]);
 
         $data = $request->all();
