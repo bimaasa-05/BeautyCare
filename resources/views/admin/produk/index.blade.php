@@ -356,7 +356,7 @@
                                             </span>
                                         </td>
                                         <td class="px-5 py-4 text-sm text-gray-600" data-label="Supplier">
-                                            {{ $p->supplier?->nm_supplier ?? '-' }}
+                                            {{ $p->supplier->isNotEmpty() ? $p->supplier->pluck('nm_supplier')->implode(', ') : '-' }}
                                         </td>
                                         <td class="px-5 py-4 text-sm text-gray-600" data-label="Satuan">{{ $p->satuan }}</td>
                                         <td class="px-5 py-4 text-sm text-gray-600" data-label="Harga Beli">Rp. {{ number_format($p->harga_beli, 0, ',', '.') }}</td>
