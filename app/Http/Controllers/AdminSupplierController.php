@@ -19,9 +19,8 @@ class AdminSupplierController extends Controller
 
     public function create()
     {
-        $produk   = Produk::orderBy('nm_produk')->get();
-        $terpakai = Supplier::whereNotNull('id_produk')->pluck('id_produk')->toArray();
-        return view('admin.supplier.create', compact('produk', 'terpakai'));
+        $produk = Produk::orderBy('nm_produk')->get();
+        return view('admin.supplier.create', compact('produk'));
     }
 
     public function store(Request $request)
@@ -30,11 +29,14 @@ class AdminSupplierController extends Controller
             'nm_supplier' => 'required',
             'alamat'      => 'required',
             'no_hp'       => 'required',
-            'id_produk'   => 'nullable|integer|exists:produk,id_produk',
             'status'      => 'required|string|in:Aktif,Non Aktif',
+            'produk'      => 'nullable|array',
+            'produk.*.id_produk' => 'required|integer|exists:produk,id_produk',
         ]);
 
-        Supplier::create($request->all());
+        $supplier = Supplier::create($request->only(['nm_supplier', 'no_hp', 'alamat', 'status']));
+
+        $this->syncProduk($supplier, $request->produk);
 
         buatNotif(auth()->id(), 'Supplier Ditambahkan', 'Supplier ' . $request->nm_supplier . ' berhasil ditambahkan', 'Lainnya', route('admin.supplier.index'));
 
@@ -45,10 +47,9 @@ class AdminSupplierController extends Controller
 
     public function edit($id)
     {
-        $supplier = Supplier::findOrFail($id);
+        $supplier = Supplier::with('produk')->findOrFail($id);
         $produk   = Produk::orderBy('nm_produk')->get();
-        $terpakai = Supplier::whereNotNull('id_produk')->where('id_supplier', '!=', $supplier->id_supplier)->pluck('id_produk')->toArray();
-        return view('admin.supplier.edit', compact('supplier', 'produk', 'terpakai'));
+        return view('admin.supplier.edit', compact('supplier', 'produk'));
     }
 
     public function update(Request $request, $id)
@@ -57,17 +58,32 @@ class AdminSupplierController extends Controller
             'nm_supplier' => 'required',
             'alamat'      => 'required',
             'no_hp'       => 'required',
-            'id_produk'   => 'nullable|integer|exists:produk,id_produk',
             'status'      => 'required|string|in:Aktif,Non Aktif',
+            'produk'      => 'nullable|array',
+            'produk.*.id_produk' => 'required|integer|exists:produk,id_produk',
         ]);
 
         $supplier = Supplier::findOrFail($id);
-        $supplier->update($request->all());
+        $supplier->update($request->only(['nm_supplier', 'no_hp', 'alamat', 'status']));
+
+        $this->syncProduk($supplier, $request->produk);
 
         buatNotif(auth()->id(), 'Supplier Diperbarui', 'Supplier ' . $supplier->nm_supplier . ' berhasil diperbarui', 'Lainnya', route('admin.supplier.edit', $supplier->id_supplier));
 
         return redirect()->route('admin.supplier.index')
             ->with('success', 'Supplier updated successfully.');
+    }
+
+    public function show($id)
+    {
+        $supplier = Supplier::with('produk')->findOrFail($id);
+        return view('admin.supplier.show', compact('supplier'));
+    }
+
+    protected function syncProduk(Supplier $supplier, ?array $produkList)
+    {
+        $ids = array_map(fn($row) => $row['id_produk'], $produkList ?? []);
+        $supplier->produk()->sync($ids);
     }
 
     public function destroy($id)
