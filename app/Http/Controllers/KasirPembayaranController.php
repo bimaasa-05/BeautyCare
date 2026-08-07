@@ -60,13 +60,7 @@ class KasirPembayaranController extends Controller
             return redirect()->route('kasir.pembayaran.index')->with('error', 'Booking ini sudah memiliki pembayaran');
         }
 
-        $bankTujuan = [
-            'BRI' => '10101010',
-            'BCA' => '20202020',
-            'Mandiri' => '30303030',
-            'BNI' => '40404040',
-            'BSI' => '50505050',
-        ];
+        $bankTujuan = CheckoutController::bankTujuan();
 
         return view('kasir.pembayaran.create', compact('booking', 'bankTujuan'));
     }
