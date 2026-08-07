@@ -45,6 +45,8 @@
         .kanban-card .doc-badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: 600; }
         .kanban-card .doc-badge.has-doc { background: #D1FAE5; color: #059669; }
         .kanban-card .doc-badge.no-doc { background: #FEF3C7; color: #D97706; }
+        .kanban-card .late-badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: 600; background: #FEE2E2; color: #DC2626; }
+        .kanban-card .run-badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: 600; background: #FEF3C7; color: #D97706; }
 
         .btn-kanban { padding: 6px 14px; border-radius: 8px; font-size: 11px; font-weight: 600; border: none; cursor: pointer; transition: all 0.2s ease; font-family: 'Poppins', sans-serif; display: inline-flex; align-items: center; gap: 5px; }
         .btn-kanban:hover { transform: scale(1.03); }
@@ -137,6 +139,14 @@
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                                     {{ \Carbon\Carbon::parse($item->jam)->format('H:i') }}
                                 </div>
+                                @if($item->terlambatMenit > 0)
+                                <div style="margin-top:6px;">
+                                    <span class="late-badge">
+                                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                                        Terlambat {{ $item->terlambatMenit }} menit
+                                    </span>
+                                </div>
+                                @endif
                             </div>
                             <div class="kc-card-footer">
                                 <form action="{{ route('beautycian.jadwal-treatment.update') }}" method="POST" onsubmit="return confirm('Mulai treatment ini?')">
@@ -186,6 +196,12 @@
                                 <div class="kc-time">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                                     {{ \Carbon\Carbon::parse($item->jam)->format('H:i') }}
+                                </div>
+                                <div style="margin-top:6px;">
+                                    <span class="run-badge">
+                                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                                        Berjalan sejak {{ \Carbon\Carbon::parse($item->jam)->format('H:i') }} · Sudah {{ $item->berjalanMenit }} menit
+                                    </span>
                                 </div>
                                 @if($item->riwayatTreatment)
                                     <div style="margin-top:6px;">
