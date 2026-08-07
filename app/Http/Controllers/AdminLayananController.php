@@ -44,17 +44,17 @@ class AdminLayananController extends Controller
 
     public function store(Request $request)
     {
-        $request->merge([
-            'harga' => (int) str_replace('.', '', $request->harga),
-        ]);
-
-        $request->validate([
+                $request->validate([
             'id_kategori'  => 'required|integer|max:100',
             'nm_layanan'         => 'required|string|max:20',
             'durasi'            => 'required|integer',
-            'harga'             => 'required|numeric|min:0',
+            'harga'             => 'required|string|regex:/^[0-9.,]+$/',
             'foto'          => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'status'            => 'required|in:Tersedia,Tidak Tersedia',
+        ]);
+
+        $request->merge([
+            'harga' => (int) str_replace('.', '', $request->harga),
         ]);
 
         $data = $request->only(['nm_layanan', 'id_kategori', 'durasi', 'harga', 'status']);
@@ -80,17 +80,17 @@ class AdminLayananController extends Controller
 
     public function update(Request $request, Layanan $layanan)
     {
-        $request->merge([
-            'harga' => (int) str_replace('.', '', $request->harga),
-        ]);
-
-        $request->validate([
+                $request->validate([
             'nm_layanan'  => 'sometimes|required|string|max:20',
             'id_kategori' => 'sometimes|required|integer|max:100',
             'durasi'      => 'sometimes|required|integer',
-            'harga'       => 'sometimes|required|numeric|min:0',
+            'harga'       => 'sometimes|string|regex:/^[0-9.,]+$/',
             'foto'          => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'status'      => 'sometimes|required|in:Tersedia,Tidak Tersedia',
+        ]);
+
+        $request->merge([
+            'harga' => (int) str_replace('.', '', $request->harga),
         ]);
 
         $data = $request->only(['nm_layanan', 'id_kategori', 'durasi', 'harga', 'status']);
