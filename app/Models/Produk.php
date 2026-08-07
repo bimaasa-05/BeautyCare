@@ -14,7 +14,6 @@ class Produk extends Model
         'id_kategori_produk',
         'nm_produk',
         'satuan',
-        'harga_beli',
         'harga_jual',
         'stok',
         'foto',
@@ -48,6 +47,7 @@ class Produk extends Model
 
     public function supplier()
     {
-        return $this->belongsToMany(Supplier::class, 'supplier_produk', 'id_produk', 'id_supplier');
+        return $this->belongsToMany(Supplier::class, 'supplier_produk', 'id_produk', 'id_supplier')
+            ->withPivot('harga_beli');
     }
 }

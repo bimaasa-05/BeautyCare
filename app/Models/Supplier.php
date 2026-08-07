@@ -24,6 +24,7 @@ class Supplier extends Model
 
     public function produk()
     {
-        return $this->belongsToMany(Produk::class, 'supplier_produk', 'id_supplier', 'id_produk');
+        return $this->belongsToMany(Produk::class, 'supplier_produk', 'id_supplier', 'id_produk')
+            ->withPivot('harga_beli');
     }
 }

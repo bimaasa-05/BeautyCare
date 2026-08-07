@@ -210,7 +210,7 @@
                                     required>
                                     <option value="" disabled {{ old('id_supplier') ? '' : 'selected' }}>Pilih supplier</option>
                                     @foreach ($supplier as $s)
-                                        <option value="{{ $s->id_supplier }}" data-produks='@json($s->produk->pluck('id_produk')->all())'
+                                        <option value="{{ $s->id_supplier }}" data-produks='@json($s->produk->map(fn($p) => ['id' => $p->id_produk, 'harga' => $p->pivot->harga_beli])->all())'
                                             {{ old('id_supplier') == $s->id_supplier ? 'selected' : '' }}>
                                             {{ $s->nm_supplier }}@if ($s->produk->isNotEmpty())
                                                 - {{ $s->produk->pluck('nm_produk')->take(2)->implode(', ') }}@if ($s->produk->count() > 2) dll.@endif
@@ -233,7 +233,7 @@
                                     <option value="" disabled selected>Pilih supplier terlebih dahulu</option>
                                     @foreach ($produk as $p)
                                         <option value="{{ $p->id_produk }}" data-stok="{{ $p->stok }}" data-nm="{{ $p->nm_produk }}">
-                                            {{ $p->nm_produk }} (stok: {{ $p->stok }})
+                                            {{ $p->nm_produk }} ({{ $p->satuan }}) - stok: {{ $p->stok }}
                                         </option>
                                     @endforeach
                                 </select>
@@ -245,11 +245,20 @@
                             </div>
 
                             <div>
+                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Harga Beli <span
+                                        class="text-[10px] font-normal text-gray-400">(otomatis dari supplier)</span></label>
+                                <input type="text" id="hargaBeli" readonly
+                                    class="w-full bg-gray-100 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none text-gray-500"
+                                    placeholder="Pilih produk terlebih dahulu">
+                            </div>
+
+                            <div>
                                 <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Jumlah <span
                                         class="text-red-400">*</span></label>
-                                <input type="number" name="jumlah" value="{{ old('jumlah') }}" min="1"
+                                <input type="number" name="jumlah" id="jumlah" value="{{ old('jumlah') }}" min="1"
                                     class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('jumlah') border-red-300 @enderror"
                                     placeholder="Masukkan jumlah barang masuk">
+                                <p class="text-[11px] text-gray-400 mt-1" id="totalHarga"></p>
                                 @error('jumlah')
                                     <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
                                 @enderror
@@ -296,7 +305,14 @@
         const produkSelect = document.getElementById('id_produk');
         const produkHidden = document.getElementById('id_produk_hidden');
         const produkInfo = document.getElementById('produkInfo');
+        const hargaBeli = document.getElementById('hargaBeli');
+        const jumlahInput = document.getElementById('jumlah');
+        const totalHarga = document.getElementById('totalHarga');
         const semuaProduk = Array.from(produkSelect.options).filter(function (o) { return o.value; });
+
+        function formatRupiah(n) {
+            return 'Rp ' + Number(n || 0).toLocaleString('id-ID');
+        }
 
         function getProdukList() {
             const option = supplierSelect.options[supplierSelect.selectedIndex];
@@ -308,6 +324,11 @@
             }
         }
 
+        function getHarga(id) {
+            const item = getProdukList().find(function (x) { return Number(x.id) === Number(id); });
+            return item ? Number(item.harga) : 0;
+        }
+
         function renderProduk() {
             const list = getProdukList();
             if (!list.length) {
@@ -315,6 +336,8 @@
                 produkSelect.disabled = true;
                 produkHidden.value = '';
                 produkInfo.textContent = 'Supplier belum memiliki produk yang disuplai.';
+                hargaBeli.value = '';
+                hitungTotal();
                 return;
             }
 
@@ -327,12 +350,18 @@
             produkSelect.appendChild(kosong);
 
             semuaProduk.forEach(function (o) {
-                if (list.indexOf(Number(o.value)) !== -1) {
+                if (list.some(function (x) { return Number(x.id) === Number(o.value); })) {
                     produkSelect.appendChild(o);
                 }
             });
             produkSelect.disabled = false;
             produkInfo.textContent = 'Pilih produk yang disuplai oleh supplier ini.';
+        }
+
+        function hitungTotal() {
+            const harga = parseInt(hargaBeli.value.replace(/\D/g, '')) || 0;
+            const jumlah = parseInt(jumlahInput.value) || 0;
+            totalHarga.textContent = harga && jumlah ? 'Total: ' + formatRupiah(harga * jumlah) : '';
         }
 
         supplierSelect.addEventListener('change', function () {
@@ -344,8 +373,14 @@
             const option = produkSelect.options[produkSelect.selectedIndex];
             if (option) {
                 produkInfo.textContent = option.getAttribute('data-nm') + ' - stok saat ini: ' + option.getAttribute('data-stok');
+                hargaBeli.value = formatRupiah(getHarga(produkSelect.value));
+            } else {
+                hargaBeli.value = '';
             }
+            hitungTotal();
         });
+
+        jumlahInput.addEventListener('input', hitungTotal);
 
         window.addEventListener('DOMContentLoaded', function () {
             renderProduk();
@@ -354,8 +389,10 @@
                 const option = produkSelect.options[produkSelect.selectedIndex];
                 if (option) {
                     produkInfo.textContent = option.getAttribute('data-nm') + ' - stok saat ini: ' + option.getAttribute('data-stok');
+                    hargaBeli.value = formatRupiah(getHarga(produkSelect.value));
                 }
             }
+            hitungTotal();
         });
     </script>
     <script>

@@ -65,6 +65,8 @@ class AdminStokController extends Controller
             return back()->withErrors(['id_produk' => 'Produk harus sesuai dengan produk yang disuplai oleh ' . $supplier->nm_supplier . '.']);
         }
 
+        $hargaSatuan = $supplier->produk->firstWhere('id_produk', $request->id_produk)->pivot->harga_beli;
+
         $produk    = Produk::findOrFail($request->id_produk);
         $stokLama  = $produk->stok;
         $produk->increment('stok', $request->jumlah);
@@ -78,7 +80,8 @@ class AdminStokController extends Controller
             $request->keterangan ?? 'Barang masuk dari supplier',
             $request->id_supplier,
             $produk->id_produk,
-            'Restok'
+            'Restok',
+            $hargaSatuan
         );
 
         buatNotif(auth()->id(), 'Barang Masuk', $produk->nm_produk . ' +' . $request->jumlah . ' dari supplier', 'Lainnya', route('admin.stok.index'));
@@ -111,6 +114,8 @@ class AdminStokController extends Controller
             return back()->withErrors(['id_produk' => 'Produk harus sesuai dengan produk yang disuplai oleh ' . $supplier->nm_supplier . '.']);
         }
 
+        $hargaSatuan = $supplier->produk->firstWhere('id_produk', $request->id_produk)->pivot->harga_beli;
+
         $produk   = Produk::findOrFail($request->id_produk);
         $stokLama = $produk->stok;
 
@@ -129,7 +134,8 @@ class AdminStokController extends Controller
             $request->keterangan ?? 'Barang rusak / tidak sesuai dikembalikan ke supplier',
             $request->id_supplier,
             $produk->id_produk,
-            'Refund'
+            'Refund',
+            $hargaSatuan
         );
 
         buatNotif(auth()->id(), 'Refund Stok', $produk->nm_produk . ' -' . $request->jumlah . ' di-refund ke supplier', 'Lainnya', route('admin.stok.index'));
