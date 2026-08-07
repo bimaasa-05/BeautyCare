@@ -217,14 +217,12 @@
                                 <select name="id_supplier" id="id_supplier"
                                     class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all @error('id_supplier') border-red-300 @enderror"
                                     required>
-                                    <option value="" disabled selected>Pilih supplier</option>
+                                    <option value="" disabled {{ old('id_supplier') ? '' : 'selected' }}>Pilih supplier</option>
                                     @foreach ($supplier as $s)
-                                        <option value="{{ $s->id_supplier }}" data-produk="{{ $s->id_produk }}"
-                                            data-nama-produk="{{ $s->produk?->nm_produk }}"
-                                            data-stok-produk="{{ $s->produk?->stok }}"
+                                        <option value="{{ $s->id_supplier }}" data-produks='@json($s->produk->pluck('id_produk')->all())'
                                             {{ old('id_supplier') == $s->id_supplier ? 'selected' : '' }}>
-                                            {{ $s->nm_supplier }}@if ($s->produk)
-                                                - {{ $s->produk->nm_produk }}
+                                            {{ $s->nm_supplier }}@if ($s->produk->isNotEmpty())
+                                                - {{ $s->produk->pluck('nm_produk')->take(2)->implode(', ') }}@if ($s->produk->count() > 2) dll.@endif
                                             @endif
                                         </option>
                                     @endforeach
@@ -239,16 +237,17 @@
                                         class="text-red-400">*</span></label>
                                 <input type="hidden" name="id_produk" id="id_produk_hidden" value="{{ old('id_produk') }}">
                                 <select name="id_produk_display" id="id_produk" disabled
-                                    class="w-full bg-gray-100 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 transition-all text-gray-500 @error('id_produk') border-red-300 @enderror">
+                                    class="w-full bg-gray-100 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 transition-all text-gray-500 @error('id_produk') border-red-300 @enderror"
+                                    required>
                                     <option value="" disabled selected>Pilih supplier terlebih dahulu</option>
                                     @foreach ($produk as $p)
-                                        <option value="{{ $p->id_produk }}" data-stok="{{ $p->stok }}">
+                                        <option value="{{ $p->id_produk }}" data-stok="{{ $p->stok }}" data-nm="{{ $p->nm_produk }}">
                                             {{ $p->nm_produk }} (stok: {{ $p->stok }})
                                         </option>
                                     @endforeach
                                 </select>
-                                <p class="text-[11px] text-gray-400 mt-1" id="produkInfo">Produk otomatis menyesuaikan
-                                    supplier yang dipilih (1 supplier = 1 produk).</p>
+                                <p class="text-[11px] text-gray-400 mt-1" id="produkInfo">Pilih supplier terlebih dahulu untuk
+                                    melihat produk yang disuplai.</p>
                                 @error('id_produk')
                                     <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
                                 @enderror
@@ -306,32 +305,65 @@
         const produkSelect = document.getElementById('id_produk');
         const produkHidden = document.getElementById('id_produk_hidden');
         const produkInfo = document.getElementById('produkInfo');
+        const semuaProduk = Array.from(produkSelect.options).filter(function (o) { return o.value; });
+
+        function getProdukList() {
+            const option = supplierSelect.options[supplierSelect.selectedIndex];
+            if (!option) return [];
+            try {
+                return JSON.parse(option.getAttribute('data-produks') || '[]');
+            } catch (e) {
+                return [];
+            }
+        }
+
+        function renderProduk() {
+            const list = getProdukList();
+            if (!list.length) {
+                produkSelect.innerHTML = '<option value="" disabled selected>Supplier ini belum punya produk</option>';
+                produkSelect.disabled = true;
+                produkHidden.value = '';
+                produkInfo.textContent = 'Supplier belum memiliki produk yang disuplai.';
+                return;
+            }
+
+            produkSelect.innerHTML = '';
+            const kosong = document.createElement('option');
+            kosong.value = '';
+            kosong.disabled = true;
+            kosong.selected = true;
+            kosong.textContent = 'Pilih produk';
+            produkSelect.appendChild(kosong);
+
+            semuaProduk.forEach(function (o) {
+                if (list.indexOf(Number(o.value)) !== -1) {
+                    produkSelect.appendChild(o);
+                }
+            });
+            produkSelect.disabled = false;
+            produkInfo.textContent = 'Pilih produk yang disuplai oleh supplier ini.';
+        }
 
         supplierSelect.addEventListener('change', function () {
-            const option = this.options[this.selectedIndex];
-            const idProduk = option ? option.getAttribute('data-produk') : '';
-            const nmProduk = option ? (option.getAttribute('data-nama-produk') || '') : '';
-            const stokProduk = option ? (option.getAttribute('data-stok-produk') || '') : '';
+            renderProduk();
+        });
 
-            if (idProduk) {
-                produkSelect.value = idProduk;
-                produkHidden.value = idProduk;
-                produkInfo.textContent = nmProduk + ' - stok saat ini: ' + stokProduk;
-            } else {
-                produkSelect.value = '';
-                produkHidden.value = '';
-                produkInfo.textContent = 'Produk otomatis menyesuaikan supplier yang dipilih (1 supplier = 1 produk).';
+        produkSelect.addEventListener('change', function () {
+            produkHidden.value = produkSelect.value;
+            const option = produkSelect.options[produkSelect.selectedIndex];
+            if (option) {
+                produkInfo.textContent = option.getAttribute('data-nm') + ' - stok saat ini: ' + option.getAttribute('data-stok');
             }
         });
 
         window.addEventListener('DOMContentLoaded', function () {
+            renderProduk();
             if (supplierSelect.value && produkHidden.value) {
-                const option = supplierSelect.options[supplierSelect.selectedIndex];
-                const idProduk = option ? option.getAttribute('data-produk') : '';
-                const nmProduk = option ? (option.getAttribute('data-nama-produk') || '') : '';
-                const stokProduk = option ? (option.getAttribute('data-stok-produk') || '') : '';
-                produkSelect.value = idProduk;
-                produkInfo.textContent = nmProduk + ' - stok saat ini: ' + stokProduk;
+                produkSelect.value = produkHidden.value;
+                const option = produkSelect.options[produkSelect.selectedIndex];
+                if (option) {
+                    produkInfo.textContent = option.getAttribute('data-nm') + ' - stok saat ini: ' + option.getAttribute('data-stok');
+                }
             }
         });
     </script>

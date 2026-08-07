@@ -221,10 +221,11 @@
                                     <h3>Data Supplier</h3>
                                     <p>Pusat informasi mitra bisnis dan pemasok kita! Di sini, Anda dapat dengan mudah
                                         mengelola daftar supplier yang bekerja sama dengan perusahaan. Setiap supplier
-                                        menyuplai 1 produk, lengkap dengan stok dan status kontrak kerjasama (Aktif /
-                                        Non Aktif). Perbarui detail kontak, pantau produk yang mereka sediakan, dan
-                                        pastikan jalur komunikasi dengan vendor selalu lancar. Mari kelola data mitra
-                                        dengan rapi agar ketersediaan stok operasional kita selalu aman dan terjaga!</p>
+                                        dapat menyuplai banyak produk, lengkap dengan stok per produk dan status kontrak
+                                        kerjasama (Aktif / Non Aktif). Perbarui detail kontak, pantau produk yang mereka
+                                        sediakan, dan pastikan jalur komunikasi dengan vendor selalu lancar. Mari kelola
+                                        data mitra dengan rapi agar ketersediaan stok operasional kita selalu aman dan
+                                        terjaga!</p>
                                 </div>
                             </div>
                         </div>
@@ -375,16 +376,19 @@
                                             <td class="px-5 py-4 text-sm text-gray-600 max-w-[200px] truncate"
                                                 data-label="Alamat">{{ $s->alamat }}</td>
                                             <td class="px-5 py-4" data-label="Nama Produk">
-                                                <p class="text-sm font-semibold text-gray-800">
-                                                    {{ $s->produk?->nm_produk ?? '-' }}</p>
+                                                @forelse ($s->produk as $p)
+                                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-pink-50 text-pink-600 border border-pink-100 text-xs font-semibold mb-1 mr-1">{{ $p->nm_produk }}</span>
+                                                @empty
+                                                    <p class="text-sm font-semibold text-gray-400">-</p>
+                                                @endforelse
                                             </td>
                                             <td class="px-5 py-4" data-label="Stok">
                                                 @php
-                                                    $stokSup = $s->produk?->stok ?? null;
-                                                    $stokSupClass = $stokSup === null ? 'text-gray-400' : ($stokSup == 0 ? 'text-red-500' : ($stokSup < 10 ? 'text-amber-500' : 'text-gray-800'));
+                                                    $totalStokSup = $s->produk->sum('stok');
+                                                    $stokSupClass = $totalStokSup == 0 ? 'text-red-500' : ($totalStokSup < 10 ? 'text-amber-500' : 'text-gray-800');
                                                 @endphp
                                                 <p class="text-sm font-semibold {{ $stokSupClass }}">
-                                                    {{ $stokSup ?? '-' }}</p>
+                                                    {{ $s->produk->isNotEmpty() ? $totalStokSup : '-' }}</p>
                                             </td>
                                             <td class="px-5 py-4" data-label="Status">
                                                 @php
@@ -400,6 +404,16 @@
                                             </td>
                                             <td class="px-5 py-4" data-label="Aksi">
                                                 <div class="flex gap-1.5">
+                                                    <a href="{{ route('admin.supplier.show', $s->id_supplier) }}"
+                                                        class="w-7 h-7 rounded-lg bg-sky-50 text-sky-500 hover:bg-sky-100 flex items-center justify-center"
+                                                        title="Detail">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11"
+                                                            viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                            <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path>
+                                                            <circle cx="12" cy="12" r="3"></circle>
+                                                        </svg>
+                                                    </a>
                                                     <a href="{{ route('admin.supplier.edit', $s->id_supplier) }}"
                                                         class="w-7 h-7 rounded-lg bg-amber-50 text-amber-500 hover:bg-amber-100 flex items-center justify-center">
                                                         <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11"
