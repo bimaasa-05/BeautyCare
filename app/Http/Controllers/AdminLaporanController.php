@@ -7,6 +7,7 @@ use App\Models\Booking;
 use App\Models\User;
 use App\Models\Pelanggan;
 use App\Models\Stok;
+use App\Models\Pengeluaran;
 use App\Exports\LaporanExport;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Maatwebsite\Excel\Facades\Excel;
@@ -80,7 +81,6 @@ class AdminLaporanController extends Controller
             'rataPendapatan', 'jumlahHari'
         ));
     }
-
     private function getPengeluaranPembelian($startDate, $endDate)
     {
         $masuk = Stok::where('type', 'Masuk')
@@ -93,7 +93,10 @@ class AdminLaporanController extends Controller
             ->get()
             ->sum(fn($s) => ($s->harga_satuan ?? 0) * $s->jumlah);
 
-        return $masuk - $refund;
+        $pengeluaranKasir = Pengeluaran::whereBetween('tanggal', [$startDate, $endDate])
+            ->sum('nominal');
+
+        return ($masuk - $refund) + $pengeluaranKasir;
     }
 
     private function getChartData($periode, $startDate, $endDate)
