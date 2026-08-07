@@ -31,7 +31,8 @@ class AdminSupplierController extends Controller
             'no_hp'       => 'required',
             'status'      => 'required|string|in:Aktif,Non Aktif',
             'produk'      => 'nullable|array',
-            'produk.*.id_produk' => 'required|integer|exists:produk,id_produk',
+            'produk.*.id_produk'  => 'required|integer|exists:produk,id_produk',
+            'produk.*.harga_beli' => 'required|integer|min:0',
         ]);
 
         $supplier = Supplier::create($request->only(['nm_supplier', 'no_hp', 'alamat', 'status']));
@@ -60,7 +61,8 @@ class AdminSupplierController extends Controller
             'no_hp'       => 'required',
             'status'      => 'required|string|in:Aktif,Non Aktif',
             'produk'      => 'nullable|array',
-            'produk.*.id_produk' => 'required|integer|exists:produk,id_produk',
+            'produk.*.id_produk'  => 'required|integer|exists:produk,id_produk',
+            'produk.*.harga_beli' => 'required|integer|min:0',
         ]);
 
         $supplier = Supplier::findOrFail($id);
@@ -82,8 +84,11 @@ class AdminSupplierController extends Controller
 
     protected function syncProduk(Supplier $supplier, ?array $produkList)
     {
-        $ids = array_map(fn($row) => $row['id_produk'], $produkList ?? []);
-        $supplier->produk()->sync($ids);
+        $pivot = [];
+        foreach ($produkList ?? [] as $row) {
+            $pivot[$row['id_produk']] = ['harga_beli' => $row['harga_beli']];
+        }
+        $supplier->produk()->sync($pivot);
     }
 
     public function destroy($id)
