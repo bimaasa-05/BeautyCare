@@ -79,6 +79,12 @@ class PelangganBookingController extends Controller
             ->orderBy('id_user')
             ->get();
 
+        $karyawanSibukIds = Booking::where('status', 'diproses')
+            ->whereNotNull('id_karyawan')
+            ->distinct()
+            ->pluck('id_karyawan')
+            ->toArray();
+
         $user = auth()->user();
         $diskonMember = 0;
         $pelanggan = Pelanggan::dariUser($user);
@@ -99,7 +105,7 @@ class PelangganBookingController extends Controller
                     && $klaim->promo->selesai > now()->format('Y-m-d');
             });
 
-        return view('pelanggan.booking.create', compact('layanans', 'karyawans', 'diskonMember', 'claimedPromos'));
+        return view('pelanggan.booking.create', compact('layanans', 'karyawans', 'karyawanSibukIds', 'diskonMember', 'claimedPromos'));
     }
 
     public function store(Request $request)
@@ -121,6 +127,10 @@ class PelangganBookingController extends Controller
             'catatan' => 'nullable|string',
             'id_promo' => 'nullable|integer|exists:promo,id_promo',
         ]);
+
+        if (Booking::where('id_karyawan', $request->id_karyawan)->where('status', 'diproses')->exists()) {
+            return redirect()->back()->withErrors('Terapis sedang melayani pelanggan lain. Silakan pilih terapis lain yang tersedia.');
+        }
 
         $idPromo = $request->id_promo;
         $promo = null;
@@ -261,6 +271,12 @@ class PelangganBookingController extends Controller
             ->orderBy('id_user')
             ->get();
 
+        $karyawanSibukIds = Booking::where('status', 'diproses')
+            ->whereNotNull('id_karyawan')
+            ->distinct()
+            ->pluck('id_karyawan')
+            ->toArray();
+
         $diskonMember = 0;
         $user = auth()->user();
         $pelanggan = Pelanggan::dariUser($user);
@@ -271,7 +287,7 @@ class PelangganBookingController extends Controller
             }
         }
 
-        return view('pelanggan.booking.edit', compact('booking', 'detail', 'layanans', 'karyawans', 'diskonMember'));
+        return view('pelanggan.booking.edit', compact('booking', 'detail', 'layanans', 'karyawans', 'karyawanSibukIds', 'diskonMember'));
     }
 
     public function update(Request $request, $id)
@@ -289,6 +305,10 @@ class PelangganBookingController extends Controller
         $booking = Booking::where('id_booking', $id)
             ->where('id_pelanggan', $this->resolveIdPelanggan())
             ->firstOrFail();
+
+        if (Booking::where('id_karyawan', $request->id_karyawan)->where('status', 'diproses')->exists()) {
+            return redirect()->back()->withErrors('Terapis sedang melayani pelanggan lain. Silakan pilih terapis lain yang tersedia.');
+        }
 
         $karyawanLama = $booking->id_karyawan;
         $statusBooking = $booking->status;
