@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Notifikasi;
 use App\Models\RiwayatAktivitas;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -42,10 +43,13 @@ class NotifikasiController extends Controller
     {
         $user = Auth::user();
         $since = $request->input('since');
-        $now = now();
+        $now = now()->toDateTimeString();
         $items = [];
 
         if ($since) {
+            // Normalisasi ke format DATETIME app timezone agar cocok dengan kolom created_at di MySQL
+            $since = Carbon::parse($since)->toDateTimeString();
+
             // Popup realtime untuk admin: perubahan data oleh kasir/beautycian/pelanggan
             if ($user->role === 'admin') {
                 $aktivitas = RiwayatAktivitas::with('user')
@@ -87,7 +91,7 @@ class NotifikasiController extends Controller
         }
 
         return response()->json([
-            'now' => $now->toIso8601String(),
+            'now' => $now,
             'items' => $items,
         ]);
     }

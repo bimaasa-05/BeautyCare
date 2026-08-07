@@ -129,7 +129,7 @@ if (!isset($pageTitle)) {
                 </a>
                 @endif
                 <div class="dropdown-divider"></div>
-                <form method="POST" action="{{ route('logout') }}">
+                <form method="POST" action="{{ route('logout') }}" id="logoutForm">
                     @csrf
                     <button type="submit" class="dropdown-item dropdown-item-danger">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -158,7 +158,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const role = bell.dataset.role;
 
     function loadNotif() {
-        fetch('/notif/get')
+        fetch('/notif/get', { headers: { 'Accept': 'application/json' } })
             .then(r => r.json())
             .then(d => {
                 if (d.unread_count > 0) {
@@ -224,9 +224,21 @@ document.addEventListener('DOMContentLoaded', function() {
     // Real-time popup: perubahan data kasir/beautycian (admin) & notifikasi baru
     const POPUP_KEY = 'notifPopupSince_' + (bell.dataset.userId || '0');
 
+    // Hapus penanda "since" saat logout supaya login berikutnya di tab yang sama tidak langsung
+    // memunculkan toast untuk semua aktivitas yang terlewat (bug toast spam saat login)
+    document.querySelectorAll('#logoutForm').forEach(function (form) {
+        form.addEventListener('submit', function () {
+            sessionStorage.removeItem(POPUP_KEY);
+        });
+    });
+
+    let aktivitasBusy = false;
+
     function checkAktivitasBaru() {
+        if (document.hidden || aktivitasBusy) return;
         const since = sessionStorage.getItem(POPUP_KEY) || '';
-        fetch('/notif/aktivitas-baru?since=' + encodeURIComponent(since))
+        aktivitasBusy = true;
+        fetch('/notif/aktivitas-baru?since=' + encodeURIComponent(since), { headers: { 'Accept': 'application/json' } })
             .then(r => r.json())
             .then(d => {
                 if (!since) {
@@ -243,11 +255,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 sessionStorage.setItem(POPUP_KEY, d.now);
             })
-            .catch(function () {});
+            .catch(function () {})
+            .finally(function () { aktivitasBusy = false; });
     }
 
     checkAktivitasBaru();
-    setInterval(checkAktivitasBaru, 5000);
+    setInterval(checkAktivitasBaru, 30000);
 
     // Profile Dropdown
     const profileTrigger = document.getElementById('profileTrigger');
