@@ -473,6 +473,8 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
+        gap: 8px;
+        flex-wrap: wrap;
     }
 
     .produk-card .pc-body .pc-price {
@@ -485,6 +487,42 @@
         font-size: 11px;
         font-weight: 500;
         color: var(--gray);
+    }
+
+    .produk-card .pc-body .pc-keranjang-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        padding: 8px 14px;
+        border-radius: 100px;
+        border: none;
+        background: linear-gradient(135deg, #10B981, #34D399);
+        color: #fff;
+        font-size: 11px;
+        font-weight: 700;
+        font-family: 'Poppins', sans-serif;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+        white-space: nowrap;
+    }
+
+    .produk-card .pc-body .pc-keranjang-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 18px rgba(16, 185, 129, 0.35);
+    }
+
+    .produk-card .pc-body .pc-keranjang-btn:active {
+        transform: translateY(0);
+    }
+
+    .produk-card .pc-body .pc-keranjang-btn:disabled,
+    .produk-card .pc-body .pc-keranjang-btn:disabled:hover {
+        opacity: 0.55;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
     }
 
     .pc-name-link {
@@ -712,6 +750,9 @@
                             <div class="pc-divider"></div>
                             <div class="pc-footer">
                                 <div class="pc-price">Rp {{ number_format($produk->harga_jual, 0, ',', '.') }} <span>/{{ $produk->satuan }}</span></div>
+                                <button class="pc-keranjang-btn" onclick="tambahKeranjangCard(this)" data-id="{{ $produk->id_produk }}" data-nama="{{ $produk->nm_produk }}" data-kategori="{{ $nmKategori }}" data-harga="{{ $produk->harga_jual }}" {{ $produk->stok > 0 ? '' : 'disabled' }} title="{{ $produk->stok > 0 ? 'Tambah ke keranjang' : 'Stok habis' }}">
+                                    <i class="fa-solid fa-cart-plus"></i> Keranjang
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -837,6 +878,36 @@
                 });
                 if (currentSort === 'favorit') applySort('favorit');
                 showNotif(data.in_favorit ? 'Produk berhasil difavoritkan' : 'Favorit produk dihapus');
+            }
+        })
+        .catch(function() { alert('Terjadi kesalahan'); });
+    }
+
+    function tambahKeranjangCard(btn) {
+        event.preventDefault();
+        event.stopPropagation();
+        var csrf = document.querySelector('meta[name="csrf-token"]').content;
+
+        fetch('{{ route("pelanggan.keranjang.store") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrf
+            },
+            body: JSON.stringify({
+                nm_produk: btn.getAttribute('data-nama'),
+                produk_slug: btn.getAttribute('data-id'),
+                kategori: btn.getAttribute('data-kategori'),
+                harga_satuan: parseInt(btn.getAttribute('data-harga')),
+                qty: 1
+            })
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            if (data.success) {
+                showNotif(data.message);
+                localStorage.removeItem('cart_seen');
+                updateCartBadge();
             }
         })
         .catch(function() { alert('Terjadi kesalahan'); });
