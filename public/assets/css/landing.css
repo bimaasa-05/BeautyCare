@@ -776,31 +776,26 @@ html {
 }
 
 .pricing-card:hover {
-  transform: translateY(-8px);
-  box-shadow: var(--shadow-lg);
+  transform: translateY(-8px) scale(1.04);
+  box-shadow: 0 20px 60px rgba(255, 79, 135, 0.16);
+  border-color: var(--hover);
 }
 
-.pricing-card.featured {
-  border-color: var(--primary);
-  box-shadow: 0 8px 32px rgba(255, 79, 135, 0.15);
-  transform: scale(1.04);
-}
-
-.pricing-card.featured:hover {
-  transform: scale(1.04) translateY(-8px);
-}
-
-.pricing-card .popular-badge {
-  position: absolute;
-  top: -12px;
-  left: 50%;
-  transform: translateX(-50%);
+.pricing-card:hover .btn {
   background: var(--primary);
-  color: var(--white);
-  padding: 6px 20px;
-  border-radius: 100px;
-  font-size: 12px;
-  font-weight: var(--fw-medium);
+  border-color: var(--primary);
+  color: #fff;
+  box-shadow: 0 0 0 4px rgba(255, 79, 135, 0.12), 0 8px 28px rgba(255, 79, 135, 0.45);
+  animation: pricingBtnPulse 1.4s ease-in-out infinite;
+}
+
+@keyframes pricingBtnPulse {
+  0%, 100% {
+    box-shadow: 0 0 0 4px rgba(255, 79, 135, 0.12), 0 8px 28px rgba(255, 79, 135, 0.45);
+  }
+  50% {
+    box-shadow: 0 0 0 7px rgba(255, 79, 135, 0.2), 0 14px 40px rgba(255, 79, 135, 0.65);
+  }
 }
 
 .pricing-card .plan-name {
@@ -859,28 +854,69 @@ html {
   font-size: 16px;
 }
 
+/* ---- Membership Card ---- */
+.pricing-card .ms-syarat {
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  background: var(--background);
+  display: grid;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.pricing-card .ms-syarat div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--gray);
+}
+
+.pricing-card .ms-syarat strong {
+  color: var(--dark);
+}
+
+.pricing-card .ms-harga {
+  font-size: 13px;
+  color: var(--gray);
+  margin-bottom: 16px;
+}
+
+.pricing-card .ms-harga strong {
+  color: var(--primary);
+}
+
 /* ---- FAQ Section ---- */
 .faq {
-  background: var(--background);
+  background: linear-gradient(180deg, var(--background) 0%, #ffffff 100%);
 }
 
 .faq-list {
-  max-width: 700px;
+  max-width: 720px;
   margin: 0 auto;
   display: grid;
-  gap: 12px;
+  gap: 14px;
 }
 
 .faq-item {
   background: var(--white);
-  border-radius: var(--radius-md);
+  border-radius: 16px;
   border: 1px solid var(--border);
   overflow: hidden;
-  transition: var(--transition-base);
+  box-shadow: 0 2px 10px rgba(179, 16, 87, 0.05);
+  transition: border-color 0.35s ease, box-shadow 0.35s ease, transform 0.35s ease;
+}
+
+.faq-item:hover {
+  border-color: rgba(255, 79, 135, 0.4);
+  box-shadow: 0 8px 24px rgba(255, 79, 135, 0.09);
+  transform: translateY(-2px);
 }
 
 .faq-item.active {
   border-color: var(--primary);
+  box-shadow: 0 12px 32px rgba(255, 79, 135, 0.13);
 }
 
 .faq-question {
@@ -888,43 +924,53 @@ html {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 16px;
   padding: 20px 24px;
   font-size: 15px;
-  font-weight: var(--fw-medium);
+  font-weight: var(--fw-semibold);
   color: var(--dark);
   text-align: left;
   cursor: pointer;
+  background: transparent;
+  border: 0;
+  transition: color 0.3s ease;
+}
+
+.faq-question:hover {
+  color: var(--primary);
 }
 
 .faq-question .faq-icon {
-  width: 24px;
-  height: 24px;
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: var(--transition-base);
-  flex-shrink: 0;
+  border-radius: var(--radius-full);
+  background: var(--background);
+  color: var(--gray);
+  transition: background 0.35s ease, color 0.35s ease, transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .faq-item.active .faq-question .faq-icon {
-  transform: rotate(45deg);
+  background: var(--primary);
+  color: var(--white);
+  transform: rotate(180deg);
 }
 
 .faq-answer {
   max-height: 0;
   overflow: hidden;
-  transition: max-height 0.3s ease, padding 0.3s ease;
+  transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .faq-answer-inner {
-  padding: 0 24px 20px;
+  padding: 16px 24px 22px;
   font-size: 14px;
   color: var(--gray);
-  line-height: 1.7;
-}
-
-.faq-item.active .faq-answer {
-  max-height: 300px;
+  line-height: 1.75;
+  border-top: 1px dashed var(--border);
 }
 
 /* ---- Contact Section ---- */
@@ -1127,162 +1173,4 @@ html {
 .animate-on-scroll.visible {
   opacity: 1;
   transform: translateY(0);
-}
-
-/* =============================================
-   ADDITIONAL RESPONSIVE FIXES
-   ============================================= */
-
-@media screen and (max-width: 768px) {
-  .hero {
-    padding: 100px 0 60px;
-  }
-  .hero-content h1 {
-    font-size: 32px;
-  }
-  .hero-content p {
-    font-size: 15px;
-  }
-  .hero-image .mockup {
-    max-width: 90%;
-    margin: 0 auto;
-  }
-  .about-image .experience-badge {
-    bottom: -10px;
-    right: 10px;
-    padding: 14px 20px;
-  }
-  .about-image .experience-badge h3 {
-    font-size: 22px;
-  }
-  .layanan-card {
-    height: 220px;
-  }
-  .layanan-card .overlay h3 {
-    font-size: 17px;
-  }
-  .pricing-card .price {
-    font-size: 36px;
-  }
-  .pricing-card.featured {
-    transform: scale(1);
-  }
-  .pricing-card.featured:hover {
-    transform: translateY(-6px);
-  }
-  .contact-map {
-    min-height: 280px;
-  }
-  .contact-form {
-    padding: 28px 20px;
-  }
-  .navbar-brand {
-    font-size: 18px;
-  }
-  .navbar-brand svg {
-    width: 28px;
-    height: 28px;
-  }
-}
-
-@media screen and (max-width: 576px) {
-  .hero {
-    padding: 80px 0 40px;
-  }
-  .hero-content h1 {
-    font-size: 26px;
-  }
-  .hero-content p {
-    font-size: 14px;
-  }
-  .hero-buttons .btn {
-    width: 100%;
-    text-align: center;
-  }
-  .step-number {
-    width: 60px;
-    height: 60px;
-    font-size: 22px;
-  }
-  .step-card h3 {
-    font-size: 16px;
-  }
-  .stat-card h3 {
-    font-size: 30px;
-  }
-  .stat-card .stat-icon svg {
-    width: 32px;
-    height: 32px;
-  }
-  .statistik {
-    padding: 50px 0;
-  }
-  .section-header {
-    margin-bottom: 36px;
-  }
-  .section-header h2 {
-    font-size: 24px;
-  }
-  .section-header p {
-    font-size: 14px;
-  }
-  .about-content h2 {
-    font-size: 24px;
-  }
-  .about-content p {
-    font-size: 14px;
-  }
-  .faq-question {
-    font-size: 14px;
-    padding: 16px 18px;
-  }
-  .pricing-card {
-    padding: 28px 20px;
-  }
-  .pricing-card .price {
-    font-size: 32px;
-  }
-  .testimoni-card {
-    padding: 24px 20px;
-  }
-  .contact-form h3 {
-    font-size: 20px;
-  }
-  .feature-card {
-    padding: 24px 18px;
-  }
-  .feature-card .fc-icon {
-    width: 52px;
-    height: 52px;
-  }
-  .navbar-actions .btn {
-    font-size: 12px;
-    padding: 8px 14px;
-  }
-}
-
-@media screen and (max-width: 400px) {
-  .container {
-    padding-left: 16px;
-    padding-right: 16px;
-  }
-  .hero-content h1 {
-    font-size: 22px;
-  }
-  .stat-card h3 {
-    font-size: 26px;
-  }
-  .layanan-grid {
-    gap: 16px;
-  }
-  .layanan-card {
-    height: 180px;
-    border-radius: var(--radius-md);
-  }
-  .pricing-card .price {
-    font-size: 28px;
-  }
-  .pricing-card .price span {
-    font-size: 15px;
-  }
 }
