@@ -16,13 +16,17 @@
             <li><a href="#tentang">Tentang</a></li>
             <li><a href="#fitur">Fitur</a></li>
             <li><a href="#layanan">Layanan</a></li>
-            <li><a href="#pricing">Harga</a></li>
+            <li><a href="#membership">Membership</a></li>
             <li><a href="#kontak">Kontak</a></li>
         </ul>
 
         <div class="navbar-actions">
+            @auth
+            <a href="{{ route('dashboard') }}" class="btn btn-primary btn-sm">Dashboard</a>
+            @else
             <a href="{{ route('login') }}" class="btn btn-outline btn-sm">Masuk</a>
             <a href="{{ route('register') }}" class="btn btn-primary btn-sm">Daftar</a>
+            @endauth
             <button type="button" class="navbar-toggle" aria-label="Toggle navigation menu">
                 <span></span>
                 <span></span>
