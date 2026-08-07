@@ -329,7 +329,7 @@ Route::middleware('auth')->group(function () {
     });
     //--------------------------------------------------
     //Route Pelangggan
-    Route::get('/pelanggan/dashboard', [PelangganDashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
+    Route::get('/pelanggan/dashboard', [PelangganDashboardController::class, 'index'])->middleware(['auth', 'verified', 'role:pelanggan'])->name('dashboard');
     Route::middleware(['role:pelanggan'])->group(function () {
 
         //Route Booking
