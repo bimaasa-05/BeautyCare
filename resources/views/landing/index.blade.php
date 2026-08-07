@@ -35,7 +35,7 @@
 
             <div class="hero-image">
                 <div class="mockup">
-                    <img src="{{ asset('https://i.pinimg.com/736x/f1/0f/85/f10f857f68a5771a4a9b98b940cd0795.jpg') }}"
+                    <img src="https://i.pinimg.com/736x/f1/0f/85/f10f857f68a5771a4a9b98b940cd0795.jpg"
                         alt="BeautyCare Dashboard Preview" loading="lazy">
                 </div>
                 <div class="floating-card">
@@ -627,65 +627,90 @@
         </div>
     </section>
 
-    <!-- Pricing Section -->
-    <section class="section pricing" id="pricing">
+    <!-- Membership Section -->
+    <section class="section pricing" id="membership">
         <div class="container">
             <div class="section-header animate-on-scroll">
-                <h2>Harga <span>Terjangkau</span></h2>
-                <p>Pilih paket yang sesuai dengan kebutuhan bisnis kecantikan Anda.</p>
+                <h2>Membership <span>BeautyCare</span></h2>
+                <p>Pilih level membership sesuai kebutuhan Anda dan nikmati berbagai keuntungan eksklusif.</p>
             </div>
             <div class="pricing-grid animate-on-scroll">
+                @php
+                    $ctaUrl = route('register');
+                    $ctaLabel = 'Daftar & Bergabung';
+                    if (auth()->check()) {
+                        $role = auth()->user()->role;
+                        if ($role === 'pelanggan') {
+                            $ctaUrl = route('pelanggan.membership');
+                            $ctaLabel = 'Lihat';
+                        } elseif ($role === 'admin') {
+                            $ctaUrl = route('admin.dashboard');
+                            $ctaLabel = 'Dashboard';
+                        } elseif ($role === 'kasir') {
+                            $ctaUrl = route('kasir.dashboard');
+                            $ctaLabel = 'Dashboard';
+                        } else {
+                            $ctaUrl = route('beautycian.dashboard');
+                            $ctaLabel = 'Dashboard';
+                        }
+                    }
+                @endphp
+                @forelse($tingkatMembership as $member)
+                @php
+                    $benefitItems = [
+                        ['on' => true, 'text' => 'Diskon ' . (float) $member->diskon . '% semua layanan & produk'],
+                        ['on' => (int) $member->jml_konsultasi > 0, 'text' => 'Gratis konsultasi ' . (int) $member->jml_konsultasi . 'x/bulan'],
+                        ['on' => (bool) $member->prioritas_booking, 'text' => 'Prioritas booking treatment'],
+                        ['on' => (bool) $member->undangan_event, 'text' => 'Undangan event eksklusif'],
+                        ['on' => (int) $member->masa_berlaku > 0, 'text' => 'Masa aktif ' . (int) $member->masa_berlaku . ' hari'],
+                    ];
+                @endphp
                 <div class="pricing-card">
-                    <div class="plan-name">Basic</div>
-                    <div class="plan-desc">Cocok untuk pemula</div>
-                    <div class="price">Rp. 149.000<span>/bln</span></div>
-                    <div class="price-period">Ditagih bulanan</div>
+                    <div class="plan-name">{{ $member->tingkat }}</div>
+                    <div class="plan-desc">{{ $member->deskripsi ?: ($member->nm_member ?: 'Membership BeautyCare') }}</div>
+                    <div class="price">{{ (float) $member->diskon }}%<span> diskon</span></div>
+                    <div class="price-period">
+                        @if((float) $member->harga > 0)
+                        Biaya bergabung Rp {{ number_format((float) $member->harga, 0, ',', '.') }}
+                        @else
+                        Untuk semua layanan & produk
+                        @endif
+                    </div>
                     <ul class="plan-features">
-                        <li><span class="check">✓</span> Dashboard sederhana</li>
-                        <li><span class="check">✓</span> Manajemen customer</li>
-                        <li><span class="check">✓</span> Booking manual</li>
-                        <li><span class="check">✓</span> POS dasar</li>
-                        <li><span class="check">✓</span> 1 pengguna</li>
-                        <li><span class="x">✗</span> Laporan keuangan</li>
-                        <li><span class="x">✗</span> Membership</li>
+                        @foreach($benefitItems as $benefit)
+                        <li>
+                            @if($benefit['on'])
+                            <span class="check">✓</span>
+                            @else
+                            <span class="x">✗</span>
+                            @endif
+                            {{ $benefit['text'] }}
+                        </li>
+                        @endforeach
                     </ul>
-                    <a href="{{ route('register') }}" class="btn btn-outline w-full">Pilih Paket</a>
+                    <div class="ms-syarat">
+                        <div>
+                            <span>Min. Transaksi Produk</span>
+                            <strong>{{ (int) $member->min_transaksi }}x</strong>
+                        </div>
+                        <div>
+                            <span>Min. Total Belanja</span>
+                            <strong>Rp {{ number_format((float) $member->min_pembelian, 0, ',', '.') }}</strong>
+                        </div>
+                    </div>
+                    @if((float) $member->harga > 0)
+                    <div class="ms-harga">Biaya bergabung: <strong>Rp {{ number_format((float) $member->harga, 0, ',', '.') }}</strong></div>
+                    @endif
+                    <a href="{{ $ctaUrl }}" class="btn btn-outline w-full">{{ $ctaLabel }}</a>
                 </div>
-
-                <div class="pricing-card featured">
-                    <span class="popular-badge">Paling Populer</span>
-                    <div class="plan-name">Professional</div>
-                    <div class="plan-desc">Untuk bisnis berkembang</div>
-                    <div class="price">Rp. 349.000<span>/bln</span></div>
-                    <div class="price-period">Ditagih bulanan</div>
-                    <ul class="plan-features">
-                        <li><span class="check">✓</span> Dashboard lengkap</li>
-                        <li><span class="check">✓</span> Manajemen customer + history</li>
-                        <li><span class="check">✓</span> Booking online</li>
-                        <li><span class="check">✓</span> POS lengkap</li>
-                        <li><span class="check">✓</span> 5 pengguna</li>
-                        <li><span class="check">✓</span> Laporan keuangan</li>
-                        <li><span class="check">✓</span> Membership</li>
-                    </ul>
-                    <a href="{{ route('register') }}" class="btn btn-primary w-full">Pilih Paket</a>
+                @empty
+                <div class="pricing-card" style="grid-column:1/-1;">
+                    <div class="plan-name">Membership</div>
+                    <div class="plan-desc">Informasi level membership akan segera hadir.</div>
+                    <p style="text-align:center;color:var(--gray);margin-bottom:24px;">Daftar sekarang untuk menjadi bagian dari BeautyCare dan mulai menikmati berbagai keuntungan.</p>
+                    <a href="{{ $ctaUrl }}" class="btn btn-primary w-full">{{ $ctaLabel }}</a>
                 </div>
-
-                <div class="pricing-card">
-                    <div class="plan-name">Enterprise</div>
-                    <div class="plan-desc">Untuk bisnis besar</div>
-                    <div class="price">Rp. 749.000<span>/bln</span></div>
-                    <div class="price-period">Ditagih bulanan</div>
-                    <ul class="plan-features">
-                        <li><span class="check">✓</span> Semua fitur Professional</li>
-                        <li><span class="check">✓</span> Unlimited pengguna</li>
-                        <li><span class="check">✓</span> Multi cabang</li>
-                        <li><span class="check">✓</span> API akses</li>
-                        <li><span class="check">✓</span> Analytics lanjutan</li>
-                        <li><span class="check">✓</span> Dedicated support</li>
-                        <li><span class="check">✓</span> Kustomisasi fitur</li>
-                    </ul>
-                    <a href="{{ route('register') }}" class="btn btn-outline w-full">Pilih Paket</a>
-                </div>
+                @endforelse
             </div>
         </div>
     </section>
@@ -704,8 +729,7 @@
                         <span class="faq-icon">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <line x1="12" y1="5" x2="12" y2="19" />
-                                <line x1="5" y1="12" x2="19" y2="12" />
+                                <polyline points="6 9 12 15 18 9" />
                             </svg>
                         </span>
                     </button>
@@ -718,19 +742,20 @@
                 </div>
                 <div class="faq-item">
                     <button class="faq-question">
-                        Apakah ada masa trial gratis?
+                        Bagaimana cara mendaftar di BeautyCare?
                         <span class="faq-icon">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <line x1="12" y1="5" x2="12" y2="19" />
-                                <line x1="5" y1="12" x2="19" y2="12" />
+                                <polyline points="6 9 12 15 18 9" />
                             </svg>
                         </span>
                     </button>
                     <div class="faq-answer">
                         <div class="faq-answer-inner">
-                            Ya, BeautyCare menawarkan masa trial gratis selama 14 hari tanpa komitmen. Anda bisa mencoba
-                            semua fitur premium selama masa trial.
+                            Pendaftaran mudah sekali. Buat akun Anda sebagai pelanggan melalui tombol "Daftar", lalu
+                            lengkapi data diri. Setelah akun Anda aktif, Anda sudah bisa booking treatment, belanja
+                            produk, dan mengikuti promo. Akun untuk kasir, beautycian, dan admin dibuat khusus oleh
+                            Admin BeautyCare.
                         </div>
                     </div>
                 </div>
@@ -740,8 +765,7 @@
                         <span class="faq-icon">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <line x1="12" y1="5" x2="12" y2="19" />
-                                <line x1="5" y1="12" x2="19" y2="12" />
+                                <polyline points="6 9 12 15 18 9" />
                             </svg>
                         </span>
                     </button>
@@ -758,8 +782,7 @@
                         <span class="faq-icon">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <line x1="12" y1="5" x2="12" y2="19" />
-                                <line x1="5" y1="12" x2="19" y2="12" />
+                                <polyline points="6 9 12 15 18 9" />
                             </svg>
                         </span>
                     </button>
@@ -772,19 +795,19 @@
                 </div>
                 <div class="faq-item">
                     <button class="faq-question">
-                        Apakah bisa kustom fitur?
+                        Bagaimana cara mendapatkan membership?
                         <span class="faq-icon">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <line x1="12" y1="5" x2="12" y2="19" />
-                                <line x1="5" y1="12" x2="19" y2="12" />
+                                <polyline points="6 9 12 15 18 9" />
                             </svg>
                         </span>
                     </button>
                     <div class="faq-answer">
                         <div class="faq-answer-inner">
-                            Untuk paket Enterprise, kami menyediakan layanan kustomisasi fitur sesuai kebutuhan spesifik
-                            bisnis Anda. Silakan hubungi tim kami untuk diskusi lebih lanjut.
+                            Membership dapat diperoleh dengan memenuhi syarat minimal transaksi produk dan total
+                            belanja, atau langsung bergabung melalui halaman Membership setelah login. Setiap level
+                            membership memberikan diskon dan keuntungan yang semakin besar.
                         </div>
                     </div>
                 </div>
@@ -818,26 +841,46 @@
                 </div>
                 <div class="contact-form">
                     <h3>Kirim Pesan</h3>
-                    <form>
+
+                    @if(session('success'))
+                    <div class="alert" style="background:#E8F8EE;color:#166534;border:1px solid #A7F3D0;padding:12px 16px;border-radius:var(--radius-md);font-size:14px;margin-bottom:20px;">
+                        {{ session('success') }}
+                    </div>
+                    @endif
+
+                    @if(isset($errors) && $errors->any())
+                    <div class="alert" style="background:#FDE8E8;color:#991B1B;border:1px solid #FECACA;padding:12px 16px;border-radius:var(--radius-md);font-size:14px;margin-bottom:20px;">
+                        <ul style="margin:0;padding-left:16px;">
+                            @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                    @endif
+
+                    <form method="POST" action="{{ route('landing.contact') }}">
+                        @csrf
                         <div class="form-row">
                             <div class="form-group">
                                 <label class="form-label" for="contact-name">Nama</label>
-                                <input type="text" id="contact-name" class="form-input" placeholder="Nama lengkap"
-                                    required>
+                                <input type="text" id="contact-name" name="nama" class="form-input"
+                                    placeholder="Nama lengkap" value="{{ old('nama') }}" required>
                             </div>
                             <div class="form-group">
                                 <label class="form-label" for="contact-email">Email</label>
-                                <input type="email" id="contact-email" class="form-input"
-                                    placeholder="email@example.com" required>
+                                <input type="email" id="contact-email" name="email" class="form-input"
+                                    placeholder="email@example.com" value="{{ old('email') }}" required>
                             </div>
                         </div>
                         <div class="form-group">
                             <label class="form-label" for="contact-phone">Nomor HP</label>
-                            <input type="tel" id="contact-phone" class="form-input" placeholder="+62 812 3456 7890">
+                            <input type="tel" id="contact-phone" name="no_hp" class="form-input"
+                                placeholder="+62 812 3456 7890" value="{{ old('no_hp') }}">
                         </div>
                         <div class="form-group">
                             <label class="form-label" for="contact-message">Pesan</label>
-                            <textarea id="contact-message" class="form-input" placeholder="Tulis pesan Anda..." required></textarea>
+                            <textarea id="contact-message" name="pesan" class="form-input"
+                                placeholder="Tulis pesan Anda..." required>{{ old('pesan') }}</textarea>
                         </div>
                         <button type="submit" class="btn btn-primary">Kirim Pesan</button>
                     </form>
