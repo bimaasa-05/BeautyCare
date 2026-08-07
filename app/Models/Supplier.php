@@ -14,7 +14,6 @@ class Supplier extends Model
         'nm_supplier',
         'no_hp',
         'alamat',
-        'id_produk',
         'status',
     ];
 
@@ -25,6 +24,6 @@ class Supplier extends Model
 
     public function produk()
     {
-        return $this->belongsTo(Produk::class, 'id_produk', 'id_produk');
+        return $this->belongsToMany(Produk::class, 'supplier_produk', 'id_supplier', 'id_produk');
     }
 }
