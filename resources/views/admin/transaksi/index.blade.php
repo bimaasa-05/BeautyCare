@@ -385,13 +385,20 @@
                                             </div>
                                         </td>
                                         <td data-label="Status" class="py-3.5 px-4">
-                                            @if ($t->status == 'Lunas')
-                                                <span class="badge-status status-selesai"><i class="fa-regular fa-circle-check"></i> Lunas</span>
-                                            @elseif ($t->status == 'Pending')
-                                                <span class="badge-status status-proses"><i class="fa-regular fa-clock"></i> Pending</span>
-                                            @else
-                                                <span class="badge-status status-batal"><i class="fa-regular fa-circle-xmark"></i> Batal</span>
-                                            @endif
+                                            @php
+                                                $mapStatus = [
+                                                    'Lunas' => ['class' => 'status-selesai', 'icon' => 'fa-regular fa-circle-check', 'label' => 'Lunas'],
+                                                    'Pending' => ['class' => 'status-proses', 'icon' => 'fa-regular fa-clock', 'label' => 'Pending'],
+                                                    'Menunggu Pembayaran' => ['class' => 'status-proses', 'icon' => 'fa-regular fa-clock', 'label' => 'Menunggu Pembayaran'],
+                                                    'Sedang Diproses' => ['class' => 'status-proses', 'icon' => 'fa-regular fa-hourglass-half', 'label' => 'Sedang Diproses'],
+                                                    'Batal' => ['class' => 'status-batal', 'icon' => 'fa-regular fa-circle-xmark', 'label' => 'Batal'],
+                                                    'Gagal' => ['class' => 'status-batal', 'icon' => 'fa-solid fa-xmark', 'label' => 'Gagal'],
+                                                    'Dibatalkan' => ['class' => 'status-batal', 'icon' => 'fa-solid fa-ban', 'label' => 'Dibatalkan'],
+                                                    'Kadaluarsa' => ['class' => 'status-batal', 'icon' => 'fa-regular fa-hourglass-end', 'label' => 'Kadaluarsa'],
+                                                ];
+                                                $s = $mapStatus[$t->status] ?? ['class' => 'status-proses', 'icon' => 'fa-regular fa-clock', 'label' => $t->status];
+                                            @endphp
+                                            <span class="badge-status {{ $s['class'] }}"><i class="{{ $s['icon'] }}"></i> {{ $s['label'] }}</span>
                                         </td>
                                         <td data-label="Aksi" class="py-3.5 px-4 text-center">
                                             <div class="flex items-center justify-center gap-2">
