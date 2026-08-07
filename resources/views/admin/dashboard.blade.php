@@ -283,7 +283,7 @@
                         <div class="stat-label">Total Karyawan</div>
                     </div>
 
-                    <div class="stat-card">
+                    <div class="stat-card stat-card-produk">
                         <div class="stat-header">
                             <div class="stat-icon info">
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
