@@ -49,6 +49,13 @@ class AuthenticatedSessionController extends Controller
 
         $base = $request->root();
 
+        // Jangan ikuti intended URL yang menunjuk endpoint JSON notifikasi (mis. dari polling
+        // background saat session habis) — login harus selalu mendarat ke dashboard role.
+        $intended = $request->session()->get('url.intended');
+        if ($intended && str_contains($intended, '/notif/')) {
+            $request->session()->forget('url.intended');
+        }
+
         if ($user->role === 'admin') {
             return \redirect()->intended($base . \route('admin.dashboard', [], false));
         } elseif ($user->role === 'kasir') {
