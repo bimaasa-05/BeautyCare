@@ -31,10 +31,12 @@
                     class="text-[11px] font-semibold px-2 py-1 rounded-full border-0 cursor-pointer appearance-none
                     @if ($user->status === 'aktif') bg-emerald-50 text-emerald-600
                     @elseif ($user->status === 'suspend') bg-amber-50 text-amber-600
+                    @elseif ($user->status === 'menunggu_persetujuan') bg-blue-50 text-blue-600
                     @else bg-red-50 text-red-600 @endif">
                     <option value="aktif" {{ $user->status === 'aktif' ? 'selected' : '' }}>Aktif</option>
                     <option value="suspend" {{ $user->status === 'suspend' ? 'selected' : '' }}>Suspend</option>
                     <option value="non_aktif" {{ $user->status === 'non_aktif' ? 'selected' : '' }}>Non Aktif</option>
+                    <option value="menunggu_persetujuan" {{ $user->status === 'menunggu_persetujuan' ? 'selected' : '' }}>Menunggu Persetujuan</option>
                 </select>
             </form>
             @if ($user->status === 'suspend' && $user->suspend_until)

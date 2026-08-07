@@ -44,7 +44,7 @@ class RegisteredUserController extends Controller
             'email' => $request->email,
             'no_hp' => $request->no_hp,
             'password' => Hash::make($request->password),
-            'status' => 'non_aktif',
+            'status' => 'menunggu_persetujuan',
         ]);
 
         $existingPelanggan = Pelanggan::where('email', $request->email)->whereNull('id_user')->first();
