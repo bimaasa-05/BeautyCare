@@ -29,6 +29,8 @@
     <div class="ringkasan">
         <table>
             <tr><td>Total Pendapatan</td><td>{{ $fmt($totalPendapatan) }}</td></tr>
+            <tr><td>Pengeluaran Pembelian</td><td>{{ $fmt($totalPengeluaran) }}</td></tr>
+            <tr><td>Saldo Bersih</td><td>{{ $fmt($saldoBersih) }}</td></tr>
             <tr><td>Total Reservasi</td><td>{{ number_format($totalReservasi, 0, ',', '.') }}</td></tr>
             <tr><td>Pelanggan Baru</td><td>{{ number_format($pelangganBaru, 0, ',', '.') }}</td></tr>
             <tr><td>Pertumbuhan Pendapatan</td><td>{{ $pendapatanGrowth >= 0 ? '+' : '' }}{{ $pendapatanGrowth }}%</td></tr>
