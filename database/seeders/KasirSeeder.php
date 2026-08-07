@@ -270,6 +270,7 @@ class KasirSeeder extends Seeder
                 'id_booking' => null,
                 'id_pelanggan' => $pelangganId,
                 'id_user' => $userId,
+                'id_kasir' => $userId,
                 'no_invoice' => $noInv,
                 'tanggal' => $date,
                 'subtotal' => $subtotal,
