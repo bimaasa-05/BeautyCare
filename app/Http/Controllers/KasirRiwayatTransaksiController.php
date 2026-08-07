@@ -14,11 +14,11 @@ class KasirRiwayatTransaksiController extends Controller
         $sampai = $request->sampai;
         $userId = auth()->id();
 
-        $totalTransaksi = Transaksi::where('id_user', $userId)->count();
-        $totalPendapatan = Transaksi::where('id_user', $userId)->where('status', 'Lunas')->sum('total');
+        $totalTransaksi = Transaksi::where('id_kasir', $userId)->count();
+        $totalPendapatan = Transaksi::where('id_kasir', $userId)->where('status', 'Lunas')->sum('total');
 
         $transaksi = Transaksi::with('pelanggan', 'user')
-            ->where('id_user', $userId)
+            ->where('id_kasir', $userId)
             ->when($search, function ($query, $search) {
                 return $query->where(function ($q) use ($search) {
                     $q->where('no_invoice', 'like', "%{$search}%")
