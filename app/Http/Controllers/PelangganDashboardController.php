@@ -18,6 +18,10 @@ class PelangganDashboardController extends Controller
 {
     public function index()
     {
+        if (auth()->user()->role !== 'pelanggan') {
+            abort(403);
+        }
+
         $promos = Promo::where('status', 'Tersedia')
             ->whereDate('selesai', '>', now())
             ->orderBy('id_promo', 'desc')
