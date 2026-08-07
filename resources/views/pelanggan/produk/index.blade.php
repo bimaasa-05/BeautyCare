@@ -251,6 +251,8 @@
         box-shadow: 0 2px 12px -4px rgba(0, 0, 0, 0.06);
         overflow: hidden;
         transition: all 0.3s ease;
+        display: flex;
+        flex-direction: column;
     }
 
     .produk-card:hover {
@@ -443,6 +445,9 @@
 
     .produk-card .pc-body {
         padding: 16px 20px 20px;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
     }
 
     .produk-card .pc-body .pc-name {
@@ -475,6 +480,8 @@
         justify-content: space-between;
         gap: 8px;
         flex-wrap: wrap;
+        margin-top: auto;
+        padding-top: 8px;
     }
 
     .produk-card .pc-body .pc-price {
