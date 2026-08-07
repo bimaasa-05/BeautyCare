@@ -226,18 +226,47 @@
                                 @enderror
                             </div>
 
-                            <div>
-                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Nama Produk</label>
-                                <select name="id_produk"
-                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all @error('id_produk') border-red-300 @enderror">
-                                    <option value="" {{ old('id_produk') ? '' : 'selected' }}>Pilih produk</option>
-                                    @foreach ($produk as $p)
-                                        <option value="{{ $p->id_produk }}" {{ in_array($p->id_produk, $terpakai) ? 'disabled' : '' }} {{ old('id_produk') == $p->id_produk ? 'selected' : '' }}>
-                                            {{ $p->nm_produk }}@if (in_array($p->id_produk, $terpakai)) (sudah punya supplier)@endif
-                                        </option>
+                            <div class="md:col-span-2">
+                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Produk yang
+                                    Disuplai</label>
+                                <div id="produkRows" class="space-y-2">
+                                    @php
+                                        $oldProduk = old('produk') ?? [['id_produk' => '']];
+                                    @endphp
+                                    @foreach ($oldProduk as $index => $row)
+                                        <div class="produk-row grid grid-cols-1 md:grid-cols-[1fr_40px] gap-2 items-start">
+                                            <select name="produk[{{ $index }}][id_produk]"
+                                                class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all">
+                                                <option value="">Pilih produk</option>
+                                                @foreach ($produk as $p)
+                                                    <option value="{{ $p->id_produk }}" {{ (string) old("produk.$index.id_produk") === (string) $p->id_produk ? 'selected' : '' }}>
+                                                        {{ $p->nm_produk }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                            <button type="button"
+                                                class="remove-produk w-10 h-10 rounded-xl bg-red-50 text-red-400 hover:bg-red-100 flex items-center justify-center">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12"
+                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                                                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                                                </svg>
+                                            </button>
+                                        </div>
                                     @endforeach
-                                </select>
-                                @error('id_produk')
+                                </div>
+                                <button type="button" id="addProdukBtn"
+                                    class="mt-2 flex items-center gap-1.5 text-[12px] font-semibold text-[#de3b7c] hover:text-[#c62f6b] transition-colors">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <path d="M5 12h14"></path>
+                                        <path d="M12 5v14"></path>
+                                    </svg>
+                                    Tambah Produk
+                                </button>
+                                @error('produk')
                                     <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
@@ -283,6 +312,40 @@
         };
         const dateEl = document.getElementById('currentDate');
         if (dateEl) dateEl.textContent = now.toLocaleDateString('id-ID', options);
+
+        // Baris dinamis produk supplier
+        const produkRows = document.getElementById('produkRows');
+        const addProdukBtn = document.getElementById('addProdukBtn');
+
+        function reindexProdukRows() {
+            produkRows.querySelectorAll('.produk-row').forEach(function (row, i) {
+                row.querySelectorAll('select').forEach(function (el) {
+                    const name = el.name.replace(/produk\[\d+\]\[(id_produk)\]/, 'produk[' + i + '][$1]');
+                    el.name = name;
+                });
+            });
+        }
+
+        addProdukBtn.addEventListener('click', function () {
+            const template = produkRows.querySelector('.produk-row');
+            if (!template) return;
+            const clone = template.cloneNode(true);
+            clone.querySelector('select').value = '';
+            produkRows.appendChild(clone);
+            reindexProdukRows();
+        });
+
+        produkRows.addEventListener('click', function (e) {
+            const btn = e.target.closest('.remove-produk');
+            if (!btn) return;
+            const rows = produkRows.querySelectorAll('.produk-row');
+            if (rows.length === 1) {
+                btn.closest('.produk-row').querySelector('select').value = '';
+                return;
+            }
+            btn.closest('.produk-row').remove();
+            reindexProdukRows();
+        });
     </script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
 </body>
