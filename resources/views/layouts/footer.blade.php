@@ -34,7 +34,7 @@
                     <li><a href="#tentang">Tentang</a></li>
                     <li><a href="#fitur">Fitur</a></li>
                     <li><a href="#layanan">Layanan</a></li>
-                    <li><a href="#pricing">Harga</a></li>
+                    <li><a href="#membership">Membership</a></li>
                     <li><a href="#kontak">Kontak</a></li>
                 </ul>
             </div>
