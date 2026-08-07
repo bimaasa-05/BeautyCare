@@ -231,9 +231,12 @@
 
                             <div>
                                 <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Harga Beli <span class="text-red-400">*</span></label>
-                                <input type="number" step="0.01" name="harga_beli" value="{{ old('harga_beli') }}"
-                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('harga_beli') border-red-300 @enderror"
-                                    placeholder="Masukkan harga beli">
+                                <div class="relative">
+                                    <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-[13px]">Rp.</span>
+                                    <input type="text" name="harga_beli" value="{{ old('harga_beli') }}"
+                                        class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl pl-12 pr-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('harga_beli') border-red-300 @enderror"
+                                        placeholder="0" data-format-harga>
+                                </div>
                                 @error('harga_beli')
                                     <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
                                 @enderror
@@ -241,9 +244,12 @@
 
                             <div>
                                 <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Harga Jual <span class="text-red-400">*</span></label>
-                                <input type="number" step="0.01" name="harga_jual" value="{{ old('harga_jual') }}"
-                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('harga_jual') border-red-300 @enderror"
-                                    placeholder="Masukkan harga jual">
+                                <div class="relative">
+                                    <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-[13px]">Rp.</span>
+                                    <input type="text" name="harga_jual" value="{{ old('harga_jual') }}"
+                                        class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl pl-12 pr-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('harga_jual') border-red-300 @enderror"
+                                        placeholder="0" data-format-harga>
+                                </div>
                                 @error('harga_jual')
                                     <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
                                 @enderror
@@ -291,6 +297,30 @@
         };
         const dateEl = document.getElementById('currentDate');
         if (dateEl) dateEl.textContent = now.toLocaleDateString('id-ID', options);
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            function formatHarga(input) {
+                let value = input.value.replace(/[^0-9]/g, '');
+                if (value === '') return '';
+                let formatted = new Intl.NumberFormat('id-ID', {
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 0
+                }).format(value);
+                let cursorPos = input.selectionStart;
+                let originalLength = input.value.length;
+                input.value = formatted;
+                let newCursorPos = cursorPos - (originalLength - formatted.length);
+                input.setSelectionRange(newCursorPos, newCursorPos);
+            }
+
+            document.querySelectorAll('[data-format-harga]').forEach(function (input) {
+                if (input.value) formatHarga(input);
+                input.addEventListener('input', function () {
+                    formatHarga(input);
+                });
+            });
+        });
     </script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
 </body>
