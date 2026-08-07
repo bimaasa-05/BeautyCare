@@ -76,9 +76,9 @@
 
                     @php
                         $userId = auth()->id();
-                        $totalAll = \App\Models\Transaksi::where('id_user', $userId)->count();
-                        $totalSelesai = \App\Models\Transaksi::where('id_user', $userId)->where('status', 'Lunas')->count();
-                        $totalTunai = \App\Models\Transaksi::where('id_user', $userId)->where('metode_byr', 'Tunai')->count();
+                        $totalAll = \App\Models\Transaksi::where('id_kasir', $userId)->count();
+                        $totalSelesai = \App\Models\Transaksi::where('id_kasir', $userId)->where('status', 'Lunas')->count();
+                        $totalTunai = \App\Models\Transaksi::where('id_kasir', $userId)->where('metode_byr', 'Tunai')->count();
                     @endphp
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-3 mb-4">
                         <a href="{{ route('kasir.transaksi.index') }}"
