@@ -26,7 +26,6 @@ class AdminProdukController extends Controller
             'id_kategori_produk' => 'required|integer|exists:kategori_produk,id_kategori_produk',
             'nm_produk'          => 'required|string|max:50',
             'satuan'             => 'required|string|max:50',
-            'harga_beli'         => 'required|string|regex:/^[0-9.,]+$/',
             'harga_jual'         => 'required|string|regex:/^[0-9.,]+$/',
             'stok'               => 'required|integer',
             'status'             => 'required|string|in:Tersedia,Habis,Belum Restok',
@@ -34,7 +33,6 @@ class AdminProdukController extends Controller
         ]);
 
         $request->merge([
-            'harga_beli' => (int) str_replace('.', '', $request->harga_beli),
             'harga_jual' => (int) str_replace('.', '', $request->harga_jual),
         ]);
 
@@ -65,7 +63,6 @@ class AdminProdukController extends Controller
             'id_kategori_produk' => 'required|integer|exists:kategori_produk,id_kategori_produk',
             'nm_produk'          => 'required|string|max:50',
             'satuan'             => 'required|string|max:50',
-            'harga_beli'         => 'required|string|regex:/^[0-9.,]+$/',
             'harga_jual'         => 'required|string|regex:/^[0-9.,]+$/',
             'stok'               => 'required|integer',
             'status'             => 'required|string|in:Tersedia,Habis,Belum Restok',
@@ -73,7 +70,6 @@ class AdminProdukController extends Controller
         ]);
 
         $request->merge([
-            'harga_beli' => (int) str_replace('.', '', $request->harga_beli),
             'harga_jual' => (int) str_replace('.', '', $request->harga_jual),
         ]);
 
