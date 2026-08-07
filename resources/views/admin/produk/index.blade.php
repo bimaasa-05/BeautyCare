@@ -325,7 +325,7 @@
                                         <th class="text-left px-5 py-3 text-xs font-bold text-gray-400 uppercase">Kategori</th>
                                         <th class="text-left px-5 py-3 text-xs font-bold text-gray-400 uppercase">Supplier</th>
                                         <th class="text-left px-5 py-3 text-xs font-bold text-gray-400 uppercase">Satuan</th>
-                                        <th class="text-left px-5 py-3 text-xs font-bold text-gray-400 uppercase">Harga Beli</th>
+                                        <th class="text-left px-5 py-3 text-xs font-bold text-gray-400 uppercase">Harga per Supplier</th>
                                         <th class="text-left px-5 py-3 text-xs font-bold text-gray-400 uppercase">Harga Jual</th>
                                         <th class="text-left px-5 py-3 text-xs font-bold text-gray-400 uppercase">Stok</th>
                                         <th class="text-left px-5 py-3 text-xs font-bold text-gray-400 uppercase">Foto</th>
@@ -359,7 +359,13 @@
                                             {{ $p->supplier->isNotEmpty() ? $p->supplier->pluck('nm_supplier')->implode(', ') : '-' }}
                                         </td>
                                         <td class="px-5 py-4 text-sm text-gray-600" data-label="Satuan">{{ $p->satuan }}</td>
-                                        <td class="px-5 py-4 text-sm text-gray-600" data-label="Harga Beli">Rp. {{ number_format($p->harga_beli, 0, ',', '.') }}</td>
+                                        <td class="px-5 py-4 text-xs text-gray-600" data-label="Harga per Supplier">
+                                            @if ($p->supplier->isNotEmpty())
+                                                {{ $p->supplier->map(fn($s) => $s->nm_supplier . ': Rp ' . number_format($s->pivot->harga_beli, 0, ',', '.'))->implode(' · ') }}
+                                            @else
+                                                -
+                                            @endif
+                                        </td>
                                         <td class="px-5 py-4 text-sm text-gray-600" data-label="Harga Jual">Rp. {{ number_format($p->harga_jual, 0, ',', '.') }}</td>
                                         <td class="px-5 py-4" data-label="Stok">
                                             @php

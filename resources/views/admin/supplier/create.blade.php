@@ -240,7 +240,7 @@
                                                 <option value="">Pilih produk</option>
                                                 @foreach ($produk as $p)
                                                     <option value="{{ $p->id_produk }}" {{ (string) old("produk.$index.id_produk") === (string) $p->id_produk ? 'selected' : '' }}>
-                                                        {{ $p->nm_produk }}
+                                                        {{ $p->nm_produk }} ({{ $p->satuan }})
                                                     </option>
                                                 @endforeach
                                             </select>

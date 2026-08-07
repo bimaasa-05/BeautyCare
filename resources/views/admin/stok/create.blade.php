@@ -233,7 +233,7 @@
                                     <option value="" disabled selected>Pilih supplier terlebih dahulu</option>
                                     @foreach ($produk as $p)
                                         <option value="{{ $p->id_produk }}" data-stok="{{ $p->stok }}" data-nm="{{ $p->nm_produk }}">
-                                            {{ $p->nm_produk }} (stok: {{ $p->stok }})
+                                            {{ $p->nm_produk }} ({{ $p->satuan }}) - stok: {{ $p->stok }}
                                         </option>
                                     @endforeach
                                 </select>
