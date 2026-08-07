@@ -231,9 +231,12 @@
 
                             <div>
                                 <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Harga</label>
-                                <input type="number" name="harga" value="{{ old('harga', $layanan->harga) }}"
-                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('harga') border-red-300 @enderror"
-                                    placeholder="Masukkan harga layanan">
+                                <div class="relative">
+                                    <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-[13px]">Rp.</span>
+                                    <input type="text" name="harga" value="{{ old('harga', $layanan->harga !== null ? rtrim(rtrim(number_format((float) $layanan->harga, 2, '.', ''), '0'), '.') : '') }}"
+                                        class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl pl-12 pr-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('harga') border-red-300 @enderror"
+                                        placeholder="0" data-format-harga>
+                                </div>
                                 @error('harga')
                                     <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
                                 @enderror
@@ -291,6 +294,19 @@
         };
         const dateEl = document.getElementById('currentDate');
         if (dateEl) dateEl.textContent = now.toLocaleDateString('id-ID', options);
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            function formatHarga(input) {
+                let value = input.value.replace(/[^0-9]/g, '');
+                if (value === '') return;
+                input.value = new Intl.NumberFormat('id-ID').format(value);
+            }
+            document.querySelectorAll('[data-format-harga]').forEach(function (input) {
+                if (input.value) formatHarga(input);
+                input.addEventListener('input', function () { formatHarga(input); });
+            });
+        });
     </script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
 </body>
