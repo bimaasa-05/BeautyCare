@@ -361,9 +361,21 @@
                                         <td class="px-5 py-4 text-sm text-gray-600" data-label="Satuan">{{ $p->satuan }}</td>
                                         <td class="px-5 py-4 text-xs text-gray-600" data-label="Harga per Supplier">
                                             @if ($p->supplier->isNotEmpty())
-                                                {{ $p->supplier->map(fn($s) => $s->nm_supplier . ': Rp ' . number_format($s->pivot->harga_beli, 0, ',', '.'))->implode(' · ') }}
+                                                <div class="flex flex-col gap-1">
+                                                    @foreach ($p->supplier as $s)
+                                                        <a href="{{ route('admin.supplier.edit', $s->id_supplier) }}"
+                                                            class="hover:text-[#de3b7c] transition-colors"
+                                                            title="Ubah harga beli di {{ $s->nm_supplier }}">
+                                                            {{ $s->nm_supplier }}: Rp {{ number_format($s->pivot->harga_beli, 0, ',', '.') }}
+                                                        </a>
+                                                    @endforeach
+                                                </div>
                                             @else
-                                                -
+                                                <a href="{{ route('admin.supplier.create') }}"
+                                                    class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-semibold bg-amber-50 text-amber-600 border border-amber-100 hover:bg-amber-100 transition-colors"
+                                                    title="Tetapkan supplier untuk produk ini">
+                                                    Belum ada supplier
+                                                </a>
                                             @endif
                                         </td>
                                         <td class="px-5 py-4 text-sm text-gray-600" data-label="Harga Jual">Rp. {{ number_format($p->harga_jual, 0, ',', '.') }}</td>

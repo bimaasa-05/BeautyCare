@@ -238,21 +238,21 @@
                             </div>
 
                             <div>
-                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Min. Transaksi</label>
+                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Min. Pembelian Produk</label>
                                 <input type="text" inputmode="numeric" name="min_transaksi" value="{{ old('min_transaksi', 0) }}"
                                     data-format-number
                                     class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('min_transaksi') border-red-300 @enderror"
-                                    placeholder="Minimal jumlah transaksi">
+                                    placeholder="Minimal pembelian produk">
                                 @error('min_transaksi')
                                     <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
 
                             <div>
-                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Min. Pembelian (Rp)</label>
+                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Min. Belanja (Rp)</label>
                                 <input type="text" inputmode="numeric" data-rupiah-display="#minPembelianHidden"
                                     class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('min_pembelian') border-red-300 @enderror"
-                                    placeholder="Minimal total pembelian">
+                                    placeholder="Minimal total belanja">
                                 <input type="hidden" name="min_pembelian" id="minPembelianHidden" value="{{ old('min_pembelian', 0) }}">
                                 @error('min_pembelian')
                                     <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>

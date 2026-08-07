@@ -204,7 +204,8 @@
                         </div>
                     </div>
 
-                    <h4 class="text-[13px] font-bold text-gray-800 mb-3">Produk yang Disuplai</h4>
+                    <h4 class="text-[13px] font-bold text-gray-800 mb-1">Produk yang Disuplai</h4>
+                    <p class="text-[11px] text-gray-400 mb-3">Stok yang ditampilkan adalah stok keseluruhan toko saat ini, bukan stok milik supplier ini.</p>
                     <div class="overflow-x-auto">
                         <table class="w-full admin-table">
                             <thead>
