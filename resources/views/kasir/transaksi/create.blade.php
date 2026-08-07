@@ -254,18 +254,30 @@
                                             <label class="form-label">
                                                 <i class="fa-solid fa-building-columns text-pink-400 mr-1"></i>Bank Tujuan <span class="text-red-500">*</span>
                                             </label>
-                                            <select name="bank_tujuan" id="bank_tujuan"
-                                                class="form-input-custom @error('bank_tujuan') border-red-400 @enderror"
-                                                onchange="onBankTujuanChange(this)">
-                                                <option value="">-- Pilih Bank Tujuan --</option>
+                                            @php
+                                                $bankColors = [
+                                                    'BRI' => 'linear-gradient(135deg,#00529C,#003A6E)',
+                                                    'BCA' => 'linear-gradient(135deg,#CC0000,#990000)',
+                                                    'Mandiri' => 'linear-gradient(135deg,#003D79,#00264D)',
+                                                    'BNI' => 'linear-gradient(135deg,#FF6600,#CC5200)',
+                                                    'BSI' => 'linear-gradient(135deg,#005747,#003A2E)',
+                                                ];
+                                            @endphp
+                                            <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
                                                 @foreach ($bankTujuan as $bank => $rek)
-                                                    <option value="{{ $bank }}" data-rekening="{{ $rek }}"
-                                                        {{ old('bank_tujuan') == $bank ? 'selected' : '' }}>
-                                                        {{ $bank }}
-                                                    </option>
+                                                <label class="cursor-pointer">
+                                                    <input type="radio" name="bank_tujuan" value="{{ $bank }}" data-rekening="{{ $rek }}" class="hidden peer"
+                                                        {{ old('bank_tujuan') == $bank ? 'checked' : '' }}
+                                                        onchange="onBankCardChange(this)">
+                                                    <div class="rounded-xl p-4 border-2 border-gray-100 peer-checked:border-pink-400 peer-checked:ring-2 peer-checked:ring-pink-200 hover:border-pink-200 transition-all"
+                                                        style="background:{{ $bankColors[$bank] ?? 'linear-gradient(135deg,#64748B,#475569)' }};">
+                                                        <div class="text-white font-bold text-[13px]">{{ $bank }}</div>
+                                                        <div class="text-white/80 text-[11px] mt-1 font-mono tracking-wide">{{ $rek }}</div>
+                                                    </div>
+                                                </label>
                                                 @endforeach
-                                                <option value="Lainnya" data-rekening="">Lainnya</option>
-                                            </select>
+                                            </div>
+                                            <p class="text-[11px] text-gray-400 mt-2"><i class="fa-solid fa-circle-info mr-1"></i>Rekening tujuan atas nama <b>BeautyCare Official</b></p>
                                             @error('bank_tujuan')
                                                 <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
                                             @enderror
@@ -582,7 +594,7 @@
                     const stok = item.stok || 0;
                     return `<option value="${item[idField]}" data-nama="${item[nmField]}" data-harga="${item[priceField] || 0}" data-stok="${stok}">${item[nmField]} | Rp ${Number(item[priceField] || 0).toLocaleString('id-ID')} | Stok: ${stok}</option>`;
                 }
-                return `<option value="${item[idField]}" data-nama="${item[nmField]}" data-harga="${item[priceField] || 0}">${item[nmField]} — Rp ${Number(item[priceField] || 0).toLocaleString('id-ID')}</option>`;
+                return `<option value="${item[idField]}" data-nama="${item[nmField]}" data-harga="${item[priceField] || 0}">${item[nmField]} (± ${item.durasi || 0} menit) — Rp ${Number(item[priceField] || 0).toLocaleString('id-ID')}</option>`;
             }).join('');
         }
 
@@ -718,10 +730,10 @@
         }
 
         // ========== Bank Tujuan ==========
-        function onBankTujuanChange(select) {
-            const opt = select.options[select.selectedIndex];
-            const rekening = opt ? opt.dataset.rekening : '';
-            document.getElementById('ke_rekening').value = rekening || '';
+        function onBankCardChange(input) {
+            const keRekening = document.getElementById('ke_rekening');
+            keRekening.value = input.dataset.rekening || '';
+            keRekening.readOnly = !!input.dataset.rekening;
         }
 
         // ========== Payment Timer ==========
@@ -825,9 +837,9 @@
             }
 
             // Initialize bank tujuan if old value
-            const bankTujuan = document.getElementById('bank_tujuan');
-            if (bankTujuan.value) {
-                onBankTujuanChange(bankTujuan);
+            const bankTujuanChecked = document.querySelector('input[name="bank_tujuan"]:checked');
+            if (bankTujuanChecked) {
+                onBankCardChange(bankTujuanChecked);
             }
         });
 
