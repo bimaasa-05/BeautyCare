@@ -244,7 +244,8 @@
                     <span>BeautyCare</span>
                 </div>
                 <h2>Mulai Perjalanan Anda</h2>
-                <p>Daftar sekarang dan kelola bisnis kecantikan Anda dengan lebih profesional.</p>
+                <p>Daftar untuk booking treatment, belanja produk, dapatkan promo menarik, dan nikmati benefit
+                    membership BeautyCare.</p>
             </div>
         </div>
 
