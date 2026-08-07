@@ -8,6 +8,7 @@ use App\Models\DetailTransaksi;
 use App\Models\Layanan;
 use App\Models\Produk;
 use App\Helpers\ActivityLogger;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 
 class AdminTransaksiController extends Controller
@@ -301,6 +302,13 @@ class AdminTransaksiController extends Controller
     {
         $transaksi = Transaksi::with('pelanggan', 'detail', 'user')->findOrFail($id);
         return view('kasir.invoice.show', compact('transaksi'));
+    }
+
+    public function invoicePdf($id)
+    {
+        $transaksi = Transaksi::with('pelanggan', 'detail', 'user')->findOrFail($id);
+        $pdf = Pdf::loadView('kasir.invoice.pdf', compact('transaksi'));
+        return $pdf->download('Invoice-' . $transaksi->no_invoice . '.pdf');
     }
 
     public function export(Request $request)

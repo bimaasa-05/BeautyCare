@@ -696,8 +696,8 @@
                     <a href="{{ route('pelanggan.treatment', ['status' => request('status')]) }}" class="btn-action btn-back">
                         <i class="fa-solid fa-arrow-left"></i> Kembali
                     </a>
-                    <a href="{{ route('pelanggan.treatment.detail', ['id' => $booking->id_booking, 'print' => 1]) }}" target="_blank" class="btn-action btn-print">
-                        <i class="fa-solid fa-print"></i> Cetak
+                    <a href="{{ route('pelanggan.treatment.pdf', $booking->id_booking) }}" class="btn-action btn-print">
+                        <i class="fa-solid fa-file-pdf"></i> Unduh PDF
                     </a>
                 </div>
             </div>

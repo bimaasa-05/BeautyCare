@@ -10,6 +10,7 @@ use App\Models\Pelanggan;
 use App\Models\Membership;
 use App\Models\PromoKlaim;
 use App\Helpers\ActivityLogger;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -211,7 +212,7 @@ class PelangganBookingController extends Controller
 
         buatNotif(auth()->id(), 'Booking Baru', 'Booking treatment berhasil dibuat', 'Booking', route('pelanggan.booking'));
 
-        if ($booking->id_karyawan) {
+        if ($booking->id_karyawan && $booking->status === 'dikonfirmasi') {
             buatNotif($booking->id_karyawan, 'Jadwal Treatment Baru', 'Booking baru oleh ' . auth()->user()->nama . ' pada ' . $booking->tanggal . ' ' . $booking->jam . '.', 'Booking', url('/beautycian/jadwal-treatment'));
         }
 
@@ -223,6 +224,27 @@ class PelangganBookingController extends Controller
         }
 
         return redirect()->route('pelanggan.booking')->with('success', 'Booking berhasil dibuat!');
+    }
+
+    public function show($id)
+    {
+        $booking = Booking::with(['detail.layanan', 'karyawan'])
+            ->where('id_booking', $id)
+            ->where('id_pelanggan', $this->resolveIdPelanggan())
+            ->firstOrFail();
+
+        return view('pelanggan.booking.detail', compact('booking'));
+    }
+
+    public function pdf($id)
+    {
+        $booking = Booking::with(['detail.layanan', 'karyawan'])
+            ->where('id_booking', $id)
+            ->where('id_pelanggan', $this->resolveIdPelanggan())
+            ->firstOrFail();
+
+        $pdf = Pdf::loadView('pelanggan.booking.pdf', compact('booking'));
+        return $pdf->download('Detail-Booking-BK' . str_pad($booking->id_booking, 3, '0', STR_PAD_LEFT) . '.pdf');
     }
 
     public function edit($id)
@@ -268,6 +290,9 @@ class PelangganBookingController extends Controller
             ->where('id_pelanggan', $this->resolveIdPelanggan())
             ->firstOrFail();
 
+        $karyawanLama = $booking->id_karyawan;
+        $statusBooking = $booking->status;
+
         $booking->update([
             'id_karyawan' => $request->id_karyawan,
             'tanggal' => $request->tanggal,
@@ -293,6 +318,16 @@ class PelangganBookingController extends Controller
 
         buatNotifRole('kasir', 'Booking Diperbarui', auth()->user()->nama . ' mengubah booking #' . $id . ' menjadi ' . $request->tanggal . ' ' . $request->jam . '.', 'Booking', route('kasir.reservasi.index'));
 
+        if ($karyawanLama !== $request->id_karyawan && $statusBooking === 'dikonfirmasi') {
+            if ($request->id_karyawan) {
+                buatNotif($request->id_karyawan, 'Jadwal Treatment Baru', 'Booking baru oleh ' . auth()->user()->nama . ' pada ' . $request->tanggal . ' ' . $request->jam . '.', 'Booking', url('/beautycian/jadwal-treatment'));
+            }
+
+            if ($karyawanLama) {
+                buatNotif($karyawanLama, 'Booking Dipindahkan', 'Booking ' . auth()->user()->nama . ' dipindahkan ke terapis lain.', 'Booking', url('/beautycian/jadwal-treatment'));
+            }
+        }
+
         ActivityLogger::log('Mengubah', auth()->user()->nama . ' mengubah booking #' . $id, 'Booking', $id);
 
         return redirect()->route('pelanggan.booking')->with('success', 'Booking berhasil diperbarui!');
@@ -308,11 +343,19 @@ class PelangganBookingController extends Controller
             return redirect()->route('pelanggan.booking')->with('error', 'Booking hanya dapat dibatalkan saat statusnya masih menunggu.');
         }
 
+        $karyawanId = $booking->id_karyawan;
+
         $booking->update(['status' => 'dibatalkan']);
 
         ActivityLogger::log('Membatalkan', auth()->user()->nama . ' membatalkan booking #' . $id, 'Booking', $id);
 
         buatNotif(auth()->id(), 'Booking Dibatalkan', 'Booking treatment berhasil dibatalkan', 'Booking', route('pelanggan.booking'));
+
+        buatNotifRole('kasir', 'Booking Dibatalkan', auth()->user()->nama . ' membatalkan booking #' . $id . '.', 'Booking', route('kasir.reservasi.index'));
+
+        if ($karyawanId) {
+            buatNotif($karyawanId, 'Booking Dibatalkan', auth()->user()->nama . ' membatalkan booking #' . $id . '.', 'Booking', url('/beautycian/jadwal-treatment'));
+        }
 
         return redirect()->route('pelanggan.booking')->with('success', 'Booking berhasil dibatalkan!');
     }

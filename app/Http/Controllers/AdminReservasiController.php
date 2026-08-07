@@ -82,6 +82,18 @@ class AdminReservasiController extends Controller
 
         ActivityLogger::log('Menambahkan', auth()->user()->nama . ' menambahkan reservasi untuk ' . ($booking->pelanggan->nm_pelanggan ?? 'Pelanggan'), 'Reservasi', $booking->id_booking);
 
+        $namaPelanggan = $booking->pelanggan->nm_pelanggan ?? 'Pelanggan';
+
+        if ($booking->id_karyawan && $booking->status === 'dikonfirmasi') {
+            buatNotif($booking->id_karyawan, 'Jadwal Treatment Baru', 'Reservasi untuk ' . $namaPelanggan . ' pada ' . $booking->tanggal . ' ' . $booking->jam . '.', 'Booking', url('/beautycian/jadwal-treatment'));
+        }
+
+        buatNotifRole('kasir', 'Reservasi Baru', 'Reservasi baru oleh ' . auth()->user()->nama . ' untuk ' . $namaPelanggan . '.', 'Booking', route('kasir.reservasi.index'));
+
+        if ($request->status === 'dikonfirmasi' && $booking->pelanggan->id_user) {
+            buatNotif($booking->pelanggan->id_user, 'Booking Dikonfirmasi', 'Booking treatment Anda telah dikonfirmasi untuk ' . $booking->tanggal . ' ' . $booking->jam . '.', 'Booking', route('pelanggan.booking'));
+        }
+
         return redirect()->route('admin.reservasi.index')->with('success', 'Reservasi berhasil dibuat');
     }
 
@@ -149,6 +161,14 @@ class AdminReservasiController extends Controller
 
         ActivityLogger::log('Mengubah', auth()->user()->nama . ' mengubah reservasi #' . str_pad($id, 3, '0', STR_PAD_LEFT), 'Reservasi', $id, $dataLama, $dataBooking);
 
+        $namaPelanggan = $bookingLama->pelanggan->nm_pelanggan ?? 'Pelanggan';
+
+        buatNotifRole('kasir', 'Reservasi Diperbarui', auth()->user()->nama . ' mengubah reservasi untuk ' . $namaPelanggan . '.', 'Booking', route('kasir.reservasi.index'));
+
+        if ($request->id_karyawan && $request->status === 'dikonfirmasi') {
+            buatNotif($request->id_karyawan, 'Jadwal Treatment Diperbarui', 'Reservasi untuk ' . $namaPelanggan . ' diperbarui menjadi ' . $request->tanggal . ' ' . $request->jam . '.', 'Booking', url('/beautycian/jadwal-treatment'));
+        }
+
         return redirect()->route('admin.reservasi.index')->with('success', 'Reservasi berhasil diperbarui');
     }
 
@@ -158,7 +178,7 @@ class AdminReservasiController extends Controller
             'status' => 'required|in:menunggu,dikonfirmasi,diproses,selesai,dibatalkan',
         ]);
 
-        $bookingLama = Booking::findOrFail($id);
+        $bookingLama = Booking::with('pelanggan')->findOrFail($id);
         $statusLama = $bookingLama->status;
 
         Booking::where('id_booking', $id)->update([
@@ -166,6 +186,24 @@ class AdminReservasiController extends Controller
         ]);
 
         ActivityLogger::log('Mengubah Status', auth()->user()->nama . ' mengubah status reservasi #' . str_pad($id, 3, '0', STR_PAD_LEFT) . ' dari ' . $statusLama . ' menjadi ' . $request->status, 'Reservasi', $id);
+
+        $namaPelanggan = $bookingLama->pelanggan->nm_pelanggan ?? 'Pelanggan';
+
+        if ($request->status === 'dikonfirmasi') {
+            if ($bookingLama->pelanggan->id_user) {
+                buatNotif($bookingLama->pelanggan->id_user, 'Booking Dikonfirmasi', 'Booking treatment Anda telah dikonfirmasi untuk ' . $bookingLama->tanggal . ' ' . $bookingLama->jam . '.', 'Booking', route('pelanggan.booking'));
+            }
+            if ($bookingLama->id_karyawan) {
+                buatNotif($bookingLama->id_karyawan, 'Booking Dikonfirmasi', 'Booking ' . $namaPelanggan . ' telah dikonfirmasi. Segera siapkan treatment.', 'Booking', url('/beautycian/jadwal-treatment'));
+            }
+        }
+
+        if ($request->status === 'dibatalkan') {
+            if ($bookingLama->pelanggan->id_user) {
+                buatNotif($bookingLama->pelanggan->id_user, 'Booking Dibatalkan', 'Booking treatment Anda (' . $namaPelanggan . ') telah dibatalkan.', 'Booking', route('pelanggan.booking'));
+            }
+            buatNotifRole('kasir', 'Reservasi Dibatalkan', auth()->user()->nama . ' membatalkan reservasi untuk ' . $namaPelanggan . '.', 'Booking', route('kasir.reservasi.index'));
+        }
 
         if ($request->wantsJson()) {
             return response()->json(['success' => true]);
@@ -176,10 +214,20 @@ class AdminReservasiController extends Controller
 
     public function destroy($id)
     {
-        $booking = Booking::findOrFail($id);
+        $booking = Booking::with('pelanggan')->findOrFail($id);
+        $namaPelanggan = $booking->pelanggan->nm_pelanggan ?? 'Pelanggan';
+        $idKaryawan = $booking->id_karyawan;
+
         ActivityLogger::log('Menghapus', auth()->user()->nama . ' menghapus reservasi #' . str_pad($id, 3, '0', STR_PAD_LEFT), 'Reservasi', $id);
         DetailBooking::where('id_booking', $id)->delete();
         $booking->delete();
+
+        buatNotifRole('kasir', 'Reservasi Dihapus', auth()->user()->nama . ' menghapus reservasi untuk ' . $namaPelanggan . '.', 'Booking', route('kasir.reservasi.index'));
+
+        if ($idKaryawan) {
+            buatNotif($idKaryawan, 'Reservasi Dihapus', 'Reservasi untuk ' . $namaPelanggan . ' telah dihapus.', 'Booking', url('/beautycian/jadwal-treatment'));
+        }
+
         return redirect()->route('admin.reservasi.index')->with('success', 'Reservasi berhasil dihapus');
     }
 
