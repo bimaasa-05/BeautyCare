@@ -43,8 +43,15 @@ use App\Http\Controllers\PelangganProdukController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('landing.index');
+    $tingkatMembership = \App\Models\Membership::where('status', 'aktif')
+        ->orderBy('min_transaksi')
+        ->orderBy('min_pembelian')
+        ->get();
+
+    return view('landing.index', compact('tingkatMembership'));
 })->name('home');
+
+Route::post('/kontak', [App\Http\Controllers\ContactController::class, 'store'])->name('landing.contact');
 
 
 Route::middleware('auth')->group(function () {
