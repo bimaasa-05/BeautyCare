@@ -84,7 +84,7 @@ class AdminReservasiController extends Controller
 
         $namaPelanggan = $booking->pelanggan->nm_pelanggan ?? 'Pelanggan';
 
-        if ($booking->id_karyawan) {
+        if ($booking->id_karyawan && $booking->status === 'dikonfirmasi') {
             buatNotif($booking->id_karyawan, 'Jadwal Treatment Baru', 'Reservasi untuk ' . $namaPelanggan . ' pada ' . $booking->tanggal . ' ' . $booking->jam . '.', 'Booking', url('/beautycian/jadwal-treatment'));
         }
 
@@ -165,7 +165,7 @@ class AdminReservasiController extends Controller
 
         buatNotifRole('kasir', 'Reservasi Diperbarui', auth()->user()->nama . ' mengubah reservasi untuk ' . $namaPelanggan . '.', 'Booking', route('kasir.reservasi.index'));
 
-        if ($request->id_karyawan) {
+        if ($request->id_karyawan && $request->status === 'dikonfirmasi') {
             buatNotif($request->id_karyawan, 'Jadwal Treatment Diperbarui', 'Reservasi untuk ' . $namaPelanggan . ' diperbarui menjadi ' . $request->tanggal . ' ' . $request->jam . '.', 'Booking', url('/beautycian/jadwal-treatment'));
         }
 
