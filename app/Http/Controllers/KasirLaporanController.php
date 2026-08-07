@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Transaksi;
 use App\Models\DetailTransaksi;
+use App\Models\Pengeluaran;
 use App\Exports\KasirLaporanExport;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Maatwebsite\Excel\Facades\Excel;
@@ -31,6 +32,12 @@ class KasirLaporanController extends Controller
         $totalPendapatan = (clone $queryBase)
             ->where('status', 'Lunas')
             ->sum('total');
+
+        $totalPengeluaran = Pengeluaran::where('id_user', $userId)
+            ->whereBetween('tanggal', [$startDate, $endDate])
+            ->sum('nominal');
+
+        $pendapatanBersih = $totalPendapatan - $totalPengeluaran;
 
         $rataTransaksi = $totalTransaksi > 0 ? $totalPendapatan / $totalTransaksi : 0;
 
@@ -111,7 +118,7 @@ class KasirLaporanController extends Controller
             'chartTransaksi', 'chartMetodeLabels', 'chartMetodeValues',
             'periode', 'startDate', 'endDate', 'transaksi',
             'search', 'dari', 'sampai', 'fmt', 'maxRevenue',
-            'rataPendapatan', 'jumlahHari'
+            'rataPendapatan', 'jumlahHari', 'totalPengeluaran', 'pendapatanBersih'
         ));
     }
 
