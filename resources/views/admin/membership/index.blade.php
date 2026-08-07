@@ -166,10 +166,10 @@
                                     <i class="fa-solid fa-tags"></i> Diskon {{ $item->diskon }}% semua layanan
                                 </div>
                                 <div class="mt-benefit-item">
-                                    <i class="fa-solid fa-bag-shopping"></i> Min. {{ $item->min_transaksi }}x transaksi
+                                    <i class="fa-solid fa-bag-shopping"></i> Min. {{ $item->min_transaksi }}x Pembelian Produk
                                 </div>
                                 <div class="mt-benefit-item">
-                                    <i class="fa-solid fa-wallet"></i> Min. Rp {{ number_format($item->min_pembelian, 0, ',', '.') }} pembelian
+                                    <i class="fa-solid fa-wallet"></i> Min. Belanja Rp {{ number_format($item->min_pembelian, 0, ',', '.') }}
                                 </div>
                                 <div class="mt-benefit-item">
                                     <i class="fa-solid fa-money-bill-wave"></i> Harga Upgrade: Rp {{ number_format($item->harga, 0, ',', '.') }}
