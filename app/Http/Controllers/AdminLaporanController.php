@@ -6,6 +6,7 @@ use App\Models\Transaksi;
 use App\Models\Booking;
 use App\Models\User;
 use App\Models\Pelanggan;
+use App\Models\Stok;
 use App\Exports\LaporanExport;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Maatwebsite\Excel\Facades\Excel;
@@ -24,6 +25,9 @@ class AdminLaporanController extends Controller
         $totalPendapatan = Transaksi::whereBetween('tanggal', [$startDate, $endDate])
             ->where('status', '!=', 'Dibatalkan')
             ->sum('total');
+
+        $totalPengeluaran = $this->getPengeluaranPembelian($startDate, $endDate);
+        $saldoBersih = $totalPendapatan - $totalPengeluaran;
 
         $totalReservasi = Booking::whereBetween('tanggal', [$startDate, $endDate])->count();
 
@@ -68,12 +72,28 @@ class AdminLaporanController extends Controller
         $rataPendapatan = $jumlahHari > 0 ? $totalPendapatan / $jumlahHari : 0;
 
         return view('admin.laporan.index', compact(
-            'totalPendapatan', 'totalReservasi', 'pelangganBaru',
+            'totalPendapatan', 'totalPengeluaran', 'saldoBersih',
+            'totalReservasi', 'pelangganBaru',
             'pendapatanGrowth', 'reservasiGrowth', 'pelangganGrowth',
             'chartLabels', 'chartRevenue', 'chartBookings',
             'periode', 'startDate', 'endDate', 'fmt', 'maxRevenue',
             'rataPendapatan', 'jumlahHari'
         ));
+    }
+
+    private function getPengeluaranPembelian($startDate, $endDate)
+    {
+        $masuk = Stok::where('type', 'Masuk')
+            ->whereBetween('tanggal', [$startDate, $endDate])
+            ->get()
+            ->sum(fn($s) => ($s->harga_satuan ?? 0) * $s->jumlah);
+
+        $refund = Stok::where('type', 'Refund')
+            ->whereBetween('tanggal', [$startDate, $endDate])
+            ->get()
+            ->sum(fn($s) => ($s->harga_satuan ?? 0) * $s->jumlah);
+
+        return $masuk - $refund;
     }
 
     private function getChartData($periode, $startDate, $endDate)
@@ -184,6 +204,9 @@ class AdminLaporanController extends Controller
             ->where('status', '!=', 'Dibatalkan')
             ->sum('total');
 
+        $totalPengeluaran = $this->getPengeluaranPembelian($startDate, $endDate);
+        $saldoBersih = $totalPendapatan - $totalPengeluaran;
+
         $totalReservasi = Booking::whereBetween('tanggal', [$startDate, $endDate])->count();
 
         $pelangganBaru = Pelanggan::whereBetween('created_at', [$startDate . ' 00:00:00', $endDate . ' 23:59:59'])
@@ -222,7 +245,8 @@ class AdminLaporanController extends Controller
         };
 
         $pdf = Pdf::loadView('admin.laporan.pdf', compact(
-            'totalPendapatan', 'totalReservasi', 'pelangganBaru',
+            'totalPendapatan', 'totalPengeluaran', 'saldoBersih',
+            'totalReservasi', 'pelangganBaru',
             'pendapatanGrowth', 'reservasiGrowth', 'pelangganGrowth',
             'chartLabels', 'chartRevenue', 'chartBookings',
             'startDate', 'endDate', 'fmt'

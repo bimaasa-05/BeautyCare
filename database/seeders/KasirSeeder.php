@@ -127,16 +127,17 @@ class KasirSeeder extends Seeder
         ];
         foreach ($data as $d) {
             $idSupplier = $d['id_supplier'];
-            unset($d['id_supplier']);
+            $hargaBeli = $d['harga_beli'];
+            unset($d['id_supplier'], $d['harga_beli']);
 
             $produk = Produk::create($d);
 
-            Supplier::where('id_supplier', $idSupplier)->whereNull('id_produk')
-                ->update(['id_produk' => $produk->id_produk]);
+            $produk->supplier()->attach($idSupplier, ['harga_beli' => $hargaBeli]);
 
             Stok::create([
                 'id_produk' => $produk->id_produk,
                 'id_supplier' => $idSupplier,
+                'harga_satuan' => $hargaBeli,
                 'tanggal' => now()->toDateString(),
                 'type' => 'Masuk',
                 'jumlah' => $d['stok'],

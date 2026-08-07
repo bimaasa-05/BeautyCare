@@ -212,6 +212,8 @@
                                     <th class="text-left px-5 py-3 text-xs font-bold text-gray-400 uppercase">#</th>
                                     <th class="text-left px-5 py-3 text-xs font-bold text-gray-400 uppercase">Nama Produk
                                     </th>
+                                    <th class="text-left px-5 py-3 text-xs font-bold text-gray-400 uppercase">Satuan</th>
+                                    <th class="text-left px-5 py-3 text-xs font-bold text-gray-400 uppercase">Harga Beli</th>
                                     <th class="text-left px-5 py-3 text-xs font-bold text-gray-400 uppercase">Stok</th>
                                 </tr>
                             </thead>
@@ -221,6 +223,8 @@
                                         <td class="px-5 py-4 text-sm text-gray-600">{{ $loop->iteration }}</td>
                                         <td class="px-5 py-4 text-sm font-semibold text-gray-800">{{ $p->nm_produk }}
                                         </td>
+                                        <td class="px-5 py-4 text-sm text-gray-600">{{ $p->satuan }}</td>
+                                        <td class="px-5 py-4 text-sm text-gray-600">Rp {{ number_format($p->pivot->harga_beli, 0, ',', '.') }}</td>
                                         @php
                                             $stokSup = $p->stok;
                                             $stokSupClass = $stokSup == 0 ? 'text-red-500' : ($stokSup < 10 ? 'text-amber-500' : 'text-gray-800');
@@ -230,7 +234,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="3" class="px-5 py-10 text-center text-gray-400 text-sm">
+                                        <td colspan="5" class="px-5 py-10 text-center text-gray-400 text-sm">
                                             <i class="fa-regular fa-face-frown text-4xl block mb-3"></i>
                                             Belum ada produk yang disuplai
                                         </td>

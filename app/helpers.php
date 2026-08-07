@@ -109,12 +109,13 @@ if (!function_exists('formatRupiahSingkat')) {
     }
 }
 
-if (!function_exists('catatStok')) {    function catatStok($idProduk, $type, $jumlah, $stokSebelum, $stokSesudah, $keterangan = '', $idSupplier = null, $refId = null, $refType = null)
+if (!function_exists('catatStok')) {    function catatStok($idProduk, $type, $jumlah, $stokSebelum, $stokSesudah, $keterangan = '', $idSupplier = null, $refId = null, $refType = null, $hargaSatuan = null)
     {
         try {
             return \App\Models\Stok::create([
                 'id_produk'    => $idProduk,
                 'id_supplier'  => $idSupplier,
+                'harga_satuan' => $hargaSatuan,
                 'tanggal'      => now()->toDateString(),
                 'type'         => $type,
                 'jumlah'       => $jumlah,

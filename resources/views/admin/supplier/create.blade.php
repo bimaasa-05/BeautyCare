@@ -231,19 +231,22 @@
                                     Disuplai</label>
                                 <div id="produkRows" class="space-y-2">
                                     @php
-                                        $oldProduk = old('produk') ?? [['id_produk' => '']];
+                                        $oldProduk = old('produk') ?? [['id_produk' => '', 'harga_beli' => 0]];
                                     @endphp
                                     @foreach ($oldProduk as $index => $row)
-                                        <div class="produk-row grid grid-cols-1 md:grid-cols-[1fr_40px] gap-2 items-start">
+                                        <div class="produk-row grid grid-cols-1 md:grid-cols-[1fr_140px_40px] gap-2 items-start">
                                             <select name="produk[{{ $index }}][id_produk]"
                                                 class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all">
                                                 <option value="">Pilih produk</option>
                                                 @foreach ($produk as $p)
                                                     <option value="{{ $p->id_produk }}" {{ (string) old("produk.$index.id_produk") === (string) $p->id_produk ? 'selected' : '' }}>
-                                                        {{ $p->nm_produk }}
+                                                        {{ $p->nm_produk }} ({{ $p->satuan }})
                                                     </option>
                                                 @endforeach
                                             </select>
+                                            <input type="number" name="produk[{{ $index }}][harga_beli]" min="0" value="{{ old("produk.$index.harga_beli", 0) }}"
+                                                class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all"
+                                                placeholder="Harga Beli">
                                             <button type="button"
                                                 class="remove-produk w-10 h-10 rounded-xl bg-red-50 text-red-400 hover:bg-red-100 flex items-center justify-center">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12"
@@ -319,8 +322,8 @@
 
         function reindexProdukRows() {
             produkRows.querySelectorAll('.produk-row').forEach(function (row, i) {
-                row.querySelectorAll('select').forEach(function (el) {
-                    const name = el.name.replace(/produk\[\d+\]\[(id_produk)\]/, 'produk[' + i + '][$1]');
+                row.querySelectorAll('select, input').forEach(function (el) {
+                    const name = el.name.replace(/produk\[\d+\]\[(id_produk|harga_beli)\]/, 'produk[' + i + '][$1]');
                     el.name = name;
                 });
             });
@@ -331,6 +334,7 @@
             if (!template) return;
             const clone = template.cloneNode(true);
             clone.querySelector('select').value = '';
+            clone.querySelector('input[name$="[harga_beli]"]').value = '0';
             produkRows.appendChild(clone);
             reindexProdukRows();
         });
@@ -341,6 +345,7 @@
             const rows = produkRows.querySelectorAll('.produk-row');
             if (rows.length === 1) {
                 btn.closest('.produk-row').querySelector('select').value = '';
+                btn.closest('.produk-row').querySelector('input[name$="[harga_beli]"]').value = '0';
                 return;
             }
             btn.closest('.produk-row').remove();

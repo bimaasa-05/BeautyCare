@@ -5,6 +5,7 @@ namespace App\Exports;
 use App\Models\Transaksi;
 use App\Models\Booking;
 use App\Models\Pelanggan;
+use App\Models\Stok;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
@@ -216,6 +217,19 @@ class LaporanRingkasanSheet implements FromCollection, WithHeadings, WithMapping
             ->where('status', '!=', 'Dibatalkan')
             ->sum('total');
 
+        $masuk = Stok::where('type', 'Masuk')
+            ->whereBetween('tanggal', [$this->startDate, $this->endDate])
+            ->get()
+            ->sum(fn($s) => ($s->harga_satuan ?? 0) * $s->jumlah);
+
+        $refund = Stok::where('type', 'Refund')
+            ->whereBetween('tanggal', [$this->startDate, $this->endDate])
+            ->get()
+            ->sum(fn($s) => ($s->harga_satuan ?? 0) * $s->jumlah);
+
+        $totalPengeluaran = $masuk - $refund;
+        $saldoBersih = $totalPendapatan - $totalPengeluaran;
+
         $totalReservasi = Booking::whereBetween('tanggal', [$this->startDate, $this->endDate])->count();
 
         $pelangganBaru = Pelanggan::whereBetween('created_at', [$this->startDate . ' 00:00:00', $this->endDate . ' 23:59:59'])
@@ -223,6 +237,8 @@ class LaporanRingkasanSheet implements FromCollection, WithHeadings, WithMapping
 
         return collect([
             ['Total Pendapatan', 'Rp ' . number_format($totalPendapatan, 0, ',', '.')],
+            ['Pengeluaran Pembelian', 'Rp ' . number_format($totalPengeluaran, 0, ',', '.')],
+            ['Saldo Bersih', 'Rp ' . number_format($saldoBersih, 0, ',', '.')],
             ['Total Reservasi', (string) $totalReservasi],
             ['Pelanggan Baru', (string) $pelangganBaru],
             ['Periode', date('d M Y', strtotime($this->startDate)) . ' – ' . date('d M Y', strtotime($this->endDate))],
