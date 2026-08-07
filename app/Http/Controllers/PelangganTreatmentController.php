@@ -3,11 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Booking;
-<<<<<<< HEAD
-use Barryvdh\DomPDF\Facade\Pdf;
-=======
 use App\Models\Pelanggan;
->>>>>>> cad6e891473db047bf1f360cceb97f1c2e5a278f
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 
 class PelangganTreatmentController extends Controller
@@ -41,19 +38,18 @@ class PelangganTreatmentController extends Controller
         return view('pelanggan.treatment.detail', compact('booking'));
     }
 
-<<<<<<< HEAD
     public function pdf($id)
     {
         $booking = Booking::with(['detail.layanan', 'karyawan', 'transaksi', 'pelanggan', 'riwayatTreatment'])
             ->where('id_booking', $id)
-            ->where('id_pelanggan', auth()->id())
+            ->where('id_pelanggan', $this->resolveIdPelanggan())
+            ->whereIn('status', ['selesai', 'dibatalkan'])
             ->firstOrFail();
 
         $pdf = Pdf::loadView('pelanggan.treatment.pdf', compact('booking'));
         return $pdf->download('Detail-Treatment-BK' . str_pad($booking->id_booking, 3, '0', STR_PAD_LEFT) . '.pdf');
     }
 
-=======
     private function resolveIdPelanggan()
     {
         $user = auth()->user();
@@ -65,5 +61,4 @@ class PelangganTreatmentController extends Controller
             ['nm_pelanggan' => $user->nama, 'email' => $user->email, 'no_hp' => $user->no_hp ?? '']
         )->id_pelanggan;
     }
->>>>>>> cad6e891473db047bf1f360cceb97f1c2e5a278f
 }
