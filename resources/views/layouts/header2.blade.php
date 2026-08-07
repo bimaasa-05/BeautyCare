@@ -234,7 +234,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     return;
                 }
                 if (d.items && d.items.length) {
-                    d.items.slice(0, 3).forEach(function (it, i) {
+                    d.items.slice(0, 5).forEach(function (it, i) {
                         if (typeof showToast === 'function') {
                             setTimeout(function() { showToast(it.message, it.type || 'info'); }, i * 600);
                         }

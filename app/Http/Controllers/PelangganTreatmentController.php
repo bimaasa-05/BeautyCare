@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Booking;
 use App\Models\Pelanggan;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 
 class PelangganTreatmentController extends Controller
@@ -35,6 +36,18 @@ class PelangganTreatmentController extends Controller
             ->firstOrFail();
 
         return view('pelanggan.treatment.detail', compact('booking'));
+    }
+
+    public function pdf($id)
+    {
+        $booking = Booking::with(['detail.layanan', 'karyawan', 'transaksi', 'pelanggan', 'riwayatTreatment'])
+            ->where('id_booking', $id)
+            ->where('id_pelanggan', $this->resolveIdPelanggan())
+            ->whereIn('status', ['selesai', 'dibatalkan'])
+            ->firstOrFail();
+
+        $pdf = Pdf::loadView('pelanggan.treatment.pdf', compact('booking'));
+        return $pdf->download('Detail-Treatment-BK' . str_pad($booking->id_booking, 3, '0', STR_PAD_LEFT) . '.pdf');
     }
 
     private function resolveIdPelanggan()
