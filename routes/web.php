@@ -140,6 +140,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/supplier', [AdminSupplierController::class, 'index'])->name('admin.supplier.index');
         Route::get('/admin/supplier/create', [AdminSupplierController::class, 'create'])->name('admin.supplier.create');
         Route::post('/admin/supplier', [AdminSupplierController::class, 'store'])->name('admin.supplier.store');
+        Route::get('/admin/supplier/{id}', [AdminSupplierController::class, 'show'])->name('admin.supplier.show');
         Route::get('/admin/supplier/{id}/edit', [AdminSupplierController::class, 'edit'])->name('admin.supplier.edit');
         Route::put('/admin/supplier/{id}', [AdminSupplierController::class, 'update'])->name('admin.supplier.update');
         Route::delete('/admin/supplier/{id}', [AdminSupplierController::class, 'destroy'])->name('admin.supplier.destroy');

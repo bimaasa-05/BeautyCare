@@ -44,7 +44,7 @@ class AdminStokController extends Controller
     public function create()
     {
         $produk   = Produk::orderBy('nm_produk')->get();
-        $supplier = Supplier::with('produk')->where('status', 'Aktif')->whereNotNull('id_produk')->orderBy('nm_supplier')->get();
+        $supplier = Supplier::with('produk')->where('status', 'Aktif')->orderBy('nm_supplier')->get();
 
         return view('admin.stok.create', compact('produk', 'supplier'));
     }
@@ -59,9 +59,9 @@ class AdminStokController extends Controller
             'keterangan'  => 'nullable|string|max:255',
         ]);
 
-        $supplier = Supplier::findOrFail($request->id_supplier);
+        $supplier = Supplier::with('produk')->findOrFail($request->id_supplier);
 
-        if ($supplier->id_produk != $request->id_produk) {
+        if (!$supplier->produk->contains('id_produk', $request->id_produk)) {
             return back()->withErrors(['id_produk' => 'Produk harus sesuai dengan produk yang disuplai oleh ' . $supplier->nm_supplier . '.']);
         }
 
@@ -90,7 +90,7 @@ class AdminStokController extends Controller
     public function refundCreate()
     {
         $produk   = Produk::orderBy('nm_produk')->get();
-        $supplier = Supplier::with('produk')->where('status', 'Aktif')->whereNotNull('id_produk')->orderBy('nm_supplier')->get();
+        $supplier = Supplier::with('produk')->where('status', 'Aktif')->orderBy('nm_supplier')->get();
 
         return view('admin.stok.refund', compact('produk', 'supplier'));
     }
@@ -105,9 +105,9 @@ class AdminStokController extends Controller
             'keterangan'  => 'nullable|string|max:255',
         ]);
 
-        $supplier = Supplier::findOrFail($request->id_supplier);
+        $supplier = Supplier::with('produk')->findOrFail($request->id_supplier);
 
-        if ($supplier->id_produk != $request->id_produk) {
+        if (!$supplier->produk->contains('id_produk', $request->id_produk)) {
             return back()->withErrors(['id_produk' => 'Produk harus sesuai dengan produk yang disuplai oleh ' . $supplier->nm_supplier . '.']);
         }
 

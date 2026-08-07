@@ -48,6 +48,6 @@ class Produk extends Model
 
     public function supplier()
     {
-        return $this->hasOne(Supplier::class, 'id_produk', 'id_produk');
+        return $this->belongsToMany(Supplier::class, 'supplier_produk', 'id_produk', 'id_supplier');
     }
 }
