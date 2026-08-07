@@ -111,7 +111,7 @@ class AdminPromoController extends Controller
     {
         $request->validate([
             'nm_promo'     => 'required|string|max:100',
-            'kode_promo'   => 'nullable|string|max:30|unique:promo,kode_promo,' . ($request->route('id') ?? 0),
+            'kode_promo'   => 'nullable|string|max:30|unique:promo,kode_promo,' . ($request->route('id') ?? 0) . ',id_promo',
             'jenis_promo'  => 'required|in:Diskon,Cashback,Paket,Buy 1 Get 1,Lainnya',
             'nilai'        => 'required|numeric|min:0',
             'mulai'        => 'required|date',
