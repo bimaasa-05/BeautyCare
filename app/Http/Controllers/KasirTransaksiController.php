@@ -47,13 +47,7 @@ class KasirTransaksiController extends Controller
         $layanan = Layanan::where('status', 'Tersedia')->get();
         $produk = Produk::where('status', 1)->get();
 
-        $bankTujuan = [
-            'BRI' => '10101010',
-            'BCA' => '20202020',
-            'Mandiri' => '30303030',
-            'BNI' => '40404040',
-            'BSI' => '50505050',
-        ];
+        $bankTujuan = CheckoutController::bankTujuan();
 
         return view('kasir.transaksi.create', compact('pelanggan', 'layanan', 'produk', 'bankTujuan'));
     }
@@ -215,13 +209,7 @@ class KasirTransaksiController extends Controller
         $layanan = Layanan::where('status', 'Tersedia')->get();
         $produk = Produk::where('status', 1)->get();
 
-        $bankTujuan = [
-            'BRI' => '10101010',
-            'BCA' => '20202020',
-            'Mandiri' => '30303030',
-            'BNI' => '40404040',
-            'BSI' => '50505050',
-        ];
+        $bankTujuan = CheckoutController::bankTujuan();
 
         return view('kasir.transaksi.edit', compact('transaksi', 'pelanggan', 'layanan', 'produk', 'bankTujuan'));
     }
