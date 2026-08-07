@@ -325,6 +325,10 @@
                                 </a>
                             </div>
                         </div>
+                        <div class="px-5 pt-4 text-[11px] text-gray-400">
+                            <i class="fa-solid fa-circle-info text-[#EC4899] mr-1"></i>
+                            Stok produk adalah stok keseluruhan toko saat ini, bukan stok per supplier. Setiap catatan barang masuk otomatis menambah stok produk.
+                        </div>
                         <div class="flex items-center gap-2 px-5 pt-4 flex-wrap">
                             <a href="{{ route('admin.stok.index', request()->only(['dari', 'sampai'])) }}"
                                 class="px-4 py-2 rounded-xl text-xs font-bold transition-colors {{ !$tabType ? 'bg-gradient-to-r from-[#EC4899] to-[#BE185D] text-white shadow-sm' : 'bg-[#FFF7FA] text-gray-500 hover:bg-pink-50' }}">

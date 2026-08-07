@@ -250,6 +250,10 @@
                                 <input type="text" id="hargaBeli" readonly
                                     class="w-full bg-gray-100 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none text-gray-500"
                                     placeholder="Pilih produk terlebih dahulu">
+                                <p class="text-[11px] mt-1 hidden" id="hargaWarning">
+                                    <i class="fa-solid fa-triangle-exclamation mr-1 text-amber-500"></i>
+                                    <span class="text-amber-600 font-medium">Harga beli belum diatur — atur dulu di halaman Supplier.</span>
+                                </p>
                             </div>
 
                             <div>
@@ -306,6 +310,7 @@
         const produkHidden = document.getElementById('id_produk_hidden');
         const produkInfo = document.getElementById('produkInfo');
         const hargaBeli = document.getElementById('hargaBeli');
+        const hargaWarning = document.getElementById('hargaWarning');
         const jumlahInput = document.getElementById('jumlah');
         const totalHarga = document.getElementById('totalHarga');
         const semuaProduk = Array.from(produkSelect.options).filter(function (o) { return o.value; });
@@ -364,6 +369,14 @@
             totalHarga.textContent = harga && jumlah ? 'Total: ' + formatRupiah(harga * jumlah) : '';
         }
 
+        function updateHargaWarning() {
+            if (produkSelect.value && getHarga(produkSelect.value) === 0) {
+                hargaWarning.classList.remove('hidden');
+            } else {
+                hargaWarning.classList.add('hidden');
+            }
+        }
+
         supplierSelect.addEventListener('change', function () {
             renderProduk();
         });
@@ -378,6 +391,7 @@
                 hargaBeli.value = '';
             }
             hitungTotal();
+            updateHargaWarning();
         });
 
         jumlahInput.addEventListener('input', hitungTotal);
@@ -393,6 +407,7 @@
                 }
             }
             hitungTotal();
+            updateHargaWarning();
         });
     </script>
     <script>

@@ -169,7 +169,7 @@
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                             <div class="bg-white rounded-2xl p-5 shadow-[0_2px_16px_rgba(236,72,153,0.08)] border border-pink-50 hover:shadow-[0_4px_24px_rgba(236,72,153,0.14)] transition-all duration-300">
                                 <div class="flex items-start justify-between mb-4">
                                     <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-pink-400 to-rose-500 flex items-center justify-center shadow-sm">
@@ -198,18 +198,18 @@
                                 <p class="text-xs text-gray-400 mt-1">Stok masuk dari supplier (dikurangi refund)</p>
                             </div>
 
-                            <div class="bg-white rounded-2xl p-5 shadow-[0_2px_16px_rgba(16,185,129,0.10)] border border-emerald-50 hover:shadow-[0_4px_24px_rgba(16,185,129,0.16)] transition-all duration-300">
+                            <div class="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl p-5 shadow-[0_2px_16px_rgba(16,185,129,0.25)]">
                                 <div class="flex items-start justify-between mb-4">
-                                    <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-emerald-400 to-green-600 flex items-center justify-center shadow-sm">
+                                    <div class="w-11 h-11 rounded-xl bg-white/20 flex items-center justify-center shadow-sm">
                                         <i data-lucide="wallet" class="text-white w-5 h-5"></i>
                                     </div>
-                                    <span class="flex items-center gap-1 text-[10px] font-semibold px-2 py-1 rounded-full text-emerald-600 bg-emerald-50">
+                                    <span class="flex items-center gap-1 text-[10px] font-semibold px-2 py-1 rounded-full bg-white/20 text-white">
                                         <i data-lucide="scale" class="w-3 h-3"></i>Saldo Bersih
                                     </span>
                                 </div>
-                                <p class="text-sm text-gray-400 font-medium mb-1">Saldo Bersih</p>
-                                <p class="text-2xl font-bold text-emerald-600">{{ $fmt($saldoBersih) }}</p>
-                                <p class="text-xs text-gray-400 mt-1">Pendapatan – Pengeluaran pembelian</p>
+                                <p class="text-sm text-emerald-50/90 font-medium mb-1">Saldo Bersih</p>
+                                <p class="text-2xl font-bold text-white">{{ $fmt($saldoBersih) }}</p>
+                                <p class="text-xs text-emerald-50/80 mt-1">Pendapatan – Pengeluaran pembelian</p>
                             </div>
 
                             <div class="bg-white rounded-2xl p-5 shadow-[0_2px_16px_rgba(236,72,153,0.08)] border border-pink-50 hover:shadow-[0_4px_24px_rgba(236,72,153,0.14)] transition-all duration-300">
