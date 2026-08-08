@@ -641,9 +641,12 @@
         }
 
         .keranjang-footer {
-            background: var(--white);
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             border-radius: 20px;
-            box-shadow: 0 2px 12px -4px rgba(0, 0, 0, 0.06);
+            border: 1px solid rgba(255, 79, 135, 0.08);
+            box-shadow: 0 2px 12px -4px rgba(0, 0, 0, 0.06), 0 -10px 35px -8px rgba(0, 0, 0, 0.22);
             padding: 24px 32px;
             margin-top: 20px;
             display: flex;
@@ -651,6 +654,27 @@
             justify-content: space-between;
             flex-wrap: wrap;
             gap: 16px;
+        }
+
+        .keranjang-footer.sticky-active {
+            position: sticky;
+            bottom: 0;
+            z-index: 30;
+        }
+
+        .main-content.keranjang-main {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-content.keranjang-main .dashboard-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-content.keranjang-main .keranjang-footer {
+            margin-top: auto;
         }
 
         .keranjang-footer .kf-total-label {
@@ -994,7 +1018,7 @@
     <div class="dashboard-layout">
         @include('layouts.sidebar')
 
-        <main class="main-content">
+        <main class="main-content keranjang-main">
             @include('layouts.header2')
 
             <div class="dashboard-content">
@@ -1119,7 +1143,7 @@
                         @endforeach
                     </div>
 
-                    <div class="keranjang-footer">
+                    <div class="keranjang-footer {{ $troli->count() > 5 ? 'sticky-active' : '' }}">
                         <div>
                             <div class="kf-total-label">Total Belanja</div>
                             <div class="kf-total" id="grandTotal">Rp {{ number_format($total, 0, ',', '.') }}
@@ -1434,6 +1458,7 @@
                             if (card) card.remove();
                         });
                         toggleHapusMode();
+                        updateFooterSticky();
 
                         var grandEl = document.getElementById('grandTotal');
                         grandEl.textContent = 'Rp ' + formatAngka(data.total_all);
@@ -1498,6 +1523,20 @@
 
         var badge = document.getElementById('cartBadgeSidebar');
         if (badge) badge.style.display = 'none';
+
+        function updateFooterSticky() {
+            var footer = document.querySelector('.keranjang-footer');
+            if (!footer) return;
+            var jumlah = document.querySelectorAll('.keranjang-card').length;
+            if (jumlah > 5) {
+                footer.classList.add('sticky-active');
+            } else {
+                footer.classList.remove('sticky-active');
+            }
+        }
+
+        window.addEventListener('resize', updateFooterSticky);
+        updateFooterSticky();
     </script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
 </body>
