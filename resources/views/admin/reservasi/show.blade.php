@@ -150,10 +150,6 @@
                             </p>
                         </div>
                         <div class="flex items-center gap-2">
-                            <a href="{{ route('admin.reservasi.edit', $reservasi->id_booking) }}"
-                                class="flex items-center gap-2 bg-[#FF4F87] text-white text-[12px] font-semibold px-4 py-2 rounded-full hover:bg-[#ff3a78] transition-all shadow-sm">
-                                <i class="fa-solid fa-pen-to-square"></i> Edit
-                            </a>
                             <a href="{{ route('admin.reservasi.index') }}"
                                 class="flex items-center gap-2 border border-gray-200 text-gray-600 text-[12px] font-medium px-4 py-2 rounded-full hover:bg-gray-50 transition-colors">
                                 <i class="fa-solid fa-arrow-left"></i> Kembali
