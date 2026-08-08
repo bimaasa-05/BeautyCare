@@ -665,8 +665,9 @@
         position: absolute;
         top: calc(100% + 6px);
         left: 0;
-        width: 340px;
-        max-width: 92vw;
+        width: 100%;
+        min-width: 280px;
+        max-width: 340px;
         background: #fff;
         border-radius: 16px;
         border: 1px solid #FFD6E6;
@@ -846,6 +847,56 @@
         color: #9CA3AF;
     }
 
+    .dcp-footer {
+        display: flex;
+        gap: 10px;
+        margin-top: 12px;
+    }
+
+    .dcp-today {
+        flex: 1;
+        padding: 10px;
+        border: 1.5px solid var(--primary);
+        border-radius: 12px;
+        background: #fff;
+        color: var(--primary);
+        font-size: 13px;
+        font-weight: 700;
+        font-family: 'Poppins', sans-serif;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .dcp-today:hover {
+        background: var(--hover);
+    }
+
+    .dcp-oke {
+        display: none;
+        flex: 1;
+        padding: 10px;
+        border: none;
+        border-radius: 12px;
+        background: linear-gradient(135deg, var(--primary), #FF7BA6);
+        color: #fff;
+        font-size: 13px;
+        font-weight: 700;
+        font-family: 'Poppins', sans-serif;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 14px rgba(255, 79, 135, 0.3);
+    }
+
+    .dcp-oke:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 18px rgba(255, 79, 135, 0.4);
+    }
+
+    /* ─── Selected Services Table ─── */
+    #selectedServicesBody td {
+        white-space: nowrap;
+    }
+
     /* ─── Bubble Click Effect ─── */
     .bubble-effect {
         position: absolute;
@@ -994,7 +1045,8 @@
 
                             <!-- Daftar Layanan Terpilih -->
                             <div id="selectedServicesWrap" style="margin-top:16px;display:none;">
-                                <table class="services-table" style="width:100%;border-collapse:collapse;">
+                                <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;">
+                                <table class="services-table" style="width:100%;min-width:560px;border-collapse:collapse;">
                                     <thead>
                                         <tr style="background:#FFF7FA;">
                                             <th style="text-align:left;padding:10px 14px;font-size:12px;font-weight:700;color:var(--gray);text-transform:uppercase;border-bottom:1px solid var(--border);">No</th>
@@ -1007,6 +1059,7 @@
                                     </thead>
                                     <tbody id="selectedServicesBody"></tbody>
                                 </table>
+                                </div>
                             </div>
                             <div id="noServicesMsg" style="margin-top:12px;padding:20px;text-align:center;background:#FAFAFA;border-radius:12px;border:1px dashed var(--border);">
                                 <i class="fa-solid fa-spa" style="font-size:24px;color:#ddd;display:block;margin-bottom:8px;"></i>
@@ -1052,6 +1105,10 @@
                                                 <p class="dcp-summary-date" id="dcpSummaryDate"></p>
                                                 <p class="dcp-summary-total" id="dcpSummaryTotal"></p>
                                                 <p class="dcp-summary-meta" id="dcpSummaryMeta"></p>
+                                            </div>
+                                            <div class="dcp-footer">
+                                                <button type="button" id="dcpToday" class="dcp-today">Hari Ini</button>
+                                                <button type="button" id="dcpOke" class="dcp-oke">Oke</button>
                                             </div>
                                         </div>
                                     </div>
@@ -1411,6 +1468,8 @@
     const dcpPopup = document.getElementById('dateCalendarPopup');
     const dcpDays = document.getElementById('dcpDays');
     const dcpSummary = document.getElementById('dcpSummary');
+    const dcpOke = document.getElementById('dcpOke');
+    const dcpToday = document.getElementById('dcpToday');
 
     function getDataForDate(year, month, day) {
         const key = year + '-' + String(month + 1).padStart(2, '0') + '-' + String(day).padStart(2, '0');
@@ -1469,10 +1528,12 @@
                 showCalendarSummary(d, total, data, isPast);
                 if (!isPast) {
                     dcpSelected = iso;
-                    tanggalInput.value = iso;
-                    tanggalInput.dispatchEvent(new Event('change', { bubbles: true }));
+                    dcpOke.style.display = 'block';
                     renderCalendarPopup();
-                    closeCalendarPopup();
+                } else {
+                    dcpSelected = null;
+                    dcpOke.style.display = 'none';
+                    renderCalendarPopup();
                 }
             });
 
@@ -1550,6 +1611,7 @@
         dcpMonth--;
         if (dcpMonth < 0) { dcpMonth = 11; dcpYear--; }
         dcpSelected = null;
+        dcpOke.style.display = 'none';
         renderCalendarPopup();
     });
 
@@ -1558,12 +1620,31 @@
         dcpMonth++;
         if (dcpMonth > 11) { dcpMonth = 0; dcpYear++; }
         dcpSelected = null;
+        dcpOke.style.display = 'none';
         renderCalendarPopup();
+    });
+
+    dcpOke.addEventListener('click', function(e) {
+        e.stopPropagation();
+        if (dcpSelected) {
+            tanggalInput.value = dcpSelected;
+            tanggalInput.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+        closeCalendarPopup();
+    });
+
+    dcpToday.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const todayIso = dcpNow.getFullYear() + '-' + String(dcpNow.getMonth() + 1).padStart(2, '0') + '-' + String(dcpNow.getDate()).padStart(2, '0');
+        dcpSelected = todayIso;
+        tanggalInput.value = todayIso;
+        tanggalInput.dispatchEvent(new Event('change', { bubbles: true }));
+        closeCalendarPopup();
     });
 
     document.addEventListener('click', function(e) {
         const wrap = tanggalInput ? tanggalInput.closest('.date-field-wrap') : null;
-        if (wrap && !wrap.contains(e.target)) {
+        if (wrap && e.target.isConnected && !wrap.contains(e.target)) {
             closeCalendarPopup();
         }
     });
