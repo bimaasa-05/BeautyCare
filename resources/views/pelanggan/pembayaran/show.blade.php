@@ -305,6 +305,89 @@
         padding: 26px;
     }
 
+    .bank-card-hero {
+        border-radius: 18px;
+        padding: 24px 22px;
+        color: #fff;
+        box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .bank-card-hero::after {
+        content: '';
+        position: absolute;
+        right: -40px;
+        top: -40px;
+        width: 140px;
+        height: 140px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.08);
+    }
+
+    .bank-card-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 20px;
+    }
+
+    .bank-card-name {
+        font-size: 18px;
+        font-weight: 800;
+        letter-spacing: 2px;
+    }
+
+    .bank-card-chip {
+        width: 36px;
+        height: 28px;
+        border-radius: 6px;
+        background: rgba(255, 255, 255, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 13px;
+    }
+
+    .bank-card-label {
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        opacity: 0.75;
+        font-weight: 600;
+    }
+
+    .bank-card-va {
+        font-size: 22px;
+        font-weight: 800;
+        letter-spacing: 1.5px;
+        font-family: 'Courier New', monospace;
+        margin-top: 4px;
+    }
+
+    .bank-card-copy {
+        margin-top: 16px;
+        width: 100%;
+        padding: 10px;
+        border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        background: rgba(255, 255, 255, 0.12);
+        color: #fff;
+        font-size: 12px;
+        font-weight: 600;
+        font-family: 'Poppins', sans-serif;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        transition: background 0.2s;
+    }
+
+    .bank-card-copy:hover {
+        background: rgba(255, 255, 255, 0.22);
+    }
+
     .pm-qr-wrap {
         text-align: center;
     }
@@ -808,7 +891,7 @@
                                 <input type="file" name="bukti_bayar" id="inpBukti" accept="image/jpeg,image/png,image/jpg" class="bukti-input" onchange="pilihBukti(this)">
                                 <div class="bukti-pick" id="buktiPick" onclick="document.getElementById('inpBukti').click()">
                                     <i class="fa-solid fa-image"></i>
-                                    <span id="buktiLabel">{{ $transaksi->bukti_bayar ? 'Ganti Gambar Bukti' : 'Pilih Gambar Bukti' }}</span>
+                                    <span id="buktiLabel">{{ $transaksi->bukti_bayar ? 'Ganti Bukti Pembayaran' : 'Upload Bukti Pembayaran' }}</span>
                                     <small>JPG / PNG, maks 2 MB</small>
                                 </div>
                             </form>
