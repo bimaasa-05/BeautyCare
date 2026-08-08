@@ -105,7 +105,16 @@ class PelangganBookingController extends Controller
                     && $klaim->promo->selesai > now()->format('Y-m-d');
             });
 
-        return view('pelanggan.booking.create', compact('layanans', 'karyawans', 'karyawanSibukIds', 'diskonMember', 'claimedPromos'));
+        $bookingsPerDay = Booking::where('id_pelanggan', $this->resolveIdPelanggan())
+            ->whereIn('status', ['selesai', 'dibatalkan'])
+            ->get()
+            ->groupBy(fn($b) => \Carbon\Carbon::parse($b->tanggal)->format('Y-m-d'))
+            ->map(fn($group) => [
+                'selesai' => $group->where('status', 'selesai')->count(),
+                'dibatalkan' => $group->where('status', 'dibatalkan')->count(),
+            ]);
+
+        return view('pelanggan.booking.create', compact('layanans', 'karyawans', 'karyawanSibukIds', 'diskonMember', 'claimedPromos', 'bookingsPerDay'));
     }
 
     public function store(Request $request)
