@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Layanan;
-use App\Models\Pelanggan;
 use App\Models\Produk;
 use App\Models\Promo;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class AdminPromoController extends Controller
 {
@@ -33,9 +33,8 @@ class AdminPromoController extends Controller
     {
         $layanans = Layanan::where('status', 'Tersedia')->orderBy('nm_layanan')->get();
         $produks = Produk::where('status', 'Tersedia')->orderBy('nm_produk')->get();
-        $pelanggans = Pelanggan::orderBy('nm_pelanggan')->get();
 
-        return view('admin.promo.create', compact('layanans', 'produks', 'pelanggans'));
+        return view('admin.promo.create', compact('layanans', 'produks'));
     }
 
     public function store(Request $request)
@@ -44,12 +43,9 @@ class AdminPromoController extends Controller
 
         $promo = Promo::create($data);
 
-        if (empty($promo->kode_promo)) {
-            $prefix = self::PREFIX_KODE[$promo->jenis_promo] ?? 'PRO';
-            $promo->update([
-                'kode_promo' => $prefix . '-' . str_pad($promo->id_promo, 3, '0', STR_PAD_LEFT),
-            ]);
-        }
+        $promo->update([
+            'kode_promo' => $this->buatKode($promo->jenis_promo),
+        ]);
 
         $this->syncItems($promo, $request);
 
@@ -61,12 +57,11 @@ class AdminPromoController extends Controller
 
     public function edit($id)
     {
-        $promo = Promo::with(['promoLayanan', 'promoProduk', 'targetPelanggan'])->findOrFail($id);
+        $promo = Promo::with(['promoLayanan', 'promoProduk'])->findOrFail($id);
         $layanans = Layanan::where('status', 'Tersedia')->orderBy('nm_layanan')->get();
         $produks = Produk::where('status', 'Tersedia')->orderBy('nm_produk')->get();
-        $pelanggans = Pelanggan::orderBy('nm_pelanggan')->get();
 
-        return view('admin.promo.edit', compact('promo', 'layanans', 'produks', 'pelanggans'));
+        return view('admin.promo.edit', compact('promo', 'layanans', 'produks'));
     }
 
     public function update(Request $request, $id)
@@ -77,9 +72,8 @@ class AdminPromoController extends Controller
         $promo->update($data);
 
         if (empty($promo->kode_promo)) {
-            $prefix = self::PREFIX_KODE[$promo->jenis_promo] ?? 'PRO';
             $promo->update([
-                'kode_promo' => $prefix . '-' . str_pad($promo->id_promo, 3, '0', STR_PAD_LEFT),
+                'kode_promo' => $this->buatKode($promo->jenis_promo),
             ]);
         }
 
@@ -105,6 +99,17 @@ class AdminPromoController extends Controller
 
         return redirect()->route('admin.promo.index')
             ->with('success', 'Promo berhasil dihapus.');
+    }
+
+    protected function buatKode(string $jenis): string
+    {
+        $prefix = self::PREFIX_KODE[$jenis] ?? 'PRO';
+
+        do {
+            $kode = $prefix . '-' . strtoupper(Str::random(5));
+        } while (Promo::where('kode_promo', $kode)->exists());
+
+        return $kode;
     }
 
     protected function validasi(Request $request): array
