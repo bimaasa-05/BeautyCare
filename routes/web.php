@@ -31,6 +31,8 @@ use App\Http\Controllers\KasirDashboardController;
 use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\AdminPengaturanController;
 use App\Http\Controllers\AdminRiwayatController;
+use App\Http\Controllers\AdminPengeluaranController;
+use App\Http\Controllers\KasirPengeluaranController;
 use App\Http\Controllers\BeatycianJadwalTreatmentController;
 use App\Http\Controllers\MembershipPelangganController;
 use App\Http\Controllers\BeautycianPelangganController;
@@ -203,6 +205,11 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/admin/riwayat', [AdminRiwayatController::class, 'index'])->name('admin.riwayat.index');
         Route::get('/admin/riwayat/{id}', [AdminRiwayatController::class, 'show'])->name('admin.riwayat.show');
+
+        Route::get('/admin/pengeluaran', [AdminPengeluaranController::class, 'index'])->name('admin.pengeluaran.index');
+        Route::post('/admin/pengeluaran', [AdminPengeluaranController::class, 'store'])->name('admin.pengeluaran.store');
+        Route::put('/admin/pengeluaran/{id}', [AdminPengeluaranController::class, 'update'])->name('admin.pengeluaran.update');
+        Route::delete('/admin/pengeluaran/{id}', [AdminPengeluaranController::class, 'destroy'])->name('admin.pengeluaran.destroy');
     });
 
 
@@ -251,6 +258,10 @@ Route::middleware('auth')->group(function () {
         Route::get('/kasir/invoice/{id}/pdf', [KasirTransaksiController::class, 'invoicePdf'])->name('kasir.invoice.pdf');
         Route::get('/kasir/riwayat-transaksi', [KasirRiwayatTransaksiController::class, 'index'])->name('kasir.riwayat-transaksi.index');
         Route::get('/kasir/riwayat-transaksi/{id}', [KasirRiwayatTransaksiController::class, 'show'])->name('kasir.riwayat-transaksi.show');
+
+        Route::get('/kasir/pengeluaran', [KasirPengeluaranController::class, 'index'])->name('kasir.pengeluaran.index');
+        Route::post('/kasir/pengeluaran', [KasirPengeluaranController::class, 'store'])->name('kasir.pengeluaran.store');
+        Route::delete('/kasir/pengeluaran/{id}', [KasirPengeluaranController::class, 'destroy'])->name('kasir.pengeluaran.destroy');
 
         Route::get('/kasir/laporan', [KasirLaporanController::class, 'index'])->name('kasir.laporan.index');
         Route::get('/kasir/laporan/export-pdf', [KasirLaporanController::class, 'exportPDF'])->name('kasir.laporan.export-pdf');
