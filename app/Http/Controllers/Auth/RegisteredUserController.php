@@ -8,9 +8,7 @@ use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
@@ -33,9 +31,9 @@ class RegisteredUserController extends Controller
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'no_hp' => ['nullable', 'string', 'max:20'],
-            'password' => ['required', 'confirmed',],
+            'password' => ['required', 'confirmed'],
 
         ]);
 
@@ -52,16 +50,19 @@ class RegisteredUserController extends Controller
             $existingPelanggan->update(['id_user' => $user->id]);
         } else {
             Pelanggan::create([
-                'nm_pelanggan'   => $request->name,
-                'email'          => $request->email,
-                'no_hp'          => $request->no_hp,
-                'alamat'         => '',
+                'nm_pelanggan' => $request->name,
+                'email' => $request->email,
+                'no_hp' => $request->no_hp,
+                'alamat' => '',
                 'catatan_alergi' => '',
-                'id_user'        => $user->id,
+                'id_user' => $user->id,
             ]);
         }
 
+        buatNotifRole('admin', 'Pelanggan Baru Menunggu Persetujuan', $request->name.' ('.$request->email.') baru saja mendaftar dan menunggu aktivasi Anda.', 'Registrasi', route('admin.pelanggan.index'));
+
         event(new Registered($user));
-        return  \redirect()->route('login')->with('status', "Register Telah berhasil silahkan login");
+
+        return \redirect()->route('login')->with('status', 'Register Telah berhasil silahkan login');
     }
 }
