@@ -80,6 +80,9 @@
                 <a href="{{ route('admin.supplier.index') }}"
                     class="sub-item {{ request()->routeIs('admin.supplier.index') ? 'active' : '' }}"
                     title="Kelola data supplier">Data Supplier</a>
+                <a href="{{ route('admin.bank.index') }}"
+                    class="sub-item {{ request()->routeIs('admin.bank.index') ? 'active' : '' }}"
+                    title="Kelola data bank untuk pembayaran transfer">Data Bank</a>
             </div>
         </div>
 
