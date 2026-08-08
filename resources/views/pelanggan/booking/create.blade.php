@@ -654,6 +654,221 @@
         .steps-indicator .step-item { padding: 8px 10px; }
         .steps-indicator .step-num { width: 20px; height: 20px; font-size: 10px; }
     }
+
+    /* ─── Calendar Popup ─── */
+    .date-field-wrap {
+        position: relative;
+    }
+
+    .date-calendar-popup {
+        display: none;
+        position: absolute;
+        top: calc(100% + 6px);
+        left: 0;
+        width: 340px;
+        max-width: 92vw;
+        background: #fff;
+        border-radius: 16px;
+        border: 1px solid #FFD6E6;
+        box-shadow: 0 12px 40px rgba(255, 79, 135, 0.15);
+        z-index: 120;
+        padding: 20px;
+        font-family: 'Poppins', sans-serif;
+        transform-origin: top center;
+        animation: curtainUnroll 0.45s cubic-bezier(0.22, 0.61, 0.36, 1);
+    }
+
+    .date-calendar-popup.open {
+        display: block;
+    }
+
+    @keyframes curtainUnroll {
+        0%   { transform: scaleY(0); opacity: 0.2; }
+        55%  { transform: scaleY(1.03); opacity: 1; }
+        100% { transform: scaleY(1); opacity: 1; }
+    }
+
+    .dcp-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 12px;
+    }
+
+    .dcp-header h4 {
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--dark);
+        margin: 0;
+    }
+
+    .dcp-header .dcp-nav {
+        display: flex;
+        gap: 4px;
+    }
+
+    .dcp-header .dcp-nav button {
+        width: 30px;
+        height: 30px;
+        border: none;
+        border-radius: 8px;
+        background: var(--hover);
+        color: var(--primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 13px;
+        transition: all 0.2s ease;
+    }
+
+    .dcp-header .dcp-nav button:hover {
+        background: #FFD9E7;
+    }
+
+    .dcp-weekdays {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 2px;
+        margin-bottom: 4px;
+    }
+
+    .dcp-weekdays span {
+        text-align: center;
+        font-size: 10px;
+        font-weight: 700;
+        color: #9CA3AF;
+        padding: 4px 0;
+        text-transform: uppercase;
+    }
+
+    .dcp-days {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 2px;
+    }
+
+    .dcp-days .dcp-day {
+        aspect-ratio: 1;
+        position: relative;
+        border: none;
+        border-radius: 9px;
+        background: transparent;
+        font-size: 12px;
+        font-weight: 600;
+        font-family: 'Poppins', sans-serif;
+        color: var(--gray);
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.15s ease;
+        padding: 0;
+        line-height: 1;
+    }
+
+    .dcp-days .dcp-day:hover {
+        background: var(--hover);
+    }
+
+    .dcp-days .dcp-day .dcp-count {
+        font-size: 8px;
+        font-weight: 700;
+        color: var(--primary);
+        margin-top: 2px;
+        line-height: 1;
+    }
+
+    .dcp-days .dcp-day.today {
+        background: var(--hover);
+        color: var(--dark);
+        box-shadow: inset 0 0 0 1.5px rgba(255, 79, 135, 0.45);
+    }
+
+    .dcp-days .dcp-day.today:hover {
+        background: #FFD9E7;
+    }
+
+    .dcp-days .dcp-day.has-count {
+        background: #FFE3EE;
+        color: var(--dark);
+    }
+
+    .dcp-days .dcp-day.has-count:hover {
+        background: #FFD9E7;
+    }
+
+    .dcp-days .dcp-day.selected {
+        background: linear-gradient(135deg, var(--primary), #FF7BA6);
+        color: #fff;
+        box-shadow: 0 3px 10px rgba(255, 79, 135, 0.35);
+    }
+
+    .dcp-days .dcp-day.selected:hover {
+        background: linear-gradient(135deg, var(--primary), #FF7BA6);
+    }
+
+    .dcp-days .dcp-day.selected .dcp-count {
+        color: #FFD6E6;
+    }
+
+    .dcp-summary {
+        display: none;
+        margin-top: 14px;
+        padding: 12px 16px;
+        background: linear-gradient(135deg, #FFF5F8 0%, #FFE5EF 100%);
+        border: 1px solid rgba(255, 79, 135, 0.1);
+        border-radius: 12px;
+        text-align: center;
+    }
+
+    .dcp-summary.visible {
+        display: block;
+    }
+
+    .dcp-summary .dcp-summary-date {
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--gray);
+        margin-bottom: 2px;
+    }
+
+    .dcp-summary .dcp-summary-total {
+        font-size: 26px;
+        font-weight: 800;
+        color: var(--primary);
+        line-height: 1.2;
+    }
+
+    .dcp-summary .dcp-summary-meta {
+        font-size: 10px;
+        color: #9CA3AF;
+    }
+
+    /* ─── Bubble Click Effect ─── */
+    .bubble-effect {
+        position: absolute;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(255, 79, 135, 0.5) 0%, rgba(255, 79, 135, 0.18) 55%, transparent 75%);
+        border: 1.5px solid rgba(255, 79, 135, 0.35);
+        transform: translate(-50%, -50%) scale(0);
+        pointer-events: none;
+        animation: bubblePop 0.7s ease-out forwards;
+        z-index: 130;
+    }
+
+    .bubble-effect.bubble-small {
+        border-width: 1px;
+        background: radial-gradient(circle, rgba(255, 79, 135, 0.45) 0%, rgba(255, 79, 135, 0.15) 55%, transparent 75%);
+    }
+
+    @keyframes bubblePop {
+        0%   { transform: translate(-50%, -50%) scale(0); opacity: 0.9; }
+        30%  { opacity: 0.85; }
+        60%  { transform: translate(-50%, -65%) scale(1.5); opacity: 0.45; }
+        100% { transform: translate(-50%, -95%) scale(2.1); opacity: 0; }
+    }
     </style>
 </head>
 
@@ -815,7 +1030,34 @@
                                         <i class="fa-regular fa-calendar-check fg-label-icon"></i>
                                         Tanggal <span class="fg-required">*</span>
                                     </label>
-                                    <input type="date" name="tanggal" class="fg-input" required min="{{ date('Y-m-d') }}">
+                                    <div class="date-field-wrap">
+                                        <input type="date" name="tanggal" id="tanggalInput" class="fg-input" required min="{{ date('Y-m-d') }}">
+                                        <div class="date-calendar-popup" id="dateCalendarPopup">
+                                            <div class="dcp-header">
+                                                <h4 id="dcpMonthYear"></h4>
+                                                <div class="dcp-nav">
+                                                    <button type="button" id="dcpPrevMonth" title="Bulan sebelumnya">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg>
+                                                    </button>
+                                                    <button type="button" id="dcpNextMonth" title="Bulan berikutnya">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div class="dcp-weekdays">
+                                                <span>M</span><span>S</span><span>S</span><span>R</span><span>K</span><span>J</span><span>S</span>
+                                            </div>
+                                            <div class="dcp-days" id="dcpDays"></div>
+                                            <div class="dcp-summary" id="dcpSummary">
+                                                <p class="dcp-summary-date" id="dcpSummaryDate"></p>
+                                                <p class="dcp-summary-total" id="dcpSummaryTotal"></p>
+                                                <p class="dcp-summary-meta" id="dcpSummaryMeta"></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div style="margin-top:6px;">
+                                        <span style="font-size:10px;color:#9CA3AF;"><i class="fa-regular fa-calendar"></i> Klik ikon tanggal untuk melihat kalender riwayat treatment Anda</span>
+                                    </div>
                                 </div>
 
                                 <div class="fg-premium">
@@ -1157,7 +1399,176 @@
     document.addEventListener('DOMContentLoaded', function() {
         const jamInput = document.querySelector('input[name="jam"]');
         if (jamInput && !jamInput.value) {
-            const now = new Date();
+    // ─── Calendar Popup (riwayat treatment pelanggan) ───
+    const bookingsPerDay = @json($bookingsPerDay);
+    const monthNames = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+    const dcpNow = new Date();
+    let dcpMonth = dcpNow.getMonth();
+    let dcpYear = dcpNow.getFullYear();
+    let dcpSelected = null;
+
+    const tanggalInput = document.getElementById('tanggalInput');
+    const dcpPopup = document.getElementById('dateCalendarPopup');
+    const dcpDays = document.getElementById('dcpDays');
+    const dcpSummary = document.getElementById('dcpSummary');
+
+    function getDataForDate(year, month, day) {
+        const key = year + '-' + String(month + 1).padStart(2, '0') + '-' + String(day).padStart(2, '0');
+        return bookingsPerDay[key] || { selesai: 0, dibatalkan: 0 };
+    }
+
+    function getCountForDate(year, month, day) {
+        const data = getDataForDate(year, month, day);
+        return (data.selesai || 0) + (data.dibatalkan || 0);
+    }
+
+    function renderCalendarPopup() {
+        const firstDay = new Date(dcpYear, dcpMonth, 1).getDay();
+        const daysInMonth = new Date(dcpYear, dcpMonth + 1, 0).getDate();
+        const today = new Date();
+        const todayDate = today.getDate();
+        const todayMonth = today.getMonth();
+        const todayYear = today.getFullYear();
+
+        document.getElementById('dcpMonthYear').textContent = monthNames[dcpMonth] + ' ' + dcpYear;
+
+        dcpDays.innerHTML = '';
+
+        for (let i = 0; i < (firstDay === 0 ? 6 : firstDay - 1); i++) {
+            const empty = document.createElement('div');
+            dcpDays.appendChild(empty);
+        }
+
+        for (let d = 1; d <= daysInMonth; d++) {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            const count = getCountForDate(dcpYear, dcpMonth, d);
+            const iso = dcpYear + '-' + String(dcpMonth + 1).padStart(2, '0') + '-' + String(d).padStart(2, '0');
+            const isPast = new Date(dcpYear, dcpMonth, d) < new Date(dcpNow.getFullYear(), dcpNow.getMonth(), dcpNow.getDate());
+            const isToday = (d === todayDate && dcpMonth === todayMonth && dcpYear === todayYear);
+            const isSelected = dcpSelected && dcpSelected === iso;
+
+            btn.className = 'dcp-day';
+            btn.textContent = d;
+
+            if (isToday) btn.classList.add('today');
+            if (count > 0) btn.classList.add('has-count');
+            if (isSelected) btn.classList.add('selected');
+
+            if (count > 0) {
+                const span = document.createElement('span');
+                span.className = 'dcp-count';
+                span.textContent = count;
+                btn.appendChild(span);
+            }
+
+            btn.addEventListener('click', function() {
+                const data = getDataForDate(dcpYear, dcpMonth, d);
+                const total = (data.selesai || 0) + (data.dibatalkan || 0);
+                spawnBubble(btn, btn.clientWidth / 2, btn.clientHeight / 2, 40, true);
+                showCalendarSummary(d, total, data, isPast);
+                if (!isPast) {
+                    dcpSelected = iso;
+                    tanggalInput.value = iso;
+                    tanggalInput.dispatchEvent(new Event('change', { bubbles: true }));
+                    renderCalendarPopup();
+                    closeCalendarPopup();
+                }
+            });
+
+            dcpDays.appendChild(btn);
+        }
+    }
+
+    function showCalendarSummary(day, count, data, isPast) {
+        dcpSummary.classList.add('visible');
+        document.getElementById('dcpSummaryDate').textContent = day + ' ' + monthNames[dcpMonth] + ' ' + dcpYear;
+        document.getElementById('dcpSummaryTotal').textContent = count + ' Treatment';
+        const meta = document.getElementById('dcpSummaryMeta');
+        if (count > 0) {
+            const parts = [];
+            if (data.selesai) parts.push(data.selesai + ' Selesai');
+            if (data.dibatalkan) parts.push(data.dibatalkan + ' Dibatalkan');
+            meta.textContent = parts.join(' · ');
+        } else {
+            meta.textContent = 'Belum ada treatment pada tanggal ini';
+        }
+        if (isPast) {
+            meta.textContent += ' · tanggal lampau (hanya info)';
+        }
+    }
+
+    function openCalendarPopup() {
+        dcpPopup.classList.add('open');
+        renderCalendarPopup();
+    }
+
+    function spawnBubble(target, x, y, size, small) {
+        const bubble = document.createElement('span');
+        bubble.className = 'bubble-effect' + (small ? ' bubble-small' : '');
+        bubble.style.left = x + 'px';
+        bubble.style.top = y + 'px';
+        bubble.style.width = size + 'px';
+        bubble.style.height = size + 'px';
+        target.appendChild(bubble);
+        setTimeout(function() { bubble.remove(); }, 750);
+    }
+
+    function closeCalendarPopup() {
+        dcpPopup.classList.remove('open');
+    }
+
+    function toggleCalendarPopup() {
+        if (dcpPopup.classList.contains('open')) {
+            closeCalendarPopup();
+        } else {
+            openCalendarPopup();
+        }
+    }
+
+    if (tanggalInput) {
+        tanggalInput.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const wrap = tanggalInput.closest('.date-field-wrap');
+            const rect = tanggalInput.getBoundingClientRect();
+            const x = e.clientX ? e.clientX - rect.left : rect.width / 2;
+            const y = e.clientY ? e.clientY - rect.top : rect.height / 2;
+            spawnBubble(wrap, x, y, 52, false);
+            toggleCalendarPopup();
+        });
+        tanggalInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                toggleCalendarPopup();
+            }
+        });
+    }
+
+    document.getElementById('dcpPrevMonth').addEventListener('click', function(e) {
+        e.stopPropagation();
+        dcpMonth--;
+        if (dcpMonth < 0) { dcpMonth = 11; dcpYear--; }
+        dcpSelected = null;
+        renderCalendarPopup();
+    });
+
+    document.getElementById('dcpNextMonth').addEventListener('click', function(e) {
+        e.stopPropagation();
+        dcpMonth++;
+        if (dcpMonth > 11) { dcpMonth = 0; dcpYear++; }
+        dcpSelected = null;
+        renderCalendarPopup();
+    });
+
+    document.addEventListener('click', function(e) {
+        const wrap = tanggalInput ? tanggalInput.closest('.date-field-wrap') : null;
+        if (wrap && !wrap.contains(e.target)) {
+            closeCalendarPopup();
+        }
+    });
+
+    const now = new Date();
             const hours = String(now.getHours()).padStart(2, '0');
             const minutes = String(now.getMinutes()).padStart(2, '0');
             jamInput.value = hours + ':' + minutes;
