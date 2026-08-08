@@ -623,6 +623,38 @@
         color: var(--primary);
     }
 
+    .custom-select-dropdown .csd-item.cs-item-disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+        background: #FAFAFA;
+        pointer-events: none;
+    }
+
+    .custom-select-dropdown .csd-item.cs-item-disabled:hover {
+        background: #FAFAFA;
+    }
+
+    .custom-select-dropdown .csd-item .csd-status {
+        font-size: 10px;
+        font-weight: 700;
+        padding: 3px 10px;
+        border-radius: 100px;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+    .custom-select-dropdown .csd-item .csd-status.cs-status-busy {
+        background: #FEE2E2;
+        color: #DC2626;
+        border: 1px solid #FECACA;
+    }
+
+    .custom-select-dropdown .csd-item .csd-status.cs-status-free {
+        background: #D1FAE5;
+        color: #059669;
+        border: 1px solid #A7F3D0;
+    }
+
     .custom-select-dropdown::-webkit-scrollbar {
         width: 5px;
     }
@@ -739,8 +771,12 @@
                                     <select name="id_karyawan" id="id_karyawan" required style="display:none">
                                         <option value="">— Pilih Terapis —</option>
                                         @foreach($karyawans as $karyawan)
-                                        <option value="{{ $karyawan->user->id }}" {{ $booking->id_karyawan == $karyawan->user->id ? 'selected' : '' }}>
-                                            {{ $karyawan->user->nama }} — {{ $karyawan->jabatan }}
+                                        @php
+                                            $sibuk = in_array($karyawan->user->id, $karyawanSibukIds ?? []);
+                                            $terpilih = $booking->id_karyawan == $karyawan->user->id;
+                                        @endphp
+                                        <option value="{{ $karyawan->user->id }}" {{ $terpilih ? 'selected' : '' }} {{ ($sibuk && !$terpilih) ? 'disabled' : '' }}>
+                                            {{ $karyawan->user->nama }} — {{ $karyawan->jabatan }} — {{ $sibuk ? 'Sedang Melayani' : 'Tersedia' }}
                                         </option>
                                         @endforeach
                                     </select>
@@ -909,7 +945,7 @@
         document.getElementById('summary_total').textContent = formatRupiah(total);
     }
 
-    function initCustomSelect(selectId, wrapId, triggerId, dropdownId, onChange) {
+    function initCustomSelect(selectId, wrapId, triggerId, dropdownId, onChange, showStatus) {
         const select = document.getElementById(selectId);
         const wrap = document.getElementById(wrapId);
         const trigger = document.getElementById(triggerId);
@@ -928,9 +964,15 @@
                     const name = parts[0] || opt.text;
                     const price = parts[1] || '';
                     const harga = opt.getAttribute('data-harga') || '0';
-                    html += '<div class="csd-item" data-value="' + opt.value + '" data-harga="' + harga + '">';
+                    const status = showStatus && parts[2] ? parts[2].trim() : '';
+                    const isDisabled = !!opt.disabled;
+                    html += '<div class="csd-item' + (isDisabled ? ' cs-item-disabled' : '') + '" data-value="' + opt.value + '" data-harga="' + harga + '"' + (isDisabled ? ' data-disabled="1"' : '') + '>';
                     html += '<span>' + name + '</span>';
-                    if (price) html += '<span class="csd-price">' + price + '</span>';
+                    if (status) {
+                        html += '<span class="csd-status ' + (status === 'Sedang Melayani' ? 'cs-status-busy' : 'cs-status-free') + '">' + status + '</span>';
+                    } else if (price) {
+                        html += '<span class="csd-price">' + price + '</span>';
+                    }
                     html += '</div>';
                 }
             }
@@ -956,6 +998,7 @@
         }
 
         function selectItem(el) {
+            if (el.getAttribute('data-disabled')) return;
             const val = el.getAttribute('data-value');
             const harga = el.getAttribute('data-harga');
             select.value = val;
@@ -997,7 +1040,7 @@
 
     document.addEventListener('DOMContentLoaded', function() {
         initCustomSelect('id_layanan', 'customLayananWrap', 'customLayananTrigger', 'customLayananDropdown', updateHarga);
-        initCustomSelect('id_karyawan', 'customTerapisWrap', 'customTerapisTrigger', 'customTerapisDropdown');
+        initCustomSelect('id_karyawan', 'customTerapisWrap', 'customTerapisTrigger', 'customTerapisDropdown', null, true);
     });
 
     const now = new Date();
