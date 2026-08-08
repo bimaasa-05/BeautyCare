@@ -718,7 +718,7 @@
                                         <option value="{{ $layanan->id_layanan }}"
                                             data-harga="{{ $layanan->harga }}"
                                             {{ $detail && $detail->id_layanan == $layanan->id_layanan ? 'selected' : '' }}>
-                                            {{ $layanan->nm_layanan }} — Rp {{ number_format($layanan->harga, 0, ',', '.') }}
+                                            {{ $layanan->nm_layanan }} (± {{ $layanan->durasi }} menit) — Rp {{ number_format($layanan->harga, 0, ',', '.') }}
                                         </option>
                                         @endforeach
                                     </select>
@@ -739,8 +739,9 @@
                                     <select name="id_karyawan" id="id_karyawan" required style="display:none">
                                         <option value="">— Pilih Terapis —</option>
                                         @foreach($karyawans as $karyawan)
-                                        <option value="{{ $karyawan->user->id }}" {{ $booking->id_karyawan == $karyawan->user->id ? 'selected' : '' }}>
-                                            {{ $karyawan->user->nama }} — {{ $karyawan->jabatan }}
+                                        @php($sedangLayani = in_array($karyawan->user->id, $sedangMelayani) && $booking->id_karyawan != $karyawan->user->id)
+                                        <option value="{{ $karyawan->user->id }}" {{ $booking->id_karyawan == $karyawan->user->id ? 'selected' : '' }} {{ $sedangLayani ? 'disabled' : '' }}>
+                                            {{ $karyawan->user->nama }} — {{ $karyawan->jabatan }}{{ $sedangLayani ? ' — Sedang Melayani' : '' }}
                                         </option>
                                         @endforeach
                                     </select>
@@ -777,7 +778,15 @@
                                         <i class="fa-regular fa-clock fg-label-icon"></i>
                                         Jam <span class="fg-required">*</span>
                                     </label>
-                                    <input type="time" name="jam" class="fg-input" required value="{{ \Carbon\Carbon::parse($booking->jam)->format('H:i') }}">
+                                    <select name="jam" id="jamSlot" class="fg-input" required>
+                                        <option value="">— Pilih Jam —</option>
+                                        @foreach($slotJam as $jam)
+                                        <option value="{{ $jam }}" {{ \Carbon\Carbon::parse($booking->jam)->format('H:i') == $jam ? 'selected' : '' }}>{{ $jam }}</option>
+                                        @endforeach
+                                    </select>
+                                    <div style="margin-top:6px;font-size:11px;color:var(--gray);">
+                                        <i class="fa-solid fa-circle-info"></i> Slot yang sudah dibooking terapis akan otomatis dinonaktifkan
+                                    </div>
                                 </div>
                             </div>
 
@@ -921,14 +930,18 @@
             let html = '';
             for (let i = 0; i < select.options.length; i++) {
                 const opt = select.options[i];
+                const isDisabled = opt.disabled;
+                const cls = isDisabled ? ' csd-disabled' : '';
+                const attr = isDisabled ? ' data-disabled="1"' : '';
+                const stl = isDisabled ? ' style="opacity:.5;cursor:not-allowed;"' : '';
                 if (!opt.value) {
-                    html += '<div class="csd-item" data-value="" data-harga="0"><span>' + opt.text + '</span></div>';
+                    html += '<div class="csd-item' + cls + '" data-value="" data-harga="0"' + attr + stl + '><span>' + opt.text + '</span></div>';
                 } else {
                     const parts = opt.text.split(' — ');
                     const name = parts[0] || opt.text;
                     const price = parts[1] || '';
                     const harga = opt.getAttribute('data-harga') || '0';
-                    html += '<div class="csd-item" data-value="' + opt.value + '" data-harga="' + harga + '">';
+                    html += '<div class="csd-item' + cls + '" data-value="' + opt.value + '" data-harga="' + harga + '"' + attr + stl + '>';
                     html += '<span>' + name + '</span>';
                     if (price) html += '<span class="csd-price">' + price + '</span>';
                     html += '</div>';
@@ -956,6 +969,7 @@
         }
 
         function selectItem(el) {
+            if (el.getAttribute('data-disabled')) return;
             const val = el.getAttribute('data-value');
             const harga = el.getAttribute('data-harga');
             select.value = val;
@@ -995,9 +1009,31 @@
         });
     }
 
+    const bookedJamByKaryawan = @json($bookedJamByKaryawan);
+    const jamSelect = document.getElementById('jamSlot');
+
+    function updateJamSlots() {
+        if (!jamSelect) return;
+        const karyawanId = document.getElementById('id_karyawan').value;
+        const booked = bookedJamByKaryawan[karyawanId] || [];
+        for (let i = 0; i < jamSelect.options.length; i++) {
+            const opt = jamSelect.options[i];
+            if (!opt.value) continue;
+            const penuh = booked.indexOf(opt.value) !== -1;
+            opt.disabled = penuh || !karyawanId;
+            opt.textContent = opt.value + (penuh ? ' — Sudah Dibooking' : '');
+        }
+        if (jamSelect.value && jamSelect.options[jamSelect.selectedIndex].disabled) {
+            jamSelect.value = '';
+        }
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
         initCustomSelect('id_layanan', 'customLayananWrap', 'customLayananTrigger', 'customLayananDropdown', updateHarga);
-        initCustomSelect('id_karyawan', 'customTerapisWrap', 'customTerapisTrigger', 'customTerapisDropdown');
+        initCustomSelect('id_karyawan', 'customTerapisWrap', 'customTerapisTrigger', 'customTerapisDropdown', function() {
+            updateJamSlots();
+        });
+        updateJamSlots();
     });
 
     const now = new Date();
