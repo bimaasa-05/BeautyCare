@@ -115,6 +115,10 @@ class Promo extends Model
             return (int) round($eligible * $this->nilai / 100);
         }
 
+        if ($this->jenis_promo === 'Cashback') {
+            return 0; // cashback bukan diskon; dikredit ke saldo setelah Lunas
+        }
+
         return (int) round(min($this->nilai, $eligible));
     }
 
