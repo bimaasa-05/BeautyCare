@@ -169,6 +169,13 @@
                 </div>
                 @endif
 
+                @if (session('error'))
+                <div class="mb-4 p-4 bg-red-50 border border-red-100 rounded-xl flex items-center gap-2 text-sm text-red-700">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-x text-red-500"><circle cx="12" cy="12" r="10"></circle><path d="m15 9-6 6"></path><path d="m9 9 6 6"></path></svg>
+                    {{ session('error') }}
+                </div>
+                @endif
+
                 <div class="bg-white rounded-2xl p-6 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] relative overflow-hidden mb-5">
                     <div class="float-decoration" style="top:-10px;right:-10px;">💸</div>
                     <div class="float-decoration" style="bottom:-10px;left:-10px;font-size:40px;">📊</div>
@@ -252,6 +259,7 @@
                                     <td class="text-right font-bold text-red-600">- Rp {{ number_format($p->nominal, 0, ',', '.') }}</td>
                                     <td class="text-center">
                                         <form action="{{ route('kasir.pengeluaran.destroy', $p->id_pengeluaran) }}" method="POST"
+                                            class="form-hapus"
                                             onsubmit="return confirm('Hapus pengeluaran ini?')">
                                             @csrf
                                             @method('DELETE')
@@ -300,7 +308,7 @@
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
-            <form action="{{ route('kasir.pengeluaran.store') }}" method="POST">
+            <form action="{{ route('kasir.pengeluaran.store') }}" method="POST" id="formTambahPengeluaran" onsubmit="handleSimpanPengeluaran(event)">
                 @csrf
                 <div class="space-y-4">
                     <div>
@@ -331,7 +339,7 @@
                         <textarea name="keterangan" rows="2" placeholder="Catatan pengeluaran (opsional)" class="form-input-custom">{{ old('keterangan') }}</textarea>
                         @error('keterangan')<p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>@enderror
                     </div>
-                    <button type="submit" class="w-full py-2.5 rounded-xl bg-red-500 text-white text-[13px] font-semibold hover:bg-red-600 transition-colors">
+                    <button type="submit" id="btnSimpanPengeluaran" class="w-full py-2.5 rounded-xl bg-red-500 text-white text-[13px] font-semibold hover:bg-red-600 transition-colors">
                         <i class="fa-solid fa-check mr-1"></i>Simpan Pengeluaran
                     </button>
                 </div>
@@ -339,6 +347,30 @@
         </div>
     </div>
 
+    <script>
+        // ========== Loading Simpan (#10) ==========
+        function handleSimpanPengeluaran(event) {
+            const btn = document.getElementById('btnSimpanPengeluaran');
+            if (!btn || btn.disabled) { event.preventDefault(); return; }
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i> Menyimpan...';
+        }
+
+        // ========== Loading Hapus (#10) ==========
+        document.querySelectorAll('.form-hapus').forEach(function(form) {
+            form.addEventListener('submit', function() {
+                const btn = form.querySelector('button[type="submit"]');
+                if (!btn) return;
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-xs"></i>';
+            });
+        });
+
+        // ========== Auto-buka modal saat validasi gagal (#9) ==========
+        @if ($errors->any())
+        document.getElementById('modalTambah').classList.remove('hidden');
+        @endif
+    </script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
 </body>
 
