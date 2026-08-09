@@ -19,6 +19,7 @@ class KasirRiwayatTransaksiController extends Controller
 
         $transaksi = Transaksi::with('pelanggan', 'user')
             ->where('id_kasir', $userId)
+            ->whereIn('status', ['Lunas', 'Selesai'])
             ->when($search, function ($query, $search) {
                 return $query->where(function ($q) use ($search) {
                     $q->where('no_invoice', 'like', "%{$search}%")
