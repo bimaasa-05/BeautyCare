@@ -60,9 +60,29 @@ class NotifikasiController extends Controller
                     ->get();
 
                 foreach ($aktivitas as $a) {
-                    $pelaku = ucfirst($a->role) . ' ' . ($a->user?->nama ?? '');
+                    $pelaku = ucfirst($a->role).' '.($a->user?->nama ?? '');
                     $items[] = [
-                        'message' => trim($pelaku) . ': ' . $a->deskripsi,
+                        'message' => trim($pelaku).': '.$a->deskripsi,
+                        'type' => 'success',
+                    ];
+                }
+
+                // Popup notifikasi dari sistem (mis. registrasi pelanggan baru / pesan kontak,
+                // aktor NULL) dan aksi pelanggan, agar admin langsung tahu ada yang menunggu persetujuan
+                $notifBaru = Notifikasi::with('aktor')
+                    ->where('id_user', $user->id)
+                    ->where('created_at', '>', $since)
+                    ->where(function ($q) {
+                        $q->whereNull('aktor_id')
+                            ->orWhereHas('aktor', fn ($a) => $a->where('role', 'pelanggan'));
+                    })
+                    ->latest()
+                    ->take(5)
+                    ->get();
+
+                foreach ($notifBaru as $n) {
+                    $items[] = [
+                        'message' => $n->judul.': '.$n->isi,
                         'type' => 'success',
                     ];
                 }
@@ -83,7 +103,7 @@ class NotifikasiController extends Controller
 
                 foreach ($notif as $n) {
                     $items[] = [
-                        'message' => $n->judul . ': ' . $n->isi,
+                        'message' => $n->judul.': '.$n->isi,
                         'type' => 'info',
                     ];
                 }
@@ -135,6 +155,7 @@ class NotifikasiController extends Controller
     public function index()
     {
         $notif = Notifikasi::forUser(Auth::id())->latest()->paginate(20);
+
         return view('notifikasi.index', compact('notif'));
     }
 }

@@ -176,15 +176,7 @@ Route::middleware('auth')->group(function () {
             return back()->with('success', 'Alamat berhasil diperbarui!');
         })->name('admin.profile.update-alamat');
         Route::get('/admin/reservasi', [AdminReservasiController::class, 'index'])->name('admin.reservasi.index');
-        Route::get('/admin/reservasi/create', [AdminReservasiController::class, 'create'])->name('admin.reservasi.create');
-        Route::post('/admin/reservasi', [AdminReservasiController::class, 'store'])->name('admin.reservasi.store');
-        Route::get('/admin/reservasi/get-layanan', [AdminReservasiController::class, 'getLayanan'])->name('admin.reservasi.get-layanan');
-        Route::get('/admin/reservasi/slot-data', [AdminReservasiController::class, 'slotData'])->name('admin.reservasi.slot-data');
-        Route::put('/admin/reservasi/{id}/status', [AdminReservasiController::class, 'updateStatus'])->name('admin.reservasi.status');
-        Route::get('/admin/reservasi/{id}', [AdminReservasiController::class, 'show'])->name('admin.reservasi.show');
-        Route::get('/admin/reservasi/{id}/edit', [AdminReservasiController::class, 'edit'])->name('admin.reservasi.edit');
-        Route::put('/admin/reservasi/{id}', [AdminReservasiController::class, 'update'])->name('admin.reservasi.update');
-        Route::delete('/admin/reservasi/{id}', [AdminReservasiController::class, 'destroy'])->name('admin.reservasi.destroy');
+        Route::get('/admin/reservasi/{id}', [AdminReservasiController::class, 'show'])->name('admin.reservasi.show')->where('id', '[0-9]+');
 
         Route::get('/admin/transaksi', [AdminTransaksiController::class, 'index'])->name('admin.transaksi.index');
         Route::get('/admin/transaksi/export', [AdminTransaksiController::class, 'export'])->name('admin.transaksi.export');

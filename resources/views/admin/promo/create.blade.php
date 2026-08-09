@@ -205,12 +205,11 @@
 
                             <div>
                                 <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Kode Promo</label>
-                                <input type="text" name="kode_promo" value="{{ old('kode_promo') }}"
-                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('kode_promo') border-red-300 @enderror"
-                                    placeholder="Kosongkan untuk kode otomatis (mis. DSK-001)">
-                                @error('kode_promo')
-                                    <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
-                                @enderror
+                                <input type="text" value="{{ old('kode_promo') }}" disabled
+                                    class="w-full bg-gray-100 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 text-gray-400 cursor-not-allowed"
+                                    placeholder="Dibuat otomatis oleh sistem">
+                                <input type="hidden" name="kode_promo" value="{{ old('kode_promo') }}">
+                                <p class="text-[11px] text-gray-400 mt-1">Kode promo dihasilkan otomatis oleh sistem dan dijamin unik (tidak sama dengan promo lain).</p>
                             </div>
 
                             <div>
@@ -283,38 +282,9 @@
                             </div>
 
                             <div class="border-t border-gray-100 pt-5">
-                                <label class="text-[13px] font-semibold text-gray-700 block mb-3">Berlaku Untuk Pelanggan</label>
-                                <div class="space-y-2">
-                                    <label class="flex items-center gap-2 text-[13px] text-gray-700 cursor-pointer">
-                                        <input type="radio" name="target" value="semua" {{ old('target', 'semua') == 'semua' ? 'checked' : '' }}
-                                            class="accent-pink-500" onchange="toggleTargetPelanggan()">
-                                        Semua Pelanggan
-                                    </label>
-                                    <label class="flex items-center gap-2 text-[13px] text-gray-700 cursor-pointer">
-                                        <input type="radio" name="target" value="membership" {{ old('target', 'semua') == 'membership' ? 'checked' : '' }}
-                                            class="accent-pink-500" onchange="toggleTargetPelanggan()">
-                                        Khusus Membership Aktif
-                                    </label>
-                                    <label class="flex items-center gap-2 text-[13px] text-gray-700 cursor-pointer">
-                                        <input type="radio" name="target" value="pilih" {{ old('target', 'semua') == 'pilih' ? 'checked' : '' }}
-                                            class="accent-pink-500" onchange="toggleTargetPelanggan()">
-                                        Pilih Pelanggan Tertentu
-                                    </label>
-                                </div>
-                                <div id="targetPelangganWrap" class="mt-3 {{ old('target', 'semua') == 'pilih' ? '' : 'hidden' }}">
-                                    <div class="max-h-52 overflow-y-auto border border-gray-200 rounded-xl p-3 space-y-1.5 bg-gray-50">
-                                        @forelse($pelanggans as $pelanggan)
-                                            <label class="flex items-center gap-2 text-[12px] text-gray-600 cursor-pointer hover:bg-white px-2 py-1 rounded-lg transition-colors">
-                                                <input type="checkbox" name="id_pelanggan[]" value="{{ $pelanggan->id_pelanggan }}"
-                                                    class="accent-pink-500"
-                                                    {{ in_array($pelanggan->id_pelanggan, old('id_pelanggan') ?? []) ? 'checked' : '' }}>
-                                                {{ $pelanggan->nm_pelanggan }}
-                                            </label>
-                                        @empty
-                                            <p class="text-[12px] text-gray-400 text-center py-2">Belum ada pelanggan</p>
-                                        @endforelse
-                                    </div>
-                                </div>
+                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Berlaku Untuk Pelanggan</label>
+                                <p class="text-[11px] text-gray-400">Promo ini berlaku untuk semua pelanggan.</p>
+                                <input type="hidden" name="target" value="semua">
                             </div>
 
                             <div class="border-t border-gray-100 pt-5">
@@ -385,13 +355,6 @@
             if (!el) return;
             const sel = document.querySelector('select[name="jenis_promo"]');
             el.textContent = sel && sel.value ? (hints[sel.value] || '(Rp)') : '';
-        }
-
-        function toggleTargetPelanggan() {
-            const wrap = document.getElementById('targetPelangganWrap');
-            if (!wrap) return;
-            const val = document.querySelector('input[name="target"]:checked');
-            wrap.classList.toggle('hidden', !val || val.value !== 'pilih');
         }
 
         const jenisSel = document.querySelector('select[name="jenis_promo"]');

@@ -226,11 +226,11 @@
                         $bookingsPerDay = $reservasi->groupBy(fn($r) => \Carbon\Carbon::parse($r->tanggal)->format('Y-m-d'))->map->count();
                     @endphp
 
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+                    <div class="grid grid-cols-1 gap-5">
 
                         <!-- Calendar Side -->
-                        <div class="bg-white rounded-2xl p-5 border border-pink-50 shadow-[0_2px_16px_rgba(236,72,153,0.07)]">
-                            <div class="flex items-center justify-between mb-4">
+                        <div class="bg-white rounded-2xl border border-pink-50 shadow-[0_2px_16px_rgba(236,72,153,0.07)] overflow-hidden lg:max-w-4xl lg:mx-auto">
+                            <div class="p-4 border-b border-pink-50 flex items-center justify-between flex-wrap gap-3">
                                 <h3 id="calendarMonthYear" class="font-bold text-gray-800"></h3>
                                 <div class="flex gap-1">
                                     <button id="prevMonth" class="w-7 h-7 rounded-lg bg-pink-50 text-[#EC4899] flex items-center justify-center hover:bg-pink-100">
@@ -241,28 +241,35 @@
                                     </button>
                                 </div>
                             </div>
-                            <div class="grid grid-cols-7 gap-0.5 mb-1">
-                                <div class="text-center text-[10px] font-bold text-gray-400 py-1">M</div>
-                                <div class="text-center text-[10px] font-bold text-gray-400 py-1">S</div>
-                                <div class="text-center text-[10px] font-bold text-gray-400 py-1">S</div>
-                                <div class="text-center text-[10px] font-bold text-gray-400 py-1">R</div>
-                                <div class="text-center text-[10px] font-bold text-gray-400 py-1">K</div>
-                                <div class="text-center text-[10px] font-bold text-gray-400 py-1">J</div>
-                                <div class="text-center text-[10px] font-bold text-gray-400 py-1">S</div>
-                            </div>
-                            <div id="calendarDays" class="grid grid-cols-7 gap-0.5"></div>
-                            <div id="calendarSummary" class="mt-4 p-3 bg-pink-50 rounded-xl hidden">
-                                <p id="summaryDate" class="text-xs font-bold text-gray-700 mb-0.5"></p>
-                                <p id="summaryTotal" class="text-2xl font-extrabold text-[#EC4899]"></p>
-                                <p id="summaryMeta" class="text-[10px] text-gray-400"></p>
+                            <div class="p-5">
+                                <div class="grid grid-cols-7 gap-0.5 mb-1 lg:max-w-4xl lg:mx-auto">
+                                <div class="text-center text-xs sm:text-sm font-bold text-gray-400 py-1">M</div>
+                                <div class="text-center text-xs sm:text-sm font-bold text-gray-400 py-1">S</div>
+                                <div class="text-center text-xs sm:text-sm font-bold text-gray-400 py-1">S</div>
+                                <div class="text-center text-xs sm:text-sm font-bold text-gray-400 py-1">R</div>
+                                <div class="text-center text-xs sm:text-sm font-bold text-gray-400 py-1">K</div>
+                                <div class="text-center text-xs sm:text-sm font-bold text-gray-400 py-1">J</div>
+                                <div class="text-center text-xs sm:text-sm font-bold text-gray-400 py-1">S</div>
+                                </div>
+                                <div id="calendarDays" class="grid grid-cols-7 gap-0.5 lg:max-w-4xl lg:mx-auto"></div>
+                                <div id="calendarSummary" class="mt-4 p-3 bg-pink-50 rounded-xl hidden">
+                                    <p id="summaryDate" class="text-xs font-bold text-gray-700 mb-0.5"></p>
+                                    <p id="summaryTotal" class="text-2xl font-extrabold text-[#EC4899]"></p>
+                                    <p id="summaryMeta" class="text-[10px] text-gray-400"></p>
+                                </div>
                             </div>
                         </div>
 
                         <!-- Table Side -->
-                        <div class="lg:col-span-2 bg-white rounded-2xl border border-pink-50 shadow-[0_2px_16px_rgba(236,72,153,0.07)] overflow-hidden">
+                        <div class="bg-white rounded-2xl border border-pink-50 shadow-[0_2px_16px_rgba(236,72,153,0.07)] overflow-hidden">
                             <div class="p-4 border-b border-pink-50 flex items-center justify-between flex-wrap gap-3">
                                 <h3 class="font-bold text-gray-800">Daftar Reservasi</h3>
                                 <div class="flex items-center gap-2">
+                                    <div id="filterBadge" class="hidden items-center gap-1.5 bg-pink-50 text-pink-600 border border-pink-100 rounded-full px-3 py-1.5 text-[11px] font-semibold">
+                                        <i class="fa-solid fa-calendar-day"></i>
+                                        <span id="filterBadgeText"></span>
+                                        <button type="button" onclick="clearDateFilter()" class="hover:text-pink-800 font-bold" title="Hapus filter">×</button>
+                                    </div>
                                     <div class="relative">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
                                             <circle cx="11" cy="11" r="8"></circle>
@@ -272,17 +279,10 @@
                                             class="pl-8 pr-3 py-2 bg-[#FFF7FA] border border-pink-100 rounded-xl text-xs focus:outline-none focus:border-pink-300 w-full sm:w-[200px] lg:w-44"
                                             placeholder="Cari reservasi...">
                                     </div>
-                                    <a href="{{ route('admin.reservasi.create') }}"
-                                        class="flex items-center gap-1.5 px-3 py-2 bg-gradient-to-r from-[#EC4899] to-[#BE185D] text-white rounded-xl text-xs font-bold shadow-sm hover:opacity-95">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M5 12h14"></path>
-                                            <path d="M12 5v14"></path>
-                                        </svg> Tambah
-                                    </a>
                                 </div>
                             </div>
-                            <div class="overflow-x-auto">
-<table class="w-full admin-table">
+                            <div>
+<table class="w-full min-w-full admin-table">
                                 <thead>
                                         <tr class="bg-[#FFF7FA]">
                                             <th class="text-left px-5 py-3 text-xs font-bold text-gray-400 uppercase">#</th>
@@ -297,7 +297,7 @@
                                     </thead>
                                     <tbody id="reservasiTableBody">
                                         @forelse ($reservasi as $r)
-                                        <tr class="border-t border-pink-50 hover:bg-pink-50/30 transition-colors reservasi-row">
+                                        <tr class="border-t border-pink-50 hover:bg-pink-50/30 transition-colors reservasi-row" data-tanggal="{{ \Carbon\Carbon::parse($r->tanggal)->format('Y-m-d') }}">
                                             <td class="px-5 py-4 text-sm text-gray-600 font-mono">RSV-{{ str_pad($r->id_booking, 3, '0', STR_PAD_LEFT) }}</td>
                                         <td class="px-5 py-4" data-label="Pelanggan">
                                             <div class="flex items-center gap-2.5">
@@ -324,63 +324,27 @@
                                                         'selesai' => 'bg-emerald-50 text-emerald-600 border-emerald-100',
                                                         'dibatalkan' => 'bg-red-50 text-red-500 border-red-100',
                                                     ];
-                                                    $bgColors = [
-                                                        'menunggu' => '#fffbeb',
-                                                        'dikonfirmasi' => '#eff6ff',
-                                                        'diproses' => '#f5f3ff',
-                                                        'selesai' => '#ecfdf5',
-                                                        'dibatalkan' => '#fef2f2',
-                                                    ];
-                                                    $textColors = [
-                                                        'menunggu' => '#d97706',
-                                                        'dikonfirmasi' => '#2563eb',
-                                                        'diproses' => '#7c3aed',
-                                                        'selesai' => '#059669',
-                                                        'dibatalkan' => '#dc2626',
+                                                    $statusLabels = [
+                                                        'menunggu' => 'Menunggu',
+                                                        'dikonfirmasi' => 'Dikonfirmasi',
+                                                        'diproses' => 'Diproses',
+                                                        'selesai' => 'Selesai',
+                                                        'dibatalkan' => 'Dibatalkan',
                                                     ];
                                                 @endphp
-                                                <select onchange="ubahStatus(this, {{ $r->id_booking }})"
-                                                    class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border cursor-pointer focus:outline-none focus:ring-2 focus:ring-pink-300"
-                                                    style="background-color: {{ $bgColors[$r->status] ?? '#f9fafb' }}; color: {{ $textColors[$r->status] ?? '#6b7280' }}; border-color: transparent;">
-                                                    <option value="menunggu" {{ $r->status == 'menunggu' ? 'selected' : '' }} style="background:#fffbeb;color:#d97706;">Menunggu</option>
-                                                    <option value="dikonfirmasi" {{ $r->status == 'dikonfirmasi' ? 'selected' : '' }} style="background:#eff6ff;color:#2563eb;">Dikonfirmasi</option>
-                                                    <option value="diproses" {{ $r->status == 'diproses' ? 'selected' : '' }} style="background:#f5f3ff;color:#7c3aed;">Diproses</option>
-                                                    <option value="selesai" {{ $r->status == 'selesai' ? 'selected' : '' }} style="background:#ecfdf5;color:#059669;">Selesai</option>
-                                                    <option value="dibatalkan" {{ $r->status == 'dibatalkan' ? 'selected' : '' }} style="background:#fef2f2;color:#dc2626;">Dibatalkan</option>
-                                                </select>
+                                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border {{ $statusColors[$r->status] ?? 'bg-gray-50 text-gray-500 border-gray-200' }}">
+                                                    {{ $statusLabels[$r->status] ?? ucfirst($r->status) }}
+                                                </span>
                                             </td>
                                             <td class="px-5 py-4" data-label="Aksi">
-                                                <div class="flex gap-1.5">
-                                                    <a href="{{ route('admin.reservasi.show', $r->id_booking) }}"
-                                                        class="w-7 h-7 rounded-lg bg-blue-50 text-blue-500 hover:bg-blue-100 flex items-center justify-center">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                            <path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"></path>
-                                                            <circle cx="12" cy="12" r="3"></circle>
-                                                        </svg>
-                                                    </a>
-                                                    <a href="{{ route('admin.reservasi.edit', $r->id_booking) }}"
-                                                        class="w-7 h-7 rounded-lg bg-amber-50 text-amber-500 hover:bg-amber-100 flex items-center justify-center">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                            <path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                                                            <path d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z"></path>
-                                                        </svg>
-                                                    </a>
-                                                    <form action="{{ route('admin.reservasi.destroy', $r->id_booking) }}" method="POST"
-                                                        onsubmit="return confirm('Yakin ingin menghapus reservasi ini?')" class="inline">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit"
-                                                            class="w-7 h-7 rounded-lg bg-red-50 text-red-400 hover:bg-red-100 flex items-center justify-center">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                                <path d="M3 6h18"></path>
-                                                                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
-                                                                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
-                                                                <line x1="10" y1="11" x2="10" y2="17"></line>
-                                                                <line x1="14" y1="11" x2="14" y2="17"></line>
-                                                            </svg>
-                                                        </button>
-                                                    </form>
-                                                </div>
+                                                <a href="{{ route('admin.reservasi.show', $r->id_booking) }}"
+                                                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-blue-50 text-blue-600 border border-blue-100 hover:bg-blue-100 text-[11px] font-semibold" title="Lihat Detail">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                        <path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"></path>
+                                                        <circle cx="12" cy="12" r="3"></circle>
+                                                    </svg>
+                                                    Detail
+                                                </a>
                                             </td>
                                         </tr>
                                         @empty
@@ -417,44 +381,41 @@
         const dateEl = document.getElementById('currentDate');
         if (dateEl) dateEl.textContent = now.toLocaleDateString('id-ID', options);
 
-        document.getElementById('searchReservasi').addEventListener('input', function() {
-            const q = this.value.toLowerCase();
+        let filterDate = null;
+
+        function applyFilters() {
+            const q = (document.getElementById('searchReservasi').value || '').toLowerCase();
             document.querySelectorAll('.reservasi-row').forEach(function(row) {
                 const nm = row.querySelector('.nm_pelanggan')?.textContent?.toLowerCase() || '';
-                row.style.display = nm.includes(q) ? '' : 'none';
+                const tanggal = row.dataset.tanggal || '';
+                const matchSearch = nm.includes(q);
+                const matchDate = !filterDate || tanggal === filterDate;
+                row.style.display = (matchSearch && matchDate) ? '' : 'none';
             });
-        });
+        }
 
-        function ubahStatus(el, id) {
-            const status = el.value;
-            fetch('/admin/reservasi/' + id + '/status', {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                    'Accept': 'application/json',
-                },
-                body: JSON.stringify({ status: status })
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    const colors = {
-                        menunggu: { bg: '#fffbeb', text: '#d97706' },
-                        dikonfirmasi: { bg: '#eff6ff', text: '#2563eb' },
-                        diproses: { bg: '#f5f3ff', text: '#7c3aed' },
-                        selesai: { bg: '#ecfdf5', text: '#059669' },
-                        dibatalkan: { bg: '#fef2f2', text: '#dc2626' },
-                    };
-                    const c = colors[status] || { bg: '#f9fafb', text: '#6b7280' };
-                    el.style.backgroundColor = c.bg;
-                    el.style.color = c.text;
-                } else {
-                    alert('Gagal mengubah status');
-                    location.reload();
-                }
-            })
-            .catch(() => { alert('Terjadi kesalahan'); location.reload(); });
+        document.getElementById('searchReservasi').addEventListener('input', applyFilters);
+
+        function updateFilterBadge() {
+            const badge = document.getElementById('filterBadge');
+            if (filterDate) {
+                const parts = filterDate.split('-').map(Number);
+                document.getElementById('filterBadgeText').textContent = 'Menampilkan: ' + parts[2] + ' ' + monthNames[parts[1] - 1] + ' ' + parts[0];
+                badge.classList.remove('hidden');
+                badge.classList.add('flex');
+            } else {
+                badge.classList.add('hidden');
+                badge.classList.remove('flex');
+            }
+        }
+
+        function clearDateFilter() {
+            filterDate = null;
+            selectedDate = null;
+            updateFilterBadge();
+            applyFilters();
+            renderCalendar();
+            document.getElementById('calendarSummary').classList.add('hidden');
         }
 
         const bookingsPerDay = @json($bookingsPerDay);
@@ -493,7 +454,7 @@
                 const isToday = (d === todayDate && currentMonth === todayMonth && currentYear === todayYear);
                 const isSelected = selectedDate && d === selectedDate.getDate() && currentMonth === selectedDate.getMonth() && currentYear === selectedDate.getFullYear();
 
-                let classes = 'aspect-square rounded-lg flex flex-col items-center justify-center text-[10px] font-bold transition-all';
+                let classes = 'aspect-square rounded-lg flex flex-col items-center justify-center text-xs sm:text-base font-bold transition-all';
 
                 if (isSelected) {
                     classes += ' bg-gradient-to-br from-[#EC4899] to-[#BE185D] text-white shadow-sm';
@@ -510,14 +471,22 @@
 
                 if (count > 0) {
                     const span = document.createElement('span');
-                    span.className = isSelected ? 'text-[7px] font-bold text-pink-200' : 'text-[7px] font-bold text-[#EC4899]';
+                    span.className = isSelected ? 'text-[9px] sm:text-xs font-bold text-pink-200' : 'text-[9px] sm:text-xs font-bold text-[#EC4899]';
                     span.textContent = count;
                     btn.appendChild(span);
                 }
 
                 btn.addEventListener('click', function() {
+                    const key = currentYear + '-' + String(currentMonth + 1).padStart(2, '0') + '-' + String(d).padStart(2, '0');
+                    if (filterDate === key) {
+                        clearDateFilter();
+                        return;
+                    }
+                    filterDate = key;
                     selectedDate = new Date(currentYear, currentMonth, d);
                     updateSummary(d, count);
+                    updateFilterBadge();
+                    applyFilters();
                     renderCalendar();
                 });
 
@@ -546,6 +515,9 @@
             currentMonth--;
             if (currentMonth < 0) { currentMonth = 11; currentYear--; }
             selectedDate = null;
+            filterDate = null;
+            updateFilterBadge();
+            applyFilters();
             renderCalendar();
         });
 
@@ -553,6 +525,9 @@
             currentMonth++;
             if (currentMonth > 11) { currentMonth = 0; currentYear++; }
             selectedDate = null;
+            filterDate = null;
+            updateFilterBadge();
+            applyFilters();
             renderCalendar();
         });
 
