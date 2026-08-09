@@ -115,33 +115,48 @@
 
                             <div id="item-container">
                                 @foreach ($transaksi->detail ?? [] as $dt)
-                                <div class="item-row flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-3 p-3 bg-gray-50 rounded-xl border border-gray-100" data-index="{{ $loop->index }}">
-                                    <input type="hidden" name="items[{{ $loop->index }}][jenis]" class="item-jenis-hidden" value="{{ $dt->jenis }}">
-                                    <input type="hidden" name="items[{{ $loop->index }}][id_item]" class="item-id-hidden" value="{{ $dt->id_item }}">
-                                    <input type="hidden" name="items[{{ $loop->index }}][nm_item]" class="item-nama-hidden" value="{{ $dt->nm_item }}">
-                                    <input type="hidden" name="items[{{ $loop->index }}][qty]" class="item-qty-hidden" value="{{ $dt->qty }}">
-                                    <input type="hidden" name="items[{{ $loop->index }}][harga]" class="item-harga-hidden" value="{{ $dt->harga }}">
-                                    <input type="hidden" name="items[{{ $loop->index }}][subtotal]" class="item-subtotal-hidden" value="{{ $dt->subtotal }}">
+<div class="item-row flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-3 p-3 bg-gray-50 rounded-xl border border-gray-100" data-index="{{ $loop->index }}">
+                    <input type="hidden" name="items[{{ $loop->index }}][jenis]" class="item-jenis-hidden" value="{{ $dt->jenis }}">
+                    <input type="hidden" name="items[{{ $loop->index }}][id_item]" class="item-id-hidden" value="{{ $dt->id_item }}">
+                    <input type="hidden" name="items[{{ $loop->index }}][nm_item]" class="item-nama-hidden" value="{{ $dt->nm_item }}">
+                    <input type="hidden" name="items[{{ $loop->index }}][qty]" class="item-qty-hidden" value="{{ $dt->qty }}">
+                    <input type="hidden" name="items[{{ $loop->index }}][harga]" class="item-harga-hidden" value="{{ $dt->harga }}">
+                    <input type="hidden" name="items[{{ $loop->index }}][subtotal]" class="item-subtotal-hidden" value="{{ $dt->subtotal }}">
+                    <input type="hidden" name="items[{{ $loop->index }}][jam]" class="item-jam-hidden" value="{{ $dt->jam }}">
+                    <input type="hidden" name="items[{{ $loop->index }}][id_karyawan]" class="item-karyawan-hidden" value="{{ $dt->id_karyawan }}">
 
-                                    <select class="form-input-custom item-jenis-select w-full sm:!w-[120px] !py-2 !text-[12px] sm:flex-shrink-0"
-                                        onchange="onJenisChange(this)">
-                                        <option value="Layanan" {{ $dt->jenis == 'Layanan' ? 'selected' : '' }}>Layanan</option>
-                                        <option value="Produk" {{ $dt->jenis == 'Produk' ? 'selected' : '' }}>Produk</option>
-                                    </select>
-                                    <select class="form-input-custom item-select w-full sm:!flex-1 sm:!min-w-0 !py-2 !text-[12px]"
-                                        onchange="onItemChange(this)">
-                                        <option value="">-- Pilih --</option>
-                                    </select>
-                                    <span class="item-harga-display text-[12px] text-gray-600 font-medium w-full sm:w-24 text-right sm:flex-shrink-0">Rp {{ number_format($dt->harga, 0, ',', '.') }}</span>
-                                    <input type="number" value="{{ $dt->qty }}" min="1"
-                                        class="form-input-custom item-qty w-full sm:!w-16 !py-2 !text-[12px] text-center sm:flex-shrink-0"
-                                        oninput="onQtyChange(this)">
-                                    <span class="item-subtotal-display text-[13px] text-pink-600 font-bold w-full sm:w-32 text-right sm:flex-shrink-0">Rp {{ number_format($dt->subtotal, 0, ',', '.') }}</span>
-                                    <button type="button" onclick="removeItemRow(this)"
-                                        class="w-7 h-7 flex items-center justify-center text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors sm:flex-shrink-0">
-                                        <i class="fa-regular fa-trash-can text-xs"></i>
-                                    </button>
-                                </div>
+                    <select class="form-input-custom item-jenis-select w-full sm:!w-[120px] !py-2 !text-[12px] sm:flex-shrink-0"
+                        onchange="onJenisChange(this)">
+                        <option value="Layanan" {{ $dt->jenis == 'Layanan' ? 'selected' : '' }}>Layanan</option>
+                        <option value="Produk" {{ $dt->jenis == 'Produk' ? 'selected' : '' }}>Produk</option>
+                    </select>
+                    <select class="form-input-custom item-select w-full sm:!flex-1 sm:!min-w-0 !py-2 !text-[12px]"
+                        onchange="onItemChange(this)">
+                        <option value="">-- Pilih --</option>
+                    </select>
+                    <span class="item-harga-display text-[12px] text-gray-600 font-medium w-full sm:w-24 text-right sm:flex-shrink-0">Rp {{ number_format($dt->harga, 0, ',', '.') }}</span>
+                    <input type="number" value="{{ $dt->qty }}" min="1"
+                        class="form-input-custom item-qty w-full sm:!w-16 !py-2 !text-[12px] text-center sm:flex-shrink-0"
+                        oninput="onQtyChange(this)">
+                    <span class="item-subtotal-display text-[13px] text-pink-600 font-bold w-full sm:w-32 text-right sm:flex-shrink-0">Rp {{ number_format($dt->subtotal, 0, ',', '.') }}</span>
+
+                    <div class="item-layanan-fields {{ $dt->jenis == 'Layanan' ? '' : 'hidden' }} sm:flex gap-2 flex-wrap" style="width: 100%;">
+                        <input type="time" class="form-input-custom item-jam-input w-full sm:!w-32 !py-2 !text-[12px]"
+                            onchange="onLayananFieldChange(this)" value="{{ $dt->jam ? \Carbon\Carbon::parse($dt->jam)->format('H:i') : '' }}">
+                        <select class="form-input-custom item-karyawan-select w-full sm:!w-48 !py-2 !text-[12px]"
+                            onchange="onLayananFieldChange(this)">
+                            <option value="">-- Karyawan --</option>
+                            @foreach($karyawan as $k)
+                            <option value="{{ $k->id }}" {{ ($dt->id_karyawan ?? '') == $k->id ? 'selected' : '' }}>{{ $k->user->nama ?? $k->nama }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <button type="button" onclick="removeItemRow(this)"
+                        class="w-7 h-7 flex items-center justify-center text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors sm:flex-shrink-0">
+                        <i class="fa-regular fa-trash-can text-xs"></i>
+                    </button>
+                </div>
                                 @endforeach
                             </div>
 
@@ -195,6 +210,15 @@
                                     </div>
                                 </label>
                                 <label class="payment-option cursor-pointer">
+                                    <input type="radio" name="metode_byr" value="QRIS" class="hidden peer"
+                                        {{ old('metode_byr', $transaksi->metode_byr) == 'QRIS' ? 'checked' : '' }}
+                                        onchange="togglePaymentMethod('QRIS')">
+                                    <div class="p-4 rounded-xl border-2 border-gray-100 peer-checked:border-pink-400 peer-checked:bg-pink-50/50 hover:border-pink-200 transition-all text-center">
+                                        <div class="text-2xl mb-1">📱</div>
+                                        <div class="text-[12px] font-semibold text-gray-600 peer-checked:text-pink-500">QRIS</div>
+                                    </div>
+                                </label>
+                                <label class="payment-option cursor-pointer">
                                     <input type="radio" name="metode_byr" value="E-Wallet" class="hidden peer"
                                         {{ old('metode_byr', $transaksi->metode_byr) == 'E-Wallet' ? 'checked' : '' }}
                                         onchange="togglePaymentMethod('E-Wallet')">
@@ -241,101 +265,13 @@
                                             <i class="fa-solid fa-flag text-pink-400 mr-1"></i>Status <span class="text-red-500">*</span>
                                         </label>
                                         <select name="status" class="form-input-custom">
-                                            <option value="Lunas" {{ old('status', $transaksi->status) == 'Lunas' ? 'selected' : '' }}>Lunas</option>
                                             <option value="Proses" {{ old('status', $transaksi->status) == 'Proses' ? 'selected' : '' }}>Proses</option>
+                                            <option value="Lunas" {{ old('status', $transaksi->status) == 'Lunas' ? 'selected' : '' }}>Lunas</option>
                                             <option value="Batal" {{ old('status', $transaksi->status) == 'Batal' ? 'selected' : '' }}>Batal</option>
                                         </select>
                                     </div>
 
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div class="form-group">
-                                            <label class="form-label">
-                                                <i class="fa-solid fa-building-columns text-pink-400 mr-1"></i>Bank Asal
-                                            </label>
-                                            <select name="bank_asal" id="bank_asal"
-                                                class="form-input-custom @error('bank_asal') border-red-400 @enderror">
-                                                <option value="">-- Pilih Bank Asal --</option>
-                                                <option value="BRI" {{ old('bank_asal', $transaksi->bank_asal) == 'BRI' ? 'selected' : '' }}>BRI</option>
-                                                <option value="BCA" {{ old('bank_asal', $transaksi->bank_asal) == 'BCA' ? 'selected' : '' }}>BCA</option>
-                                                <option value="Mandiri" {{ old('bank_asal', $transaksi->bank_asal) == 'Mandiri' ? 'selected' : '' }}>Mandiri</option>
-                                                <option value="BNI" {{ old('bank_asal', $transaksi->bank_asal) == 'BNI' ? 'selected' : '' }}>BNI</option>
-                                                <option value="BSI" {{ old('bank_asal', $transaksi->bank_asal) == 'BSI' ? 'selected' : '' }}>BSI</option>
-                                                <option value="Lainnya" {{ old('bank_asal', $transaksi->bank_asal) == 'Lainnya' ? 'selected' : '' }}>Lainnya</option>
-                                            </select>
-                                            @error('bank_asal')
-                                                <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
-                                            @enderror
-                                        </div>
-
-                                        <div class="form-group">
-                                            <label class="form-label">
-                                                <i class="fa-solid fa-arrow-right text-pink-400 mr-1"></i>Dari Rekening
-                                            </label>
-                                            <input type="text" name="dari_rekening"
-                                                class="form-input-custom @error('dari_rekening') border-red-400 @enderror"
-                                                placeholder="No. rekening pengirim" value="{{ old('dari_rekening', $transaksi->dari_rekening) }}">
-                                            @error('dari_rekening')
-                                                <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
-                                            @enderror
-                                        </div>
-
-                                        <div class="form-group">
-                                            <label class="form-label">
-                                                <i class="fa-solid fa-building-columns text-pink-400 mr-1"></i>Bank Tujuan <span class="text-red-500">*</span>
-                                            </label>
-                                            @php
-                                                $bankColors = [
-                                                    'BRI' => 'linear-gradient(135deg,#00529C,#003A6E)',
-                                                    'BCA' => 'linear-gradient(135deg,#CC0000,#990000)',
-                                                    'Mandiri' => 'linear-gradient(135deg,#003D79,#00264D)',
-                                                    'BNI' => 'linear-gradient(135deg,#FF6600,#CC5200)',
-                                                    'BSI' => 'linear-gradient(135deg,#005747,#003A2E)',
-                                                ];
-                                            @endphp
-                                            <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
-                                                @foreach ($bankTujuan as $bank => $rek)
-                                                <label class="cursor-pointer">
-                                                    <input type="radio" name="bank_tujuan" value="{{ $bank }}" data-rekening="{{ $rek }}" class="hidden peer"
-                                                        {{ old('bank_tujuan', $transaksi->bank_tujuan) == $bank ? 'checked' : '' }}
-                                                        onchange="onBankCardChange(this)">
-                                                    <div class="rounded-xl p-4 border-2 border-gray-100 peer-checked:border-pink-400 peer-checked:ring-2 peer-checked:ring-pink-200 hover:border-pink-200 transition-all"
-                                                        style="background:{{ $bankColors[$bank] ?? 'linear-gradient(135deg,#64748B,#475569)' }};">
-                                                        <div class="text-white font-bold text-[13px]">{{ $bank }}</div>
-                                                        <div class="text-white/80 text-[11px] mt-1 font-mono tracking-wide">{{ $rek }}</div>
-                                                    </div>
-                                                </label>
-                                                @endforeach
-                                            </div>
-                                            <p class="text-[11px] text-gray-400 mt-2"><i class="fa-solid fa-circle-info mr-1"></i>Rekening tujuan atas nama <b>BeautyCare Official</b></p>
-                                            @error('bank_tujuan')
-                                                <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
-                                            @enderror
-                                        </div>
-
-                                        <div class="form-group">
-                                            <label class="form-label">
-                                                <i class="fa-solid fa-arrow-left text-pink-400 mr-1"></i>Ke Rekening <span class="text-red-500">*</span>
-                                            </label>
-                                            <input type="text" name="ke_rekening" id="ke_rekening"
-                                                class="form-input-custom @error('ke_rekening') border-red-400 @enderror"
-                                                placeholder="No. rekening tujuan" value="{{ old('ke_rekening', $transaksi->ke_rekening) }}" readonly>
-                                            @error('ke_rekening')
-                                                <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
-                                            @enderror
-                                        </div>
-
-                                        <div class="form-group">
-                                            <label class="form-label">
-                                                <i class="fa-solid fa-user text-pink-400 mr-1"></i>Atas Nama
-                                            </label>
-                                            <input type="text" name="atas_nama"
-                                                class="form-input-custom @error('atas_nama') border-red-400 @enderror"
-                                                placeholder="Nama pemilik rekening" value="{{ old('atas_nama', $transaksi->atas_nama) }}">
-                                            @error('atas_nama')
-                                                <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
-                                            @enderror
-                                        </div>
-
                                         <div class="form-group">
                                             <label class="form-label">
                                                 <i class="fa-solid fa-hashtag text-pink-400 mr-1"></i>No. Referensi
@@ -367,6 +303,10 @@
                                             <p class="text-[11px] text-gray-400 mt-1">Format: JPG, PNG. Maks: 2MB</p>
                                         </div>
                                     </div>
+
+                                    <div id="bank-timer-display" class="mt-3 text-center text-[13px] font-medium hidden">
+                                        ⏱️ 15:00
+                                    </div>
                                 </div>
                             </div>
 
@@ -391,23 +331,11 @@
                                             <select name="ewallet_type" id="ewallet_type"
                                                 class="form-input-custom @error('ewallet_type') border-red-400 @enderror">
                                                 <option value="">-- Pilih E-Wallet --</option>
-                                                <option value="Dana" {{ old('ewallet_type', $transaksi->bank_asal) == 'Dana' ? 'selected' : '' }}>Dana</option>
-                                                <option value="GoPay" {{ old('ewallet_type', $transaksi->bank_asal) == 'GoPay' ? 'selected' : '' }}>GoPay</option>
-                                                <option value="OVO" {{ old('ewallet_type', $transaksi->bank_asal) == 'OVO' ? 'selected' : '' }}>OVO</option>
-                                                <option value="ShopeePay" {{ old('ewallet_type', $transaksi->bank_asal) == 'ShopeePay' ? 'selected' : '' }}>ShopeePay</option>
+                                                <option value="Dana" {{ old('ewallet_type', $transaksi->ewallet_type ?? null) == 'Dana' ? 'selected' : '' }}>Dana</option>
+                                                <option value="GoPay" {{ old('ewallet_type', $transaksi->ewallet_type ?? null) == 'GoPay' ? 'selected' : '' }}>GoPay</option>
+                                                <option value="ShopeePay" {{ old('ewallet_type', $transaksi->ewallet_type ?? null) == 'ShopeePay' ? 'selected' : '' }}>ShopeePay</option>
                                             </select>
                                             @error('ewallet_type')
-                                                <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
-                                            @enderror
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="form-label">
-                                                <i class="fa-solid fa-user text-pink-400 mr-1"></i>Atas Nama
-                                            </label>
-                                            <input type="text" name="atas_nama"
-                                                class="form-input-custom @error('atas_nama') border-red-400 @enderror"
-                                                placeholder="Nama pengirim" value="{{ old('atas_nama', $transaksi->atas_nama) }}">
-                                            @error('atas_nama')
                                                 <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
                                             @enderror
                                         </div>
@@ -429,6 +357,10 @@
                                             @enderror
                                             <p class="text-[11px] text-gray-400 mt-1">Screenshot bukti pembayaran E-Wallet</p>
                                         </div>
+                                    </div>
+
+                                    <div id="ewallet-timer-display" class="mt-3 text-center text-[13px] font-medium hidden">
+                                        ⏱️ 05:00
                                     </div>
                                 </div>
                             </div>
@@ -554,7 +486,7 @@
     <script>
         const layananData = @json($layanan);
         const produkData = @json($produk);
-        const bankTujuanData = @json($bankTujuan);
+        const karyawanData = @json($karyawan);
         let itemRowIndex = {{ count($transaksi->detail ?? []) }};
 
         function formatRp(value) {
@@ -586,6 +518,10 @@
         }
 
         function getItemTemplate(index) {
+            let karyawanOptions = '<option value="">-- Karyawan --</option>';
+            if (karyawanData) {
+                karyawanOptions += karyawanData.map(k => `<option value="${k.id}">${k.user?.nama || k.nama}</option>`).join('');
+            }
             return `
             <div class="item-row flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-3 p-3 bg-gray-50 rounded-xl border border-gray-100" data-index="${index}">
                 <input type="hidden" name="items[${index}][jenis]" class="item-jenis-hidden" value="Layanan">
@@ -594,6 +530,8 @@
                 <input type="hidden" name="items[${index}][qty]" class="item-qty-hidden" value="1">
                 <input type="hidden" name="items[${index}][harga]" class="item-harga-hidden" value="0">
                 <input type="hidden" name="items[${index}][subtotal]" class="item-subtotal-hidden" value="0">
+                <input type="hidden" name="items[${index}][jam]" class="item-jam-hidden" value="">
+                <input type="hidden" name="items[${index}][id_karyawan]" class="item-karyawan-hidden" value="">
 
                 <select class="form-input-custom item-jenis-select w-full sm:!w-[120px] !py-2 !text-[12px] sm:flex-shrink-0"
                     onchange="onJenisChange(this)">
@@ -609,6 +547,16 @@
                     class="form-input-custom item-qty w-full sm:!w-16 !py-2 !text-[12px] text-center sm:flex-shrink-0"
                     oninput="onQtyChange(this)">
                 <span class="item-subtotal-display text-[13px] text-pink-600 font-bold w-full sm:w-32 text-right sm:flex-shrink-0">Rp 0</span>
+
+                <div class="item-layanan-fields hidden sm:flex gap-2 flex-wrap" style="width: 100%;">
+                    <input type="time" class="form-input-custom item-jam-input w-full sm:!w-32 !py-2 !text-[12px]"
+                        onchange="onLayananFieldChange(this)">
+                    <select class="form-input-custom item-karyawan-select w-full sm:!w-48 !py-2 !text-[12px]"
+                        onchange="onLayananFieldChange(this)">
+                        ${karyawanOptions}
+                    </select>
+                </div>
+
                 <button type="button" onclick="removeItemRow(this)"
                     class="w-7 h-7 flex items-center justify-center text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors sm:flex-shrink-0">
                     <i class="fa-regular fa-trash-can text-xs"></i>
@@ -659,6 +607,25 @@
             row.querySelector('.item-harga-display').textContent = 'Rp 0';
             row.querySelector('.item-subtotal-hidden').value = 0;
             row.querySelector('.item-subtotal-display').textContent = 'Rp 0';
+
+            const layananFields = row.querySelector('.item-layanan-fields');
+            const jamInput = row.querySelector('.item-jam-input');
+            const karyawanSelect = row.querySelector('.item-karyawan-select');
+            if (jenis === 'Layanan') {
+                layananFields.classList.remove('hidden');
+                if (!jamInput.value) {
+                    const now = new Date();
+                    jamInput.value = now.toTimeString().slice(0, 5);
+                }
+                row.querySelector('.item-jam-hidden').value = jamInput.value || '';
+                row.querySelector('.item-karyawan-hidden').value = karyawanSelect.value || '';
+            } else {
+                layananFields.classList.add('hidden');
+                jamInput.value = '';
+                karyawanSelect.value = '';
+                row.querySelector('.item-jam-hidden').value = '';
+                row.querySelector('.item-karyawan-hidden').value = '';
+            }
             recalculateSubtotal();
         }
 
@@ -758,22 +725,35 @@
             hitungKembali();
         }
 
-        function onBankCardChange(input) {
-            const keRekening = document.getElementById('ke_rekening');
-            keRekening.value = input.dataset.rekening || '';
-            keRekening.readOnly = !!input.dataset.rekening;
+        function onLayananFieldChange(input) {
+            const row = input.closest('.item-row');
+            row.querySelector('.item-jam-hidden').value = row.querySelector('.item-jam-input').value || '';
+            row.querySelector('.item-karyawan-hidden').value = row.querySelector('.item-karyawan-select').value || '';
         }
 
         let paymentTimer = null;
-        let timerSeconds = 60;
+        let timerSeconds = 0;
 
-        function startPaymentTimer(displayId) {
+        function getTimerDuration() {
+            const metode = document.querySelector('input[name="metode_byr"]:checked')?.value || 'Transfer';
+            if (metode === 'Transfer') return 15 * 60;
+            if (metode === 'Debit') return 15 * 60;
+            if (metode === 'QRIS') return 3 * 60;
+            if (metode === 'E-Wallet') return 5 * 60;
+            return 0;
+        }
+
+        function startPaymentTimer(el) {
             stopPaymentTimer();
-            timerSeconds = 60;
-            const el = document.getElementById(displayId);
+            timerSeconds = getTimerDuration();
             if (!el) return;
             el.classList.remove('hidden');
             updateTimerDisplay(el);
+
+            if (timerSeconds <= 0) {
+                el.classList.add('hidden');
+                return;
+            }
 
             paymentTimer = setInterval(function() {
                 timerSeconds--;
@@ -782,9 +762,9 @@
                     clearInterval(paymentTimer);
                     paymentTimer = null;
                     showToast('Waktu pembayaran habis! Silakan ulangi.', 'warning');
-                    timerSeconds = 60;
+                    timerSeconds = getTimerDuration();
                     updateTimerDisplay(el);
-                    startPaymentTimer(displayId);
+                    startPaymentTimer(el);
                 }
             }, 1000);
         }
@@ -792,7 +772,7 @@
         function updateTimerDisplay(el) {
             const menit = Math.floor(timerSeconds / 60);
             const detik = timerSeconds % 60;
-            el.textContent = '\u23f1\ufe0f ' + String(menit).padStart(2, '0') + ':' + String(detik).padStart(2, '0');
+            el.textContent = '⏱️ ' + String(menit).padStart(2, '0') + ':' + String(detik).padStart(2, '0');
             el.style.color = timerSeconds <= 10 ? '#EF4444' : '#666666';
         }
 
@@ -801,10 +781,8 @@
                 clearInterval(paymentTimer);
                 paymentTimer = null;
             }
-            document.querySelectorAll('[id^="timer-"]').forEach(function(el) {
+            document.querySelectorAll('[id$="-timer-display"]').forEach(function(el) {
                 el.classList.add('hidden');
-                el.textContent = '\u23f1\ufe0f 01:00';
-                el.style.color = '#666666';
             });
         }
 
@@ -812,6 +790,10 @@
             stopPaymentTimer();
             document.querySelectorAll('.payment-section').forEach(el => el.classList.remove('active'));
             const btn = document.getElementById('btn-simpan-transaksi');
+            const bankTimerEl = document.getElementById('bank-timer-display');
+            const ewalletTimerEl = document.getElementById('ewallet-timer-display');
+            if (bankTimerEl) bankTimerEl.classList.add('hidden');
+            if (ewalletTimerEl) ewalletTimerEl.classList.add('hidden');
 
             if (method === 'Tunai') {
                 document.getElementById('payment-section-tunai').classList.add('active');
@@ -819,9 +801,11 @@
             } else if (method === 'E-Wallet') {
                 document.getElementById('payment-section-ewallet').classList.add('active');
                 if (btn) btn.innerHTML = '<i class="fa-solid fa-pen-to-square"></i> Perbarui Transaksi';
+                if (ewalletTimerEl) startPaymentTimer(ewalletTimerEl);
             } else {
                 document.getElementById('payment-section-bank').classList.add('active');
                 if (btn) btn.innerHTML = '<i class="fa-solid fa-pen-to-square"></i> Perbarui Transaksi';
+                if (bankTimerEl) startPaymentTimer(bankTimerEl);
             }
         }
 

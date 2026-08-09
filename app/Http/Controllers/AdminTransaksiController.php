@@ -7,9 +7,11 @@ use App\Models\Pelanggan;
 use App\Models\DetailTransaksi;
 use App\Models\Layanan;
 use App\Models\Produk;
+use App\Models\Karyawan;
 use App\Helpers\ActivityLogger;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use App\Services\SaldoAkunService;
 
 class AdminTransaksiController extends Controller
 {
@@ -59,10 +61,9 @@ class AdminTransaksiController extends Controller
         $pelanggan = Pelanggan::with('membership')->get();
         $layanan   = Layanan::where('status', 1)->get();
         $produk    = Produk::where('status', 1)->get();
+        $karyawan  = Karyawan::with('user')->get();
 
-        $bankTujuan = CheckoutController::bankTujuan();
-
-        return view('admin.transaksi.create', compact('pelanggan', 'layanan', 'produk', 'bankTujuan'));
+        return view('admin.transaksi.create', compact('pelanggan', 'layanan', 'produk', 'karyawan'));
     }
 
     public function store(Request $request)
@@ -74,22 +75,19 @@ class AdminTransaksiController extends Controller
             'diskon'       => 'nullable|numeric|min:0',
             'pajak'        => 'nullable|numeric|min:0',
             'total'        => 'required|numeric|min:0',
-            'metode_byr'   => 'required|in:Tunai,Transfer,Debit,E-Wallet',
+            'metode_byr'   => 'required|in:Tunai,Transfer,Debit,QRIS,E-Wallet',
             'dibayar'      => 'required|numeric|min:0',
             'kembali'      => 'required|numeric|min:0',
             'catatan'      => 'nullable|string',
             'bukti_bayar'  => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'atas_nama'    => 'nullable|string|max:100',
-            'dari_rekening'=> 'nullable|string|max:50',
-            'ke_rekening'  => 'nullable|string|max:50',
-            'bank_asal'    => 'nullable|string|max:50',
-            'bank_tujuan'  => 'nullable|string|max:50',
             'no_referensi' => 'nullable|string|max:50',
-            'ewallet_type' => 'nullable|string|max:50',
+            'ewallet_type' => 'nullable|in:Dana,GoPay,ShopeePay',
         ]);
 
         $lastId   = Transaksi::max('id_transaksi') + 1;
         $no_invoice = 'INV-' . date('Ymd') . '-' . str_pad($lastId, 4, '0', STR_PAD_LEFT);
+
+        $status = in_array($request->metode_byr, ['Tunai', 'QRIS', 'E-Wallet']) ? 'Lunas' : 'Proses';
 
         $data = [
             'id_booking'   => null,
@@ -105,13 +103,9 @@ class AdminTransaksiController extends Controller
             'dibayar'      => $request->dibayar,
             'kembali'      => $request->kembali,
             'catatan'      => $request->catatan ?? '',
-            'status'       => in_array($request->metode_byr, ['Tunai', 'E-Wallet']) ? 'Lunas' : 'Pending',
-            'atas_nama'    => $request->atas_nama,
-            'dari_rekening'=> $request->dari_rekening,
-            'ke_rekening'  => $request->ke_rekening,
-            'bank_asal'    => $request->bank_asal ?? $request->ewallet_type,
-            'bank_tujuan'  => $request->bank_tujuan,
+            'status'       => $status,
             'no_referensi' => $request->no_referensi,
+            'ewallet_type' => $request->ewallet_type,
         ];
 
         if ($request->hasFile('bukti_bayar')) {
@@ -134,6 +128,8 @@ class AdminTransaksiController extends Controller
                         'harga'        => $item['harga'] ?? 0,
                         'diskon'       => 0,
                         'subtotal'     => $item['subtotal'] ?? 0,
+                        'jam'          => $item['jam'] ?? null,
+                        'id_karyawan'  => $item['id_karyawan'] ?? null,
                     ]);
 
                     if (($item['jenis'] ?? 'Layanan') === 'Produk') {
@@ -148,7 +144,7 @@ class AdminTransaksiController extends Controller
             }
         }
 
-        $msg = in_array($request->metode_byr, ['Tunai', 'E-Wallet'])
+        $msg = in_array($request->metode_byr, ['Tunai', 'QRIS', 'E-Wallet'])
             ? 'Transaksi berhasil disimpan!'
             : 'Transaksi berhasil dicatat! Menunggu konfirmasi pembayaran.';
 
@@ -167,10 +163,9 @@ class AdminTransaksiController extends Controller
         $pelanggan = Pelanggan::with('membership')->get();
         $layanan   = Layanan::where('status', 1)->get();
         $produk    = Produk::where('status', 1)->get();
+        $karyawan  = Karyawan::with('user')->get();
 
-        $bankTujuan = CheckoutController::bankTujuan();
-
-        return view('admin.transaksi.edit', compact('transaksi', 'pelanggan', 'layanan', 'produk', 'bankTujuan'));
+        return view('admin.transaksi.edit', compact('transaksi', 'pelanggan', 'layanan', 'produk', 'karyawan'));
     }
 
     public function update(Request $request, $id)
@@ -182,19 +177,14 @@ class AdminTransaksiController extends Controller
             'diskon'       => 'nullable|numeric|min:0',
             'pajak'        => 'nullable|numeric|min:0',
             'total'        => 'required|numeric|min:0',
-            'metode_byr'   => 'required|in:Tunai,Transfer,Debit,E-Wallet',
+            'metode_byr'   => 'required|in:Tunai,Transfer,Debit,QRIS,E-Wallet',
             'dibayar'      => 'required|numeric|min:0',
             'kembali'      => 'required|numeric|min:0',
             'catatan'      => 'nullable|string',
             'bukti_bayar'  => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'atas_nama'    => 'nullable|string|max:100',
-            'dari_rekening'=> 'nullable|string|max:50',
-            'ke_rekening'  => 'nullable|string|max:50',
-            'bank_asal'    => 'nullable|string|max:50',
-            'bank_tujuan'  => 'nullable|string|max:50',
             'no_referensi' => 'nullable|string|max:50',
-            'ewallet_type' => 'nullable|string|max:50',
-            'status'       => 'nullable|in:Lunas,Pending,Batal',
+            'ewallet_type' => 'nullable|in:Dana,GoPay,ShopeePay',
+            'status'       => 'nullable|in:Lunas,Proses,Batal',
         ]);
 
         $data = [
@@ -208,18 +198,16 @@ class AdminTransaksiController extends Controller
             'dibayar'      => $request->dibayar,
             'kembali'      => $request->kembali,
             'catatan'      => $request->catatan ?? '',
-            'atas_nama'    => $request->atas_nama,
-            'dari_rekening'=> $request->dari_rekening,
-            'ke_rekening'  => $request->ke_rekening,
-            'bank_asal'    => $request->bank_asal ?? $request->ewallet_type,
-            'bank_tujuan'  => $request->bank_tujuan,
             'no_referensi' => $request->no_referensi,
+            'ewallet_type' => $request->ewallet_type,
         ];
 
         if ($request->filled('status')) {
             $data['status'] = $request->status;
-        } elseif (in_array($request->metode_byr, ['Tunai', 'E-Wallet'])) {
+        } elseif (in_array($request->metode_byr, ['Tunai', 'QRIS', 'E-Wallet'])) {
             $data['status'] = 'Lunas';
+        } else {
+            $data['status'] = 'Proses';
         }
 
         if ($request->hasFile('bukti_bayar')) {
@@ -234,6 +222,19 @@ class AdminTransaksiController extends Controller
         $dataLama = $transaksiLama->toArray();
 
         Transaksi::where('id_transaksi', $id)->update($data);
+
+        // Proses saldo & cashback jika status jadi Lunas
+        $transaksiBaru = Transaksi::findOrFail($id);
+        if (($data['status'] ?? $transaksiBaru->status) === 'Lunas' && ($transaksiLama->status !== 'Lunas')) {
+            $saldoService = new SaldoAkunService();
+            $saldoService->prosesCheckout(
+                $transaksiBaru->id_pelanggan,
+                (float) $transaksiBaru->total,
+                0, // hanya cashback
+                $transaksiBaru->id_transaksi,
+                $transaksiBaru->detail->firstWhere('id_promo')?->id_promo
+            );
+        }
 
         ActivityLogger::log('Mengubah', auth()->user()->nama . ' mengubah transaksi ' . $transaksiLama->no_invoice, 'Transaksi', $id, $dataLama, $data);
 
@@ -262,6 +263,8 @@ class AdminTransaksiController extends Controller
                         'harga'        => $item['harga'] ?? 0,
                         'diskon'       => 0,
                         'subtotal'     => $item['subtotal'] ?? 0,
+                        'jam'          => $item['jam'] ?? null,
+                        'id_karyawan'  => $item['id_karyawan'] ?? null,
                     ]);
 
                     if (($item['jenis'] ?? 'Layanan') === 'Produk') {
@@ -279,7 +282,7 @@ class AdminTransaksiController extends Controller
         if ($data['status'] === 'Lunas') {
             $transaksi = Transaksi::with('booking')->find($id);
             if ($transaksi && $transaksi->booking && $transaksi->booking->status !== 'selesai') {
-                $transaksi->booking->update(['status' => 'selesai']);
+                $transaksi->booking->update(['status' => 'selesai', 'jam_selesai_aktual' => now()]);
             }
         }
 
