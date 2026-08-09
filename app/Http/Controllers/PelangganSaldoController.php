@@ -21,9 +21,23 @@ class PelangganSaldoController extends Controller
             ->orderByDesc('created_at')
             ->paginate(20);
 
+        $totalKredit = SaldoMutasi::where('id_pelanggan', $pelanggan->id_pelanggan)
+            ->where('type', 'kredit')
+            ->sum('nominal');
+
+        $totalDebit = SaldoMutasi::where('id_pelanggan', $pelanggan->id_pelanggan)
+            ->where('type', 'debit')
+            ->sum('nominal');
+
+        $totalMutasi = SaldoMutasi::where('id_pelanggan', $pelanggan->id_pelanggan)
+            ->count();
+
         return view('pelanggan.saldo.index', [
             'pelanggan' => $pelanggan,
             'mutasi' => $mutasi,
+            'totalKredit' => $totalKredit,
+            'totalDebit' => $totalDebit,
+            'totalMutasi' => $totalMutasi,
         ]);
     }
 }
