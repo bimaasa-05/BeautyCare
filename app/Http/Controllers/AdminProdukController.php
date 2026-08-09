@@ -47,7 +47,7 @@ class AdminProdukController extends Controller
         buatNotif(auth()->id(), 'Produk Ditambahkan', 'Produk ' . $request->nm_produk . ' berhasil ditambahkan', 'Lainnya', route('admin.produk.index'));
 
         return redirect()->route('admin.produk.index')
-            ->with('success', 'Produk berhasil ditambahkan. Tambah stok melalui menu Transaksi → Pengeluaran (Transaksi Keluar).');
+            ->with('success', 'Produk berhasil ditambahkan. Tambah stok melalui menu Pengeluaran → Pembelian Stok.');
     }
 
     public function edit(Produk $produk)
