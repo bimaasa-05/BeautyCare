@@ -10,7 +10,7 @@ class Transaksi extends Model
     protected $primaryKey = 'id_transaksi';
     public $timestamps = false;
 
-    protected $fillable = [
+     protected $fillable = [
         'id_booking',
         'sumber',
         'id_pelanggan',
@@ -24,17 +24,14 @@ class Transaksi extends Model
         'diskon',
         'pajak',
         'total',
+        'saldo_terpakai',
         'metode_byr',
+        'ewallet_type',
         'dibayar',
         'kembali',
         'catatan',
         'status',
         'bukti_bayar',
-        'atas_nama',
-        'dari_rekening',
-        'ke_rekening',
-        'bank_asal',
-        'bank_tujuan',
         'no_referensi',
     ];
 

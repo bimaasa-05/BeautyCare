@@ -11,6 +11,7 @@ use App\Models\DetailTransaksi;
 use Illuminate\Http\Request;
 use App\Helpers\ActivityLogger;
 use Illuminate\Support\Facades\DB;
+use App\Services\SaldoAkunService;
 
 class KasirPembayaranController extends Controller
 {
@@ -60,33 +61,20 @@ class KasirPembayaranController extends Controller
             return redirect()->route('kasir.pembayaran.index')->with('error', 'Booking ini sudah memiliki pembayaran');
         }
 
-        $bankTujuan = [
-            'BRI' => '10101010',
-            'BCA' => '20202020',
-            'Mandiri' => '30303030',
-            'BNI' => '40404040',
-            'BSI' => '50505050',
-        ];
-
-        return view('kasir.pembayaran.create', compact('booking', 'bankTujuan'));
+        return view('kasir.pembayaran.create', compact('booking'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
             'id_booking' => 'required|integer|exists:booking,id_booking',
-            'metode_byr' => 'required|in:Tunai,Transfer,Debit,E-Wallet',
+            'metode_byr' => 'required|in:Tunai,Transfer,Debit,QRIS,E-Wallet',
             'total' => 'required|numeric|min:0',
             'dibayar' => 'required|numeric|min:0|gte:total',
             'catatan' => 'nullable|string',
             'bukti_bayar' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-            'atas_nama' => 'nullable|string|max:100',
-            'dari_rekening' => 'nullable|string|max:50',
-            'ke_rekening' => 'nullable|string|max:50',
-            'bank_asal' => 'nullable|string|max:50',
-            'bank_tujuan' => 'nullable|string|max:50',
             'no_referensi' => 'nullable|string|max:50',
-            'ewallet_type' => 'nullable|string|max:50',
+            'ewallet_type' => 'nullable|in:Dana,GoPay,ShopeePay',
         ]);
 
         $booking = Booking::with(['pelanggan', 'detail.layanan'])->findOrFail($request->id_booking);
@@ -99,7 +87,7 @@ class KasirPembayaranController extends Controller
         $dibayar = $request->dibayar;
         $kembali = max(0, $dibayar - $total);
 
-        $statusPembayaran = in_array($request->metode_byr, ['Tunai', 'E-Wallet']) ? 'Lunas' : 'Pending';
+        $statusPembayaran = in_array($request->metode_byr, ['Tunai', 'QRIS', 'E-Wallet']) ? 'Lunas' : 'Proses';
 
         $lastId = Transaksi::max('id_transaksi') + 1;
         $no_invoice = 'INV-' . date('Ymd') . '-' . str_pad($lastId, 4, '0', STR_PAD_LEFT);
@@ -125,13 +113,9 @@ class KasirPembayaranController extends Controller
             'kembali' => $kembali,
             'catatan' => $request->catatan ?? '',
             'status' => $statusPembayaran,
-            'bukti_bayar' => $buktiBayar,
-            'atas_nama' => $request->atas_nama,
-            'dari_rekening' => $request->dari_rekening,
-            'ke_rekening' => $request->ke_rekening,
-            'bank_asal' => $request->bank_asal ?? $request->ewallet_type,
-            'bank_tujuan' => $request->bank_tujuan,
+            'bukti_bayar' => $request->bukti_bayar ? $buktiBayar : null,
             'no_referensi' => $request->no_referensi,
+            'ewallet_type' => $request->ewallet_type,
         ]);
 
         ActivityLogger::log('Menambahkan', auth()->user()->nama . ' menambahkan pembayaran ' . $no_invoice, 'Pembayaran', $transaksi->id_transaksi);
@@ -149,7 +133,18 @@ class KasirPembayaranController extends Controller
             ]);
         }
 
-        Booking::where('id_booking', $request->id_booking)->update(['status' => 'selesai']);
+        Booking::where('id_booking', $request->id_booking)->update(['status' => 'selesai', 'jam_selesai_aktual' => now()]);
+
+        // Proses saldo & cashback jika Lunas
+        if ($statusPembayaran === 'Lunas') {
+            $saldoService = new SaldoAkunService();
+            $saldoService->prosesCheckout(
+                $booking->id_pelanggan,
+                $total,
+                0, // kasir tidak pakai saldo pelanggan, hanya cashback
+                $transaksi->id_transaksi
+            );
+        }
 
         buatNotif(auth()->user()->id, 'Pembayaran Berhasil', 'Pembayaran ' . $no_invoice . ' berhasil diproses (' . $request->metode_byr . ')', 'Transaksi', route('kasir.pembayaran.show', $transaksi->id_transaksi));
 
@@ -226,6 +221,16 @@ class KasirPembayaranController extends Controller
                         'no_referensi' => $request->no_referensi ?? $transaksi->pembayaran->kode_pembayaran,
                     ]);
                 }
+
+                // Proses saldo & cashback
+                $saldoService = new SaldoAkunService();
+                $saldoService->prosesCheckout(
+                    $transaksi->id_pelanggan,
+                    (float) $transaksi->total,
+                    0, // hanya cashback, tidak pakai saldo
+                    $transaksi->id_transaksi,
+                    $transaksi->detail->firstWhere('id_promo')?->id_promo
+                );
 
                 $detailMembership = $transaksi->detail->firstWhere('jenis', 'Membership');
                 if ($detailMembership && $transaksi->id_pelanggan) {

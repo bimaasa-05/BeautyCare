@@ -6,9 +6,11 @@ use App\Models\Transaksi;
 use App\Models\DetailTransaksi;
 use App\Models\Produk;
 use App\Models\Supplier;
+use App\Models\Karyawan;
 use App\Helpers\ActivityLogger;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use App\Services\SaldoAkunService;
 
 class AdminTransaksiController extends Controller
 {
@@ -67,6 +69,12 @@ class AdminTransaksiController extends Controller
         ])->keyBy('id');
 
         return view('admin.transaksi.keluar', compact('supplier', 'supplierData'));
+        $pelanggan = Pelanggan::with('membership')->get();
+        $layanan   = Layanan::where('status', 1)->get();
+        $produk    = Produk::where('status', 1)->get();
+        $karyawan  = Karyawan::with('user')->get();
+
+        return view('admin.transaksi.create', compact('pelanggan', 'layanan', 'produk', 'karyawan'));
     }
 
     public function storeKeluar(Request $request)
@@ -81,12 +89,48 @@ class AdminTransaksiController extends Controller
             'items'       => 'required|array|min:1',
             'items.*.id_produk' => 'required|integer|exists:produk,id_produk',
             'items.*.qty'       => 'required|integer|min:1',
+            
+            //Validasi tambahan untuk metode pembayaran tertentu Untuk Pelanggan
+
+            'id_pelanggan' => 'required|integer',
+            'tanggal'      => 'required|date',
+            'subtotal'     => 'required|numeric|min:0',
+            'diskon'       => 'nullable|numeric|min:0',
+            'pajak'        => 'nullable|numeric|min:0',
+            'total'        => 'required|numeric|min:0',
+            'metode_byr'   => 'required|in:Tunai,Transfer,Debit,QRIS,E-Wallet',
+            'dibayar'      => 'required|numeric|min:0',
+            'kembali'      => 'required|numeric|min:0',
+            'catatan'      => 'nullable|string',
+            'bukti_bayar'  => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'no_referensi' => 'nullable|string|max:50',
+            'ewallet_type' => 'nullable|in:Dana,GoPay,ShopeePay',
         ]);
 
         $supplier = Supplier::with('produk')->findOrFail($request->id_supplier);
 
         $lastId    = Transaksi::max('id_transaksi') + 1;
         $no_invoice = 'TRK-' . date('Ymd') . '-' . str_pad($lastId, 4, '0', STR_PAD_LEFT);
+        $status = in_array($request->metode_byr, ['Tunai', 'QRIS', 'E-Wallet']) ? 'Lunas' : 'Proses';
+
+        $data = [
+            'id_booking'   => null,
+            'id_pelanggan' => $request->id_pelanggan,
+            'id_user'      => auth()->user()->id,
+            'no_invoice'   => $no_invoice,
+            'tanggal'      => $request->tanggal,
+            'subtotal'     => $request->subtotal,
+            'diskon'       => $request->diskon ?? 0,
+            'pajak'        => $request->pajak ?? 0,
+            'total'        => $request->total,
+            'metode_byr'   => $request->metode_byr,
+            'dibayar'      => $request->dibayar,
+            'kembali'      => $request->kembali,
+            'catatan'      => $request->catatan ?? '',
+            'status'       => $status,
+            'no_referensi' => $request->no_referensi,
+            'ewallet_type' => $request->ewallet_type,
+        ];
 
         $transaksi = Transaksi::create([
             'id_booking'      => null,
@@ -113,6 +157,33 @@ class AdminTransaksiController extends Controller
 
             if (!$produk) {
                 return back()->withErrors(['items' => 'Produk harus sesuai dengan produk yang disuplai oleh ' . $supplier->nm_supplier . '.']);
+        ActivityLogger::log('Menambahkan', auth()->user()->nama . ' menambahkan transaksi ' . $no_invoice, 'Transaksi', $transaksi->id_transaksi);
+
+        if ($request->has('items') && is_array($request->items)) {
+            foreach ($request->items as $item) {
+                if (!empty($item['id_item'])) {
+                    DetailTransaksi::create([
+                        'id_transaksi' => $transaksi->id_transaksi,
+                        'jenis'        => $item['jenis'] ?? 'Layanan',
+                        'id_item'      => $item['id_item'],
+                        'nm_item'      => $item['nm_item'] ?? '',
+                        'qty'          => $item['qty'] ?? 1,
+                        'harga'        => $item['harga'] ?? 0,
+                        'diskon'       => 0,
+                        'subtotal'     => $item['subtotal'] ?? 0,
+                        'jam'          => $item['jam'] ?? null,
+                        'id_karyawan'  => $item['id_karyawan'] ?? null,
+                    ]);
+
+                    if (($item['jenis'] ?? 'Layanan') === 'Produk') {
+                        $produk = Produk::find($item['id_item']);
+                        if ($produk && $produk->stok >= ($item['qty'] ?? 1)) {
+                            $stokLama = $produk->stok;
+                            $produk->decrement('stok', $item['qty'] ?? 1);
+                            catatStok($produk->id_produk, 'Keluar', $item['qty'] ?? 1, $stokLama, $produk->stok, 'Penjualan ' . $no_invoice, null, $transaksi->id_transaksi, 'Transaksi');
+                        }
+                    }
+                }
             }
 
             $hargaBeli = (float) $produk->pivot->harga_beli;
@@ -146,6 +217,9 @@ class AdminTransaksiController extends Controller
         }
 
         ActivityLogger::log('Menambahkan', auth()->user()->nama . ' membuat transaksi keluar (pembelian stok) ' . $no_invoice, 'Transaksi', $transaksi->id_transaksi);
+        $msg = in_array($request->metode_byr, ['Tunai', 'QRIS', 'E-Wallet'])
+            ? 'Transaksi berhasil disimpan!'
+            : 'Transaksi berhasil dicatat! Menunggu konfirmasi pembayaran.';
 
         return redirect()->route('admin.transaksi.index', ['jenis' => 'pengeluaran'])
             ->with('success', 'Transaksi keluar berhasil disimpan! Stok produk telah ditambahkan.');
@@ -155,6 +229,138 @@ class AdminTransaksiController extends Controller
     {
         $transaksi = Transaksi::with('pelanggan', 'supplier', 'detail')->findOrFail($id);
         return view('admin.transaksi.show', compact('transaksi'));
+    }
+
+    public function edit($id)
+    {
+        $transaksi = Transaksi::with('detail')->findOrFail($id);
+        $pelanggan = Pelanggan::with('membership')->get();
+        $layanan   = Layanan::where('status', 1)->get();
+        $produk    = Produk::where('status', 1)->get();
+        $karyawan  = Karyawan::with('user')->get();
+
+        return view('admin.transaksi.edit', compact('transaksi', 'pelanggan', 'layanan', 'produk', 'karyawan'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'id_pelanggan' => 'required|integer',
+            'tanggal'      => 'required|date',
+            'subtotal'     => 'required|numeric|min:0',
+            'diskon'       => 'nullable|numeric|min:0',
+            'pajak'        => 'nullable|numeric|min:0',
+            'total'        => 'required|numeric|min:0',
+            'metode_byr'   => 'required|in:Tunai,Transfer,Debit,QRIS,E-Wallet',
+            'dibayar'      => 'required|numeric|min:0',
+            'kembali'      => 'required|numeric|min:0',
+            'catatan'      => 'nullable|string',
+            'bukti_bayar'  => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'no_referensi' => 'nullable|string|max:50',
+            'ewallet_type' => 'nullable|in:Dana,GoPay,ShopeePay',
+            'status'       => 'nullable|in:Lunas,Proses,Batal',
+        ]);
+
+        $data = [
+            'id_pelanggan' => $request->id_pelanggan,
+            'tanggal'      => $request->tanggal,
+            'subtotal'     => $request->subtotal,
+            'diskon'       => $request->diskon ?? 0,
+            'pajak'        => $request->pajak ?? 0,
+            'total'        => $request->total,
+            'metode_byr'   => $request->metode_byr,
+            'dibayar'      => $request->dibayar,
+            'kembali'      => $request->kembali,
+            'catatan'      => $request->catatan ?? '',
+            'no_referensi' => $request->no_referensi,
+            'ewallet_type' => $request->ewallet_type,
+        ];
+
+        if ($request->filled('status')) {
+            $data['status'] = $request->status;
+        } elseif (in_array($request->metode_byr, ['Tunai', 'QRIS', 'E-Wallet'])) {
+            $data['status'] = 'Lunas';
+        } else {
+            $data['status'] = 'Proses';
+        }
+
+        if ($request->hasFile('bukti_bayar')) {
+            $transaksi = Transaksi::findOrFail($id);
+            if ($transaksi->bukti_bayar) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($transaksi->bukti_bayar);
+            }
+            $data['bukti_bayar'] = $request->file('bukti_bayar')->store('uploads/bukti_bayar', 'public');
+        }
+
+        $transaksiLama = Transaksi::findOrFail($id);
+        $dataLama = $transaksiLama->toArray();
+
+        Transaksi::where('id_transaksi', $id)->update($data);
+
+        // Proses saldo & cashback jika status jadi Lunas
+        $transaksiBaru = Transaksi::findOrFail($id);
+        if (($data['status'] ?? $transaksiBaru->status) === 'Lunas' && ($transaksiLama->status !== 'Lunas')) {
+            $saldoService = new SaldoAkunService();
+            $saldoService->prosesCheckout(
+                $transaksiBaru->id_pelanggan,
+                (float) $transaksiBaru->total,
+                0, // hanya cashback
+                $transaksiBaru->id_transaksi,
+                $transaksiBaru->detail->firstWhere('id_promo')?->id_promo
+            );
+        }
+
+        ActivityLogger::log('Mengubah', auth()->user()->nama . ' mengubah transaksi ' . $transaksiLama->no_invoice, 'Transaksi', $id, $dataLama, $data);
+
+        if ($request->has('items') && is_array($request->items)) {
+            $oldDetails = DetailTransaksi::where('id_transaksi', $id)->get();
+            foreach ($oldDetails as $old) {
+                if ($old->jenis === 'Produk') {
+                    $produk = Produk::find($old->id_item);
+                    if ($produk) {
+                        $stokLama = $produk->stok;
+                        $produk->increment('stok', $old->qty);
+                        catatStok($produk->id_produk, 'Masuk', $old->qty, $stokLama, $produk->stok, 'Pengembalian stok dari perubahan transaksi', null, $id, 'Transaksi');
+                    }
+                }
+            }
+
+            DetailTransaksi::where('id_transaksi', $id)->delete();
+            foreach ($request->items as $item) {
+                if (!empty($item['id_item'])) {
+                    DetailTransaksi::create([
+                        'id_transaksi' => $id,
+                        'jenis'        => $item['jenis'] ?? 'Layanan',
+                        'id_item'      => $item['id_item'],
+                        'nm_item'      => $item['nm_item'] ?? '',
+                        'qty'          => $item['qty'] ?? 1,
+                        'harga'        => $item['harga'] ?? 0,
+                        'diskon'       => 0,
+                        'subtotal'     => $item['subtotal'] ?? 0,
+                        'jam'          => $item['jam'] ?? null,
+                        'id_karyawan'  => $item['id_karyawan'] ?? null,
+                    ]);
+
+                    if (($item['jenis'] ?? 'Layanan') === 'Produk') {
+                        $produk = Produk::find($item['id_item']);
+                        if ($produk && $produk->stok >= ($item['qty'] ?? 1)) {
+                            $stokLama = $produk->stok;
+                            $produk->decrement('stok', $item['qty'] ?? 1);
+                            catatStok($produk->id_produk, 'Keluar', $item['qty'] ?? 1, $stokLama, $produk->stok, 'Penjualan pada perubahan transaksi', null, $id, 'Transaksi');
+                        }
+                    }
+                }
+            }
+        }
+
+        if ($data['status'] === 'Lunas') {
+            $transaksi = Transaksi::with('booking')->find($id);
+            if ($transaksi && $transaksi->booking && $transaksi->booking->status !== 'selesai') {
+                $transaksi->booking->update(['status' => 'selesai', 'jam_selesai_aktual' => now()]);
+            }
+        }
+
+        return redirect()->route('admin.transaksi.index')->with('success', 'Transaksi berhasil diperbarui');
     }
 
     public function invoice($id)

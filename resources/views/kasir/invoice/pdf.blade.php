@@ -170,40 +170,16 @@
                     <td>Metode</td>
                     <td>{{ $transaksi->metode_byr }}</td>
                 </tr>
-                @if ($transaksi->atas_nama)
-                <tr>
-                    <td>Atas Nama</td>
-                    <td>{{ $transaksi->atas_nama }}</td>
-                </tr>
-                @endif
-                @if ($transaksi->bank_asal)
-                <tr>
-                    <td>Bank/E-Wallet</td>
-                    <td>{{ $transaksi->bank_asal }}</td>
-                </tr>
-                @endif
-                @if ($transaksi->dari_rekening)
-                <tr>
-                    <td>Dari Rekening</td>
-                    <td>{{ $transaksi->dari_rekening }}</td>
-                </tr>
-                @endif
-                @if ($transaksi->bank_tujuan)
-                <tr>
-                    <td>Bank Tujuan</td>
-                    <td>{{ $transaksi->bank_tujuan }}</td>
-                </tr>
-                @endif
-                @if ($transaksi->ke_rekening)
-                <tr>
-                    <td>Ke Rekening</td>
-                    <td>{{ $transaksi->ke_rekening }}</td>
-                </tr>
-                @endif
                 @if ($transaksi->no_referensi)
                 <tr>
                     <td>No. Referensi</td>
                     <td>{{ $transaksi->no_referensi }}</td>
+                </tr>
+                @endif
+                @if ($transaksi->ewallet_type && $transaksi->metode_byr === 'E-Wallet')
+                <tr>
+                    <td>E-Wallet</td>
+                    <td>{{ $transaksi->ewallet_type }}</td>
                 </tr>
                 @endif
                 @if ($transaksi->catatan)

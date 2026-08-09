@@ -1,9 +1,24 @@
+@php
+    $provider = $transaksi->pembayaran->provider;
+    $bankColors = [
+        'BRI' => 'linear-gradient(135deg,#00529C,#003A6E)',
+        'BCA' => 'linear-gradient(135deg,#CC0000,#990000)',
+        'Mandiri' => 'linear-gradient(135deg,#003D79,#00264D)',
+        'BNI' => 'linear-gradient(135deg,#FF6600,#CC5200)',
+        'BSI' => 'linear-gradient(135deg,#005747,#003A2E)',
+    ];
+@endphp
 <div class="pm-box">
-    <div class="pm-va-wrap">
-        <div class="pm-va-bank">{{ $transaksi->pembayaran->provider }}</div>
-        <div class="pm-va-label">Nomor Virtual Account</div>
-        <div class="pm-va-number" id="vaNumber">{{ $transaksi->pembayaran->kode_pembayaran }}</div>
-        <button type="button" class="pm-copy-btn" onclick="salinVA()">
+    <div class="bank-card-hero" style="background:{{ $bankColors[$provider] ?? 'linear-gradient(135deg,#64748B,#475569)' }};">
+        <div class="bank-card-head">
+            <span class="bank-card-name">{{ $provider }}</span>
+            <span class="bank-card-chip">
+                <i class="fa-solid fa-building-columns"></i>
+            </span>
+        </div>
+        <div class="bank-card-label">Nomor Virtual Account</div>
+        <div class="bank-card-va" id="vaNumber">{{ $transaksi->pembayaran->kode_pembayaran }}</div>
+        <button type="button" class="pm-copy-btn bank-card-copy" onclick="salinVA()">
             <i class="fa-regular fa-copy"></i> Salin Nomor VA
         </button>
     </div>
@@ -16,11 +31,11 @@
     <div class="pm-bank-info">
         <div class="pm-bank-info-row">
             <span>Bank Tujuan</span>
-            <b>{{ $transaksi->pembayaran->provider }}</b>
+            <b>{{ $provider }}</b>
         </div>
         <div class="pm-bank-info-row">
             <span>No. Rekening</span>
-            <b>{{ $bankTujuan[$transaksi->pembayaran->provider] ?? '-' }}</b>
+            <b>{{ $bankTujuan[$provider] ?? '-' }}</b>
         </div>
         <div class="pm-bank-info-row">
             <span>Atas Nama</span>
@@ -31,7 +46,7 @@
     <div class="pm-steps">
         <div class="pm-step">
             <span class="pm-step-num">1</span>
-            <span>Buka aplikasi m-banking / ATM bank <b>{{ $transaksi->pembayaran->provider }}</b></span>
+            <span>Buka aplikasi m-banking / ATM bank <b>{{ $provider }}</b></span>
         </div>
         <div class="pm-step">
             <span class="pm-step-num">2</span>

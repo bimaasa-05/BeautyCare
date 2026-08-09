@@ -189,6 +189,28 @@
                 </span>
                 Data Transaksi
             </a>
+            <a href="{{ route('admin.pengeluaran.index') }}"
+                class="nav-item {{ request()->routeIs('admin.pengeluaran.*') ? 'active' : '' }}"
+                title="Kelola semua data pengeluaran">
+                <span class="nav-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+                    </svg>
+                </span>
+                Pengeluaran
+            </a>
+            <a href="{{ route('admin.konsultasi.index') }}"
+                class="nav-item {{ request()->routeIs('admin.konsultasi.*') ? 'active' : '' }}"
+                title="Monitor permintaan konsultasi member">
+                <span class="nav-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                    </svg>
+                </span>
+                Konsultasi
+            </a>
         </div>
 
         <div class="nav-section">

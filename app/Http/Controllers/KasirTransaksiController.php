@@ -7,6 +7,7 @@ use App\Models\Pelanggan;
 use App\Models\DetailTransaksi;
 use App\Models\Layanan;
 use App\Models\Produk;
+use App\Models\Karyawan;
 use App\Helpers\ActivityLogger;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
@@ -47,15 +48,7 @@ class KasirTransaksiController extends Controller
         $layanan = Layanan::where('status', 'Tersedia')->get();
         $produk = Produk::where('status', 1)->get();
 
-        $bankTujuan = [
-            'BRI' => '10101010',
-            'BCA' => '20202020',
-            'Mandiri' => '30303030',
-            'BNI' => '40404040',
-            'BSI' => '50505050',
-        ];
-
-        return view('kasir.transaksi.create', compact('pelanggan', 'layanan', 'produk', 'bankTujuan'));
+        return view('kasir.transaksi.create', compact('pelanggan', 'layanan', 'produk'));
     }
 
     public function store(Request $request)
@@ -67,18 +60,13 @@ class KasirTransaksiController extends Controller
             'diskon' => 'nullable|numeric|min:0',
             'pajak' => 'nullable|numeric|min:0',
             'total' => 'required|numeric|min:0',
-            'metode_byr' => 'required|in:Tunai,Transfer,Debit,E-Wallet',
+            'metode_byr' => 'required|in:Tunai,Transfer,Debit,QRIS,E-Wallet',
             'dibayar' => 'required|numeric|min:0',
             'kembali' => 'required|numeric|min:0',
             'catatan' => 'nullable|string',
             'bukti_bayar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'atas_nama' => 'nullable|string|max:100',
-            'dari_rekening' => 'nullable|string|max:50',
-            'ke_rekening' => 'nullable|string|max:50',
-            'bank_asal' => 'nullable|string|max:50',
-            'bank_tujuan' => 'nullable|string|max:50',
             'no_referensi' => 'nullable|string|max:50',
-            'ewallet_type' => 'nullable|string|max:50',
+            'ewallet_type' => 'nullable|in:Dana,GoPay,ShopeePay',
             'status' => 'nullable|in:Lunas,Proses,Batal,Pending',
         ]);
 
@@ -87,7 +75,7 @@ class KasirTransaksiController extends Controller
 
         $status = $request->status;
         if (!$status) {
-            $status = in_array($request->metode_byr, ['Tunai', 'E-Wallet']) ? 'Lunas' : 'Pending';
+            $status = in_array($request->metode_byr, ['Tunai', 'QRIS', 'E-Wallet']) ? 'Lunas' : 'Proses';
         }
 
         $data = [
@@ -106,12 +94,8 @@ class KasirTransaksiController extends Controller
             'kembali' => $request->kembali,
             'catatan' => $request->catatan ?? '',
             'status' => $status,
-            'atas_nama' => $request->atas_nama,
-            'dari_rekening' => $request->dari_rekening,
-            'ke_rekening' => $request->ke_rekening,
-            'bank_asal' => $request->bank_asal ?? $request->ewallet_type,
-            'bank_tujuan' => $request->bank_tujuan,
             'no_referensi' => $request->no_referensi,
+            'ewallet_type' => $request->ewallet_type,
         ];
 
         if ($request->hasFile('bukti_bayar')) {
@@ -134,6 +118,8 @@ class KasirTransaksiController extends Controller
                         'harga' => $item['harga'] ?? 0,
                         'diskon' => 0,
                         'subtotal' => $item['subtotal'] ?? 0,
+                        'jam' => $item['jam'] ?? null,
+                        'id_karyawan' => $item['id_karyawan'] ?? null,
                     ]);
 
                     if (($item['jenis'] ?? 'Layanan') === 'Produk') {
@@ -214,16 +200,9 @@ class KasirTransaksiController extends Controller
         $pelanggan = Pelanggan::with('membership')->get();
         $layanan = Layanan::where('status', 'Tersedia')->get();
         $produk = Produk::where('status', 1)->get();
+        $karyawan = Karyawan::with('user')->get();
 
-        $bankTujuan = [
-            'BRI' => '10101010',
-            'BCA' => '20202020',
-            'Mandiri' => '30303030',
-            'BNI' => '40404040',
-            'BSI' => '50505050',
-        ];
-
-        return view('kasir.transaksi.edit', compact('transaksi', 'pelanggan', 'layanan', 'produk', 'bankTujuan'));
+        return view('kasir.transaksi.edit', compact('transaksi', 'pelanggan', 'layanan', 'produk', 'karyawan'));
     }
 
     public function update(Request $request, $id)
@@ -235,24 +214,19 @@ class KasirTransaksiController extends Controller
             'diskon' => 'nullable|numeric|min:0',
             'pajak' => 'nullable|numeric|min:0',
             'total' => 'required|numeric|min:0',
-            'metode_byr' => 'required|in:Tunai,Transfer,Debit,E-Wallet',
+            'metode_byr' => 'required|in:Tunai,Transfer,Debit,QRIS,E-Wallet',
             'dibayar' => 'required|numeric|min:0',
             'kembali' => 'required|numeric|min:0',
             'catatan' => 'nullable|string',
             'bukti_bayar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'atas_nama' => 'nullable|string|max:100',
-            'dari_rekening' => 'nullable|string|max:50',
-            'ke_rekening' => 'nullable|string|max:50',
-            'bank_asal' => 'nullable|string|max:50',
-            'bank_tujuan' => 'nullable|string|max:50',
             'no_referensi' => 'nullable|string|max:50',
-            'ewallet_type' => 'nullable|string|max:50',
+            'ewallet_type' => 'nullable|in:Dana,GoPay,ShopeePay',
             'status' => 'nullable|in:Lunas,Proses,Batal,Pending',
         ]);
 
         $status = $request->status;
         if (!$status) {
-            $status = in_array($request->metode_byr, ['Tunai', 'E-Wallet']) ? 'Lunas' : 'Pending';
+            $status = in_array($request->metode_byr, ['Tunai', 'QRIS', 'E-Wallet']) ? 'Lunas' : 'Proses';
         }
 
         $data = [
@@ -267,12 +241,8 @@ class KasirTransaksiController extends Controller
             'kembali' => $request->kembali,
             'catatan' => $request->catatan ?? '',
             'status' => $status,
-            'atas_nama' => $request->atas_nama,
-            'dari_rekening' => $request->dari_rekening,
-            'ke_rekening' => $request->ke_rekening,
-            'bank_asal' => $request->bank_asal ?? $request->ewallet_type,
-            'bank_tujuan' => $request->bank_tujuan,
             'no_referensi' => $request->no_referensi,
+            'ewallet_type' => $request->ewallet_type,
         ];
 
         if ($request->hasFile('bukti_bayar')) {
@@ -319,6 +289,8 @@ class KasirTransaksiController extends Controller
                         'harga' => $item['harga'] ?? 0,
                         'diskon' => 0,
                         'subtotal' => $item['subtotal'] ?? 0,
+                        'jam' => $item['jam'] ?? null,
+                        'id_karyawan' => $item['id_karyawan'] ?? null,
                     ]);
 
                     if (($item['jenis'] ?? 'Layanan') === 'Produk') {
