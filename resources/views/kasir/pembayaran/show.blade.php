@@ -185,23 +185,17 @@
 
                                 @php
                                     $statusMap = [
-                                        'Pending' => [
-                                            'label' => 'Pending',
-                                            'class' => 'status-proses',
-                                            'icon' => 'fa-regular fa-clock',
-                                        ],
-                                        'Lunas' => [
-                                            'label' => 'Lunas',
-                                            'class' => 'status-selesai',
-                                            'icon' => 'fa-regular fa-circle-check',
-                                        ],
-                                        'Batal' => [
-                                            'label' => 'Batal',
-                                            'class' => 'status-batal',
-                                            'icon' => 'fa-regular fa-circle-xmark',
-                                        ],
+                                        'Menunggu Pembayaran' => ['label' => 'Menunggu Pembayaran', 'class' => 'status-proses', 'icon' => 'fa-regular fa-clock'],
+                                        'Sedang Diproses' => ['label' => 'Sedang Diproses', 'class' => 'status-proses', 'icon' => 'fa-regular fa-clock'],
+                                        'Proses' => ['label' => 'Proses', 'class' => 'status-proses', 'icon' => 'fa-regular fa-clock'],
+                                        'Pending' => ['label' => 'Pending', 'class' => 'status-proses', 'icon' => 'fa-regular fa-clock'],
+                                        'Lunas' => ['label' => 'Lunas', 'class' => 'status-selesai', 'icon' => 'fa-regular fa-circle-check'],
+                                        'Selesai' => ['label' => 'Selesai', 'class' => 'status-selesai', 'icon' => 'fa-regular fa-circle-check'],
+                                        'Batal' => ['label' => 'Batal', 'class' => 'status-batal', 'icon' => 'fa-regular fa-circle-xmark'],
+                                        'Gagal' => ['label' => 'Gagal', 'class' => 'status-batal', 'icon' => 'fa-regular fa-circle-xmark'],
+                                        'Kadaluarsa' => ['label' => 'Kadaluarsa', 'class' => 'status-batal', 'icon' => 'fa-regular fa-circle-xmark'],
                                     ];
-                                    $s = $statusMap[$transaksi->status] ?? $statusMap['Pending'];
+                                    $s = $statusMap[$transaksi->status] ?? ['label' => $transaksi->status ?? 'Pending', 'class' => 'status-proses', 'icon' => 'fa-regular fa-clock'];
                                 @endphp
                                 <span class="mt-3 badge-status {{ $s['class'] }}">
                                     <i class="{{ $s['icon'] }}"></i> {{ $s['label'] }}
@@ -273,7 +267,7 @@
                                 <div class="info-box md:col-span-2">
                                     <p class="info-label"><i class="fa-solid fa-note-sticky mr-1 text-pink-300"></i>
                                         Catatan</p>
-                                    <p class="info-value">{{ $transaksi->catatan ?: '-' }}</p>
+                                    <p class="info-value" style="white-space:pre-wrap;word-break:break-word;overflow-wrap:anywhere;">{{ $transaksi->catatan ?: '-' }}</p>
                                 </div>
                             </div>
 
