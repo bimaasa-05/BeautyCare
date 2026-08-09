@@ -331,6 +331,8 @@
                                             <option value="Lunas" {{ old('status') == 'Lunas' ? 'selected' : '' }}>Lunas</option>
                                             <option value="Batal" {{ old('status') == 'Batal' ? 'selected' : '' }}>Batal</option>
                                         </select>
+                                        <input type="hidden" name="dibayar" value="{{ $totalBayar }}">
+                                        <input type="hidden" name="kembali" value="0">
                                     </div>
 
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -411,6 +413,11 @@
 
         function togglePaymentMethod(method) {
             stopPaymentTimer();
+            document.querySelectorAll('.payment-section').forEach(function (el) {
+                el.classList.remove('active');
+                el.querySelectorAll('input, select, textarea').forEach(function (i) { i.disabled = true; });
+            });
+
             const btn = document.getElementById('btn-simpan-transaksi');
             const bankTimerEl = document.getElementById('bank-timer-display');
             const ewalletTimerEl = document.getElementById('ewallet-timer-display');
@@ -418,7 +425,11 @@
             if (ewalletTimerEl) ewalletTimerEl.classList.add('hidden');
 
             const activeId = 'payment-section-' + (method === 'Tunai' ? 'tunai' : method === 'E-Wallet' ? 'ewallet' : 'bank');
-            document.getElementById(activeId).classList.add('active');
+            const active = document.getElementById(activeId);
+            if (active) {
+                active.classList.add('active');
+                active.querySelectorAll('input, select, textarea').forEach(function (i) { i.disabled = false; });
+            }
             if (btn) btn.innerHTML = '<i class="fa-regular fa-circle-check"></i> Konfirmasi Pembayaran';
             if (method === 'E-Wallet' && ewalletTimerEl) startPaymentTimer(ewalletTimerEl);
             if ((method === 'Transfer' || method === 'Debit' || method === 'QRIS') && bankTimerEl) startPaymentTimer(bankTimerEl);
