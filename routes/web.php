@@ -42,6 +42,10 @@ use App\Http\Controllers\PelangganDashboardController;
 use App\Http\Controllers\PelangganTreatmentController;
 use App\Http\Controllers\PelangganBookingController;
 use App\Http\Controllers\PelangganProdukController;
+use App\Http\Controllers\KonsultasiPelangganController;
+use App\Http\Controllers\KasirKonsultasiController;
+use App\Http\Controllers\BeautycianKonsultasiController;
+use App\Http\Controllers\AdminKonsultasiController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -175,6 +179,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/reservasi/create', [AdminReservasiController::class, 'create'])->name('admin.reservasi.create');
         Route::post('/admin/reservasi', [AdminReservasiController::class, 'store'])->name('admin.reservasi.store');
         Route::get('/admin/reservasi/get-layanan', [AdminReservasiController::class, 'getLayanan'])->name('admin.reservasi.get-layanan');
+        Route::get('/admin/reservasi/slot-data', [AdminReservasiController::class, 'slotData'])->name('admin.reservasi.slot-data');
         Route::put('/admin/reservasi/{id}/status', [AdminReservasiController::class, 'updateStatus'])->name('admin.reservasi.status');
         Route::get('/admin/reservasi/{id}', [AdminReservasiController::class, 'show'])->name('admin.reservasi.show');
         Route::get('/admin/reservasi/{id}/edit', [AdminReservasiController::class, 'edit'])->name('admin.reservasi.edit');
@@ -210,6 +215,9 @@ Route::middleware('auth')->group(function () {
         Route::post('/admin/pengeluaran', [AdminPengeluaranController::class, 'store'])->name('admin.pengeluaran.store');
         Route::put('/admin/pengeluaran/{id}', [AdminPengeluaranController::class, 'update'])->name('admin.pengeluaran.update');
         Route::delete('/admin/pengeluaran/{id}', [AdminPengeluaranController::class, 'destroy'])->name('admin.pengeluaran.destroy');
+
+        //Route Konsultasi Admin
+        Route::get('/admin/konsultasi', [AdminKonsultasiController::class, 'index'])->name('admin.konsultasi.index');
     });
 
 
@@ -238,6 +246,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/kasir/reservasi/create', [KasirReservasiController::class, 'create'])->name('kasir.reservasi.create');
         Route::post('/kasir/reservasi', [KasirReservasiController::class, 'store'])->name('kasir.reservasi.store');
         Route::get('/kasir/reservasi/get-layanan', [KasirReservasiController::class, 'getLayanan'])->name('kasir.reservasi.get-layanan');
+        Route::get('/kasir/reservasi/slot-data', [KasirReservasiController::class, 'slotData'])->name('kasir.reservasi.slot-data');
         Route::get('/kasir/reservasi/{id}', [KasirReservasiController::class, 'show'])->name('kasir.reservasi.show');
         Route::get('/kasir/reservasi/{id}/edit', [KasirReservasiController::class, 'edit'])->name('kasir.reservasi.edit');
         Route::put('/kasir/reservasi/{id}', [KasirReservasiController::class, 'update'])->name('kasir.reservasi.update');
@@ -295,6 +304,11 @@ Route::middleware('auth')->group(function () {
             auth()->user()->update(['alamat' => $req->alamat ?? '']);
             return back()->with('success', 'Alamat berhasil diperbarui!');
         })->name('kasir.profile.update-alamat');
+
+        //Route Konsultasi Kasir
+        Route::get('/kasir/konsultasi', [KasirKonsultasiController::class, 'index'])->name('kasir.konsultasi.index');
+        Route::post('/kasir/konsultasi/{id}/konfirmasi', [KasirKonsultasiController::class, 'konfirmasi'])->name('kasir.konsultasi.konfirmasi');
+        Route::post('/kasir/konsultasi/{id}/tolak', [KasirKonsultasiController::class, 'tolak'])->name('kasir.konsultasi.tolak');
     });
     //--------------------------------------------------
     //Route BeautyCian
@@ -345,6 +359,10 @@ Route::middleware('auth')->group(function () {
         Route::get('/beautycian/laporan-reservasi/export-pdf', [BeautycianLaporanReservasiController::class, 'exportPDF'])->name('beautycian.laporan-reservasi.export-pdf');
         Route::get('/beautycian/laporan-reservasi/export-excel', [BeautycianLaporanReservasiController::class, 'exportExcel'])->name('beautycian.laporan-reservasi.export-excel');
         Route::get('/beautycian/laporan-reservasi/{id}', [BeautycianLaporanReservasiController::class, 'show'])->name('beautycian.laporan-reservasi.show')->where('id', '[0-9]+');
+
+        //Route Konsultasi Beautycian
+        Route::get('/beautycian/konsultasi', [BeautycianKonsultasiController::class, 'index'])->name('beautycian.konsultasi.index');
+        Route::post('/beautycian/konsultasi/{id}/selesai', [BeautycianKonsultasiController::class, 'selesai'])->name('beautycian.konsultasi.selesai');
     });
     //--------------------------------------------------
     //Route Pelangggan
@@ -372,6 +390,14 @@ Route::middleware('auth')->group(function () {
 
         //Route Membership
         Route::get('/pelanggan/membership', [MembershipPelangganController::class, 'index'])->name('pelanggan.membership');
+
+        //Route Konsultasi Pelanggan
+        Route::get('/pelanggan/konsultasi', [KonsultasiPelangganController::class, 'index'])->name('pelanggan.konsultasi.index');
+        Route::get('/pelanggan/konsultasi/create', [KonsultasiPelangganController::class, 'create'])->name('pelanggan.konsultasi.create');
+        Route::post('/pelanggan/konsultasi', [KonsultasiPelangganController::class, 'store'])->name('pelanggan.konsultasi.store');
+
+        //Route Saldo Akun
+        Route::get('/pelanggan/saldo', [App\Http\Controllers\PelangganSaldoController::class, 'index'])->name('pelanggan.saldo.index');
 
         //Route Produk
         Route::get('/pelanggan/produk', [PelangganProdukController::class, 'index'])->name('pelanggan.produk');

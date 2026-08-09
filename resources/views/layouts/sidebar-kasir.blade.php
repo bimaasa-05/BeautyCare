@@ -138,6 +138,15 @@
                 </span>
                 Reservasi
             </a>
+            <a href="{{ route('kasir.konsultasi.index') }}" class="nav-item {{ request()->routeIs('kasir.konsultasi*') ? 'active' : '' }}" title="Kelola permintaan konsultasi member">
+                <span class="nav-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                    </svg>
+                </span>
+                Konsultasi
+            </a>
         </div>
 
         <div class="nav-section">

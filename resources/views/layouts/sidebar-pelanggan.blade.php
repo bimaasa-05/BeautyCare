@@ -94,6 +94,25 @@
                 </span>
                 Membership
             </a>
+            <a href="{{ route('pelanggan.konsultasi.index') }}" class="nav-item {{ request()->routeIs('pelanggan.konsultasi*') ? 'active' : '' }}" title="Konsultasi dengan beautycian (kuota member)">
+                <span class="nav-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                    </svg>
+                </span>
+                Konsultasi
+            </a>
+            <a href="{{ route('pelanggan.saldo.index') }}" class="nav-item {{ request()->routeIs('pelanggan.saldo*') ? 'active' : '' }}" title="Saldo akun dari cashback">
+                <span class="nav-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="2" y="5" width="20" height="14" rx="2" />
+                        <line x1="2" y1="10" x2="22" y2="10" />
+                    </svg>
+                </span>
+                Saldo Akun
+            </a>
         </div>
 
         <div class="nav-section">
