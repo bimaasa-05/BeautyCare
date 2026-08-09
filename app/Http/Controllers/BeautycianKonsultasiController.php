@@ -11,10 +11,10 @@ class BeautycianKonsultasiController extends Controller
     {
         $query = Konsultasi::with('pelanggan')
             ->where('id_karyawan', auth()->id())
-            ->orderByRaw("FIELD(status, 'dikonfirmasi', 'selesai', 'ditolak')")
+            ->orderByRaw("FIELD(status, 'menunggu', 'dikonfirmasi', 'selesai', 'ditolak')")
             ->orderByDesc('tanggal');
 
-        if ($request->filled('status') && in_array($request->status, ['dikonfirmasi', 'selesai', 'ditolak'])) {
+        if ($request->filled('status') && in_array($request->status, ['menunggu', 'dikonfirmasi', 'selesai', 'ditolak'])) {
             $query->where('status', $request->status);
         }
 
