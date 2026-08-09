@@ -46,9 +46,10 @@ class KasirTransaksiController extends Controller
     {
         $pelanggan = Pelanggan::with('membership')->get();
         $layanan = Layanan::where('status', 'Tersedia')->get();
-        $produk = Produk::where('status', 1)->get();
+        $produk = Produk::where('status', 'Tersedia')->get();
+        $karyawan = Karyawan::with('user')->get();
 
-        return view('kasir.transaksi.create', compact('pelanggan', 'layanan', 'produk'));
+        return view('kasir.transaksi.create', compact('pelanggan', 'layanan', 'produk', 'karyawan'));
     }
 
     public function store(Request $request)
