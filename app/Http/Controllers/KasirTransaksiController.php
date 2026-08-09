@@ -8,6 +8,8 @@ use App\Models\DetailTransaksi;
 use App\Models\Layanan;
 use App\Models\Produk;
 use App\Models\Karyawan;
+use App\Models\Bank;
+use App\Models\Pembayaran;
 use App\Helpers\ActivityLogger;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
@@ -50,6 +52,10 @@ class KasirTransaksiController extends Controller
         $karyawan = Karyawan::with('user')->get();
 
         return view('kasir.transaksi.create', compact('pelanggan', 'layanan', 'produk', 'karyawan'));
+        $produk = Produk::where('status', 1)->get();
+        $banks = Bank::active()->transfer()->get(['id', 'nama_bank', 'no_rekening', 'kode_bank', 'logo']);
+
+        return view('kasir.transaksi.create', compact('pelanggan', 'layanan', 'produk', 'banks'));
     }
 
     public function store(Request $request)
@@ -68,8 +74,14 @@ class KasirTransaksiController extends Controller
             'bukti_bayar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'no_referensi' => 'nullable|string|max:50',
             'ewallet_type' => 'nullable|in:Dana,GoPay,ShopeePay',
+            'bank_id' => 'nullable|integer|exists:banks,id',
             'status' => 'nullable|in:Lunas,Proses,Batal,Pending',
         ]);
+
+        // Validate bank_id for Transfer
+        if ($request->metode_byr === 'Transfer' && !$request->bank_id) {
+            return back()->withErrors(['bank_id' => 'Silakan pilih bank untuk transfer.']);
+        }
 
         $lastId = Transaksi::max('id_transaksi') + 1;
         $no_invoice = 'INV-' . date('Ymd') . '-' . str_pad($lastId, 4, '0', STR_PAD_LEFT);
@@ -104,6 +116,36 @@ class KasirTransaksiController extends Controller
         }
 
         $transaksi = Transaksi::create($data);
+
+        // Get bank for Transfer
+        $bank = null;
+        if ($request->metode_byr === 'Transfer' && $request->bank_id) {
+            $bank = Bank::find($request->bank_id);
+        }
+
+        // Create Pembayaran record for non-cash payments
+        if ($request->metode_byr !== 'Tunai') {
+            $pembayaranData = [
+                'id_transaksi' => $transaksi->id_transaksi,
+                'metode' => $request->metode_byr,
+                'provider' => $request->metode_byr === 'E-Wallet' ? $request->ewallet_type : $request->metode_byr,
+                'kode_pembayaran' => $this->generateKodePembayaran($request->metode_byr, $transaksi->id_transaksi, $bank),
+                'nominal' => $request->total,
+                'status' => $status === 'Lunas' ? 'Lunas' : 'Menunggu',
+                'expires_at' => $request->metode_byr === 'QRIS'
+                    ? now()->addMinutes(3)
+                    : now()->addMinutes(15),
+                'paid_at' => $status === 'Lunas' ? now() : null,
+            ];
+
+            if ($bank) {
+                $pembayaranData['bank_id'] = $bank->id;
+                $pembayaranData['no_rekening_tujuan'] = $bank->no_rekening;
+                $pembayaranData['atas_nama_tujuan'] = $bank->atas_nama;
+            }
+
+            Pembayaran::create($pembayaranData);
+        }
 
         ActivityLogger::log('Menambahkan', auth()->user()->nama . ' menambahkan transaksi ' . $no_invoice, 'Transaksi', $transaksi->id_transaksi);
 
@@ -147,6 +189,23 @@ class KasirTransaksiController extends Controller
             : 'Pembayaran berhasil dicatat! Menunggu konfirmasi.';
 
         return redirect('kasir/transaksi')->with('message', $msg);
+    }
+
+    private function generateKodePembayaran($metode, $idTransaksi, $bank = null)
+    {
+        $digits = str_pad((string) $idTransaksi, 8, '0', STR_PAD_LEFT);
+
+        if ($metode === 'Transfer') {
+            if ($bank && $bank->kode_bank) {
+                return $bank->kode_bank . $digits;
+            }
+            return '8802' . $digits; // fallback
+        }
+        if ($metode === 'QRIS') {
+            return 'QR-' . $digits;
+        }
+
+        return 'EP-' . $digits;
     }
 
     public function show($id)
@@ -202,8 +261,9 @@ class KasirTransaksiController extends Controller
         $layanan = Layanan::where('status', 'Tersedia')->get();
         $produk = Produk::where('status', 1)->get();
         $karyawan = Karyawan::with('user')->get();
+        $banks = Bank::active()->transfer()->get(['id', 'nama_bank', 'no_rekening', 'kode_bank', 'logo']);
 
-        return view('kasir.transaksi.edit', compact('transaksi', 'pelanggan', 'layanan', 'produk', 'karyawan'));
+        return view('kasir.transaksi.edit', compact('transaksi', 'pelanggan', 'layanan', 'produk', 'karyawan', 'banks'));
     }
 
     public function update(Request $request, $id)
