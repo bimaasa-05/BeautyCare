@@ -55,11 +55,8 @@
         }
     </style>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-        body {
-            font-family: 'Inter', sans-serif;
-        }
+        
 
         ::-webkit-scrollbar {
             width: 6px;
@@ -93,7 +90,7 @@
             font-size: 13px;
             width: 100%;
             transition: all 0.3s ease;
-            font-family: 'Inter', sans-serif;
+            font-family: var(--font-primary);
         }
 
         .form-input-custom:focus {
@@ -170,7 +167,7 @@
             padding: 10px 14px;
             cursor: pointer;
             font-size: 13px;
-            font-family: 'Inter', sans-serif;
+            font-family: var(--font-primary);
             border-bottom: 1px solid #f5f5f5;
             transition: background 0.15s;
         }

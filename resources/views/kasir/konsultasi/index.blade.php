@@ -23,8 +23,7 @@
     .sidebar-overlay.active { display: block; }
     @media (max-width: 768px) { .sidebar-toggle { display: flex; align-items: center; } }
 
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-    body { font-family: 'Inter', sans-serif; }
+    
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
@@ -48,7 +47,7 @@
     .modal-premium .btn-primary { padding: 10px 22px; border-radius: 100px; border: none; background: linear-gradient(135deg, #EC4899, #F472B6); color: #fff; font-size: 12px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 12px rgba(236,72,153,.3); }
     .modal-premium select, .modal-premium textarea {
         width: 100%; padding: 10px 14px; border: 1.5px solid #E5E7EB; border-radius: 12px;
-        font-size: 12px; outline: none; background: #FAFAFA; margin-bottom: 12px; font-family: 'Inter', sans-serif;
+        font-size: 12px; outline: none; background: #FAFAFA; margin-bottom: 12px; font-family: var(--font-primary);
     }
     .modal-premium select:focus, .modal-premium textarea:focus { border-color: #EC4899; background: #fff; }
     </style>

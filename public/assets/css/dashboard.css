@@ -1188,7 +1188,7 @@
   font-size: 13px;
   width: 100%;
   transition: all 0.3s ease;
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-primary);
 }
 .search-enhanced:focus {
   border-color: #FF4F87;

@@ -24,14 +24,14 @@
         @media (max-width: 768px) { .sidebar-toggle { display: flex; align-items: center; } }
     </style>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; }
+
+        
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
         .float-icon { position: absolute; pointer-events: none; opacity: 0.1; font-size: 80px; }
-        .form-input-custom { border: 1.5px solid #ECECEC; border-radius: 12px; padding: 10px 14px; font-size: 13px; width: 100%; transition: all 0.3s ease; font-family: 'Inter', sans-serif; }
+        .form-input-custom { border: 1.5px solid #ECECEC; border-radius: 12px; padding: 10px 14px; font-size: 13px; width: 100%; transition: all 0.3s ease; font-family: var(--font-primary); }
         .form-input-custom:focus { border-color: #FF4F87; box-shadow: 0 0 0 3px rgba(255,79,135,0.12); outline: none; }
         .form-input-custom::placeholder { color: #aaa; }
         select.form-input-custom { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 40px; }
@@ -41,7 +41,7 @@
         .custom-select-trigger i { transition: transform 0.2s; margin-left: auto; font-size: 10px; color: #999; }
         .custom-select-trigger.open i { transform: rotate(180deg); }
         .custom-select-dropdown { display: none; position: absolute; top: 100%; left: 0; right: 0; z-index: 50; max-height: 180px; overflow-y: auto; background: white; border: 1.5px solid #ECECEC; border-radius: 12px; margin-top: 4px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
-        .custom-select-option { padding: 10px 14px; cursor: pointer; font-size: 13px; font-family: 'Inter', sans-serif; border-bottom: 1px solid #f5f5f5; transition: background 0.15s; }
+        .custom-select-option { padding: 10px 14px; cursor: pointer; font-size: 13px; font-family: var(--font-primary); border-bottom: 1px solid #f5f5f5; transition: background 0.15s; }
         .custom-select-option:last-child { border-bottom: none; }
         .custom-select-option:hover { background: #FFF0F5; }
         .custom-select-option.selected { background: #FFE4EC; color: #FF4F87; font-weight: 500; }

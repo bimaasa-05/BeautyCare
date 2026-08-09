@@ -112,7 +112,7 @@
             font-size: 12px;
             color: #EC4899;
             font-weight: 500;
-            font-family: 'Inter', sans-serif;
+            font-family: var(--font-primary);
             min-width: 130px;
             cursor: pointer;
         }
