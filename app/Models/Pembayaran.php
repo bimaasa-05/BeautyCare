@@ -12,12 +12,15 @@ class Pembayaran extends Model
         'id_transaksi',
         'metode',
         'provider',
+        'bank_id',
         'kode_pembayaran',
         'nominal',
         'status',
         'expires_at',
         'paid_at',
         'no_referensi',
+        'no_rekening_tujuan',
+        'atas_nama_tujuan',
     ];
 
     protected function casts(): array
@@ -32,5 +35,10 @@ class Pembayaran extends Model
     public function transaksi()
     {
         return $this->belongsTo(Transaksi::class, 'id_transaksi', 'id_transaksi');
+    }
+
+    public function bank()
+    {
+        return $this->belongsTo(Bank::class);
     }
 }

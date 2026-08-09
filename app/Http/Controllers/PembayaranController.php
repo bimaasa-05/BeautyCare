@@ -11,7 +11,7 @@ class PembayaranController extends Controller
 {
     protected function getTransaksi($id)
     {
-        $transaksi = Transaksi::with(['detail', 'pembayaran'])->findOrFail($id);
+        $transaksi = Transaksi::with(['detail', 'pembayaran.bank'])->findOrFail($id);
 
         abort_unless((int) $transaksi->id_user === (int) auth()->id() && $transaksi->sumber === 'online', 403);
 
@@ -24,6 +24,12 @@ class PembayaranController extends Controller
 
         if (in_array($transaksi->status, ['Lunas', 'Gagal', 'Kadaluarsa', 'Dibatalkan'])) {
             return redirect()->route('pelanggan.pesanan.show', $id);
+        }
+
+        // Ensure pembayaran exists
+        if (!$transaksi->pembayaran) {
+            return redirect()->route('pelanggan.pesanan.show', $id)
+                ->with('error', 'Data pembayaran tidak ditemukan untuk pesanan ini.');
         }
 
         $bankTujuan = CheckoutController::bankTujuan();
