@@ -39,7 +39,8 @@ class AdminLaporanController extends Controller
 
         $prevStart = $this->getPreviousPeriodStart($periode, $startDate);
 
-        $prevPendapatan = Transaksi::whereBetween('tanggal', [$prevStart, $startDate])
+        $prevPendapatan = Transaksi::where('jenis_transaksi', 'Penjualan')
+            ->whereBetween('tanggal', [$prevStart, $startDate])
             ->where('status', '!=', 'Dibatalkan')
             ->sum('total');
         $pendapatanGrowth = $prevPendapatan > 0
@@ -106,6 +107,7 @@ class AdminLaporanController extends Controller
                     DB::raw('DATE(tanggal) as label'),
                     DB::raw('COALESCE(SUM(total),0) as total')
                 )
+                ->where('jenis_transaksi', 'Penjualan')
                 ->whereBetween('tanggal', [$startDate, $endDate])
                 ->where('status', '!=', 'Dibatalkan')
                 ->groupBy(DB::raw('DATE(tanggal)'))
@@ -142,6 +144,7 @@ class AdminLaporanController extends Controller
                 DB::raw("DATE_FORMAT(tanggal, '%Y-%m') as label"),
                 DB::raw('COALESCE(SUM(total),0) as total')
             )
+            ->where('jenis_transaksi', 'Penjualan')
             ->whereBetween('tanggal', [$startDate, $endDate])
             ->where('status', '!=', 'Dibatalkan')
             ->groupBy('label')
@@ -203,7 +206,8 @@ class AdminLaporanController extends Controller
         $startDate = $dateRange['start'];
         $endDate = $dateRange['end'];
 
-        $totalPendapatan = Transaksi::whereBetween('tanggal', [$startDate, $endDate])
+        $totalPendapatan = Transaksi::where('jenis_transaksi', 'Penjualan')
+            ->whereBetween('tanggal', [$startDate, $endDate])
             ->where('status', '!=', 'Dibatalkan')
             ->sum('total');
 
@@ -219,7 +223,8 @@ class AdminLaporanController extends Controller
 
         $prevStart = $this->getPreviousPeriodStart($periode, $startDate);
 
-        $prevPendapatan = Transaksi::whereBetween('tanggal', [$prevStart, $startDate])
+        $prevPendapatan = Transaksi::where('jenis_transaksi', 'Penjualan')
+            ->whereBetween('tanggal', [$prevStart, $startDate])
             ->where('status', '!=', 'Dibatalkan')
             ->sum('total');
         $pendapatanGrowth = $prevPendapatan > 0

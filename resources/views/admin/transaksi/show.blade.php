@@ -186,36 +186,13 @@
                             </p>
                         </div>
                         <div class="flex flex-wrap items-center gap-2 no-print">
-                            @if ($transaksi->status === 'Pending')
-                            <form action="{{ route('admin.transaksi.update', $transaksi->id_transaksi) }}" method="POST" class="inline">
-                                @csrf
-                                @method('PUT')
-                                <input type="hidden" name="id_pelanggan" value="{{ $transaksi->id_pelanggan }}">
-                                <input type="hidden" name="tanggal" value="{{ $transaksi->tanggal }}">
-                                <input type="hidden" name="subtotal" value="{{ $transaksi->subtotal }}">
-                                <input type="hidden" name="diskon" value="{{ $transaksi->diskon }}">
-                                <input type="hidden" name="pajak" value="{{ $transaksi->pajak }}">
-                                <input type="hidden" name="total" value="{{ $transaksi->total }}">
-                                <input type="hidden" name="metode_byr" value="{{ $transaksi->metode_byr }}">
-                                <input type="hidden" name="dibayar" value="{{ $transaksi->dibayar }}">
-                                <input type="hidden" name="kembali" value="{{ $transaksi->kembali }}">
-                                <input type="hidden" name="catatan" value="{{ $transaksi->catatan }}">
-                                <input type="hidden" name="status" value="Lunas">
-                                <button type="submit"
-                                    class="flex items-center gap-2 bg-emerald-500 text-white text-[12px] font-semibold px-4 py-2 rounded-full hover:bg-emerald-600 transition-all shadow-sm">
-                                    <i class="fa-regular fa-circle-check"></i> Konfirmasi Lunas
-                                </button>
-                            </form>
-                            @endif
+                            @if ($transaksi->jenis_transaksi !== 'Pembelian')
                             <a href="{{ route('admin.transaksi.invoice', $transaksi->id_transaksi) }}" target="_blank"
                                 class="flex items-center gap-2 bg-gradient-to-r from-[#EC4899] to-[#BE185D] text-white text-[12px] font-semibold px-4 py-2 rounded-full hover:shadow-md transition-all shadow-sm">
                                 <i class="fa-solid fa-print"></i> Cetak Invoice
                             </a>
-                            <a href="{{ route('admin.transaksi.edit', $transaksi->id_transaksi) }}"
-                                class="flex items-center gap-2 bg-amber-50 text-amber-600 text-[12px] font-semibold px-4 py-2 rounded-full hover:bg-amber-100 transition-colors">
-                                <i class="fa-solid fa-pen-to-square"></i> Edit
-                            </a>
-                            <a href="{{ route('admin.transaksi.index') }}"
+                            @endif
+                            <a href="{{ route('admin.transaksi.index', ['jenis' => $transaksi->jenis_transaksi === 'Pembelian' ? 'pengeluaran' : 'penjualan']) }}"
                                 class="flex items-center gap-2 border border-gray-200 text-gray-600 text-[12px] font-medium px-4 py-2 rounded-full hover:bg-gray-50 transition-colors">
                                 <i class="fa-solid fa-arrow-left"></i> Kembali
                             </a>
@@ -268,10 +245,21 @@
 
                         <div class="lg:col-span-2">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                @if ($transaksi->jenis_transaksi === 'Pembelian')
+                                <div class="info-box">
+                                    <p class="info-label"><i class="fa-solid fa-truck mr-1 text-pink-300"></i> Supplier</p>
+                                    <p class="info-value">{{ $transaksi->supplier->nm_supplier ?? '-' }}</p>
+                                </div>
+                                <div class="info-box">
+                                    <p class="info-label"><i class="fa-solid fa-tags mr-1 text-pink-300"></i> Jenis</p>
+                                    <p class="info-value">Transaksi Keluar</p>
+                                </div>
+                                @else
                                 <div class="info-box">
                                     <p class="info-label"><i class="fa-solid fa-user mr-1 text-pink-300"></i> Pelanggan</p>
                                     <p class="info-value">{{ $transaksi->pelanggan->nm_pelanggan ?? '-' }}</p>
                                 </div>
+                                @endif
                                 <div class="info-box">
                                     <p class="info-label"><i class="fa-solid fa-hashtag mr-1 text-pink-300"></i> No. Invoice</p>
                                     <p class="info-value">{{ $transaksi->no_invoice }}</p>
