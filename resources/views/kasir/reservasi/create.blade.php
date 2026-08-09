@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/dashboard.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/responsive.css') }}">
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
     <style>
         .sidebar-toggle { display: none; background: none; border: none; cursor: pointer; padding: 8px; }
@@ -84,19 +85,44 @@
                                 <label class="form-label">
                                     <i class="fa-solid fa-user text-pink-400 mr-1"></i>Pelanggan <span class="text-red-500">*</span>
                                 </label>
-                                <div class="custom-select-wrapper">
-                                <select name="id_pelanggan" id="id_pelanggan" class="form-input-custom @error('id_pelanggan') border-red-400 @enderror" onchange="onPelangganChange(this)">
-                                    <option value="">-- Pilih Pelanggan --</option>
-                                    @foreach ($pelanggan as $p)
-                                        <option value="{{ $p->id_pelanggan }}"
-                                            data-member="{{ $p->id_member ?? '' }}"
-                                            data-tingkat="{{ $p->membership->tingkat ?? '' }}"
-                                            data-diskon="{{ $p->membership->diskon ?? 0 }}"
-                                            {{ old('id_pelanggan') == $p->id_pelanggan ? 'selected' : '' }}>
-                                            {{ $p->nm_pelanggan }} @if($p->id_member)({{ $p->membership->tingkat ?? '' }} - Diskon {{ $p->membership->diskon ?? 0 }}%) @endif
-                                        </option>
-                                    @endforeach
-                                </select>
+                                @php
+                                    $optsPelanggan = $pelanggan->map(fn($p) => [
+                                        'value' => $p->id_pelanggan,
+                                        'label' => $p->nm_pelanggan . ($p->id_member ? ' (' . ($p->membership->tingkat ?? '') . ' - Diskon ' . ($p->membership->diskon ?? 0) . '%)' : '')
+                                    ])->values();
+                                @endphp
+                                <div x-data="searchableSelect()" x-init="init($el.querySelector('select'), @json($optsPelanggan), @json(old('id_pelanggan', '')))" class="relative">
+                                    <select name="id_pelanggan" id="id_pelanggan" class="hidden @error('id_pelanggan') border-red-400 @enderror" onchange="onPelangganChange(this)">
+                                        <option value="">-- Pilih Pelanggan --</option>
+                                        @foreach ($pelanggan as $p)
+                                            <option value="{{ $p->id_pelanggan }}"
+                                                data-member="{{ $p->id_member ?? '' }}"
+                                                data-tingkat="{{ $p->membership->tingkat ?? '' }}"
+                                                data-diskon="{{ $p->membership->diskon ?? 0 }}"
+                                                {{ old('id_pelanggan') == $p->id_pelanggan ? 'selected' : '' }}>
+                                                {{ $p->nm_pelanggan }} @if($p->id_member)({{ $p->membership->tingkat ?? '' }} - Diskon {{ $p->membership->diskon ?? 0 }}%) @endif
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    <button type="button" @click="toggle()"
+                                        class="form-input-custom flex items-center justify-between gap-2 text-left @error('id_pelanggan') border-red-400 @enderror">
+                                        <span :class="selectedText ? 'text-gray-800' : 'text-gray-400'" x-text="selectedText || placeholder" class="truncate"></span>
+                                        <i class="fa-solid fa-chevron-down text-[10px] text-gray-400 transition-transform duration-200 shrink-0" :class="open && 'rotate-180'"></i>
+                                    </button>
+                                    <div x-show="open" @click.outside="open = false" x-transition
+                                        class="absolute z-50 mt-1 w-full bg-white border border-slate-200 rounded-xl shadow-lg overflow-hidden">
+                                        <input type="text" x-model="search" placeholder="Cari pelanggan..."
+                                            class="w-full px-3 py-2.5 text-[12px] border-b border-slate-100 focus:outline-none">
+                                        <ul class="max-h-48 overflow-y-auto py-1">
+                                            <template x-for="opt in filtered" :key="opt.value">
+                                                <li @click="select(opt.value, opt.label)"
+                                                    class="px-3 py-2 text-[12px] cursor-pointer hover:bg-pink-50 hover:text-pink-600 transition-colors"
+                                                    :class="opt.value == value ? 'bg-pink-50 text-pink-600 font-semibold' : 'text-gray-700'"
+                                                    x-text="opt.label"></li>
+                                            </template>
+                                            <li x-show="filtered.length === 0" class="px-3 py-2 text-[11px] text-gray-400">Tidak ada hasil</li>
+                                        </ul>
+                                    </div>
                                 </div>
                                 @error('id_pelanggan')
                                     <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
@@ -107,16 +133,45 @@
                                 <label class="form-label">
                                     <i class="fa-solid fa-user text-pink-400 mr-1"></i>Karyawan <span class="text-red-500">*</span>
                                 </label>
-                                <div class="custom-select-wrapper">
-                                <select name="id_karyawan" id="id_karyawan" class="form-input-custom @error('id_karyawan') border-red-400 @enderror">
-                                    <option value="">-- Pilih Karyawan --</option>
-                                    @foreach ($karyawan as $k)
-                                        @php($infoLayani = $sedangMelayaniDetail[$k->id] ?? null)
-                                        <option value="{{ $k->id }}" {{ old('id_karyawan') == $k->id ? 'selected' : '' }} {{ $infoLayani ? 'disabled' : '' }} data-info="{{ $infoLayani ? 'Sedang melayani ' . $infoLayani['pelanggan'] . ' pukul ' . \App\Support\BookingSlot::formatJamIndo($infoLayani['jam']) : '' }}">
-                                            {{ $k->nama }}{{ $infoLayani ? ' — Sedang Melayani' : '' }}
-                                        </option>
-                                    @endforeach
-                                </select>
+                                @php
+                                    $optsKaryawan = $karyawan->map(function($k) use ($sedangMelayaniDetail) {
+                                        $infoLayani = $sedangMelayaniDetail[$k->id] ?? null;
+                                        return [
+                                            'value' => $k->id,
+                                            'disabled' => (bool) $infoLayani,
+                                            'label' => $k->nama . ($infoLayani ? ' — Sedang Melayani' : '')
+                                        ];
+                                    })->values();
+                                @endphp
+                                <div x-data="searchableSelect()" x-init="init($el.querySelector('select'), @json($optsKaryawan), @json(old('id_karyawan', '')))" class="relative">
+                                    <select name="id_karyawan" id="id_karyawan" class="hidden @error('id_karyawan') border-red-400 @enderror">
+                                        <option value="">-- Pilih Karyawan --</option>
+                                        @foreach ($karyawan as $k)
+                                            @php($infoLayani = $sedangMelayaniDetail[$k->id] ?? null)
+                                            <option value="{{ $k->id }}" {{ old('id_karyawan') == $k->id ? 'selected' : '' }} {{ $infoLayani ? 'disabled' : '' }} data-info="{{ $infoLayani ? 'Sedang melayani ' . $infoLayani['pelanggan'] . ' pukul ' . \App\Support\BookingSlot::formatJamIndo($infoLayani['jam']) : '' }}">
+                                                {{ $k->nama }}{{ $infoLayani ? ' — Sedang Melayani' : '' }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    <button type="button" @click="toggle()"
+                                        class="form-input-custom flex items-center justify-between gap-2 text-left @error('id_karyawan') border-red-400 @enderror">
+                                        <span :class="selectedText ? 'text-gray-800' : 'text-gray-400'" x-text="selectedText || placeholder" class="truncate"></span>
+                                        <i class="fa-solid fa-chevron-down text-[10px] text-gray-400 transition-transform duration-200 shrink-0" :class="open && 'rotate-180'"></i>
+                                    </button>
+                                    <div x-show="open" @click.outside="open = false" x-transition
+                                        class="absolute z-50 mt-1 w-full bg-white border border-slate-200 rounded-xl shadow-lg overflow-hidden">
+                                        <input type="text" x-model="search" placeholder="Cari karyawan..."
+                                            class="w-full px-3 py-2.5 text-[12px] border-b border-slate-100 focus:outline-none">
+                                        <ul class="max-h-48 overflow-y-auto py-1">
+                                            <template x-for="opt in filtered" :key="opt.value">
+                                                <li @click="select(opt.value, opt.label)"
+                                                    class="px-3 py-2 text-[12px] cursor-pointer hover:bg-pink-50 hover:text-pink-600 transition-colors"
+                                                    :class="opt.value == value ? 'bg-pink-50 text-pink-600 font-semibold' : 'text-gray-700'"
+                                                    x-text="opt.label"></li>
+                                            </template>
+                                            <li x-show="filtered.length === 0" class="px-3 py-2 text-[11px] text-gray-400">Tidak ada hasil</li>
+                                        </ul>
+                                    </div>
                                 </div>
                                 @error('id_karyawan')
                                     <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
@@ -349,6 +404,44 @@
                 total += parseFloat(val) || 0;
             });
             document.getElementById('grand-total').textContent = 'Rp ' + total.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+        }
+
+        // ========== Searchable Select (Alpine) ==========
+        function searchableSelect() {
+            return {
+                open: false,
+                search: '',
+                options: [],
+                value: '',
+                selectedText: '',
+                placeholder: '-- Pilih --',
+                init(selectEl, options, initial) {
+                    this.options = options;
+                    if (selectEl.options[0]) this.placeholder = selectEl.options[0].textContent.trim() || '-- Pilih --';
+                    if (initial && String(initial) !== '') {
+                        this.value = String(initial);
+                        const found = options.find(o => String(o.value) === String(initial));
+                        if (found) this.selectedText = found.label;
+                    }
+                    this.$watch('value', v => {
+                        if (String(selectEl.value) !== String(v)) {
+                            selectEl.value = v;
+                            selectEl.dispatchEvent(new Event('change'));
+                        }
+                    });
+                },
+                get filtered() {
+                    const q = this.search.toLowerCase();
+                    return this.options.filter(o => !o.disabled && o.label.toLowerCase().includes(q));
+                },
+                select(val, label) {
+                    this.value = String(val);
+                    this.selectedText = label;
+                    this.open = false;
+                    this.search = '';
+                },
+                toggle() { this.open = !this.open; }
+            };
         }
 
         function initCustomSelects() {
