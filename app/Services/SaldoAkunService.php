@@ -19,6 +19,15 @@ class SaldoAkunService
     {
         if ($nominal <= 0) return null;
 
+        // Guard anti-dobel: sekali kredit per referensi
+        $sudahAda = SaldoMutasi::where('id_pelanggan', $idPelanggan)
+            ->where('type', 'kredit')
+            ->where('ref_type', $refType)
+            ->where('ref_id', $refId)
+            ->exists();
+
+        if ($sudahAda) return null;
+
         return DB::transaction(function () use ($idPelanggan, $nominal, $refId, $refType, $keterangan) {
             $pelanggan = Pelanggan::lockForUpdate()->find($idPelanggan);
             if (!$pelanggan) return null;
@@ -68,7 +77,7 @@ class SaldoAkunService
         });
     }
 
-    public function prosesCheckout(int $idPelanggan, float $totalBayar, float $pakaiSaldo, int $idTransaksi, ?int $idPromo = null): array
+    public function prosesCheckout(int $idPelanggan, float $totalBayar, float $pakaiSaldo, int $idTransaksi, ?int $idPromo = null, bool $kreditCashback = true): array
     {
         $saldoTersedia = $this->getSaldo($idPelanggan);
         $pakaiSaldo = min($pakaiSaldo, $saldoTersedia, $totalBayar);
@@ -87,7 +96,7 @@ class SaldoAkunService
         }
 
         $mutasiCashback = null;
-        if ($cashback > 0) {
+        if ($cashback > 0 && $kreditCashback) {
             $mutasiCashback = $this->kreditCashback($idPelanggan, $cashback, $idTransaksi, 'transaksi', "Cashback promo {$promo->nm_promo}");
         }
 
