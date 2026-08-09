@@ -251,6 +251,7 @@
                         <table class="booking-table">
                             <thead>
                                 <tr>
+                                    <th>No</th>
                                     <th>Tanggal</th>
                                     <th>Jam</th>
                                     <th>Terapis</th>
@@ -262,10 +263,13 @@
                             <tbody>
                                 @forelse($konsultasi as $item)
                                 <tr>
+                                    <td data-label="No">
+                                        <span class="text-[12px] font-semibold text-gray-400">{{ $loop->iteration }}</span>
+                                    </td>
                                     <td data-label="Tanggal">
                                         <div class="flex items-center gap-1.5">
                                             <i class="fa-regular fa-calendar text-gray-300 text-[11px]"></i>
-                                            <span>{{ \Carbon\Carbon::parse($item->tanggal)->isoFormat('D MMM YYYY') }}</span>
+                                            <span>{{ \Carbon\Carbon::parse($item->tanggal)->isoFormat('D MMMM YYYY') }}</span>
                                         </div>
                                     </td>
                                     <td data-label="Jam">
@@ -306,7 +310,7 @@
                                 </tr>
                                 @empty
                                 <tr>
-                                    <td colspan="6">
+                                    <td colspan="7">
                                         <div class="empty-state">
                                             <div class="es-illustration">
                                                 <i class="fa-regular fa-comments"></i>
