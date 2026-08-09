@@ -641,7 +641,7 @@
                         </div>
                         <div class="dc-deskripsi">
                             @if ($produk && $produk->deskripsi)
-                                <p>{{ $produk->deskripsi }}</p>
+                                <p>{!! nl2br(e($produk->deskripsi)) !!}</p>
                             @elseif ($produk)
                                 <p>{{ $produk->nm_produk }} adalah produk kecantikan kategori <strong>{{ $kategori }}</strong> berkualitas dari BeautyCare. Dibanderol dengan harga <strong>Rp {{ number_format($item->harga_satuan, 0, ',', '.') }}</strong> per {{ $satuan }}, produk ini telah terpercaya dan banyak dipilih pelanggan untuk kebutuhan perawatan kecantikan Anda sehari-hari.</p>
                                 <p>Dapatkan hasil terbaik dengan pemakaian rutin. Jangan lewatkan kesempatan untuk memiliki produk andalan BeautyCare ini.</p>
