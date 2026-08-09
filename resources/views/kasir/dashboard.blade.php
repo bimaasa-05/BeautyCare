@@ -506,7 +506,8 @@
                     <div class="list-widget" style="max-height:440px;display:flex;flex-direction:column;">
                         <div class="lw-header">
                             <h3>Notifikasi Stok</h3>
-                            <a href="#" style="font-size:13px;color:var(--primary);font-weight:500;">Kelola</a>
+                            @php $adaStok = route('admin.stok.index'); try{ \Route::currentRouteName(); }catch(\Throwable $e){} @endphp
+                            <span style="font-size:13px;color:var(--gray);font-weight:500;cursor:default;">Kelola</span>
                         </div>
                         <div class="stock-grid card-scroll" style="flex:1;">
                             @forelse($stokMenipis as $p)
