@@ -634,6 +634,28 @@
                                     <div>Total Bayar</div>
                                     <div class="co-val" id="ringkasTotal">Rp {{ number_format($subtotal, 0, ',', '.') }}</div>
                                 </div>
+
+                                @if($saldo > 0 && !$isMembership)
+                                <div class="co-member-card co-member-aktif" style="margin-top: 16px;">
+                                    <div class="cmc-icon" style="background: #10B981;"><i class="fa-solid fa-wallet"></i></div>
+                                    <div>
+                                        <div class="cmc-title">
+                                            Saldo Akun (Cashback)
+                                            <span class="cmc-badge" style="background: #D1FAE5; color: #059669;">Rp {{ number_format($saldo, 0, ',', '.') }}</span>
+                                        </div>
+                                        <div class="cmc-desc">Saldo dari cashback tidak kadaluwarsa. Gunakan untuk mengurangi total bayar.</div>
+                                    </div>
+                                </div>
+                                <div class="co-row" style="margin-top: 10px; display: flex; align-items: center; gap: 12px;">
+                                    <div style="font-size: 12px; color: var(--gray); min-width: 100px;">Pakai Saldo</div>
+                                    <div style="flex: 1; display: flex; align-items: center; gap: 8px;">
+                                        <input type="number" name="pakai_saldo" id="pakaiSaldo" min="0" step="1000" value="0"
+                                            class="co-select" style="width: 100px; margin-top: 0;"
+                                            placeholder="0" oninput="hitungRingkasan()">
+                                        <span style="font-size: 12px; color: var(--gray);">Maks: Rp {{ number_format(min($saldo, $subtotal), 0, ',', '.') }}</span>
+                                    </div>
+                                </div>
+                                @endif
                             </div>
                         </div>
 
@@ -675,10 +697,10 @@
                                 <button type="submit" class="btn-buat-pesanan" id="btnBuatPesanan" disabled>
                                     <i class="fa-solid fa-check-circle"></i> Buat Pesanan
                                 </button>
-                                <div class="co-note">
-                                    <i class="fa-regular fa-clock"></i>
-                                    Batas bayar QRIS 10 menit, Transfer 24 jam
-                                </div>
+<div class="co-note">
+                    <i class="fa-regular fa-clock"></i>
+                    Batas bayar QRIS 3 menit, Transfer 15 menit
+                </div>
                             </div>
                         </div>
                     </div>
@@ -691,6 +713,7 @@
     var subtotal = parseInt('{{ $subtotal }}');
     var memberDiskon = parseInt('{{ $memberInfo['aktif'] ? $memberInfo['diskon'] : 0 }}');
     var memberLabel = '{{ $memberInfo['aktif'] ? "Member " . $memberInfo['level'] . " " . rtrim(rtrim(number_format($memberInfo['diskon_pct'], 1, '.', ','), '0'), ',') . "%" : '' }}';
+    var saldoTersedia = parseInt('{{ $saldo ?? 0 }}');
     var totalGlobal = subtotal - memberDiskon;
 
     document.querySelectorAll('.pay-option').forEach(function(opt) {
@@ -736,7 +759,17 @@
         }
         document.getElementById('ringkasDiskon').textContent = 'Rp ' + diskon.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
         document.getElementById('ringkasDiskonLabel').textContent = label ? '(' + label + ')' : '';
-        totalGlobal = subtotal - diskon;
+
+        // Saldo deduction
+        var pakaiSaldo = 0;
+        var saldoInput = document.getElementById('pakaiSaldo');
+        if (saldoInput && saldoInput.value) {
+            pakaiSaldo = Math.min(parseInt(saldoInput.value) || 0, saldoTersedia, subtotal - diskon);
+            if (pakaiSaldo < 0) pakaiSaldo = 0;
+            saldoInput.value = pakaiSaldo;
+        }
+
+        totalGlobal = subtotal - diskon - pakaiSaldo;
         document.getElementById('ringkasTotal').textContent = 'Rp ' + totalGlobal.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
     }
 

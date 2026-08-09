@@ -46,7 +46,10 @@
         .kanban-card .doc-badge.has-doc { background: #D1FAE5; color: #059669; }
         .kanban-card .doc-badge.no-doc { background: #FEF3C7; color: #D97706; }
         .kanban-card .late-badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: 600; background: #FEE2E2; color: #DC2626; }
-        .kanban-card .run-badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: 600; background: #FEF3C7; color: #D97706; }
+        .kanban-card .no-show-badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: 600; background: #FEF3C7; color: #B45309; }
+        .kanban-card .timer-badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 6px; font-size: 10px; font-weight: 700; font-variant-numeric: tabular-nums; background: #FEF3C7; color: #D97706; border: 1px solid #FCD34D; }
+        .kanban-card .timer-badge .tick { color: #B45309; }
+        .kanban-card .done-badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: 600; background: #D1FAE5; color: #059669; }
 
         .btn-kanban { padding: 6px 14px; border-radius: 8px; font-size: 11px; font-weight: 600; border: none; cursor: pointer; transition: all 0.2s ease; font-family: 'Poppins', sans-serif; display: inline-flex; align-items: center; gap: 5px; }
         .btn-kanban:hover { transform: scale(1.03); }
@@ -147,6 +150,14 @@
                                     </span>
                                 </div>
                                 @endif
+                                @if($item->belumDatang)
+                                <div style="margin-top:6px;">
+                                    <span class="no-show-badge">
+                                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                                        Pelanggan belum datang
+                                    </span>
+                                </div>
+                                @endif
                             </div>
                             <div class="kc-card-footer">
                                 <form action="{{ route('beautycian.jadwal-treatment.update') }}" method="POST" onsubmit="return confirm('Mulai treatment ini?')">
@@ -198,9 +209,9 @@
                                     {{ \Carbon\Carbon::parse($item->jam)->format('H:i') }}
                                 </div>
                                 <div style="margin-top:6px;">
-                                    <span class="run-badge">
-                                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                                        Berjalan sejak {{ \Carbon\Carbon::parse($item->jam)->format('H:i') }} · Sudah {{ $item->berjalanMenit }} menit
+                                    <span class="timer-badge" data-mulai="{{ $item->jam_mulai_aktual ? \Carbon\Carbon::parse($item->jam_mulai_aktual)->format('Y-m-d H:i:s') : \Carbon\Carbon::parse($item->tanggal . ' ' . $item->jam)->format('Y-m-d H:i:s') }}">
+                                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                        Mulai {{ $item->mulaiAktualTxt }} · Berjalan <span class="tick">00:00:00</span>
                                     </span>
                                 </div>
                                 @if($item->riwayatTreatment)
@@ -275,6 +286,17 @@
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                                     {{ \Carbon\Carbon::parse($item->jam)->format('H:i') }}
                                 </div>
+                                @if($item->jam_selesai_aktual)
+                                <div style="margin-top:6px;">
+                                    <span class="done-badge">
+                                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                                        Selesai pukul {{ \Carbon\Carbon::parse($item->jam_selesai_aktual)->format('H:i') }}
+                                        @if($item->jam_mulai_aktual)
+                                        · Durasi {{ gmdate('H:i:s', max(0, \Carbon\Carbon::parse($item->jam_selesai_aktual)->diffInSeconds(\Carbon\Carbon::parse($item->jam_mulai_aktual)))) }}
+                                        @endif
+                                    </span>
+                                </div>
+                                @endif
                                 @if($item->riwayatTreatment)
                                     <div style="margin-top:6px;">
                                         <span class="doc-badge has-doc">
@@ -385,6 +407,22 @@
                 reader.readAsDataURL(input.files[0]);
             }
         }
+
+        // Stopwatch live untuk treatment yang sedang berjalan
+        document.querySelectorAll('.timer-badge').forEach(function(badge) {
+            const mulai = new Date(badge.getAttribute('data-mulai').replace(' ', 'T')).getTime();
+            const tickEl = badge.querySelector('.tick');
+            if (!tickEl || isNaN(mulai)) return;
+            function update() {
+                let s = Math.max(0, Math.floor((Date.now() - mulai) / 1000));
+                const hh = String(Math.floor(s / 3600)).padStart(2, '0');
+                const mm = String(Math.floor((s % 3600) / 60)).padStart(2, '0');
+                const ss = String(s % 60).padStart(2, '0');
+                tickEl.textContent = hh + ':' + mm + ':' + ss;
+            }
+            update();
+            setInterval(update, 1000);
+        });
     </script>
 
     <script src="{{ asset('assets/js/beautycian.js') }}"></script>

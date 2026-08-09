@@ -10,6 +10,7 @@ use App\Models\Pelanggan;
 use App\Models\Membership;
 use App\Models\PromoKlaim;
 use App\Helpers\ActivityLogger;
+use App\Support\BookingSlot;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -99,11 +100,11 @@ class PelangganBookingController extends Controller
                     && $klaim->promo->selesai > now()->format('Y-m-d');
             });
 
-        $slotJam = $this->slotJam();
-        $bookedJamByKaryawan = $this->bookedJamByKaryawan(request('tanggal', now()->toDateString()));
-        $sedangMelayani = $this->sedangMelayani();
+        $slotJam = BookingSlot::slotJam();
+        $bookedJamByKaryawan = BookingSlot::blokirJamKaryawan(request('tanggal', now()->toDateString()));
+        $sedangMelayaniDetail = BookingSlot::sedangMelayaniDetail();
 
-        return view('pelanggan.booking.create', compact('layanans', 'karyawans', 'diskonMember', 'claimedPromos', 'slotJam', 'bookedJamByKaryawan', 'sedangMelayani'));
+        return view('pelanggan.booking.create', compact('layanans', 'karyawans', 'diskonMember', 'claimedPromos', 'slotJam', 'bookedJamByKaryawan', 'sedangMelayaniDetail'));
     }
 
     public function store(Request $request)
@@ -126,9 +127,19 @@ class PelangganBookingController extends Controller
             'id_promo' => 'nullable|integer|exists:promo,id_promo',
         ]);
 
-        $jam = date('H:i:s', strtotime($request->jam));
-        if ($this->jamBentrok($request->id_karyawan, $request->tanggal, $jam)) {
-            return redirect()->back()->withInput()->withErrors(['jam' => 'Jam tersebut sudah dibooking untuk terapis yang dipilih. Silakan pilih jam lain.']);
+        $jam = BookingSlot::normalJam($request->jam);
+
+        if (!BookingSlot::validJamSlot($jam)) {
+            return redirect()->back()->withInput()->withErrors(['jam' => 'Jam harus berada dalam jam operasional toko (' . BookingSlot::formatJamIndo(BookingSlot::jamBuka()) . ' - ' . BookingSlot::formatJamIndo(BookingSlot::jamTutup()) . ').']);
+        }
+
+        if ($request->tanggal < now()->toDateString()) {
+            return redirect()->back()->withInput()->withErrors(['tanggal' => 'Tanggal booking tidak boleh di masa lalu.']);
+        }
+
+        $durasi = (int) Layanan::whereIn('id_layanan', $request->id_layanan)->sum('durasi');
+        if (BookingSlot::jamBentrok($request->id_karyawan, $request->tanggal, $jam, null, $durasi)) {
+            return redirect()->back()->withInput()->withErrors(['jam' => 'Jam tersebut sudah dibooking untuk terapis yang dipilih (sudah memperhitungkan durasi layanan). Silakan pilih jam lain.']);
         }
 
         $idPromo = $request->id_promo;
@@ -278,11 +289,11 @@ class PelangganBookingController extends Controller
             }
         }
 
-        $slotJam = $this->slotJam();
-        $bookedJamByKaryawan = $this->bookedJamByKaryawan($booking->tanggal, $booking->id_booking);
-        $sedangMelayani = $this->sedangMelayani();
+        $slotJam = BookingSlot::slotJam();
+        $bookedJamByKaryawan = BookingSlot::blokirJamKaryawan($booking->tanggal, $booking->id_booking);
+        $sedangMelayaniDetail = BookingSlot::sedangMelayaniDetail();
 
-        return view('pelanggan.booking.edit', compact('booking', 'detail', 'layanans', 'karyawans', 'diskonMember', 'slotJam', 'bookedJamByKaryawan', 'sedangMelayani'));
+        return view('pelanggan.booking.edit', compact('booking', 'detail', 'layanans', 'karyawans', 'diskonMember', 'slotJam', 'bookedJamByKaryawan', 'sedangMelayaniDetail'));
     }
 
     public function update(Request $request, $id)
@@ -301,9 +312,19 @@ class PelangganBookingController extends Controller
             ->where('id_pelanggan', $this->resolveIdPelanggan())
             ->firstOrFail();
 
-        $jam = date('H:i:s', strtotime($request->jam));
-        if ($this->jamBentrok($request->id_karyawan, $request->tanggal, $jam, $booking->id_booking)) {
-            return redirect()->back()->withInput()->withErrors(['jam' => 'Jam tersebut sudah dibooking untuk terapis yang dipilih. Silakan pilih jam lain.']);
+        $jam = BookingSlot::normalJam($request->jam);
+
+        if (!BookingSlot::validJamSlot($jam)) {
+            return redirect()->back()->withInput()->withErrors(['jam' => 'Jam harus berada dalam jam operasional toko (' . BookingSlot::formatJamIndo(BookingSlot::jamBuka()) . ' - ' . BookingSlot::formatJamIndo(BookingSlot::jamTutup()) . ').']);
+        }
+
+        if ($request->tanggal < now()->toDateString()) {
+            return redirect()->back()->withInput()->withErrors(['tanggal' => 'Tanggal booking tidak boleh di masa lalu.']);
+        }
+
+        $durasi = (int) Layanan::where('id_layanan', $request->id_layanan)->value('durasi');
+        if (BookingSlot::jamBentrok($request->id_karyawan, $request->tanggal, $jam, $booking->id_booking, $durasi)) {
+            return redirect()->back()->withInput()->withErrors(['jam' => 'Jam tersebut sudah dibooking untuk terapis yang dipilih (sudah memperhitungkan durasi layanan). Silakan pilih jam lain.']);
         }
 
         $karyawanLama = $booking->id_karyawan;
@@ -382,47 +403,6 @@ class PelangganBookingController extends Controller
 
         return Booking::where('id_pelanggan', $idPelanggan)
             ->whereIn('status', ['menunggu', 'dikonfirmasi', 'diproses'])
-            ->exists();
-    }
-
-    private function slotJam()
-    {
-        $slotJam = [];
-        for ($h = 9; $h <= 20; $h++) {
-            $slotJam[] = date('H:i', strtotime("$h:00"));
-        }
-        return $slotJam;
-    }
-
-    private function bookedJamByKaryawan($tanggal, $exceptId = null)
-    {
-        return Booking::where('tanggal', $tanggal)
-            ->whereIn('status', ['menunggu', 'dikonfirmasi', 'diproses'])
-            ->whereNotNull('id_karyawan')
-            ->when($exceptId, fn($q) => $q->where('id_booking', '!=', $exceptId))
-            ->get(['id_karyawan', 'jam'])
-            ->groupBy('id_karyawan')
-            ->map(fn($rows) => $rows->pluck('jam')->map(fn($j) => substr($j, 0, 5))->unique()->values());
-    }
-
-    private function sedangMelayani()
-    {
-        return Booking::whereDate('tanggal', now()->toDateString())
-            ->where('status', 'diproses')
-            ->whereNotNull('id_karyawan')
-            ->pluck('id_karyawan')
-            ->unique()
-            ->values()
-            ->all();
-    }
-
-    private function jamBentrok($idKaryawan, $tanggal, $jam, $exceptId = null)
-    {
-        return Booking::where('id_karyawan', $idKaryawan)
-            ->where('tanggal', $tanggal)
-            ->where('jam', $jam)
-            ->whereIn('status', ['menunggu', 'dikonfirmasi', 'diproses'])
-            ->when($exceptId, fn($q) => $q->where('id_booking', '!=', $exceptId))
             ->exists();
     }
 

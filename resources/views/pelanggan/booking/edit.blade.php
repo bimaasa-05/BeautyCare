@@ -739,8 +739,9 @@
                                     <select name="id_karyawan" id="id_karyawan" required style="display:none">
                                         <option value="">— Pilih Terapis —</option>
                                         @foreach($karyawans as $karyawan)
-                                        @php($sedangLayani = in_array($karyawan->user->id, $sedangMelayani) && $booking->id_karyawan != $karyawan->user->id)
-                                        <option value="{{ $karyawan->user->id }}" {{ $booking->id_karyawan == $karyawan->user->id ? 'selected' : '' }} {{ $sedangLayani ? 'disabled' : '' }}>
+                                        @php($infoLayani = $sedangMelayaniDetail[$karyawan->user->id] ?? null)
+                                        @php($sedangLayani = $infoLayani && $booking->id_karyawan != $karyawan->user->id)
+                                        <option value="{{ $karyawan->user->id }}" {{ $booking->id_karyawan == $karyawan->user->id ? 'selected' : '' }} {{ $sedangLayani ? 'disabled' : '' }} data-info="{{ $infoLayani && $sedangLayani ? 'Sedang melayani ' . $infoLayani['pelanggan'] . ' pukul ' . \App\Support\BookingSlot::formatJamIndo($infoLayani['jam']) : '' }}">
                                             {{ $karyawan->user->nama }} — {{ $karyawan->jabatan }}{{ $sedangLayani ? ' — Sedang Melayani' : '' }}
                                         </option>
                                         @endforeach
@@ -751,6 +752,9 @@
                                             <span class="cst-arrow"><i class="fa-solid fa-chevron-down"></i></span>
                                         </div>
                                         <div class="custom-select-dropdown" id="customTerapisDropdown"></div>
+                                    </div>
+                                    <div style="margin-top:6px;font-size:11px;color:var(--gray);">
+                                        <i class="fa-solid fa-circle-info"></i> Terapis yang sedang melayani pelanggan lain otomatis dinonaktifkan
                                     </div>
                                 </div>
                             </div>
@@ -781,11 +785,11 @@
                                     <select name="jam" id="jamSlot" class="fg-input" required>
                                         <option value="">— Pilih Jam —</option>
                                         @foreach($slotJam as $jam)
-                                        <option value="{{ $jam }}" {{ \Carbon\Carbon::parse($booking->jam)->format('H:i') == $jam ? 'selected' : '' }}>{{ $jam }}</option>
+                                        <option value="{{ $jam }}" {{ \Carbon\Carbon::parse($booking->jam)->format('H:i') == $jam ? 'selected' : '' }}>{{ \App\Support\BookingSlot::formatJamIndo($jam) }}</option>
                                         @endforeach
                                     </select>
                                     <div style="margin-top:6px;font-size:11px;color:var(--gray);">
-                                        <i class="fa-solid fa-circle-info"></i> Slot yang sudah dibooking terapis akan otomatis dinonaktifkan
+                                        <i class="fa-solid fa-circle-info"></i> Slot yang sudah dibooking terapis (termasuk durasi layanan) otomatis dinonaktifkan
                                     </div>
                                 </div>
                             </div>
@@ -933,9 +937,15 @@
                 const isDisabled = opt.disabled;
                 const cls = isDisabled ? ' csd-disabled' : '';
                 const attr = isDisabled ? ' data-disabled="1"' : '';
-                const stl = isDisabled ? ' style="opacity:.5;cursor:not-allowed;"' : '';
+                const stl = isDisabled ? ' style="opacity:.6;cursor:not-allowed;"' : '';
                 if (!opt.value) {
                     html += '<div class="csd-item' + cls + '" data-value="" data-harga="0"' + attr + stl + '><span>' + opt.text + '</span></div>';
+                } else if (isDisabled) {
+                    const info = opt.getAttribute('data-info') || '';
+                    html += '<div class="csd-item' + cls + '" data-value="' + opt.value + '" data-harga="0"' + attr + stl + ' title="' + info + '">';
+                    html += '<span>' + opt.text.replace(' — Sedang Melayani', '') + '</span>';
+                    html += '<span class="csd-price" style="color:#DC2626;font-weight:600;">● Sedang Melayani</span>';
+                    html += '</div>';
                 } else {
                     const parts = opt.text.split(' — ');
                     const name = parts[0] || opt.text;
@@ -1021,7 +1031,7 @@
             if (!opt.value) continue;
             const penuh = booked.indexOf(opt.value) !== -1;
             opt.disabled = penuh || !karyawanId;
-            opt.textContent = opt.value + (penuh ? ' — Sudah Dibooking' : '');
+            opt.textContent = opt.value.replace(':', '.') + (penuh ? ' — Sudah Dibooking' : '');
         }
         if (jamSelect.value && jamSelect.options[jamSelect.selectedIndex].disabled) {
             jamSelect.value = '';

@@ -11,6 +11,7 @@ use App\Models\Promo;
 use App\Models\PromoKlaim;
 use App\Models\Transaksi;
 use App\Models\Troli;
+use App\Services\SaldoAkunService;
 use App\Helpers\ActivityLogger;
 use Illuminate\Http\Request;
 
@@ -101,11 +102,14 @@ class CheckoutController extends Controller
 
         $bankTujuan = self::bankTujuan();
 
+        $pelanggan = $this->getOrCreatePelanggan(auth()->user());
+        $saldo = (float) $pelanggan->saldo;
+
         $memberInfo = $isMembership
             ? ['diskon' => 0, 'aktif' => false, 'level' => null, 'diskon_pct' => 0, 'sisa' => 0]
-            : $this->hitungDiskonMember($this->getOrCreatePelanggan(auth()->user()), $subtotal);
+            : $this->hitungDiskonMember($pelanggan, $subtotal);
 
-        return view('pelanggan.checkout.index', compact('items', 'subtotal', 'claimedPromos', 'bankTujuan', 'memberInfo', 'isMembership', 'membership'));
+        return view('pelanggan.checkout.index', compact('items', 'subtotal', 'claimedPromos', 'bankTujuan', 'memberInfo', 'isMembership', 'membership', 'saldo'));
     }
 
     public function pembayaranMembership(Request $request)
@@ -144,6 +148,7 @@ class CheckoutController extends Controller
             'beli' => 'nullable|integer',
             'qty' => 'nullable|integer|min:1',
             'beli_membership' => 'nullable|integer',
+            'pakai_saldo' => 'nullable|numeric|min:0',
         ]);
 
         $providers = [
@@ -243,6 +248,21 @@ class CheckoutController extends Controller
             'status' => 'Menunggu Pembayaran',
         ]);
 
+        // Proses saldo & cashback
+        $pakaiSaldo = (float) $request->input('pakai_saldo', 0);
+        if ($pakaiSaldo > 0 && !$isMembership) {
+            $saldoService = new SaldoAkunService();
+            $saldoResult = $saldoService->prosesCheckout(
+                $pelanggan->id_pelanggan,
+                $total,
+                $pakaiSaldo,
+                $transaksi->id_transaksi,
+                $idPromo
+            );
+            $transaksi->update(['saldo_terpakai' => $saldoResult['pakai_saldo']]);
+            $total = $saldoResult['sisa_bayar']; // Update total for payment
+        }
+
         foreach ($items as $item) {
             if (!empty($item['id_member'])) {
                 DetailTransaksi::create([
@@ -280,8 +300,8 @@ class CheckoutController extends Controller
         }
 
         $expiresAt = $request->metode === 'QRIS'
-            ? now()->addMinutes(3) //Hitung Mundur Dalam 3 Menit
-            : now()->addHours(24); //Hitung Mundur Dalam 24 Jam
+            ? now()->addMinutes(3) // Hitung Mundur Dalam 3 Menit
+            : now()->addMinutes(15); // Transfer 15 menit
 
         Pembayaran::create([
             'id_transaksi' => $transaksi->id_transaksi,
