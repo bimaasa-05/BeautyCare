@@ -243,6 +243,19 @@
                             </div>
 
                             <div>
+                                <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Status <span class="text-red-400">*</span></label>
+                                <select name="status"
+                                    class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all @error('status') border-red-300 @enderror">
+                                    @foreach (['Tersedia', 'Habis', 'Belum Restok'] as $st)
+                                        <option value="{{ $st }}" {{ old('status') == $st ? 'selected' : '' }}>{{ $st }}</option>
+                                    @endforeach
+                                </select>
+                                @error('status')
+                                    <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div>
                                 <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Foto</label>
                                 <input type="file" name="foto" accept="image/*"
                                     class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all @error('foto') border-red-300 @enderror">
@@ -250,6 +263,16 @@
                                     <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
+                        </div>
+
+                        <div class="mt-5">
+                            <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Deskripsi Produk</label>
+                            <textarea name="deskripsi" rows="4"
+                                class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl px-4 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('deskripsi') border-red-300 @enderror"
+                                placeholder="Tulis deskripsi produk di sini. Deskripsi ini akan tampil di halaman produk pelanggan.">{{ old('deskripsi') }}</textarea>
+                            @error('deskripsi')
+                                <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
+                            @enderror
                         </div>
 
                         <div class="mt-5 bg-[#FFF7FA] border border-pink-100 rounded-xl px-4 py-3 flex items-center gap-2 text-[12px] text-gray-500">
