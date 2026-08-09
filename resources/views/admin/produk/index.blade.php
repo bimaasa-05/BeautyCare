@@ -329,6 +329,7 @@
                                         <th class="text-left px-5 py-3 text-xs font-bold text-gray-400 uppercase">Harga Jual</th>
                                         <th class="text-left px-5 py-3 text-xs font-bold text-gray-400 uppercase">Stok</th>
                                         <th class="text-left px-5 py-3 text-xs font-bold text-gray-400 uppercase">Foto</th>
+                                        <th class="text-left px-5 py-3 text-xs font-bold text-gray-400 uppercase">Deskripsi</th>
                                         <th class="text-left px-5 py-3 text-xs font-bold text-gray-400 uppercase">Status</th>
                                         <th class="text-left px-5 py-3 text-xs font-bold text-gray-400 uppercase">Aksi</th>
                                     </tr>
@@ -392,6 +393,13 @@
                                                 <span class="text-xs text-gray-400">-</span>
                                             @endif
                                         </td>
+                                        <td class="px-5 py-4 text-xs text-gray-600 max-w-[220px]" data-label="Deskripsi">
+                                            @if ($p->deskripsi)
+                                                <p class="truncate" title="{{ $p->deskripsi }}">{{ $p->deskripsi }}</p>
+                                            @else
+                                                <span class="text-xs text-gray-400">-</span>
+                                            @endif
+                                        </td>
                                         <td class="px-5 py-4" data-label="Status">
                                             @php
                                                 $statusBadge = match($p->status) {
@@ -433,7 +441,7 @@
                                     </tr>
                                     @empty
                                     <tr>
-                                        <td colspan="12" class="px-5 py-10 text-center text-gray-400 text-sm">
+                                        <td colspan="13" class="px-5 py-10 text-center text-gray-400 text-sm">
                                             <i class="fa-regular fa-face-frown text-4xl block mb-3"></i>
                                             Belum ada data produk
                                         </td>
