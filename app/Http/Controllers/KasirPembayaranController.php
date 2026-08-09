@@ -61,20 +61,24 @@ class KasirPembayaranController extends Controller
             return redirect()->route('kasir.pembayaran.index')->with('error', 'Booking ini sudah memiliki pembayaran');
         }
 
-        return view('kasir.pembayaran.create', compact('booking'));
+        $banks = \App\Models\Bank::active()->transfer()->get(['id', 'nama_bank', 'no_rekening', 'kode_bank', 'logo', 'atas_nama']);
+        $ewallets = \App\Models\Bank::active()->ewallet()->get(['id', 'nama_bank', 'nomor_telepon', 'atas_nama']);
+
+        return view('kasir.pembayaran.create', compact('booking', 'banks', 'ewallets'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
             'id_booking' => 'required|integer|exists:booking,id_booking',
-            'metode_byr' => 'required|in:Tunai,Transfer,Debit,QRIS,E-Wallet',
+            'metode_byr' => 'required|in:Transfer,E-Wallet',
             'total' => 'required|numeric|min:0',
             'dibayar' => 'required|numeric|min:0|gte:total',
             'catatan' => 'nullable|string',
             'bukti_bayar' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'no_referensi' => 'nullable|string|max:50',
-            'ewallet_type' => 'nullable|in:Dana,GoPay,ShopeePay',
+            'ewallet_type' => 'required_if:metode_byr,E-Wallet|string|max:50',
+            'bank_id' => 'required_if:metode_byr,Transfer|integer|exists:banks,id',
         ]);
 
         $booking = Booking::with(['pelanggan', 'detail.layanan'])->findOrFail($request->id_booking);
@@ -87,7 +91,7 @@ class KasirPembayaranController extends Controller
         $dibayar = $request->dibayar;
         $kembali = max(0, $dibayar - $total);
 
-        $statusPembayaran = in_array($request->metode_byr, ['Tunai', 'QRIS', 'E-Wallet']) ? 'Lunas' : 'Proses';
+        $statusPembayaran = $request->metode_byr === 'E-Wallet' ? 'Lunas' : 'Proses';
 
         $lastId = Transaksi::max('id_transaksi') + 1;
         $no_invoice = 'INV-' . date('Ymd') . '-' . str_pad($lastId, 4, '0', STR_PAD_LEFT);
@@ -102,6 +106,7 @@ class KasirPembayaranController extends Controller
             'id_pelanggan' => $booking->id_pelanggan,
             'id_user' => auth()->id(),
             'id_kasir' => auth()->id(),
+            'jenis_transaksi' => 'Booking',
             'no_invoice' => $no_invoice,
             'tanggal' => date('Y-m-d'),
             'subtotal' => $total,
