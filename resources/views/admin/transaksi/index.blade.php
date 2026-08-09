@@ -184,7 +184,7 @@
                         </div>
                         <div class="ph-text">
                             <h3>Data Transaksi</h3>
-                            <p>Pantau seluruh transaksi penjualan dan pembelian.</p>
+                            <p>Pantau seluruh transaksi penjualan.</p>
                         </div>
                     </div>
                 </div>
@@ -206,23 +206,8 @@
                         </h3>
                         <p class="text-[12px] text-gray-400 mt-0.5">
                             <i class="fa-regular fa-circle-check text-pink-300 mr-1"></i>
-                            Riwayat seluruh transaksi penjualan dan pengeluaran (pembelian stok dari supplier)
+                            Riwayat seluruh transaksi penjualan (kasir & admin)
                         </p>
-                    </div>
-
-                    <div class="flex flex-wrap items-center gap-2 mb-4">
-                        <a href="{{ route('admin.transaksi.index', ['jenis' => 'penjualan']) }}"
-                            class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-[12px] font-semibold transition-all {{ request()->jenis === 'pengeluaran' ? 'bg-gray-50 text-gray-500 border border-gray-200 hover:bg-gray-100' : 'bg-gradient-to-r from-[#EC4899] to-[#BE185D] text-white shadow-sm' }}">
-                            <i class="fa-solid fa-arrow-trend-up"></i> Penjualan
-                        </a>
-                        <a href="{{ route('admin.transaksi.index', ['jenis' => 'pengeluaran']) }}"
-                            class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-[12px] font-semibold transition-all {{ request()->jenis === 'pengeluaran' ? 'bg-gradient-to-r from-[#EC4899] to-[#BE185D] text-white shadow-sm' : 'bg-gray-50 text-gray-500 border border-gray-200 hover:bg-gray-100' }}">
-                            <i class="fa-solid fa-arrow-trend-down"></i> Pengeluaran
-                        </a>
-                        <span class="text-[11px] text-gray-400 ml-auto hidden sm:inline">
-                            <i class="fa-solid fa-circle-info mr-1"></i>
-                            {{ request()->jenis === 'pengeluaran' ? 'Transaksi keluar = pembelian stok dari supplier' : 'Semua transaksi penjualan (kasir & admin)' }}
-                        </span>
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-4">
@@ -237,19 +222,6 @@
                                 </div>
                             </div>
                         </div>
-                        @if (request()->jenis === 'pengeluaran')
-                        <div class="stat-card bg-gradient-to-br from-amber-50 to-white rounded-xl p-4 border border-amber-100">
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Total Pengeluaran</p>
-                                    <p class="text-[26px] font-bold text-amber-600 mt-1">Rp {{ number_format($totalPengeluaran, 0, ',', '.') }}</p>
-                                </div>
-                                <div class="w-11 h-11 rounded-full bg-amber-100 flex items-center justify-center">
-                                    <i class="fa-solid fa-arrow-trend-down text-amber-500 text-lg"></i>
-                                </div>
-                            </div>
-                        </div>
-                        @else
                         <div class="stat-card bg-gradient-to-br from-emerald-50 to-white rounded-xl p-4 border border-emerald-100">
                             <div class="flex items-center justify-between">
                                 <div>
@@ -261,14 +233,12 @@
                                 </div>
                             </div>
                         </div>
-                        @endif
                     </div>
 
                     <form method="GET" action="{{ route('admin.transaksi.index') }}" class="flex flex-wrap items-center justify-end gap-2 mb-4">
-                        <input type="hidden" name="jenis" value="{{ request()->jenis === 'pengeluaran' ? 'pengeluaran' : 'penjualan' }}">
                         <div class="relative">
                             <i class="fa-solid fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-[12px]"></i>
-                            <input type="text" placeholder="Cari invoice, pelanggan, atau supplier..." name="keyword"
+                            <input type="text" placeholder="Cari invoice, pelanggan..." name="keyword"
                                 class="bg-gray-50 border border-gray-100 text-[12px] rounded-full pl-9 pr-4 py-2 w-full sm:w-[180px] focus:outline-none focus:border-pink-300 transition-all placeholder-gray-400"
                                 value="{{ request()->keyword }}">
                         </div>
@@ -282,16 +252,10 @@
                             <i class="fa-solid fa-filter mr-1"></i> Filter
                         </button>
                         @if (request()->keyword || request()->dari || request()->sampai)
-                            <a href="{{ route('admin.transaksi.index', ['jenis' => request()->jenis === 'pengeluaran' ? 'pengeluaran' : 'penjualan']) }}"
+                            <a href="{{ route('admin.transaksi.index') }}"
                                 class="text-gray-400 hover:text-gray-600 text-[12px] px-1">
                                 <i class="fa-solid fa-rotate-right"></i>
                             </a>
-                        @endif
-                        @if (request()->jenis === 'pengeluaran')
-                        <a href="{{ route('admin.transaksi.keluar-create') }}"
-                            class="flex items-center gap-2 bg-gradient-to-r from-[#EC4899] to-[#BE185D] text-white text-[12px] font-semibold px-4 py-2 rounded-full hover:shadow-md transition-all shadow-sm">
-                            <i class="fa-solid fa-plus"></i> Transaksi Keluar Baru
-                        </a>
                         @endif
                         <a href="javascript:void(0)" onclick="exportTransaksi()"
                             class="flex items-center gap-2 border border-pink-100 text-gray-500 text-[12px] font-semibold px-4 py-2 rounded-full hover:border-pink-300">
@@ -306,7 +270,7 @@
                                     <th class="py-3 px-4 w-10">#</th>
                                     <th class="py-3 px-4 w-[130px]">No. Invoice</th>
                                     <th class="py-3 px-4 w-[110px]">Jenis</th>
-                                    <th class="py-3 px-4">{{ request()->jenis === 'pengeluaran' ? 'Supplier' : 'Pelanggan' }}</th>
+                                    <th class="py-3 px-4">Pelanggan</th>
                                     <th class="py-3 px-4 w-[100px]">Tanggal</th>
                                     <th class="py-3 px-4 w-[120px]">Total</th>
                                     <th class="py-3 px-4 w-[100px]">Metode</th>
@@ -323,32 +287,17 @@
                                             <span class="font-mono font-semibold text-gray-700 text-[12px]">{{ $t->no_invoice }}</span>
                                         </td>
                                         <td data-label="Jenis" class="py-3.5 px-4">
-                                            @if ($t->jenis_transaksi === 'Pembelian')
-                                                <span class="badge-status" style="background:#FEF3C7;color:#F59E0B;">
-                                                    <i class="fa-solid fa-arrow-trend-down"></i> Transaksi Keluar
-                                                </span>
-                                            @else
-                                                <span class="badge-status" style="background:#E8F8EE;color:#22C55E;">
-                                                    <i class="fa-solid fa-arrow-trend-up"></i> Penjualan
-                                                </span>
-                                            @endif
+                                            <span class="badge-status" style="background:#E8F8EE;color:#22C55E;">
+                                                <i class="fa-solid fa-arrow-trend-up"></i> Penjualan
+                                            </span>
                                         </td>
-                                        <td data-label="Mitra" class="py-3.5 px-4">
-                                            @if ($t->jenis_transaksi === 'Pembelian')
-                                                <div class="flex items-center gap-2">
-                                                    <div class="w-7 h-7 rounded-full bg-amber-200 text-amber-700 flex items-center justify-center font-bold text-[10px]">
-                                                        {{ $t->supplier ? strtoupper(substr($t->supplier->nm_supplier, 0, 2)) : '??' }}
-                                                    </div>
-                                                    <span class="font-medium text-gray-700">{{ $t->supplier->nm_supplier ?? '-' }}</span>
+                                        <td data-label="Pelanggan" class="py-3.5 px-4">
+                                            <div class="flex items-center gap-2">
+                                                <div class="w-7 h-7 rounded-full bg-pink-200 text-pink-600 flex items-center justify-center font-bold text-[10px]">
+                                                    {{ $t->pelanggan ? strtoupper(substr($t->pelanggan->nm_pelanggan, 0, 2)) : '??' }}
                                                 </div>
-                                            @else
-                                                <div class="flex items-center gap-2">
-                                                    <div class="w-7 h-7 rounded-full bg-pink-200 text-pink-600 flex items-center justify-center font-bold text-[10px]">
-                                                        {{ $t->pelanggan ? strtoupper(substr($t->pelanggan->nm_pelanggan, 0, 2)) : '??' }}
-                                                    </div>
-                                                    <span class="font-medium text-gray-700">{{ $t->pelanggan->nm_pelanggan ?? 'Umum' }}</span>
-                                                </div>
-                                            @endif
+                                                <span class="font-medium text-gray-700">{{ $t->pelanggan->nm_pelanggan ?? 'Umum' }}</span>
+                                            </div>
                                         </td>
                                         <td data-label="Tanggal" class="py-3.5 px-4 text-gray-500">{{ \Carbon\Carbon::parse($t->tanggal)->format('d/m/Y') }}</td>
                                         <td data-label="Total" class="py-3.5 px-4 font-semibold text-gray-800">Rp {{ number_format($t->total, 0, ',', '.') }}</td>
@@ -423,14 +372,8 @@
                                                     {{ request()->keyword || request()->dari || request()->sampai ? 'Transaksi tidak ditemukan' : 'Belum ada data transaksi' }}
                                                 </p>
                                                 <p class="text-gray-300 text-[12px] -mt-2">
-                                                    {{ request()->keyword || request()->dari || request()->sampai ? 'Coba gunakan filter yang berbeda' : (request()->jenis === 'pengeluaran' ? 'Buat transaksi keluar untuk mencatat pembelian stok dari supplier' : 'Transaksi penjualan akan tampil di sini') }}
+                                                    {{ request()->keyword || request()->dari || request()->sampai ? 'Coba gunakan filter yang berbeda' : 'Transaksi penjualan akan tampil di sini' }}
                                                 </p>
-                                                @if (!request()->keyword && !request()->dari && !request()->sampai && request()->jenis === 'pengeluaran')
-                                                <a href="{{ route('admin.transaksi.keluar-create') }}"
-                                                    class="text-pink-500 text-[12px] font-semibold hover:underline inline-flex items-center gap-1 mt-1">
-                                                    <i class="fa-solid fa-plus-circle"></i> Buat transaksi keluar sekarang
-                                                </a>
-                                                @endif
                                             </div>
                                         </td>
                                     </tr>

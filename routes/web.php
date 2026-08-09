@@ -187,8 +187,6 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/admin/transaksi', [AdminTransaksiController::class, 'index'])->name('admin.transaksi.index');
         Route::get('/admin/transaksi/export', [AdminTransaksiController::class, 'export'])->name('admin.transaksi.export');
-        Route::get('/admin/transaksi/keluar', [AdminTransaksiController::class, 'createKeluar'])->name('admin.transaksi.keluar-create');
-        Route::post('/admin/transaksi/keluar', [AdminTransaksiController::class, 'storeKeluar'])->name('admin.transaksi.keluar-store');
         Route::get('/admin/transaksi/{id}', [AdminTransaksiController::class, 'show'])->name('admin.transaksi.show');
         Route::get('/admin/transaksi/{id}/invoice', [AdminTransaksiController::class, 'invoice'])->name('admin.transaksi.invoice');
         Route::get('/admin/transaksi/{id}/invoice-pdf', [AdminTransaksiController::class, 'invoicePdf'])->name('admin.transaksi.invoice-pdf');
@@ -208,6 +206,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/riwayat/{id}', [AdminRiwayatController::class, 'show'])->name('admin.riwayat.show');
 
         Route::get('/admin/pengeluaran', [AdminPengeluaranController::class, 'index'])->name('admin.pengeluaran.index');
+        Route::get('/admin/pengeluaran/pembelian', [AdminPengeluaranController::class, 'createPembelian'])->name('admin.pengeluaran.pembelian-create');
+        Route::post('/admin/pengeluaran/pembelian', [AdminPengeluaranController::class, 'storePembelian'])->name('admin.pengeluaran.pembelian-store');
         Route::post('/admin/pengeluaran', [AdminPengeluaranController::class, 'store'])->name('admin.pengeluaran.store');
         Route::put('/admin/pengeluaran/{id}', [AdminPengeluaranController::class, 'update'])->name('admin.pengeluaran.update');
         Route::delete('/admin/pengeluaran/{id}', [AdminPengeluaranController::class, 'destroy'])->name('admin.pengeluaran.destroy');

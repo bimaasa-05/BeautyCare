@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Pengeluaran;
+use App\Models\Supplier;
+use App\Models\Produk;
+use App\Models\Stok;
 use App\Helpers\ActivityLogger;
 use Illuminate\Http\Request;
 
@@ -37,6 +40,93 @@ class AdminPengeluaranController extends Controller
         return view('admin.pengeluaran.index', compact(
             'pengeluaran', 'totalBulanIni', 'totalSemua', 'totalKasir', 'kategoris', 'bulan', 'kategori'
         ));
+    }
+
+    public function createPembelian()
+    {
+        $supplier = Supplier::with(['produk' => fn($q) => $q->orderBy('nm_produk')])
+            ->where('status', 'Aktif')
+            ->orderBy('nm_supplier')
+            ->get();
+
+        $supplierData = $supplier->map(fn($s) => [
+            'id' => $s->id_supplier,
+            'produk' => $s->produk->map(fn($p) => [
+                'id' => $p->id_produk,
+                'nm' => $p->nm_produk,
+                'harga_beli' => (float) $p->pivot->harga_beli,
+            ])->values()->all(),
+        ])->keyBy('id');
+
+        return view('admin.pengeluaran.pembelian', compact('supplier', 'supplierData'));
+    }
+
+    public function storePembelian(Request $request)
+    {
+        $request->validate([
+            'id_supplier' => 'required|integer|exists:supplier,id_supplier',
+            'tanggal'     => 'required|date',
+            'metode_byr'  => 'required|string|max:50',
+            'subtotal'    => 'required|numeric|min:0',
+            'total'       => 'required|numeric|min:0',
+            'catatan'     => 'nullable|string',
+            'items'       => 'required|array|min:1',
+            'items.*.id_produk' => 'required|integer|exists:produk,id_produk',
+            'items.*.qty'       => 'required|integer|min:1',
+        ]);
+
+        $supplier = Supplier::with('produk')->findOrFail($request->id_supplier);
+
+        $rincian = [];
+        foreach ($request->items as $item) {
+            $produk = $supplier->produk->firstWhere('id_produk', (int) $item['id_produk']);
+
+            if (!$produk) {
+                return back()->withErrors(['items' => 'Produk harus sesuai dengan produk yang disuplai oleh ' . $supplier->nm_supplier . '.']);
+            }
+
+            $rincian[] = $produk->nm_produk . ' x' . (int) $item['qty'];
+        }
+
+        $keterangan = 'Pembelian stok dari ' . $supplier->nm_supplier . ' (' . implode(', ', $rincian) . ')';
+        if ($request->filled('catatan')) {
+            $keterangan .= ' — ' . $request->catatan;
+        }
+
+        $pengeluaran = Pengeluaran::create([
+            'tanggal'    => $request->tanggal,
+            'kategori'   => 'Bahan & Stok',
+            'keterangan' => $keterangan,
+            'nominal'    => (int) $request->total,
+            'id_user'    => auth()->user()->id,
+        ]);
+
+        foreach ($request->items as $item) {
+            $produk = $supplier->produk->firstWhere('id_produk', (int) $item['id_produk']);
+
+            $hargaBeli = (float) $produk->pivot->harga_beli;
+            $qty       = (int) $item['qty'];
+
+            $stokLama = $produk->stok;
+            $produk->increment('stok', $qty);
+            catatStok(
+                $produk->id_produk,
+                'Masuk',
+                $qty,
+                $stokLama,
+                $produk->stok,
+                'Pembelian stok dari supplier (' . $supplier->nm_supplier . ')',
+                $supplier->id_supplier,
+                $pengeluaran->id_pengeluaran,
+                'Pengeluaran',
+                $hargaBeli
+            );
+        }
+
+        ActivityLogger::log('Menambahkan', auth()->user()->nama . ' mencatat pembelian stok dari ' . $supplier->nm_supplier . ' sebesar Rp ' . number_format((int) $request->total, 0, ',', '.'), 'Pengeluaran', $pengeluaran->id_pengeluaran);
+
+        return redirect()->route('admin.pengeluaran.index')
+            ->with('success', 'Pembelian stok berhasil dicatat! Stok produk telah ditambahkan.');
     }
 
     public function store(Request $request)
