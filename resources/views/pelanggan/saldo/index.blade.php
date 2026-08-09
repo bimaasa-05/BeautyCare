@@ -163,17 +163,17 @@
                 <div class="saldo-stats">
                     <div class="stat-mini">
                         <div class="sm-icon kredit"><i class="fa-solid fa-arrow-down"></i></div>
-                        <div class="sm-value kredit">+Rp {{ number_format($mutasi->where('type','kredit')->sum('nominal'), 0, ',', '.') }}</div>
+                        <div class="sm-value kredit">+Rp {{ number_format($totalKredit, 0, ',', '.') }}</div>
                         <div class="sm-label">Total Kredit</div>
                     </div>
                     <div class="stat-mini">
                         <div class="sm-icon debit"><i class="fa-solid fa-arrow-up"></i></div>
-                        <div class="sm-value debit">-Rp {{ number_format($mutasi->where('type','debit')->sum('nominal'), 0, ',', '.') }}</div>
+                        <div class="sm-value debit">-Rp {{ number_format($totalDebit, 0, ',', '.') }}</div>
                         <div class="sm-label">Total Debit</div>
                     </div>
                     <div class="stat-mini">
                         <div class="sm-icon" style="background:#FEE7EF;color:var(--primary);"><i class="fa-solid fa-exchange-alt"></i></div>
-                        <div class="sm-value">{{ $mutasi->total() }}</div>
+                        <div class="sm-value">{{ $totalMutasi }}</div>
                         <div class="sm-label">Total Mutasi</div>
                     </div>
                 </div>
