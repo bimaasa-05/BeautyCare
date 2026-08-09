@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Transaksi Keluar - BeautyCare</title>
+    <title>Pembelian Stok - BeautyCare</title>
     @include('partials.head-meta')
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -144,7 +144,7 @@
                             </span>
                         </div>
                         <div class="ph-text">
-                            <h3>Transaksi Keluar</h3>
+                            <h3>Pembelian Stok</h3>
                             <p>Catat pembelian stok produk dari supplier. Stok otomatis bertambah.</p>
                         </div>
                     </div>
@@ -163,19 +163,19 @@
                     <div class="flex flex-wrap items-start sm:items-center justify-between gap-3 mb-6">
                         <div>
                             <h3 class="text-[16px] font-bold text-gray-800">
-                                <i class="fa-solid fa-arrow-trend-down text-amber-500 mr-2"></i>Tambah Transaksi Keluar
+                                <i class="fa-solid fa-arrow-trend-down text-amber-500 mr-2"></i>Tambah Pembelian Stok
                             </h3>
                             <p class="text-[12px] text-gray-400 mt-0.5">
                                 <i class="fa-solid fa-circle-info text-pink-300 mr-1"></i>Pilih supplier lalu tambahkan produk yang dibeli
                             </p>
                         </div>
-                        <a href="{{ route('admin.transaksi.index', ['jenis' => 'pengeluaran']) }}"
+                        <a href="{{ route('admin.pengeluaran.index') }}"
                             class="flex items-center gap-2 border border-gray-200 text-gray-600 text-[12px] font-medium px-4 py-2 rounded-full hover:bg-gray-50 transition-colors">
                             <i class="fa-solid fa-arrow-left"></i> Kembali
                         </a>
                     </div>
 
-                    <form action="{{ route('admin.transaksi.keluar-store') }}" method="POST">
+                    <form action="{{ route('admin.pengeluaran.pembelian-store') }}" method="POST">
                         @csrf
 
                         <!-- SECTION 1: Supplier & Tanggal -->
@@ -277,13 +277,13 @@
                                 </div>
                             </div>
                             <div class="flex items-center gap-3">
-                                <a href="{{ route('admin.transaksi.index', ['jenis' => 'pengeluaran']) }}"
+                                <a href="{{ route('admin.pengeluaran.index') }}"
                                     class="flex items-center gap-2 border border-gray-200 text-gray-600 text-[12px] font-medium px-5 py-2.5 rounded-full hover:bg-gray-50 transition-colors">
                                     Batal
                                 </a>
                                 <button type="submit" id="btn-simpan"
                                     class="flex items-center gap-2 bg-gradient-to-r from-[#EC4899] to-[#BE185D] text-white text-[13px] font-semibold px-6 py-2.5 rounded-full hover:shadow-md transition-all shadow-sm">
-                                    <i class="fa-regular fa-circle-check"></i> Simpan Transaksi Keluar
+                                    <i class="fa-regular fa-circle-check"></i> Simpan Pembelian Stok
                                 </button>
                             </div>
                         </div>
