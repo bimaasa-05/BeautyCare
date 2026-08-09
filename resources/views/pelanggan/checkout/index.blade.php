@@ -546,6 +546,7 @@
                 <form action="{{ route('pelanggan.checkout.store') }}" method="POST" id="checkoutForm">
                     @csrf
                     <input type="hidden" name="metode" id="inpMetode">
+                    <input type="hidden" name="bank_id" id="inpBankId">
                     <input type="hidden" name="provider" id="inpProvider">
                     @if(request('beli'))
                     <input type="hidden" name="beli" value="{{ request('beli') }}">
@@ -682,12 +683,18 @@
 
                                 <div class="pay-group">
                                     <div class="pg-title"><i class="fa-solid fa-building-columns"></i> Transfer Bank (Virtual Account)</div>
-                                    @foreach($bankTujuan as $bank => $noRek)
-                                    <label class="pay-option" data-metode="Transfer" data-provider="{{ $bank }}">
-                                        <input type="radio" name="pay" value="{{ $bank }}">
-                                        <div class="po-icon"><i class="fa-solid fa-building-columns"></i></div>
+                                    @foreach($banks as $bank)
+                                    <label class="pay-option" data-metode="Transfer" data-provider="{{ $bank->nama_bank }}" data-bank-id="{{ $bank->id }}">
+                                        <input type="radio" name="pay" value="{{ $bank->nama_bank }}">
+                                        <div class="po-icon">
+                                            @if($bank->logo)
+                                                <img src="{{ asset('storage/' . $bank->logo) }}" alt="{{ $bank->nama_bank }}" style="width:24px;height:24px;object-fit:contain;">
+                                            @else
+                                                <i class="fa-solid fa-building-columns"></i>
+                                            @endif
+                                        </div>
                                         <div>
-                                            <div class="po-label">Bank {{ $bank }}</div>
+                                            <div class="po-label">Bank {{ $bank->nama_bank }}</div>
                                             <div class="po-desc">Virtual Account otomatis, valid 24 jam</div>
                                         </div>
                                     </label>
@@ -726,6 +733,7 @@
             opt.querySelector('input').checked = true;
             document.getElementById('inpMetode').value = opt.getAttribute('data-metode');
             document.getElementById('inpProvider').value = opt.getAttribute('data-provider');
+            document.getElementById('inpBankId').value = opt.getAttribute('data-bank-id') || '';
             document.getElementById('btnBuatPesanan').disabled = false;
         });
     });
@@ -782,6 +790,9 @@
         if (!document.getElementById('inpProvider').value) {
             e.preventDefault();
             alert('Silakan pilih metode pembayaran terlebih dahulu.');
+        } else if (document.getElementById('inpMetode').value === 'Transfer' && !document.getElementById('inpBankId').value) {
+            e.preventDefault();
+            alert('Silakan pilih bank untuk transfer.');
         }
     });
 
