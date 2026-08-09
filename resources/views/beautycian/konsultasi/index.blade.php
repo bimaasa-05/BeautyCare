@@ -5,12 +5,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Konsultasi Saya - BeautyCare</title>
+    <title>Konsultasi Pelanggan - BeautyCare</title>
     @include('partials.head-meta')
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/dashboard.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/responsive.css') }}">
@@ -44,6 +45,13 @@
     .page-header-premium .ph-text p { font-size: 13px; color: var(--gray); margin: 4px 0 0; }
 
     .filter-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+    .filter-pill {
+        display: inline-flex; align-items: center; gap: 6px; background: #fff; border: 1.5px solid var(--border);
+        border-radius: 100px; padding: 8px 16px; font-size: 12px; color: var(--gray); text-decoration: none;
+        font-family: 'Poppins', sans-serif; transition: all .2s ease; cursor: pointer;
+    }
+    .filter-pill:hover { border-color: var(--primary); color: var(--primary); }
+    .filter-pill.active { background: var(--primary); border-color: var(--primary); color: #fff; box-shadow: 0 4px 12px rgba(255,79,135,0.25); }
     .filter-bar select {
         background: #fff; border: 1.5px solid var(--border); border-radius: 100px;
         padding: 8px 16px; font-size: 12px; color: var(--dark); outline: none; cursor: pointer;
@@ -125,7 +133,7 @@
                                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                             </div>
                             <div class="ph-text">
-                                <h3>Konsultasi Saya</h3>
+                                <h3>Konsultasi Pelanggan</h3>
                                 <p>Tangani konsultasi member yang ditugaskan kepada Anda</p>
                             </div>
                         </div>
@@ -144,13 +152,22 @@
                 @endif
 
                 <div class="filter-bar">
-                    <form method="GET" action="" style="display:flex;gap:8px;align-items:center;">
-                        <select name="status" onchange="this.form.submit()">
-                            <option value="">Semua Status</option>
-                            <option value="dikonfirmasi" {{ $filterStatus === 'dikonfirmasi' ? 'selected' : '' }}>Dikonfirmasi</option>
-                            <option value="selesai" {{ $filterStatus === 'selesai' ? 'selected' : '' }}>Selesai</option>
-                            <option value="ditolak" {{ $filterStatus === 'ditolak' ? 'selected' : '' }}>Ditolak</option>
-                        </select>
+                    <form method="GET" action="" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+                        <a href="?status=" class="filter-pill {{ $filterStatus === '' ? 'active' : '' }}">
+                            <i class="fa-solid fa-layer-group"></i> Semua
+                        </a>
+                        <a href="?status=menunggu" class="filter-pill {{ $filterStatus === 'menunggu' ? 'active' : '' }}">
+                            <i class="fa-regular fa-clock"></i> Menunggu
+                        </a>
+                        <a href="?status=dikonfirmasi" class="filter-pill {{ $filterStatus === 'dikonfirmasi' ? 'active' : '' }}">
+                            <i class="fa-solid fa-check"></i> Dikonfirmasi
+                        </a>
+                        <a href="?status=selesai" class="filter-pill {{ $filterStatus === 'selesai' ? 'active' : '' }}">
+                            <i class="fa-solid fa-circle-check"></i> Selesai
+                        </a>
+                        <a href="?status=ditolak" class="filter-pill {{ $filterStatus === 'ditolak' ? 'active' : '' }}">
+                            <i class="fa-solid fa-ban"></i> Ditolak
+                        </a>
                     </form>
                 </div>
 
@@ -158,7 +175,13 @@
                 <div class="konsultasi-card">
                     <div class="kc-top">
                         <div class="kc-customer">
-                            <div class="kc-avatar">{{ $item->pelanggan ? substr($item->pelanggan->nm_pelanggan, 0, 1) : '?' }}</div>
+                            <div class="kc-avatar">
+                                @if($item->pelanggan && $item->pelanggan->foto)
+                                    <img src="{{ asset('storage/' . $item->pelanggan->foto) }}" alt="{{ $item->pelanggan->nm_pelanggan }}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">
+                                @else
+                                    {{ $item->pelanggan ? substr($item->pelanggan->nm_pelanggan, 0, 1) : '?' }}
+                                @endif
+                            </div>
                             <div>
                                 <div class="kc-name">{{ $item->pelanggan->nm_pelanggan ?? '#' . $item->id_pelanggan }}</div>
                                 <div class="kc-phone">
@@ -222,7 +245,7 @@
                 <h3>Tandai Selesai</h3>
                 <p>Pastikan konsultasi sudah benar-benar selesai sebelum menandainya.</p>
                 <div class="modal-actions">
-                    <button type="button" onclick="tutupSelesai()" class="btn-cancel">Batal</button>
+                    <button type="button" onclick="tutupSelesai()" class="btn-cancel"><i class="fa-solid fa-xmark mr-1"></i>Batal</button>
                     <button type="submit" class="btn-confirm"><i class="fa-solid fa-check mr-1"></i> Ya, Selesai</button>
                 </div>
             </form>
