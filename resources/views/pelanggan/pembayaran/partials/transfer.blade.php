@@ -1,5 +1,7 @@
 @php
-    $provider = $transaksi->pembayaran->provider;
+    $pembayaran = $transaksi->pembayaran;
+    $bank = $pembayaran->bank;
+    $provider = $pembayaran->provider;
     $bankColors = [
         'BRI' => 'linear-gradient(135deg,#00529C,#003A6E)',
         'BCA' => 'linear-gradient(135deg,#CC0000,#990000)',
@@ -17,7 +19,7 @@
             </span>
         </div>
         <div class="bank-card-label">Nomor Virtual Account</div>
-        <div class="bank-card-va" id="vaNumber">{{ $transaksi->pembayaran->kode_pembayaran }}</div>
+        <div class="bank-card-va" id="vaNumber">{{ $pembayaran->kode_pembayaran }}</div>
         <button type="button" class="pm-copy-btn bank-card-copy" onclick="salinVA()">
             <i class="fa-regular fa-copy"></i> Salin Nomor VA
         </button>
@@ -35,12 +37,18 @@
         </div>
         <div class="pm-bank-info-row">
             <span>No. Rekening</span>
-            <b>{{ $bankTujuan[$provider] ?? '-' }}</b>
+            <b>{{ $pembayaran->no_rekening_tujuan ?? $bank->no_rekening ?? '-' }}</b>
         </div>
         <div class="pm-bank-info-row">
             <span>Atas Nama</span>
-            <b>BeautyCare Official</b>
+            <b>{{ $pembayaran->atas_nama_tujuan ?? $bank->atas_nama ?? 'BeautyCare Official' }}</b>
         </div>
+        @if($bank && $bank->logo)
+        <div class="pm-bank-info-row">
+            <span>Logo Bank</span>
+            <img src="{{ asset('storage/' . $bank->logo) }}" alt="{{ $bank->nama_bank }}" style="height:40px;">
+        </div>
+        @endif
     </div>
 
     <div class="pm-steps">
@@ -50,7 +58,7 @@
         </div>
         <div class="pm-step">
             <span class="pm-step-num">2</span>
-            <span>Pilih menu Transfer &gt; Virtual Account, masukkan nomor <b>{{ $transaksi->pembayaran->kode_pembayaran }}</b></span>
+            <span>Pilih menu Transfer > Virtual Account, masukkan nomor <b>{{ $pembayaran->kode_pembayaran }}</b></span>
         </div>
         <div class="pm-step">
             <span class="pm-step-num">3</span>
