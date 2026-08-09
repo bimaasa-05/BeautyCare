@@ -205,7 +205,7 @@
                                     </td>
                                     <td class="px-3 py-3">
                                         <span class="badge-status badge-{{ $item->status }}">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-current"></span>
+                                            <i class="fa-solid {{ $item->status === 'menunggu' ? 'fa-clock' : ($item->status === 'dikonfirmasi' ? 'fa-check' : ($item->status === 'selesai' ? 'fa-circle-check' : 'fa-ban')) }} text-[9px]"></i>
                                             {{ ucfirst($item->status) }}
                                         </span>
                                     </td>
