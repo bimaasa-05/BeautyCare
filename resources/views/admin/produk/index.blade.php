@@ -215,9 +215,9 @@
                         </div>
                         <div class="ph-text">
                             <h3>Data Produk</h3>
-                            <p>Kelola informasi produk kecantikan. Perubahan stok dilakukan melalui menu Mutasi
-                                Stok (barang masuk / refund), bukan dari halaman ini. Produk tanpa supplier
-                                belum bisa dicatat barang masuk.</p>
+                            <p>Kelola informasi produk kecantikan. Penambahan stok dilakukan melalui menu Transaksi
+                                → Pengeluaran (beli stok dari supplier), refund melalui menu Mutasi Stok. Stok
+                                tidak diubah dari halaman ini.</p>
                         </div>
                     </div>
                 </div>

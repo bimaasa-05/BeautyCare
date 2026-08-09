@@ -206,8 +206,23 @@
                         </h3>
                         <p class="text-[12px] text-gray-400 mt-0.5">
                             <i class="fa-regular fa-circle-check text-pink-300 mr-1"></i>
-                            {{ $totalTransaksi }} transaksi — Total pendapatan <span class="font-semibold text-emerald-600">Rp {{ number_format($totalPendapatan, 0, ',', '.') }}</span>
+                            Riwayat seluruh transaksi penjualan dan pengeluaran (pembelian stok dari supplier)
                         </p>
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-2 mb-4">
+                        <a href="{{ route('admin.transaksi.index', ['jenis' => 'penjualan']) }}"
+                            class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-[12px] font-semibold transition-all {{ request()->jenis === 'pengeluaran' ? 'bg-gray-50 text-gray-500 border border-gray-200 hover:bg-gray-100' : 'bg-gradient-to-r from-[#EC4899] to-[#BE185D] text-white shadow-sm' }}">
+                            <i class="fa-solid fa-arrow-trend-up"></i> Penjualan
+                        </a>
+                        <a href="{{ route('admin.transaksi.index', ['jenis' => 'pengeluaran']) }}"
+                            class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-[12px] font-semibold transition-all {{ request()->jenis === 'pengeluaran' ? 'bg-gradient-to-r from-[#EC4899] to-[#BE185D] text-white shadow-sm' : 'bg-gray-50 text-gray-500 border border-gray-200 hover:bg-gray-100' }}">
+                            <i class="fa-solid fa-arrow-trend-down"></i> Pengeluaran
+                        </a>
+                        <span class="text-[11px] text-gray-400 ml-auto hidden sm:inline">
+                            <i class="fa-solid fa-circle-info mr-1"></i>
+                            {{ request()->jenis === 'pengeluaran' ? 'Transaksi keluar = pembelian stok dari supplier' : 'Semua transaksi penjualan (kasir & admin)' }}
+                        </span>
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-4">
@@ -222,6 +237,19 @@
                                 </div>
                             </div>
                         </div>
+                        @if (request()->jenis === 'pengeluaran')
+                        <div class="stat-card bg-gradient-to-br from-amber-50 to-white rounded-xl p-4 border border-amber-100">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Total Pengeluaran</p>
+                                    <p class="text-[26px] font-bold text-amber-600 mt-1">Rp {{ number_format($totalPengeluaran, 0, ',', '.') }}</p>
+                                </div>
+                                <div class="w-11 h-11 rounded-full bg-amber-100 flex items-center justify-center">
+                                    <i class="fa-solid fa-arrow-trend-down text-amber-500 text-lg"></i>
+                                </div>
+                            </div>
+                        </div>
+                        @else
                         <div class="stat-card bg-gradient-to-br from-emerald-50 to-white rounded-xl p-4 border border-emerald-100">
                             <div class="flex items-center justify-between">
                                 <div>
@@ -233,61 +261,14 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="stat-card bg-gradient-to-br from-amber-50 to-white rounded-xl p-4 border border-amber-100">
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">oleh Kasir</p>
-                                    <p class="text-[26px] font-bold text-amber-600 mt-1">{{ $transaksiKasir }}</p>
-                                </div>
-                                <div class="w-11 h-11 rounded-full bg-amber-100 flex items-center justify-center">
-                                    <i class="fa-solid fa-user-tie text-amber-500 text-lg"></i>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="stat-card bg-gradient-to-br from-purple-50 to-white rounded-xl p-4 border border-purple-100">
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">oleh Admin</p>
-                                    <p class="text-[26px] font-bold text-purple-600 mt-1">{{ $transaksiAdmin }}</p>
-                                </div>
-                                <div class="w-11 h-11 rounded-full bg-purple-100 flex items-center justify-center">
-                                    <i class="fa-solid fa-shield-halved text-purple-500 text-lg"></i>
-                                </div>
-                            </div>
-                        </div>
+                        @endif
                     </div>
 
                     <form method="GET" action="{{ route('admin.transaksi.index') }}" class="flex flex-wrap items-center justify-end gap-2 mb-4">
-                        <div class="relative filter-role">
-                            <button type="button" onclick="toggleFilterRole()"
-                                class="flex items-center gap-2 border border-gray-200 text-gray-600 text-[12px] font-medium px-4 py-2 rounded-full hover:bg-gray-50 transition-colors">
-                                <i class="fa-solid fa-sliders text-gray-400"></i> Pembuat
-                                @if (request()->filter_role)
-                                    <span class="text-[10px] bg-pink-100 text-pink-600 px-1.5 py-0.5 rounded-full font-semibold">{{ ucfirst(request()->filter_role) }}</span>
-                                @endif
-                            </button>
-                            <div id="filterRolePanel"
-                                class="hidden absolute right-0 mt-2 w-44 bg-white rounded-xl shadow-lg border border-gray-100 p-4 z-50">
-                                <p class="text-[11px] font-semibold text-gray-500 mb-2 uppercase tracking-wider">Dibuat Oleh</p>
-                                <div class="space-y-2">
-                                    <label class="flex items-center gap-2 text-[12px] text-gray-700 cursor-pointer">
-                                        <input type="radio" name="filter_role" value="" {{ !request()->filter_role ? 'checked' : '' }} onchange="applyFilterRole()">
-                                        Semua
-                                    </label>
-                                    <label class="flex items-center gap-2 text-[12px] text-gray-700 cursor-pointer">
-                                        <input type="radio" name="filter_role" value="kasir" {{ request()->filter_role == 'kasir' ? 'checked' : '' }} onchange="applyFilterRole()">
-                                        <i class="fa-solid fa-user-tie text-amber-500 text-[11px]"></i> Kasir
-                                    </label>
-                                    <label class="flex items-center gap-2 text-[12px] text-gray-700 cursor-pointer">
-                                        <input type="radio" name="filter_role" value="admin" {{ request()->filter_role == 'admin' ? 'checked' : '' }} onchange="applyFilterRole()">
-                                        <i class="fa-solid fa-shield-halved text-purple-500 text-[11px]"></i> Admin
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
+                        <input type="hidden" name="jenis" value="{{ request()->jenis === 'pengeluaran' ? 'pengeluaran' : 'penjualan' }}">
                         <div class="relative">
                             <i class="fa-solid fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-[12px]"></i>
-                            <input type="text" placeholder="Cari invoice atau pelanggan..." name="keyword"
+                            <input type="text" placeholder="Cari invoice, pelanggan, atau supplier..." name="keyword"
                                 class="bg-gray-50 border border-gray-100 text-[12px] rounded-full pl-9 pr-4 py-2 w-full sm:w-[180px] focus:outline-none focus:border-pink-300 transition-all placeholder-gray-400"
                                 value="{{ request()->keyword }}">
                         </div>
@@ -301,15 +282,17 @@
                             <i class="fa-solid fa-filter mr-1"></i> Filter
                         </button>
                         @if (request()->keyword || request()->dari || request()->sampai)
-                            <a href="{{ route('admin.transaksi.index') }}"
+                            <a href="{{ route('admin.transaksi.index', ['jenis' => request()->jenis === 'pengeluaran' ? 'pengeluaran' : 'penjualan']) }}"
                                 class="text-gray-400 hover:text-gray-600 text-[12px] px-1">
                                 <i class="fa-solid fa-rotate-right"></i>
                             </a>
                         @endif
-                        <a href="{{ route('admin.transaksi.create') }}"
+                        @if (request()->jenis === 'pengeluaran')
+                        <a href="{{ route('admin.transaksi.keluar-create') }}"
                             class="flex items-center gap-2 bg-gradient-to-r from-[#EC4899] to-[#BE185D] text-white text-[12px] font-semibold px-4 py-2 rounded-full hover:shadow-md transition-all shadow-sm">
-                            <i class="fa-solid fa-plus"></i> Transaksi Baru
+                            <i class="fa-solid fa-plus"></i> Transaksi Keluar Baru
                         </a>
+                        @endif
                         <a href="javascript:void(0)" onclick="exportTransaksi()"
                             class="flex items-center gap-2 border border-pink-100 text-gray-500 text-[12px] font-semibold px-4 py-2 rounded-full hover:border-pink-300">
                             <i class="fa-solid fa-download"></i> Export
@@ -322,7 +305,8 @@
                                 <tr class="text-[11px] font-bold text-gray-400 uppercase border-b border-gray-100 bg-pink-50/30">
                                     <th class="py-3 px-4 w-10">#</th>
                                     <th class="py-3 px-4 w-[130px]">No. Invoice</th>
-                                    <th class="py-3 px-4">Pelanggan</th>
+                                    <th class="py-3 px-4 w-[110px]">Jenis</th>
+                                    <th class="py-3 px-4">{{ request()->jenis === 'pengeluaran' ? 'Supplier' : 'Pelanggan' }}</th>
                                     <th class="py-3 px-4 w-[100px]">Tanggal</th>
                                     <th class="py-3 px-4 w-[120px]">Total</th>
                                     <th class="py-3 px-4 w-[100px]">Metode</th>
@@ -338,13 +322,33 @@
                                         <td data-label="Invoice" class="py-3.5 px-4">
                                             <span class="font-mono font-semibold text-gray-700 text-[12px]">{{ $t->no_invoice }}</span>
                                         </td>
-                                        <td data-label="Pelanggan" class="py-3.5 px-4">
-                                            <div class="flex items-center gap-2">
-                                                <div class="w-7 h-7 rounded-full bg-pink-200 text-pink-600 flex items-center justify-center font-bold text-[10px]">
-                                                    {{ $t->pelanggan ? strtoupper(substr($t->pelanggan->nm_pelanggan, 0, 2)) : '??' }}
+                                        <td data-label="Jenis" class="py-3.5 px-4">
+                                            @if ($t->jenis_transaksi === 'Pembelian')
+                                                <span class="badge-status" style="background:#FEF3C7;color:#F59E0B;">
+                                                    <i class="fa-solid fa-arrow-trend-down"></i> Transaksi Keluar
+                                                </span>
+                                            @else
+                                                <span class="badge-status" style="background:#E8F8EE;color:#22C55E;">
+                                                    <i class="fa-solid fa-arrow-trend-up"></i> Penjualan
+                                                </span>
+                                            @endif
+                                        </td>
+                                        <td data-label="Mitra" class="py-3.5 px-4">
+                                            @if ($t->jenis_transaksi === 'Pembelian')
+                                                <div class="flex items-center gap-2">
+                                                    <div class="w-7 h-7 rounded-full bg-amber-200 text-amber-700 flex items-center justify-center font-bold text-[10px]">
+                                                        {{ $t->supplier ? strtoupper(substr($t->supplier->nm_supplier, 0, 2)) : '??' }}
+                                                    </div>
+                                                    <span class="font-medium text-gray-700">{{ $t->supplier->nm_supplier ?? '-' }}</span>
                                                 </div>
-                                                <span class="font-medium text-gray-700">{{ $t->pelanggan->nm_pelanggan ?? 'Umum' }}</span>
-                                            </div>
+                                            @else
+                                                <div class="flex items-center gap-2">
+                                                    <div class="w-7 h-7 rounded-full bg-pink-200 text-pink-600 flex items-center justify-center font-bold text-[10px]">
+                                                        {{ $t->pelanggan ? strtoupper(substr($t->pelanggan->nm_pelanggan, 0, 2)) : '??' }}
+                                                    </div>
+                                                    <span class="font-medium text-gray-700">{{ $t->pelanggan->nm_pelanggan ?? 'Umum' }}</span>
+                                                </div>
+                                            @endif
                                         </td>
                                         <td data-label="Tanggal" class="py-3.5 px-4 text-gray-500">{{ \Carbon\Carbon::parse($t->tanggal)->format('d/m/Y') }}</td>
                                         <td data-label="Total" class="py-3.5 px-4 font-semibold text-gray-800">Rp {{ number_format($t->total, 0, ',', '.') }}</td>
@@ -405,24 +409,12 @@
                                                 <a href="{{ route('admin.transaksi.show', $t->id_transaksi) }}"
                                                     class="w-7 h-7 text-blue-500 bg-blue-50 hover:bg-blue-100 rounded-md transition-colors flex items-center justify-center"
                                                     title="Detail"><i class="fa-regular fa-eye text-xs"></i></a>
-                                                <a href="{{ route('admin.transaksi.edit', $t->id_transaksi) }}"
-                                                    class="w-7 h-7 text-amber-500 bg-amber-50 hover:bg-amber-100 rounded-md transition-colors flex items-center justify-center"
-                                                    title="Edit"><i class="fa-solid fa-pen-to-square text-xs"></i></a>
-                                                <form action="{{ route('admin.transaksi.destroy', $t->id_transaksi) }}"
-                                                    method="POST" class="inline"
-                                                    onsubmit="return confirm('Yakin ingin menghapus transaksi {{ $t->no_invoice }}?')">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit"
-                                                        class="w-7 h-7 text-red-500 bg-red-50 hover:bg-red-100 rounded-md transition-colors flex items-center justify-center"
-                                                        title="Hapus"><i class="fa-regular fa-trash-can text-xs"></i></button>
-                                                </form>
                                             </div>
                                         </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="9" class="py-14 text-center">
+                                        <td colspan="10" class="py-14 text-center">
                                             <div class="flex flex-col items-center gap-3">
                                                 <div class="w-20 h-20 rounded-full bg-pink-50 flex items-center justify-center">
                                                     <i class="fa-solid fa-receipt text-3xl text-pink-200"></i>
@@ -431,12 +423,12 @@
                                                     {{ request()->keyword || request()->dari || request()->sampai ? 'Transaksi tidak ditemukan' : 'Belum ada data transaksi' }}
                                                 </p>
                                                 <p class="text-gray-300 text-[12px] -mt-2">
-                                                    {{ request()->keyword || request()->dari || request()->sampai ? 'Coba gunakan filter yang berbeda' : 'Buat transaksi baru untuk mulai mencatat' }}
+                                                    {{ request()->keyword || request()->dari || request()->sampai ? 'Coba gunakan filter yang berbeda' : (request()->jenis === 'pengeluaran' ? 'Buat transaksi keluar untuk mencatat pembelian stok dari supplier' : 'Transaksi penjualan akan tampil di sini') }}
                                                 </p>
-                                                @if (!request()->keyword && !request()->dari && !request()->sampai)
-                                                <a href="{{ route('admin.transaksi.create') }}"
+                                                @if (!request()->keyword && !request()->dari && !request()->sampai && request()->jenis === 'pengeluaran')
+                                                <a href="{{ route('admin.transaksi.keluar-create') }}"
                                                     class="text-pink-500 text-[12px] font-semibold hover:underline inline-flex items-center gap-1 mt-1">
-                                                    <i class="fa-solid fa-plus-circle"></i> Buat transaksi sekarang
+                                                    <i class="fa-solid fa-plus-circle"></i> Buat transaksi keluar sekarang
                                                 </a>
                                                 @endif
                                             </div>
@@ -458,33 +450,16 @@
     </div>
 
     <script>
-        function toggleFilterRole() {
-            document.getElementById('filterRolePanel').classList.toggle('hidden');
-        }
-
-        function applyFilterRole() {
-            document.getElementById('filterRolePanel').classList.add('hidden');
-            document.querySelector('form[action="{{ route('admin.transaksi.index') }}"]').submit();
-        }
-
-        document.addEventListener('click', function(e) {
-            const panel = document.getElementById('filterRolePanel');
-            if (panel && !panel.classList.contains('hidden')) {
-                const btn = document.querySelector('.filter-role');
-                if (btn && !btn.contains(e.target)) {
-                    panel.classList.add('hidden');
-                }
-            }
-        });
-
         function exportTransaksi() {
             const params = new URLSearchParams();
             const keyword = document.querySelector('input[name="keyword"]')?.value;
             const dari = document.querySelector('input[name="dari"]')?.value;
             const sampai = document.querySelector('input[name="sampai"]')?.value;
+            const jenis = document.querySelector('input[name="jenis"]')?.value || 'penjualan';
             if (keyword) params.set('keyword', keyword);
             if (dari) params.set('dari', dari);
             if (sampai) params.set('sampai', sampai);
+            params.set('jenis', jenis);
             const qs = params.toString();
             window.location.href = '{{ route('admin.transaksi.export') }}' + (qs ? '?' + qs : '');
         }

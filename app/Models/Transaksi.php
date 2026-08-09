@@ -14,6 +14,8 @@ class Transaksi extends Model
         'id_booking',
         'sumber',
         'id_pelanggan',
+        'id_supplier',
+        'jenis_transaksi',
         'id_user',
         'id_kasir',
         'no_invoice',
@@ -39,6 +41,11 @@ class Transaksi extends Model
     public function pelanggan()
     {
         return $this->belongsTo(Pelanggan::class, 'id_pelanggan', 'id_pelanggan');
+    }
+
+    public function supplier()
+    {
+        return $this->belongsTo(Supplier::class, 'id_supplier', 'id_supplier');
     }
 
     public function user()

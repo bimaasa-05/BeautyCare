@@ -4,13 +4,33 @@
     <td data-label="Invoice" class="py-3.5 px-4">
         <span class="font-mono font-semibold text-gray-700 text-[12px]">{{ $t->no_invoice }}</span>
     </td>
-    <td data-label="Pelanggan" class="py-3.5 px-4">
-        <div class="flex items-center gap-2">
-            <div class="w-7 h-7 rounded-full bg-pink-200 text-pink-600 flex items-center justify-center font-bold text-[10px]">
-                {{ $t->pelanggan ? strtoupper(substr($t->pelanggan->nm_pelanggan, 0, 2)) : '??' }}
+    <td data-label="Jenis" class="py-3.5 px-4">
+        @if ($t->jenis_transaksi === 'Pembelian')
+            <span class="badge-status" style="background:#FEF3C7;color:#F59E0B;">
+                <i class="fa-solid fa-arrow-trend-down"></i> Transaksi Keluar
+            </span>
+        @else
+            <span class="badge-status" style="background:#E8F8EE;color:#22C55E;">
+                <i class="fa-solid fa-arrow-trend-up"></i> Penjualan
+            </span>
+        @endif
+    </td>
+    <td data-label="Mitra" class="py-3.5 px-4">
+        @if ($t->jenis_transaksi === 'Pembelian')
+            <div class="flex items-center gap-2">
+                <div class="w-7 h-7 rounded-full bg-amber-200 text-amber-700 flex items-center justify-center font-bold text-[10px]">
+                    {{ $t->supplier ? strtoupper(substr($t->supplier->nm_supplier, 0, 2)) : '??' }}
+                </div>
+                <span class="font-medium text-gray-700">{{ $t->supplier->nm_supplier ?? '-' }}</span>
             </div>
-            <span class="font-medium text-gray-700">{{ $t->pelanggan->nm_pelanggan ?? 'Umum' }}</span>
-        </div>
+        @else
+            <div class="flex items-center gap-2">
+                <div class="w-7 h-7 rounded-full bg-pink-200 text-pink-600 flex items-center justify-center font-bold text-[10px]">
+                    {{ $t->pelanggan ? strtoupper(substr($t->pelanggan->nm_pelanggan, 0, 2)) : '??' }}
+                </div>
+                <span class="font-medium text-gray-700">{{ $t->pelanggan->nm_pelanggan ?? 'Umum' }}</span>
+            </div>
+        @endif
     </td>
     <td data-label="Tanggal" class="py-3.5 px-4 text-gray-500">{{ \Carbon\Carbon::parse($t->tanggal)->format('d/m/Y') }}</td>
     <td data-label="Total" class="py-3.5 px-4 font-semibold text-gray-800">Rp {{ number_format($t->total, 0, ',', '.') }}</td>
@@ -71,24 +91,12 @@
             <a href="{{ route('admin.transaksi.show', $t->id_transaksi) }}"
                 class="w-7 h-7 text-blue-500 bg-blue-50 hover:bg-blue-100 rounded-md transition-colors flex items-center justify-center"
                 title="Detail"><i class="fa-regular fa-eye text-xs"></i></a>
-            <a href="{{ route('admin.transaksi.edit', $t->id_transaksi) }}"
-                class="w-7 h-7 text-amber-500 bg-amber-50 hover:bg-amber-100 rounded-md transition-colors flex items-center justify-center"
-                title="Edit"><i class="fa-solid fa-pen-to-square text-xs"></i></a>
-            <form action="{{ route('admin.transaksi.destroy', $t->id_transaksi) }}"
-                method="POST" class="inline"
-                onsubmit="return confirm('Yakin ingin menghapus transaksi {{ $t->no_invoice }}?')">
-                @csrf
-                @method('DELETE')
-                <button type="submit"
-                    class="w-7 h-7 text-red-500 bg-red-50 hover:bg-red-100 rounded-md transition-colors flex items-center justify-center"
-                    title="Hapus"><i class="fa-regular fa-trash-can text-xs"></i></button>
-            </form>
         </div>
     </td>
 </tr>
 @empty
 <tr>
-    <td colspan="9" class="py-14 text-center">
+    <td colspan="10" class="py-14 text-center">
         <div class="flex flex-col items-center gap-3">
             <div class="w-20 h-20 rounded-full bg-pink-50 flex items-center justify-center">
                 <i class="fa-solid fa-receipt text-3xl text-pink-200"></i>

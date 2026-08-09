@@ -56,6 +56,7 @@ class LaporanTrenPendapatanSheet implements FromCollection, WithHeadings, WithMa
                     DB::raw('DATE(tanggal) as label'),
                     DB::raw('COALESCE(SUM(total),0) as total')
                 )
+                ->where('jenis_transaksi', 'Penjualan')
                 ->whereBetween('tanggal', [$this->startDate, $this->endDate])
                 ->where('status', '!=', 'Dibatalkan')
                 ->groupBy(DB::raw('DATE(tanggal)'))
@@ -81,6 +82,7 @@ class LaporanTrenPendapatanSheet implements FromCollection, WithHeadings, WithMa
                 DB::raw("DATE_FORMAT(tanggal, '%Y-%m') as label"),
                 DB::raw('COALESCE(SUM(total),0) as total')
             )
+            ->where('jenis_transaksi', 'Penjualan')
             ->whereBetween('tanggal', [$this->startDate, $this->endDate])
             ->where('status', '!=', 'Dibatalkan')
             ->groupBy('label')
@@ -213,7 +215,8 @@ class LaporanRingkasanSheet implements FromCollection, WithHeadings, WithMapping
 
     public function collection()
     {
-        $totalPendapatan = Transaksi::whereBetween('tanggal', [$this->startDate, $this->endDate])
+        $totalPendapatan = Transaksi::where('jenis_transaksi', 'Penjualan')
+            ->whereBetween('tanggal', [$this->startDate, $this->endDate])
             ->where('status', '!=', 'Dibatalkan')
             ->sum('total');
 
@@ -274,7 +277,7 @@ class LaporanTransaksiSheet implements FromCollection, WithHeadings, WithMapping
 
     public function collection()
     {
-        return Transaksi::with('pelanggan')
+        return Transaksi::with('pelanggan', 'supplier')
             ->whereBetween('tanggal', [$this->startDate, $this->endDate])
             ->orderBy('tanggal', 'desc')
             ->get();
@@ -282,14 +285,17 @@ class LaporanTransaksiSheet implements FromCollection, WithHeadings, WithMapping
 
     public function headings(): array
     {
-        return ['No. Invoice', 'Pelanggan', 'Tanggal', 'Total', 'Metode', 'Status'];
+        return ['Jenis', 'No. Invoice', 'Pelanggan/Supplier', 'Tanggal', 'Total', 'Metode', 'Status'];
     }
 
     public function map($transaksi): array
     {
         return [
+            $transaksi->jenis_transaksi === 'Pembelian' ? 'Transaksi Keluar' : 'Penjualan',
             $transaksi->no_invoice,
-            $transaksi->pelanggan->nm_pelanggan ?? '-',
+            $transaksi->jenis_transaksi === 'Pembelian'
+                ? ($transaksi->supplier->nm_supplier ?? '-')
+                : ($transaksi->pelanggan->nm_pelanggan ?? '-'),
             $transaksi->tanggal,
             'Rp ' . number_format($transaksi->total, 0, ',', '.'),
             $transaksi->metode_byr,

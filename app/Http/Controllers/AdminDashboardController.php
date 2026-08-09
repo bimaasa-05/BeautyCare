@@ -19,7 +19,8 @@ class AdminDashboardController extends Controller
         $bulanLalu = $bulan == 1 ? 12 : $bulan - 1;
         $tahunLalu = $bulan == 1 ? $tahun - 1 : $tahun;
 
-        $totalPendapatan = Transaksi::where('status', '!=', 'Dibatalkan')->sum('total');
+        $totalPendapatan = Transaksi::where('jenis_transaksi', 'Penjualan')
+            ->where('status', '!=', 'Dibatalkan')->sum('total');
 
         $totalBooking = Booking::count();
 
@@ -27,14 +28,19 @@ class AdminDashboardController extends Controller
 
         $totalKaryawan = Karyawan::whereHas('user', fn ($q) => $q->whereIn('role', ['kasir', 'beautycian']))->count();
 
-        $produkTerjual = DetailTransaksi::where('jenis', 'produk')->sum('qty');
+        $produkTerjual = DetailTransaksi::where('detail_transaksi.jenis', 'produk')
+            ->join('transaksi', 'transaksi.id_transaksi', '=', 'detail_transaksi.id_transaksi')
+            ->where('transaksi.jenis_transaksi', 'Penjualan')
+            ->sum('detail_transaksi.qty');
 
-        $pendapatanBulanIni = Transaksi::where('status', '!=', 'Dibatalkan')
+        $pendapatanBulanIni = Transaksi::where('jenis_transaksi', 'Penjualan')
+            ->where('status', '!=', 'Dibatalkan')
             ->whereYear('tanggal', $tahun)
             ->whereMonth('tanggal', $bulan)
             ->sum('total');
 
-        $pendapatanBulanLalu = Transaksi::where('status', '!=', 'Dibatalkan')
+        $pendapatanBulanLalu = Transaksi::where('jenis_transaksi', 'Penjualan')
+            ->where('status', '!=', 'Dibatalkan')
             ->whereYear('tanggal', $tahunLalu)
             ->whereMonth('tanggal', $bulanLalu)
             ->sum('total');
@@ -69,12 +75,14 @@ class AdminDashboardController extends Controller
 
         $produkTerjualBulanIni = DetailTransaksi::where('detail_transaksi.jenis', 'produk')
             ->join('transaksi', 'transaksi.id_transaksi', '=', 'detail_transaksi.id_transaksi')
+            ->where('transaksi.jenis_transaksi', 'Penjualan')
             ->whereYear('transaksi.tanggal', $tahun)
             ->whereMonth('transaksi.tanggal', $bulan)
             ->sum('detail_transaksi.qty');
 
         $produkTerjualBulanLalu = DetailTransaksi::where('detail_transaksi.jenis', 'produk')
             ->join('transaksi', 'transaksi.id_transaksi', '=', 'detail_transaksi.id_transaksi')
+            ->where('transaksi.jenis_transaksi', 'Penjualan')
             ->whereYear('transaksi.tanggal', $tahunLalu)
             ->whereMonth('transaksi.tanggal', $bulanLalu)
             ->sum('detail_transaksi.qty');
@@ -91,6 +99,7 @@ class AdminDashboardController extends Controller
             )
             ->whereYear('tanggal', $tahun)
             ->where('status', '!=', 'Dibatalkan')
+            ->where('jenis_transaksi', 'Penjualan')
             ->groupBy(DB::raw('MONTH(tanggal)'))
             ->orderBy('bulan')
             ->pluck('total', 'bulan')
@@ -188,13 +197,15 @@ class AdminDashboardController extends Controller
             ->get();
 
         $produkTerlaris = DetailTransaksi::select(
-                'id_item',
-                'nm_item',
-                DB::raw('SUM(qty) as total_qty'),
-                DB::raw('SUM(subtotal) as total_subtotal')
+                'detail_transaksi.id_item',
+                'detail_transaksi.nm_item',
+                DB::raw('SUM(detail_transaksi.qty) as total_qty'),
+                DB::raw('SUM(detail_transaksi.subtotal) as total_subtotal')
             )
-            ->where('jenis', 'produk')
-            ->groupBy('id_item', 'nm_item')
+            ->join('transaksi', 'transaksi.id_transaksi', '=', 'detail_transaksi.id_transaksi')
+            ->where('detail_transaksi.jenis', 'produk')
+            ->where('transaksi.jenis_transaksi', 'Penjualan')
+            ->groupBy('detail_transaksi.id_item', 'detail_transaksi.nm_item')
             ->orderByDesc('total_qty')
             ->limit(5)
             ->get();
