@@ -50,12 +50,10 @@ class KasirTransaksiController extends Controller
         $layanan = Layanan::where('status', 'Tersedia')->get();
         $produk = Produk::where('status', 'Tersedia')->get();
         $karyawan = Karyawan::with('user')->get();
+        $banks = Bank::active()->transfer()->get(['id', 'nama_bank', 'no_rekening', 'kode_bank', 'logo', 'atas_nama']);
+        $ewallets = Bank::active()->ewallet()->get(['id', 'nama_bank', 'nomor_telepon', 'atas_nama']);
 
-        return view('kasir.transaksi.create', compact('pelanggan', 'layanan', 'produk', 'karyawan'));
-        $produk = Produk::where('status', 1)->get();
-        $banks = Bank::active()->transfer()->get(['id', 'nama_bank', 'no_rekening', 'kode_bank', 'logo']);
-
-        return view('kasir.transaksi.create', compact('pelanggan', 'layanan', 'produk', 'banks'));
+        return view('kasir.transaksi.create', compact('pelanggan', 'layanan', 'produk', 'karyawan', 'banks', 'ewallets'));
     }
 
     public function store(Request $request)
@@ -67,28 +65,23 @@ class KasirTransaksiController extends Controller
             'diskon' => 'nullable|numeric|min:0',
             'pajak' => 'nullable|numeric|min:0',
             'total' => 'required|numeric|min:0',
-            'metode_byr' => 'required|in:Tunai,Transfer,Debit,QRIS,E-Wallet',
+            'metode_byr' => 'required|in:Transfer,E-Wallet',
             'dibayar' => 'required|numeric|min:0',
             'kembali' => 'required|numeric|min:0',
             'catatan' => 'nullable|string',
             'bukti_bayar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'no_referensi' => 'nullable|string|max:50',
-            'ewallet_type' => 'nullable|in:Dana,GoPay,ShopeePay',
-            'bank_id' => 'nullable|integer|exists:banks,id',
+            'ewallet_type' => 'required_if:metode_byr,E-Wallet|string|max:50',
+            'bank_id' => 'required_if:metode_byr,Transfer|integer|exists:banks,id',
             'status' => 'nullable|in:Lunas,Proses,Batal,Pending',
         ]);
-
-        // Validate bank_id for Transfer
-        if ($request->metode_byr === 'Transfer' && !$request->bank_id) {
-            return back()->withErrors(['bank_id' => 'Silakan pilih bank untuk transfer.']);
-        }
 
         $lastId = Transaksi::max('id_transaksi') + 1;
         $no_invoice = 'INV-' . date('Ymd') . '-' . str_pad($lastId, 4, '0', STR_PAD_LEFT);
 
         $status = $request->status;
         if (!$status) {
-            $status = in_array($request->metode_byr, ['Tunai', 'QRIS', 'E-Wallet']) ? 'Lunas' : 'Proses';
+            $status = $request->metode_byr === 'E-Wallet' ? 'Lunas' : 'Proses';
         }
 
         $data = [
@@ -96,6 +89,7 @@ class KasirTransaksiController extends Controller
             'id_pelanggan' => $request->id_pelanggan,
             'id_user' => auth()->user()->id,
             'id_kasir' => auth()->user()->id,
+            'jenis_transaksi' => 'Penjualan',
             'no_invoice' => $no_invoice,
             'tanggal' => $request->tanggal,
             'subtotal' => $request->subtotal,
@@ -219,14 +213,24 @@ class KasirTransaksiController extends Controller
         $search = $request->keyword;
         $dari = $request->dari;
         $sampai = $request->sampai;
+        $jenis = $request->jenis;
         $userId = auth()->id();
 
-        $totalInvoice = Transaksi::where('id_user', $userId)->count();
-        $totalLunas = Transaksi::where('id_user', $userId)->where('status', 'Lunas')->count();
-        $totalPending = Transaksi::where('id_user', $userId)->where('status', 'Pending')->count();
+        $totalInvoice = Transaksi::where('id_user', $userId)
+            ->when($jenis, fn($q, $j) => $q->where('jenis_transaksi', $j))
+            ->count();
+        $totalLunas = Transaksi::where('id_user', $userId)
+            ->when($jenis, fn($q, $j) => $q->where('jenis_transaksi', $j))
+            ->where('status', 'Lunas')
+            ->count();
+        $totalPending = Transaksi::where('id_user', $userId)
+            ->when($jenis, fn($q, $j) => $q->where('jenis_transaksi', $j))
+            ->where('status', 'Pending')
+            ->count();
 
         $invoices = Transaksi::with('pelanggan')
             ->where('id_user', $userId)
+            ->when($jenis, fn($q, $j) => $q->where('jenis_transaksi', $j))
             ->when($search, function ($query, $search) {
                 return $query->where('no_invoice', 'like', "%{$search}%")
                     ->orWhereHas('pelanggan', function ($q) use ($search) {
@@ -261,9 +265,10 @@ class KasirTransaksiController extends Controller
         $layanan = Layanan::where('status', 'Tersedia')->get();
         $produk = Produk::where('status', 1)->get();
         $karyawan = Karyawan::with('user')->get();
-        $banks = Bank::active()->transfer()->get(['id', 'nama_bank', 'no_rekening', 'kode_bank', 'logo']);
+        $banks = Bank::active()->transfer()->get(['id', 'nama_bank', 'no_rekening', 'kode_bank', 'logo', 'atas_nama']);
+        $ewallets = Bank::active()->ewallet()->get(['id', 'nama_bank', 'nomor_telepon', 'atas_nama']);
 
-        return view('kasir.transaksi.edit', compact('transaksi', 'pelanggan', 'layanan', 'produk', 'karyawan', 'banks'));
+        return view('kasir.transaksi.edit', compact('transaksi', 'pelanggan', 'layanan', 'produk', 'karyawan', 'banks', 'ewallets'));
     }
 
     public function update(Request $request, $id)
@@ -275,19 +280,20 @@ class KasirTransaksiController extends Controller
             'diskon' => 'nullable|numeric|min:0',
             'pajak' => 'nullable|numeric|min:0',
             'total' => 'required|numeric|min:0',
-            'metode_byr' => 'required|in:Tunai,Transfer,Debit,QRIS,E-Wallet',
+            'metode_byr' => 'required|in:Transfer,E-Wallet',
             'dibayar' => 'required|numeric|min:0',
             'kembali' => 'required|numeric|min:0',
             'catatan' => 'nullable|string',
             'bukti_bayar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'no_referensi' => 'nullable|string|max:50',
-            'ewallet_type' => 'nullable|in:Dana,GoPay,ShopeePay',
+            'ewallet_type' => 'required_if:metode_byr,E-Wallet|string|max:50',
+            'bank_id' => 'required_if:metode_byr,Transfer|integer|exists:banks,id',
             'status' => 'nullable|in:Lunas,Proses,Batal,Pending',
         ]);
 
         $status = $request->status;
         if (!$status) {
-            $status = in_array($request->metode_byr, ['Tunai', 'QRIS', 'E-Wallet']) ? 'Lunas' : 'Proses';
+            $status = $request->metode_byr === 'E-Wallet' ? 'Lunas' : 'Proses';
         }
 
         $data = [
