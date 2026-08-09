@@ -662,6 +662,43 @@
             z-index: 30;
         }
 
+        /* ─── Sticky Footer: penyesuaian semua platform (aktif lewat JS) ───
+           Dikendalikan class .footer-fixed supaya perilaku identik di Chrome,
+           Android, dan Safari iOS (tanpa bergantung bug sticky WebKit). */
+        .keranjang-footer.footer-fixed {
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 40;
+            margin: 0;
+            border-radius: 20px 20px 0 0;
+            padding: 14px 20px calc(14px + env(safe-area-inset-bottom, 0px));
+            background: #ffffff;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: 1px solid rgba(255, 79, 135, 0.08);
+            box-shadow: 0 -6px 24px rgba(0, 0, 0, 0.12);
+        }
+
+        /* Sidebar tampil (>=1025px): bar dimulai setelah sidebar agar Total Belanja tidak tertutup */
+        @media (min-width: 1025px) {
+            .keranjang-footer.footer-fixed {
+                left: var(--sidebar-width);
+            }
+        }
+
+        .dashboard-content.kc-has-bar.kc-spacer {
+            padding-bottom: 120px;
+        }
+
+        @media (max-width: 576px) {
+            .keranjang-footer .btn-belanja {
+                flex: 1;
+                justify-content: center;
+            }
+        }
+
         .main-content.keranjang-main {
             display: flex;
             flex-direction: column;
@@ -1021,7 +1058,7 @@
         <main class="main-content keranjang-main">
             @include('layouts.header2')
 
-            <div class="dashboard-content">
+            <div class="dashboard-content {{ $troli->count() > 0 ? 'kc-has-bar' : '' }}">
                 <div class="page-header-premium">
                     <div class="ph-content">
                         <div class="ph-left">
@@ -1527,13 +1564,31 @@
         function updateFooterSticky() {
             var footer = document.querySelector('.keranjang-footer');
             if (!footer) return;
+            var content = document.querySelector('.dashboard-content.kc-has-bar');
             var jumlah = document.querySelectorAll('.keranjang-card').length;
-            if (jumlah > 5) {
-                footer.classList.add('sticky-active');
+            var isMobile = window.innerWidth <= 1024;
+            var aktif = isMobile ? jumlah > 0 : (jumlah > 5 && window.scrollY > 0);
+
+            footer.classList.remove('sticky-active');
+            if (aktif) {
+                footer.classList.add('footer-fixed');
+                if (content) content.classList.add('kc-spacer');
             } else {
-                footer.classList.remove('sticky-active');
+                footer.classList.remove('footer-fixed');
+                if (content) content.classList.remove('kc-spacer');
             }
         }
+
+        var kfScrolling = false;
+        window.addEventListener('scroll', function() {
+            if (window.innerWidth > 1024 && !kfScrolling) {
+                kfScrolling = true;
+                requestAnimationFrame(function() {
+                    updateFooterSticky();
+                    kfScrolling = false;
+                });
+            }
+        }, { passive: true });
 
         window.addEventListener('resize', updateFooterSticky);
         updateFooterSticky();
