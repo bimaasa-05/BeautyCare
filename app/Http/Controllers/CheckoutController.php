@@ -154,7 +154,7 @@ class CheckoutController extends Controller
         $request->validate([
             'metode' => 'required|in:QRIS,Transfer',
             'provider' => 'required|string|max:50',
-            'bank_id' => 'required_if:metode,Transfer|integer|exists:banks,id',
+            'bank_id' => 'nullable|required_if:metode,Transfer|integer|exists:banks,id',
             'id_promo' => 'nullable|integer',
             'beli' => 'nullable|integer',
             'qty' => 'nullable|integer|min:1',

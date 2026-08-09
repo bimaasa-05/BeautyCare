@@ -1,6 +1,6 @@
 <!-- Sidebar Admin -->
 @php
-    $masterDataActive = request()->routeIs('admin.user.index', 'admin.pelanggan.index', 'admin.karyawan.index', 'admin.supplier.index');
+    $masterDataActive = request()->routeIs('admin.user.index', 'admin.pelanggan.index', 'admin.karyawan.index', 'admin.supplier.index', 'admin.bank.*');
     $layananProdukActive = request()->routeIs('admin.layanan.index', 'admin.kategori.index', 'admin.produk.index', 'admin.stok.*');
 @endphp
 <aside class="sidebar" id="sidebar">
@@ -81,7 +81,7 @@
                     class="sub-item {{ request()->routeIs('admin.supplier.index') ? 'active' : '' }}"
                     title="Kelola data supplier">Data Supplier</a>
                 <a href="{{ route('admin.bank.index') }}"
-                    class="sub-item {{ request()->routeIs('admin.bank.index') ? 'active' : '' }}"
+                    class="sub-item {{ request()->routeIs('admin.bank.*') ? 'active' : '' }}"
                     title="Kelola data bank untuk pembayaran transfer">Data Bank</a>
             </div>
         </div>

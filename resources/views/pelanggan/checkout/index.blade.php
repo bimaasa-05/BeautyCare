@@ -537,6 +537,11 @@
                     <i class="fa-solid fa-circle-exclamation"></i> {{ session('error') }}
                 </div>
                 @endif
+                @if ($errors->any())
+                <div class="alert-box alert-error">
+                    <i class="fa-solid fa-circle-exclamation"></i> {{ $errors->first() }}
+                </div>
+                @endif
                 @if (session('success'))
                 <div class="alert-box alert-success">
                     <i class="fa-solid fa-circle-check"></i> {{ session('success') }}
