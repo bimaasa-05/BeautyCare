@@ -893,8 +893,81 @@
     }
 
     /* ─── Selected Services Table ─── */
+    .selected-table-scroll {
+        display: block;
+        width: 100%;
+        max-width: 100%;
+        overflow-x: auto;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior-x: contain;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        scrollbar-width: thin;
+        scrollbar-color: #FFB6CE #FFF1F6;
+    }
+
+    .selected-table-scroll::-webkit-scrollbar {
+        height: 8px;
+    }
+
+    .selected-table-scroll::-webkit-scrollbar-track {
+        background: #FFF1F6;
+        border-radius: 8px;
+    }
+
+    .selected-table-scroll::-webkit-scrollbar-thumb {
+        background: #FFB6CE;
+        border-radius: 8px;
+    }
+
+    .selected-table-scroll::-webkit-scrollbar-thumb:hover {
+        background: #FF7BA5;
+    }
+
+    .selected-table-scroll .services-table {
+        display: table;
+        width: max-content;
+        min-width: 100%;
+        border-collapse: collapse;
+    }
+
+    .selected-table-scroll th,
+    .selected-table-scroll td {
+        white-space: nowrap;
+    }
+
     #selectedServicesBody td {
         white-space: nowrap;
+    }
+
+    /* ─── Fix: biarkan flex item menyusut supaya scroll tabel berfungsi ─── */
+    .main-content {
+        min-width: 0;
+    }
+
+    .dashboard-content {
+        min-width: 0;
+    }
+
+    /* ─── Swipe Hint (mobile/tablet) ─── */
+    .selected-swipe-hint {
+        display: none;
+        margin-top: 8px;
+        font-size: 11px;
+        color: var(--gray);
+        text-align: right;
+    }
+
+    .selected-swipe-hint i {
+        color: var(--primary);
+        margin-right: 4px;
+    }
+
+    @media (max-width: 768px) {
+        .selected-swipe-hint {
+            display: block;
+        }
     }
 
     /* ─── Bubble Click Effect ─── */
@@ -1015,8 +1088,8 @@
                                         <i class="fa-solid fa-spa fg-label-icon"></i>
                                         Tambah Layanan <span class="fg-required">*</span>
                                     </label>
-                                    <div style="display:flex;gap:8px;align-items:flex-start;">
-                                        <div style="flex:1;">
+                                    <div style="display:flex;gap:8px;align-items:flex-start;flex-wrap:wrap;min-width:0;">
+                                        <div style="flex:1 1 200px;min-width:0;">
                                             <select id="id_layanan_picker" style="display:none">
                                                 <option value="">— Pilih Layanan —</option>
                                                 @foreach($layanans as $layanan)
@@ -1045,8 +1118,8 @@
 
                             <!-- Daftar Layanan Terpilih -->
                             <div id="selectedServicesWrap" style="margin-top:16px;display:none;">
-                                <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;">
-                                <table class="services-table" style="width:100%;min-width:560px;border-collapse:collapse;">
+                                <div class="selected-table-scroll" style="overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:100%;width:100%;">
+                                <table class="services-table" style="width:max-content;min-width:100%;border-collapse:collapse;">
                                     <thead>
                                         <tr style="background:#FFF7FA;">
                                             <th style="text-align:left;padding:10px 14px;font-size:12px;font-weight:700;color:var(--gray);text-transform:uppercase;border-bottom:1px solid var(--border);">No</th>
@@ -1059,6 +1132,9 @@
                                     </thead>
                                     <tbody id="selectedServicesBody"></tbody>
                                 </table>
+                                </div>
+                                <div class="selected-swipe-hint" id="selectedSwipeHint">
+                                    <i class="fa-solid fa-arrows-left-right"></i> Geser ke kanan-kiri untuk melihat semua kolom
                                 </div>
                             </div>
                             <div id="noServicesMsg" style="margin-top:12px;padding:20px;text-align:center;background:#FAFAFA;border-radius:12px;border:1px dashed var(--border);">
@@ -1283,6 +1359,10 @@
 
         wrap.style.display = 'block';
         noMsg.style.display = 'none';
+        void wrap.offsetHeight;
+
+        const hint = document.getElementById('selectedSwipeHint');
+        if (hint) hint.style.display = (window.innerWidth <= 768) ? 'block' : 'none';
 
         selectedServices.forEach(function(svc, i) {
             const diskon = hitungDiskon(svc.harga, svc.id_layanan);
@@ -1660,6 +1740,14 @@
 
         // Tambah Layanan button
         document.getElementById('btnTambahLayanan').addEventListener('click', tambahLayanan);
+
+        window.addEventListener('resize', function() {
+            const wrap = document.getElementById('selectedServicesWrap');
+            const hint = document.getElementById('selectedSwipeHint');
+            if (hint && wrap && wrap.style.display === 'block') {
+                hint.style.display = (window.innerWidth <= 768) ? 'block' : 'none';
+            }
+        });
 
         const promoSelect = document.getElementById('id_promo');
         if (promoSelect) {
