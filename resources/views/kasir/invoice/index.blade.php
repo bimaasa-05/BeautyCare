@@ -113,6 +113,12 @@
                             <input type="text" name="keyword" placeholder="Cari no. invoice atau pelanggan..." value="{{ request('keyword') }}"
                                 class="bg-gray-50 border border-gray-100 text-[12px] rounded-full pl-9 pr-4 py-2 w-[180px] focus:outline-none focus:border-pink-300 transition-all placeholder-gray-400">
                         </div>
+                        <select name="jenis" class="bg-gray-50 border border-gray-100 text-[12px] rounded-full px-3 py-2 w-[150px] focus:outline-none focus:border-pink-300 transition-all">
+                            <option value="">Semua Jenis</option>
+                            <option value="Penjualan" {{ request('jenis') == 'Penjualan' ? 'selected' : '' }}>Penjualan</option>
+                            <option value="Booking" {{ request('jenis') == 'Booking' ? 'selected' : '' }}>Booking</option>
+                            <option value="Pesanan Online" {{ request('jenis') == 'Pesanan Online' ? 'selected' : '' }}>Pesanan Online</option>
+                        </select>
                         <input type="date" name="dari" value="{{ request('dari') }}"
                             class="bg-gray-50 border border-gray-100 text-[12px] rounded-full px-3 py-2 w-[140px] focus:outline-none focus:border-pink-300 transition-all">
                         <span class="text-gray-400 text-[12px]">—</span>
@@ -133,6 +139,7 @@
                                 <tr class="text-[11px] font-bold text-gray-400 uppercase border-b border-gray-100 bg-gray-50/50">
                                     <th class="py-3 px-4">#</th>
                                     <th class="py-3 px-4">No. Invoice</th>
+                                    <th class="py-3 px-4">Jenis</th>
                                     <th class="py-3 px-4">Pelanggan</th>
                                     <th class="py-3 px-4">Tanggal</th>
                                     <th class="py-3 px-4 text-right">Total</th>
@@ -145,6 +152,11 @@
                                     <tr class="hover:bg-gray-100 transition-colors duration-150">
                                         <td class="py-3 px-4 text-gray-400 font-medium">{{ $loop->iteration }}</td>
                                         <td class="py-3 px-4 font-semibold text-gray-700">{{ $i->no_invoice }}</td>
+                                        <td class="py-3 px-4">
+                                            <span class="badge-status {{ $i->jenis_transaksi == 'Booking' ? 'badge-lunas' : ($i->jenis_transaksi == 'Pesanan Online' ? 'badge-pending' : '') }}">
+                                                {{ $i->jenis_transaksi ?? 'Penjualan' }}
+                                            </span>
+                                        </td>
                                         <td class="py-3 px-4">
                                             <div class="flex items-center gap-2.5">
                                                 <div class="w-8 h-8 rounded-full bg-pink-200 text-pink-600 flex items-center justify-center font-bold text-[11px]">
@@ -174,7 +186,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="7" class="py-10 text-center">
+                                        <td colspan="8" class="py-10 text-center">
                                             <div class="flex flex-col items-center gap-2">
                                                 <i class="fa-solid fa-file-invoice text-4xl text-gray-300"></i>
                                                 <p class="text-gray-400 font-medium text-[14px]">Belum ada data invoice</p>
