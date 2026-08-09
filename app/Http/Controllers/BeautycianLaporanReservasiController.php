@@ -7,6 +7,9 @@ use App\Models\Booking;
 use App\Models\DetailBooking;
 use App\Models\Pelanggan;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\BeauticianLaporanReservasiExport;
 
 class BeautycianLaporanReservasiController extends Controller
 {
@@ -139,5 +142,84 @@ class BeautycianLaporanReservasiController extends Controller
         ];
 
         return view('beautycian.laporan-reservasi.show', compact('reservasi', 'statusLabels'));
+    }
+
+    private function getDateRange($periode)
+    {
+        $end = now()->toDateString();
+        return match ($periode) {
+            '7hari'   => ['start' => date('Y-m-d', strtotime('-7 days')),   'end' => $end],
+            '30hari'  => ['start' => date('Y-m-d', strtotime('-30 days')),  'end' => $end],
+            '3bulan'  => ['start' => date('Y-m-d', strtotime('-3 months')), 'end' => $end],
+            'tahunini'=> ['start' => date('Y-01-01'),                       'end' => $end],
+            default   => ['start' => date('Y-m-d', strtotime('-30 days')),  'end' => $end],
+        };
+    }
+
+    public function exportPDF(Request $request)
+    {
+        $user = auth()->user();
+        $id_karyawan = $user->id;
+        $periode = $request->get('periode', '30hari');
+        $dateRange = $this->getDateRange($periode);
+        $startDate = $dateRange['start'];
+        $endDate = $dateRange['end'];
+
+        $totalReservasi = Booking::where('id_karyawan', $id_karyawan)
+            ->whereBetween('tanggal', [$startDate, $endDate])
+            ->count();
+
+        $selesai = Booking::where('id_karyawan', $id_karyawan)
+            ->where('status', 'selesai')
+            ->whereBetween('tanggal', [$startDate, $endDate])
+            ->count();
+
+        $totalPendapatan = DetailBooking::whereHas('booking', function ($q) use ($id_karyawan, $startDate, $endDate) {
+            $q->where('id_karyawan', $id_karyawan)
+                ->where('status', 'selesai')
+                ->whereBetween('tanggal', [$startDate, $endDate]);
+        })->sum('subtotal');
+
+        $rataTransaksi = $selesai > 0 ? $totalPendapatan / $selesai : 0;
+
+        $reservasi = Booking::with(['detail.layanan', 'pelanggan'])
+            ->where('id_karyawan', $id_karyawan)
+            ->whereBetween('tanggal', [$startDate, $endDate])
+            ->orderBy('tanggal', 'desc')
+            ->get();
+
+        $userName = $user->nama;
+
+        $fmt = function ($amount) {
+            if ($amount >= 1000000000) {
+                return 'Rp ' . number_format($amount / 1000000000, 1) . 'M';
+            }
+            if ($amount >= 1000000) {
+                return 'Rp ' . number_format($amount / 1000000, 1) . 'jt';
+            }
+            return 'Rp ' . number_format($amount, 0, ',', '.');
+        };
+
+        $pdf = Pdf::loadView('beautycian.laporan-reservasi.pdf', compact(
+            'totalReservasi', 'selesai', 'totalPendapatan', 'rataTransaksi',
+            'reservasi', 'startDate', 'endDate', 'userName', 'fmt'
+        ));
+
+        return $pdf->download('laporan-reservasi-' . $user->nama . '-' . date('Y-m-d') . '.pdf');
+    }
+
+    public function exportExcel(Request $request)
+    {
+        $user = auth()->user();
+        $id_karyawan = $user->id;
+        $periode = $request->get('periode', '30hari');
+        $dateRange = $this->getDateRange($periode);
+        $startDate = $dateRange['start'];
+        $endDate = $dateRange['end'];
+
+        return Excel::download(
+            new BeauticianLaporanReservasiExport($id_karyawan, $startDate, $endDate),
+            'laporan-reservasi-' . $user->nama . '-' . date('Y-m-d') . '.xlsx'
+        );
     }
 }
