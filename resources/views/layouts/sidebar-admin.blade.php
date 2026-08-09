@@ -118,7 +118,7 @@
                     title="Kelola data produk; stok diatur melalui menu Mutasi Stok">Data Produk</a>
                 <a href="{{ route('admin.stok.index') }}"
                     class="sub-item {{ request()->routeIs('admin.stok.*') ? 'active' : '' }}"
-                    title="Catat barang masuk, refund, dan lihat riwayat mutasi stok">
+                    title="Catat refund stok dan lihat riwayat mutasi stok">
                     Mutasi Stok
                     @if (hitungMutasiStokBaru() > 0)
                     <span class="nav-badge badge-primary">{{ hitungMutasiStokBaru() > 99 ? '99+' : hitungMutasiStokBaru() }}</span>

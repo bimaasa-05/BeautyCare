@@ -118,8 +118,6 @@ Route::middleware('auth')->group(function () {
         Route::delete('/admin/produk/{produk}', [AdminProdukController::class, 'destroy'])->name('admin.produk.destroy');
 
         Route::get('/admin/stok', [AdminStokController::class, 'index'])->name('admin.stok.index');
-        Route::get('/admin/stok/create', [AdminStokController::class, 'create'])->name('admin.stok.create');
-        Route::post('/admin/stok', [AdminStokController::class, 'store'])->name('admin.stok.store');
         Route::get('/admin/stok/refund', [AdminStokController::class, 'refundCreate'])->name('admin.stok.refund-create');
         Route::post('/admin/stok/refund', [AdminStokController::class, 'refundStore'])->name('admin.stok.refund-store');
 
@@ -183,14 +181,11 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/admin/transaksi', [AdminTransaksiController::class, 'index'])->name('admin.transaksi.index');
         Route::get('/admin/transaksi/export', [AdminTransaksiController::class, 'export'])->name('admin.transaksi.export');
-        Route::get('/admin/transaksi/create', [AdminTransaksiController::class, 'create'])->name('admin.transaksi.create');
-        Route::post('/admin/transaksi', [AdminTransaksiController::class, 'store'])->name('admin.transaksi.store');
+        Route::get('/admin/transaksi/keluar', [AdminTransaksiController::class, 'createKeluar'])->name('admin.transaksi.keluar-create');
+        Route::post('/admin/transaksi/keluar', [AdminTransaksiController::class, 'storeKeluar'])->name('admin.transaksi.keluar-store');
         Route::get('/admin/transaksi/{id}', [AdminTransaksiController::class, 'show'])->name('admin.transaksi.show');
         Route::get('/admin/transaksi/{id}/invoice', [AdminTransaksiController::class, 'invoice'])->name('admin.transaksi.invoice');
         Route::get('/admin/transaksi/{id}/invoice-pdf', [AdminTransaksiController::class, 'invoicePdf'])->name('admin.transaksi.invoice-pdf');
-        Route::get('/admin/transaksi/{id}/edit', [AdminTransaksiController::class, 'edit'])->name('admin.transaksi.edit');
-        Route::put('/admin/transaksi/{id}', [AdminTransaksiController::class, 'update'])->name('admin.transaksi.update');
-        Route::delete('/admin/transaksi/{id}', [AdminTransaksiController::class, 'destroy'])->name('admin.transaksi.destroy');
 
         Route::get('/admin/laporan', [AdminLaporanController::class, 'index'])->name('admin.laporan.index');
         Route::get('/admin/laporan/export-pdf', [AdminLaporanController::class, 'exportPDF'])->name('admin.laporan.export-pdf');
