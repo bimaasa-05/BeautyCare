@@ -8,11 +8,11 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Poppins', sans-serif;
             background: #f3f4f6;
             margin: 0;
             padding: 0;
@@ -206,43 +206,19 @@
             <div class="mb-8 p-4 bg-gray-50 rounded-lg border border-gray-100">
                 <div class="overflow-x-auto"><table class="w-full text-[12px]">
                     <tr>
-                        <td class="text-gray-400 w-28">Metode</td>
+                        <td class="text-gray-400">Metode</td>
                         <td class="font-semibold text-gray-700">{{ $transaksi->metode_byr }}</td>
                     </tr>
-                    @if ($transaksi->atas_nama)
-                    <tr>
-                        <td class="text-gray-400">Atas Nama</td>
-                        <td class="font-semibold text-gray-700">{{ $transaksi->atas_nama }}</td>
-                    </tr>
-                    @endif
-                    @if ($transaksi->bank_asal)
-                    <tr>
-                        <td class="text-gray-400">Bank/E-Wallet</td>
-                        <td class="font-semibold text-gray-700">{{ $transaksi->bank_asal }}</td>
-                    </tr>
-                    @endif
-                    @if ($transaksi->dari_rekening)
-                    <tr>
-                        <td class="text-gray-400">Dari Rekening</td>
-                        <td class="font-mono text-gray-700">{{ $transaksi->dari_rekening }}</td>
-                    </tr>
-                    @endif
-                    @if ($transaksi->bank_tujuan)
-                    <tr>
-                        <td class="text-gray-400">Bank Tujuan</td>
-                        <td class="font-semibold text-gray-700">{{ $transaksi->bank_tujuan }}</td>
-                    </tr>
-                    @endif
-                    @if ($transaksi->ke_rekening)
-                    <tr>
-                        <td class="text-gray-400">Ke Rekening</td>
-                        <td class="font-mono text-gray-700">{{ $transaksi->ke_rekening }}</td>
-                    </tr>
-                    @endif
                     @if ($transaksi->no_referensi)
                     <tr>
                         <td class="text-gray-400">No. Referensi</td>
                         <td class="font-mono font-semibold text-gray-700">{{ $transaksi->no_referensi }}</td>
+                    </tr>
+                    @endif
+                    @if ($transaksi->ewallet_type && $transaksi->metode_byr === 'E-Wallet')
+                    <tr>
+                        <td class="text-gray-400">E-Wallet</td>
+                        <td class="font-semibold text-gray-700">{{ $transaksi->ewallet_type }}</td>
                     </tr>
                     @endif
                     @if ($transaksi->bukti_bayar)

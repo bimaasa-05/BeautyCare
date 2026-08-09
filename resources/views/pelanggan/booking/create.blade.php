@@ -1021,7 +1021,7 @@
                                                 <option value="">— Pilih Layanan —</option>
                                                 @foreach($layanans as $layanan)
                                                 <option value="{{ $layanan->id_layanan }}" data-harga="{{ $layanan->harga }}">
-                                                    {{ $layanan->nm_layanan }} — Rp {{ number_format($layanan->harga, 0, ',', '.') }}
+                                                    {{ $layanan->nm_layanan }} (± {{ $layanan->durasi }} menit) — Rp {{ number_format($layanan->harga, 0, ',', '.') }}
                                                 </option>
                                                 @endforeach
                                             </select>
@@ -1122,7 +1122,15 @@
                                         <i class="fa-regular fa-clock fg-label-icon"></i>
                                         Jam <span class="fg-required">*</span>
                                     </label>
-                                    <input type="time" name="jam" class="fg-input" required>
+                                    <select name="jam" id="jamSlot" class="fg-input" required>
+                                        <option value="">— Pilih Jam —</option>
+                                        @foreach($slotJam as $jam)
+                                        <option value="{{ $jam }}">{{ \App\Support\BookingSlot::formatJamIndo($jam) }}</option>
+                                        @endforeach
+                                    </select>
+                                    <div style="margin-top:6px;font-size:11px;color:var(--gray);">
+                                        <i class="fa-solid fa-circle-info"></i> Slot yang sudah dibooking terapis (termasuk durasi layanan) otomatis dinonaktifkan
+                                    </div>
                                 </div>
                             </div>
 
@@ -1361,15 +1369,24 @@
             let html = '';
             for (let i = 0; i < select.options.length; i++) {
                 const opt = select.options[i];
+                const isDisabled = opt.disabled;
+                const cls = isDisabled ? ' csd-disabled' : '';
+                const attr = isDisabled ? ' data-disabled="1"' : '';
+                const stl = isDisabled ? ' style="opacity:.6;cursor:not-allowed;"' : '';
                 if (!opt.value) {
-                    html += '<div class="csd-item" data-value="" data-harga="0"><span>' + opt.text + '</span></div>';
+                    html += '<div class="csd-item' + cls + '" data-value="" data-harga="0"' + attr + stl + '><span>' + opt.text + '</span></div>';
+                } else if (isDisabled) {
+                    const info = opt.getAttribute('data-info') || '';
+                    html += '<div class="csd-item' + cls + '" data-value="' + opt.value + '" data-harga="0"' + attr + stl + ' title="' + info + '">';
+                    html += '<span>' + opt.text.replace(' — Sedang Melayani', '') + '</span>';
+                    html += '<span class="csd-price" style="color:#DC2626;font-weight:600;">● Sedang Melayani</span>';
+                    html += '</div>';
                 } else {
                     const parts = opt.text.split(' — ');
                     const name = parts[0] || opt.text;
                     const price = parts[1] || '';
                     const harga = opt.getAttribute('data-harga') || '0';
                     const status = showStatus && parts[2] ? parts[2].trim() : '';
-                    const isDisabled = !!opt.disabled;
                     html += '<div class="csd-item' + (isDisabled ? ' cs-item-disabled' : '') + '" data-value="' + opt.value + '" data-harga="' + harga + '"' + (isDisabled ? ' data-disabled="1"' : '') + '>';
                     html += '<span>' + name + '</span>';
                     if (status) {
@@ -1452,10 +1469,10 @@
         updateTrigger();
     }
 
-    // Set default time & init custom select
-    document.addEventListener('DOMContentLoaded', function() {
-        const jamInput = document.querySelector('input[name="jam"]');
-        if (jamInput && !jamInput.value) {
+    // Set default & init custom select
+    const bookedJamByKaryawan = @json($bookedJamByKaryawan);
+    const jamSelect = document.getElementById('jamSlot');
+
     // ─── Calendar Popup (riwayat treatment pelanggan) ───
     const bookingsPerDay = @json($bookingsPerDay);
     const monthNames = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
@@ -1649,14 +1666,28 @@
         }
     });
 
-    const now = new Date();
-            const hours = String(now.getHours()).padStart(2, '0');
-            const minutes = String(now.getMinutes()).padStart(2, '0');
-            jamInput.value = hours + ':' + minutes;
+    function updateJamSlots() {
+        if (!jamSelect) return;
+        const karyawanId = document.getElementById('id_karyawan').value;
+        const booked = bookedJamByKaryawan[karyawanId] || [];
+        for (let i = 0; i < jamSelect.options.length; i++) {
+            const opt = jamSelect.options[i];
+            if (!opt.value) continue;
+            const penuh = booked.indexOf(opt.value) !== -1;
+            opt.disabled = penuh || !karyawanId;
+            opt.textContent = opt.value.replace(':', '.') + (penuh ? ' — Sudah Dibooking' : '');
         }
+        if (jamSelect.value && jamSelect.options[jamSelect.selectedIndex].disabled) {
+            jamSelect.value = '';
+        }
+    }
 
+    document.addEventListener('DOMContentLoaded', function() {
         initCustomSelect('id_layanan_picker', 'customLayananWrap', 'customLayananTrigger', 'customLayananDropdown');
-        initCustomSelect('id_karyawan', 'customTerapisWrap', 'customTerapisTrigger', 'customTerapisDropdown', null, true);
+        initCustomSelect('id_karyawan', 'customTerapisWrap', 'customTerapisTrigger', 'customTerapisDropdown', function() {
+            updateJamSlots();
+        }, true);
+        updateJamSlots();
 
         // Tambah Layanan button
         document.getElementById('btnTambahLayanan').addEventListener('click', tambahLayanan);

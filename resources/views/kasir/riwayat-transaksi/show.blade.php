@@ -24,8 +24,8 @@
         @media (max-width: 768px) { .sidebar-toggle { display: flex; align-items: center; } }
     </style>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; }
+
+        
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
@@ -157,49 +157,24 @@
                         </table></div>
                     </div>
 
-                    @if ($transaksi->metode_byr == 'Transfer')
+                    @if (in_array($transaksi->metode_byr, ['Transfer', 'Debit', 'QRIS', 'E-Wallet']))
                     <div class="p-4 bg-gradient-to-br from-blue-50 to-white rounded-xl border border-blue-100">
                         <h4 class="text-[12px] font-semibold text-gray-500 uppercase tracking-wider mb-3">
                             <i class="fa-solid fa-building-columns text-blue-400 mr-1"></i>Detail Pembayaran {{ $transaksi->metode_byr }}
                         </h4>
-                        <div class="overflow-x-auto"><table class="w-full text-[13px]">
-                            @if ($transaksi->atas_nama)
-                            <tr>
-                                <td class="py-1.5 text-gray-400 w-36">Atas Nama</td>
-                                <td class="py-1.5 font-medium text-gray-700">{{ $transaksi->atas_nama }}</td>
-                            </tr>
-                            @endif
-                            @if ($transaksi->dari_rekening)
-                            <tr>
-                                <td class="py-1.5 text-gray-400">Dari Rekening</td>
-                                <td class="py-1.5 font-mono text-gray-700">{{ $transaksi->dari_rekening }}</td>
-                            </tr>
-                            @endif
-                            @if ($transaksi->bank_asal)
-                            <tr>
-                                <td class="py-1.5 text-gray-400">Bank Asal</td>
-                                <td class="py-1.5 text-gray-700">{{ $transaksi->bank_asal }}</td>
-                            </tr>
-                            @endif
-                            @if ($transaksi->ke_rekening)
-                            <tr>
-                                <td class="py-1.5 text-gray-400">Ke Rekening</td>
-                                <td class="py-1.5 font-mono text-gray-700">{{ $transaksi->ke_rekening }}</td>
-                            </tr>
-                            @endif
-                            @if ($transaksi->bank_tujuan)
-                            <tr>
-                                <td class="py-1.5 text-gray-400">Bank Tujuan</td>
-                                <td class="py-1.5 text-gray-700">{{ $transaksi->bank_tujuan }}</td>
-                            </tr>
-                            @endif
-                            @if ($transaksi->no_referensi)
+                        <div class="overflow-x-auto"><table class="w-full text-[13px]">@if ($transaksi->no_referensi)
                             <tr>
                                 <td class="py-1.5 text-gray-400">No. Referensi</td>
                                 <td class="py-1.5 font-mono font-semibold text-gray-700">{{ $transaksi->no_referensi }}</td>
                             </tr>
-                            @endif
-                            @if ($transaksi->bukti_bayar)
+                        @endif
+                        @if ($transaksi->ewallet_type && $transaksi->metode_byr === 'E-Wallet')
+                            <tr>
+                                <td class="py-1.5 text-gray-400">E-Wallet</td>
+                                <td class="py-1.5 font-semibold text-gray-700">{{ $transaksi->ewallet_type }}</td>
+                            </tr>
+                        @endif
+                        @if ($transaksi->bukti_bayar)
                             <tr>
                                 <td class="py-1.5 text-gray-400">Bukti Bayar</td>
                                 <td class="py-1.5">
@@ -209,7 +184,7 @@
                                     </a>
                                 </td>
                             </tr>
-                            @endif
+                        @endif
                         </table></div>
                     </div>
                     @endif

@@ -55,11 +55,8 @@
         }
     </style>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-        body {
-            font-family: 'Inter', sans-serif;
-        }
+        
 
         ::-webkit-scrollbar {
             width: 6px;
@@ -319,21 +316,21 @@
                                             <i class="fa-solid fa-wallet"></i> Detail Pembayaran E-Wallet
                                         </h4>
                                         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                            @if ($transaksi->atas_nama)
-                                                <div class="info-box bg-teal-50/30 border-teal-100/50">
-                                                    <p class="info-label"><i
-                                                            class="fa-solid fa-user mr-1 text-teal-400"></i> Atas
-                                                        Nama
-                                                    </p>
-                                                    <p class="info-value">{{ $transaksi->atas_nama }}</p>
-                                                </div>
-                                            @endif
-                                            @if ($transaksi->bank_asal)
+                                            @if ($transaksi->ewallet_type)
                                                 <div class="info-box bg-teal-50/30 border-teal-100/50">
                                                     <p class="info-label"><i
                                                             class="fa-solid fa-wallet mr-1 text-teal-400"></i> E-Wallet
                                                     </p>
-                                                    <p class="info-value">{{ $transaksi->bank_asal }}</p>
+                                                    <p class="info-value">{{ $transaksi->ewallet_type }}</p>
+                                                </div>
+                                            @endif
+                                            @if ($transaksi->no_referensi)
+                                                <div class="info-box bg-teal-50/30 border-teal-100/50">
+                                                    <p class="info-label"><i
+                                                            class="fa-solid fa-hashtag mr-1 text-teal-400"></i> No.
+                                                        Referensi
+                                                    </p>
+                                                    <p class="info-value">{{ $transaksi->no_referensi }}</p>
                                                 </div>
                                             @endif
                                         </div>
@@ -345,49 +342,6 @@
                                             {{ $transaksi->metode_byr }}
                                         </h4>
                                         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                            @if ($transaksi->atas_nama)
-                                                <div class="info-box bg-amber-50/30 border-amber-100/50">
-                                                    <p class="info-label"><i
-                                                            class="fa-solid fa-user mr-1 text-amber-400"></i> Atas
-                                                        Nama
-                                                    </p>
-                                                    <p class="info-value">{{ $transaksi->atas_nama }}</p>
-                                                </div>
-                                            @endif
-                                            @if ($transaksi->bank_asal)
-                                                <div class="info-box bg-amber-50/30 border-amber-100/50">
-                                                    <p class="info-label"><i
-                                                            class="fa-solid fa-building-columns mr-1 text-amber-400"></i>
-                                                        Bank Asal</p>
-                                                    <p class="info-value">{{ $transaksi->bank_asal }}</p>
-                                                </div>
-                                            @endif
-                                            @if ($transaksi->dari_rekening)
-                                                <div class="info-box bg-amber-50/30 border-amber-100/50">
-                                                    <p class="info-label"><i
-                                                            class="fa-solid fa-arrow-right mr-1 text-amber-400"></i>
-                                                        Dari
-                                                        Rekening</p>
-                                                    <p class="info-value">{{ $transaksi->dari_rekening }}</p>
-                                                </div>
-                                            @endif
-                                            @if ($transaksi->bank_tujuan)
-                                                <div class="info-box bg-amber-50/30 border-amber-100/50">
-                                                    <p class="info-label"><i
-                                                            class="fa-solid fa-building-columns mr-1 text-amber-400"></i>
-                                                        Bank Tujuan</p>
-                                                    <p class="info-value">{{ $transaksi->bank_tujuan }}</p>
-                                                </div>
-                                            @endif
-                                            @if ($transaksi->ke_rekening)
-                                                <div class="info-box bg-amber-50/30 border-amber-100/50">
-                                                    <p class="info-label"><i
-                                                            class="fa-solid fa-arrow-left mr-1 text-amber-400"></i>
-                                                        Ke
-                                                        Rekening</p>
-                                                    <p class="info-value">{{ $transaksi->ke_rekening }}</p>
-                                                </div>
-                                            @endif
                                             @if ($transaksi->no_referensi)
                                                 <div class="info-box bg-amber-50/30 border-amber-100/50">
                                                     <p class="info-label"><i
