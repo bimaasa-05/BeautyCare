@@ -61,13 +61,13 @@ class BeatycianJadwalTreatmentController extends Controller
             ->firstOrFail();
 
         if ($booking->status === 'dikonfirmasi') {
-            $booking->update(['status' => 'diproses']);
+            $booking->update(['status' => 'diproses', 'jam_mulai_aktual' => now()]);
             ActivityLogger::log('Mengubah Status', auth()->user()->nama . ' memulai treatment booking #' . $booking->id_booking, 'Reservasi', $booking->id_booking);
             return back()->with('message', 'Treatment telah dimulai!');
         }
 
         if ($booking->status === 'diproses') {
-            $booking->update(['status' => 'selesai']);
+            $booking->update(['status' => 'selesai', 'jam_selesai_aktual' => now()]);
             ActivityLogger::log('Mengubah Status', auth()->user()->nama . ' menyelesaikan treatment booking #' . $booking->id_booking, 'Reservasi', $booking->id_booking);
             $this->notifTreatmentSelesai($booking);
             return back()->with('message', 'Treatment telah selesai!');
@@ -108,12 +108,14 @@ class BeatycianJadwalTreatmentController extends Controller
         $akanDimulai = $akanDimulai->map(function ($b) use ($now) {
             $jamMulai = Carbon::parse($b->jam);
             $b->terlambatMenit = $jamMulai->lessThan($now) ? (int) $jamMulai->diffInMinutes($now) : 0;
+            $b->belumDatang = $jamMulai->lessThan($now);
             return $b;
         });
 
         $sedangBerjalan = $sedangBerjalan->map(function ($b) use ($now) {
-            $jamMulai = Carbon::parse($b->jam);
-            $b->berjalanMenit = $jamMulai->lessThan($now) ? (int) $jamMulai->diffInMinutes($now) : 0;
+            $mulaiAktual = $b->jam_mulai_aktual ? Carbon::parse($b->jam_mulai_aktual) : Carbon::parse($b->jam);
+            $b->mulaiAktualTxt = $mulaiAktual->format('H:i');
+            $b->berjalanDetik = (int) $mulaiAktual->diffInSeconds($now);
             return $b;
         });
 
@@ -136,7 +138,7 @@ class BeatycianJadwalTreatmentController extends Controller
             ->firstOrFail();
 
         if ($booking->status === 'diproses' || $booking->status === 'selesai') {
-            $booking->update(['status' => 'selesai']);
+            $booking->update(['status' => 'selesai', 'jam_selesai_aktual' => now()]);
             ActivityLogger::log('Mengubah Status', auth()->user()->nama . ' menyelesaikan treatment booking #' . $booking->id_booking, 'Reservasi', $booking->id_booking);
             $this->notifTreatmentSelesai($booking);
             return back()->with('message', 'Treatment telah diselesaikan!');
@@ -240,7 +242,7 @@ class BeatycianJadwalTreatmentController extends Controller
             $data
         );
 
-        $booking->update(['status' => 'selesai']);
+        $booking->update(['status' => 'selesai', 'jam_selesai_aktual' => now()]);
 
         ActivityLogger::log('Menambahkan', auth()->user()->nama . ' menyimpan dokumentasi treatment booking #' . $booking->id_booking, 'Dokumentasi', $booking->id_booking);
 

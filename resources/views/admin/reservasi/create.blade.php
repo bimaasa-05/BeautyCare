@@ -43,6 +43,8 @@
         .custom-select-option:last-child { border-bottom: none; }
         .custom-select-option:hover { background: #FFF0F5; }
         .custom-select-option.selected { background: #FFE4EC; color: #FF4F87; font-weight: 500; }
+        .custom-select-option-disabled { opacity: .55; cursor: not-allowed; background: #fafafa; }
+        .custom-select-option-disabled:hover { background: #fafafa; }
 
         .page-header-premium {
             background: linear-gradient(135deg, #FFF5F8 0%, #FFE5EF 50%, #FFD6E6 100%);
@@ -199,11 +201,12 @@ git<body>
                                     <i class="fa-solid fa-user text-pink-400 mr-1"></i>Karyawan <span class="text-red-500">*</span>
                                 </label>
                                 <div class="custom-select-wrapper">
-                                <select name="id_karyawan" class="form-input-custom @error('id_karyawan') border-red-400 @enderror">
+                                <select name="id_karyawan" id="id_karyawan" class="form-input-custom @error('id_karyawan') border-red-400 @enderror">
                                     <option value="">-- Pilih Karyawan --</option>
                                     @foreach ($karyawan as $k)
-                                        <option value="{{ $k->id }}" {{ old('id_karyawan') == $k->id ? 'selected' : '' }}>
-                                            {{ $k->nama }}
+                                        @php($infoLayani = $sedangMelayaniDetail[$k->id] ?? null)
+                                        <option value="{{ $k->id }}" {{ old('id_karyawan') == $k->id ? 'selected' : '' }} {{ $infoLayani ? 'disabled' : '' }} data-info="{{ $infoLayani ? 'Sedang melayani ' . $infoLayani['pelanggan'] . ' pukul ' . \App\Support\BookingSlot::formatJamIndo($infoLayani['jam']) : '' }}">
+                                            {{ $k->nama }}{{ $infoLayani ? ' — Sedang Melayani' : '' }}
                                         </option>
                                     @endforeach
                                 </select>
@@ -217,7 +220,7 @@ git<body>
                                 <label class="form-label">
                                     <i class="fa-solid fa-calendar text-pink-400 mr-1"></i>Tanggal <span class="text-red-500">*</span>
                                 </label>
-                                <input type="date" name="tanggal"
+                                <input type="date" name="tanggal" id="tanggal"
                                     class="form-input-custom @error('tanggal') border-red-400 @enderror"
                                     value="{{ old('tanggal', date('Y-m-d')) }}">
                                 @error('tanggal')
@@ -229,12 +232,17 @@ git<body>
                                 <label class="form-label">
                                     <i class="fa-regular fa-clock text-pink-400 mr-1"></i>Jam <span class="text-red-500">*</span>
                                 </label>
-                                <input type="time" name="jam"
-                                    class="form-input-custom @error('jam') border-red-400 @enderror"
-                                    value="{{ old('jam', date('H:i')) }}">
+                                <select name="jam" id="jamSlot"
+                                    class="form-input-custom @error('jam') border-red-400 @enderror">
+                                    <option value="">-- Pilih Jam --</option>
+                                    @foreach($slotJam as $jam)
+                                    <option value="{{ $jam }}" {{ old('jam', \App\Support\BookingSlot::normalJam(date('H:i'))) == $jam ? 'selected' : '' }}>{{ \App\Support\BookingSlot::formatJamIndo($jam) }}</option>
+                                    @endforeach
+                                </select>
                                 @error('jam')
                                     <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
                                 @enderror
+                                <p class="text-[11px] text-gray-400 mt-1"><i class="fa-solid fa-circle-info"></i> Slot terbooking terapis (termasuk durasi layanan) otomatis dinonaktifkan</p>
                             </div>
 
                             <div class="form-group">
@@ -482,6 +490,7 @@ git<body>
                     var optDiv = document.createElement('div');
                     optDiv.className = 'custom-select-option';
                     if (opt.selected) optDiv.classList.add('selected');
+                    if (opt.disabled) optDiv.classList.add('custom-select-option-disabled');
                     optDiv.textContent = opt.text;
 
                     for (var j = 0; j < opt.attributes.length; j++) {
@@ -493,6 +502,7 @@ git<body>
 
                     optDiv.addEventListener('click', function(e) {
                         e.stopPropagation();
+                        if (opt.disabled) return;
                         select.selectedIndex = idx;
                         triggerText.textContent = select.options[idx].text;
                         dropdown.querySelectorAll('.custom-select-option').forEach(function(o) {
@@ -539,6 +549,47 @@ git<body>
             initCustomSelects();
             const pelangganSelect = document.getElementById('id_pelanggan');
             onPelangganChange(pelangganSelect);
+
+            let slotDataCache = { slots: @json($slotJam), booked: @json($bookedJamByKaryawan) };
+
+            function applyJamAvailability() {
+                const jamSelect = document.getElementById('jamSlot');
+                if (!jamSelect) return;
+                const karyawanId = document.getElementById('id_karyawan').value;
+                const booked = (slotDataCache.booked[karyawanId] || []);
+                for (let i = 0; i < jamSelect.options.length; i++) {
+                    const opt = jamSelect.options[i];
+                    if (!opt.value) continue;
+                    const penuh = booked.indexOf(opt.value) !== -1;
+                    opt.disabled = penuh || !karyawanId;
+                    opt.textContent = opt.value.replace(':', '.') + (penuh ? ' — Sudah Dibooking' : '');
+                }
+                if (jamSelect.value && jamSelect.options[jamSelect.selectedIndex].disabled) {
+                    jamSelect.value = '';
+                }
+            }
+
+            const tanggalInput = document.getElementById('tanggal');
+            const karyawanSelect = document.getElementById('id_karyawan');
+
+            async function refreshSlotData() {
+                if (!tanggalInput || !tanggalInput.value) return;
+                try {
+                    const res = await fetch('/admin/reservasi/slot-data?tanggal=' + tanggalInput.value);
+                    if (res.ok) {
+                        slotDataCache = await res.json();
+                        applyJamAvailability();
+                    }
+                } catch (e) {}
+            }
+
+            if (tanggalInput) {
+                tanggalInput.addEventListener('change', refreshSlotData);
+            }
+            if (karyawanSelect) {
+                karyawanSelect.addEventListener('change', applyJamAvailability);
+            }
+            applyJamAvailability();
         });
 
         document.querySelector('form').addEventListener('submit', function() {

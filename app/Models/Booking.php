@@ -15,6 +15,8 @@ class Booking extends Model
         'id_karyawan',
         'tanggal',
         'jam',
+        'jam_mulai_aktual',
+        'jam_selesai_aktual',
         'status',
         'catatan',
         'reminder_h1',

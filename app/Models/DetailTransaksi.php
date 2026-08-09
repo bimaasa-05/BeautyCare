@@ -19,6 +19,8 @@ class DetailTransaksi extends Model
         'harga',
         'diskon',
         'subtotal',
+        'jam',
+        'id_karyawan',
         'id_promo',
     ];
 
