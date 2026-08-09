@@ -219,6 +219,18 @@
                             </div>
                         </div>
                         <div class="bc-actions">
+                            <div class="flex items-center gap-2 mb-3">
+                                <a href="{{ route('beautycian.laporan-reservasi.export-pdf') }}" target="_blank"
+                                    class="flex items-center gap-1 px-3 py-1.5 text-[11px] font-medium text-white bg-red-500 rounded-lg hover:bg-red-600 transition-colors">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                    PDF
+                                </a>
+                                <a href="{{ route('beautycian.laporan-reservasi.export-excel') }}" target="_blank"
+                                    class="flex items-center gap-1 px-3 py-1.5 text-[11px] font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 transition-colors">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                    Excel
+                                </a>
+                            </div>
                             <form action="{{ route('beautycian.laporan-reservasi.index') }}" method="GET">
                                 <div class="filter-group">
                                     <select name="filter_status" onchange="this.form.submit()">
