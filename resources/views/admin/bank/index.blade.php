@@ -265,82 +265,101 @@
 
                         <div class="overflow-x-auto">
                             <table class="w-full admin-table">
-                                <thead>
+<thead>
                                     <tr class="bg-[#FFF7FA]">
                                         <th class="text-left px-5 py-3 text-xs font-bold text-gray-400 uppercase">#</th>
                                         <th class="text-left px-5 py-3 text-xs font-bold text-gray-400 uppercase">Nama Bank</th>
-                                        <th class="text-left px-5 py-3 text-xs font-bold text-gray-400 uppercase">Nama Pemilik</th>
-                                        <th class="text-left px-5 py-3 text-xs font-bold text-gray-400 uppercase">Nomor Rekening</th>
+                                        <th class="text-left px-5 py-3 text-xs font-bold text-gray-400 uppercase">Kode Bank</th>
+                                        <th class="text-left px-5 py-3 text-xs font-bold text-gray-400 uppercase">Tipe</th>
+                                        <th class="text-left px-5 py-3 text-xs font-bold text-gray-400 uppercase">Atas Nama</th>
+                                        <th class="text-left px-5 py-3 text-xs font-bold text-gray-400 uppercase">No. Rekening</th>
+                                        <th class="text-left px-5 py-3 text-xs font-bold text-gray-400 uppercase">Status</th>
                                         <th class="text-left px-5 py-3 text-xs font-bold text-gray-400 uppercase">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody id="bankTableBody">
                                     @forelse ($banks as $bank)
-                                        <tr class="border-t border-pink-50 hover:bg-pink-50/30 transition-colors bank-row">
-                                            <td class="px-5 py-4 text-sm text-gray-600">{{ $loop->iteration }}</td>
-                                            <td class="px-5 py-4" data-label="Nama Bank">
-                                                <div class="flex items-center gap-2.5">
-                                                    <div class="w-8 h-8 rounded-xl bg-pink-50 flex items-center justify-center overflow-hidden">
-                                                        @if (!empty($bank->logo))
-                                                            <img src="{{ asset('storage/' . $bank->logo) }}"
-                                                                alt="{{ $bank->nama_bank }}" class="w-8 h-8 object-contain">
-                                                        @else
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13"
-                                                                viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                                                                class="text-[#EC4899]">
-                                                                <path d="M5 18H19M5 18C3.89543 18 3 17.1046 3 16V8C3 6.89543 3.89543 6 5 6H19C20.1046 6 21 6.89543 21 8V16C21 17.1046 20.1046 18 19 18M5 18L5 20M19 18L19 20" />
-                                                                <circle cx="7" cy="14" r="1.5" fill="currentColor" />
-                                                                <circle cx="17" cy="14" r="1.5" fill="currentColor" />
-                                                                <path d="M5 9H9V12H5V9Z" />
-                                                            </svg>
-                                                        @endif
-                                                    </div>
-                                                    <p class="text-sm font-semibold text-gray-800 nm_bank">{{ $bank->nama_bank }}</p>
+                                    <tr class="border-t border-pink-50 hover:bg-pink-50/30 transition-colors bank-row">
+                                        <td class="px-5 py-4 text-sm text-gray-600">{{ $loop->iteration }}</td>
+                                        <td class="px-5 py-4" data-label="Nama Bank">
+                                            <div class="flex items-center gap-2.5">
+                                                <div class="w-8 h-8 rounded-xl bg-pink-50 flex items-center justify-center overflow-hidden">
+                                                    @if (!empty($bank->logo))
+                                                        <img src="{{ asset('storage/' . $bank->logo) }}"
+                                                            alt="{{ $bank->nama_bank }}" class="w-8 h-8 object-contain">
+                                                    @else
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13"
+                                                            viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                                            class="text-[#EC4899]">
+                                                            <path d="M5 18H19M5 18C3.89543 18 3 17.1046 3 16V8C3 6.89543 3.89543 6 5 6H19C20.1046 6 21 6.89543 21 8V16C21 17.1046 20.1046 18 19 18M5 18L5 20M19 18L19 20" />
+                                                            <circle cx="7" cy="14" r="1.5" fill="currentColor" />
+                                                            <circle cx="17" cy="14" r="1.5" fill="currentColor" />
+                                                            <path d="M5 9H9V12H5V9Z" />
+                                                        </svg>
+                                                    @endif
                                                 </div>
-                                            </td>
-                                            <td class="px-5 py-4 text-sm text-gray-600" data-label="Nama Pemilik">{{ $bank->nama_pemilik }}</td>
-                                            <td class="px-5 py-4 text-sm text-gray-600 font-mono" data-label="Nomor Rekening">{{ $bank->no_rekening }}</td>
-                                            <td class="px-5 py-4" data-label="Aksi">
-                                                <div class="flex gap-1.5">
-                                                    <a href="{{ route('admin.bank.edit', $bank->id) }}"
-                                                        class="w-7 h-7 rounded-lg bg-amber-50 text-amber-500 hover:bg-amber-100 flex items-center justify-center"
-                                                        title="Edit">
+                                                <p class="text-sm font-semibold text-gray-800 nm_bank">{{ $bank->nama_bank }}</p>
+                                            </div>
+                                        </td>
+                                        <td class="px-5 py-4 text-sm text-gray-600 font-mono" data-label="Kode Bank">{{ $bank->kode_bank ?? '-' }}</td>
+                                        <td class="px-5 py-4" data-label="Tipe">
+                                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold
+                                                @if($bank->tipe === 'transfer') bg-blue-50 text-blue-600
+                                                @elseif($bank->tipe === 'ewallet') bg-purple-50 text-purple-600
+                                                @else bg-green-50 text-green-600 @endif">
+                                                <i class="fa-solid @if($bank->tipe === 'transfer') fa-building-columns @elseif($bank->tipe === 'ewallet') fa-wallet @else fa-qrcode @endif text-[10px]"></i>
+                                                {{ ucfirst($bank->tipe) }}
+                                            </span>
+                                        </td>
+                                        <td class="px-5 py-4 text-sm text-gray-600" data-label="Atas Nama">{{ $bank->atas_nama }}</td>
+                                        <td class="px-5 py-4 text-sm text-gray-600 font-mono" data-label="No. Rekening">{{ $bank->no_rekening ?? '-' }}</td>
+                                        <td class="px-5 py-4" data-label="Status">
+                                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold
+                                                {{ $bank->is_active ? 'bg-emerald-50 text-emerald-600' : 'bg-gray-50 text-gray-500' }}">
+                                                {{ $bank->is_active ? 'Aktif' : 'Nonaktif' }}
+                                            </span>
+                                        </td>
+                                        <td class="px-5 py-4" data-label="Aksi">
+                                            <div class="flex gap-1.5">
+                                                <a href="{{ route('admin.bank.edit', $bank->id) }}"
+                                                    class="w-7 h-7 rounded-lg bg-amber-50 text-amber-500 hover:bg-amber-100 flex items-center justify-center"
+                                                    title="Edit">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11"
+                                                        viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                        <path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                                        <path d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z"></path>
+                                                    </svg>
+                                                </a>
+                                                <form action="{{ route('admin.bank.destroy', $bank->id) }}" method="POST"
+                                                    onsubmit="return confirm('Yakin ingin menghapus bank ini?')"
+                                                    class="inline">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit"
+                                                        class="w-7 h-7 rounded-lg bg-red-50 text-red-400 hover:bg-red-100 flex items-center justify-center">
                                                         <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11"
                                                             viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                                             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                            <path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                                                            <path d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z"></path>
+                                                            <path d="M3 6h18"></path>
+                                                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                                                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                                                            <line x1="10" y1="11" x2="10" y2="17"></line>
+                                                            <line x1="14" y1="11" x2="14" y2="17"></line>
                                                         </svg>
-                                                    </a>
-                                                    <form action="{{ route('admin.bank.destroy', $bank->id) }}" method="POST"
-                                                        onsubmit="return confirm('Yakin ingin menghapus bank ini?')"
-                                                        class="inline">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit"
-                                                            class="w-7 h-7 rounded-lg bg-red-50 text-red-400 hover:bg-red-100 flex items-center justify-center">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11"
-                                                                viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                                <path d="M3 6h18"></path>
-                                                                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
-                                                                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
-                                                                <line x1="10" y1="11" x2="10" y2="17"></line>
-                                                                <line x1="14" y1="11" x2="14" y2="17"></line>
-                                                            </svg>
-                                                        </button>
-                                                    </form>
-                                                </div>
-                                            </td>
-                                        </tr>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
                                     @empty
-                                        <tr>
-                                            <td colspan="5" class="px-5 py-10 text-center text-gray-400 text-sm">
-                                                <i class="fa-regular fa-face-frown text-4xl block mb-3"></i>
-                                                Belum ada data bank
-                                            </td>
-                                        </tr>
+                                    <tr>
+                                        <td colspan="8" class="px-5 py-10 text-center text-gray-400 text-sm">
+                                            <i class="fa-regular fa-face-frown text-4xl block mb-3"></i>
+                                            Belum ada data bank
+                                        </td>
+                                    </tr>
                                     @endforelse
                                 </tbody>
                             </table>

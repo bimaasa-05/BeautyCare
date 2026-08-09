@@ -216,6 +216,25 @@
                                             <p class="text-[11px] text-amber-500">Lampirkan bukti pembayaran untuk verifikasi</p>
                                         </div>
                                     </div>
+
+                                    <div class="form-group mb-4">
+                                        <label class="form-label">
+                                            <i class="fa-solid fa-building-columns text-pink-400 mr-1"></i>Pilih Bank <span class="text-red-500">*</span>
+                                        </label>
+                                        <select name="bank_id" id="bank_id"
+                                            class="form-input-custom @error('bank_id') border-red-400 @enderror">
+                                            <option value="">-- Pilih Bank --</option>
+                                            @foreach ($banks as $bank)
+                                                <option value="{{ $bank->id }}" {{ old('bank_id') == $bank->id ? 'selected' : '' }}>
+                                                    {{ $bank->nama_bank }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        @error('bank_id')
+                                            <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+
                                     <div class="mb-4">
                                         <label class="form-label">
                                             <i class="fa-solid fa-flag text-pink-400 mr-1"></i>Status <span class="text-red-500">*</span>
