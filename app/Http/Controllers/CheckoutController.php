@@ -228,6 +228,9 @@ class CheckoutController extends Controller
                 return back()->with('error', 'Promo yang dipilih tidak berlaku untuk produk yang dibeli.');
             }
 
+            $promoObj = $idPromo ? Promo::find($idPromo) : null;
+            $isCashbackPromo = $promoObj && $promoObj->jenis_promo === 'Cashback';
+
             $memberInfo = $this->hitungDiskonMember($pelanggan, $subtotal);
             $memberDiskon = $memberInfo['diskon'];
 
@@ -235,7 +238,10 @@ class CheckoutController extends Controller
             $diskon = $pakaiPromo ? $promoDiskon : $memberDiskon;
 
             $catatanDiskon = '';
-            if ($pakaiPromo) {
+            if ($isCashbackPromo) {
+                $this->tandaiPromo($idPromo, $user->id);
+                $catatanDiskon = 'Cashback: ' . number_format((float) $promoObj->nilai, 0, ',', '.') . ' masuk saldo setelah Lunas';
+            } elseif ($pakaiPromo) {
                 $this->tandaiPromo($idPromo, $user->id);
                 $catatanDiskon = 'Diskon: Promo';
             } elseif ($memberDiskon > 0) {
@@ -248,11 +254,12 @@ class CheckoutController extends Controller
         $lastId = Transaksi::max('id_transaksi') + 1;
         $noInvoice = 'INV-' . date('Ymd') . '-' . str_pad($lastId, 4, '0', STR_PAD_LEFT);
 
-        return DB::transaction(function () use ($request, $user, $pelanggan, $isMembership, $items, $subtotal, $diskon, $pakaiPromo, $idPromo, $catatanDiskon, $promoDiskon, $memberInfo, $total, $bank, $noInvoice) {
+        return DB::transaction(function () use ($request, $user, $pelanggan, $isMembership, $items, $subtotal, $diskon, $pakaiPromo, $idPromo, $catatanDiskon, $promoDiskon, $memberInfo, $total, $bank, $noInvoice, $isCashbackPromo) {
             $transaksi = Transaksi::create([
                 'id_pelanggan' => $pelanggan->id_pelanggan,
                 'id_user' => $user->id,
                 'sumber' => 'online',
+                'jenis_transaksi' => 'Pesanan Online',
                 'no_invoice' => $noInvoice,
                 'tanggal' => now()->toDateString(),
                 'subtotal' => $subtotal,
@@ -266,7 +273,7 @@ class CheckoutController extends Controller
                 'status' => 'Menunggu Pembayaran',
             ]);
 
-            // Proses saldo & cashback
+            // Proses saldo (debit saja di sini); cashback dikredit setelah Lunas
             $pakaiSaldo = (float) $request->input('pakai_saldo', 0);
             if ($pakaiSaldo > 0 && !$isMembership) {
                 $saldoService = new SaldoAkunService();
@@ -275,7 +282,8 @@ class CheckoutController extends Controller
                     $total,
                     $pakaiSaldo,
                     $transaksi->id_transaksi,
-                    $idPromo
+                    $idPromo,
+                    false // jangan kredit cashback saat order masih Menunggu Pembayaran
                 );
                 $transaksi->update(['saldo_terpakai' => $saldoResult['pakai_saldo']]);
                 $total = $saldoResult['sisa_bayar']; // Update total for payment
@@ -303,6 +311,8 @@ class CheckoutController extends Controller
                 if ($diskon > 0 && $subtotal > 0) {
                     $itemDiskon = (int) round($diskon * $itemSubtotal / $subtotal);
                     $itemIdPromo = $pakaiPromo ? $idPromo : null;
+                } elseif ($isCashbackPromo) {
+                    $itemIdPromo = $idPromo;
                 }
                 DetailTransaksi::create([
                     'id_transaksi' => $transaksi->id_transaksi,
