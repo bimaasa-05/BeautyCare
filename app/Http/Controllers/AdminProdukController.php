@@ -27,7 +27,6 @@ class AdminProdukController extends Controller
             'nm_produk'          => 'required|string|max:50',
             'satuan'             => 'required|string|max:50',
             'harga_jual'         => 'required|string|regex:/^[0-9.,]+$/',
-            'stok'               => 'required|integer',
             'status'             => 'required|string|in:Tersedia,Habis,Belum Restok',
             'deskripsi'          => 'nullable|string',
         ]);
@@ -48,7 +47,7 @@ class AdminProdukController extends Controller
         buatNotif(auth()->id(), 'Produk Ditambahkan', 'Produk ' . $request->nm_produk . ' berhasil ditambahkan', 'Lainnya', route('admin.produk.index'));
 
         return redirect()->route('admin.produk.index')
-            ->with('success', 'Produk berhasil ditambahkan. Catat stok masuk melalui menu Mutasi Stok.');
+            ->with('success', 'Produk berhasil ditambahkan. Tambah stok melalui menu Transaksi → Pengeluaran (Transaksi Keluar).');
     }
 
     public function edit(Produk $produk)
@@ -64,7 +63,6 @@ class AdminProdukController extends Controller
             'nm_produk'          => 'required|string|max:50',
             'satuan'             => 'required|string|max:50',
             'harga_jual'         => 'required|string|regex:/^[0-9.,]+$/',
-            'stok'               => 'required|integer',
             'status'             => 'required|string|in:Tersedia,Habis,Belum Restok',
             'deskripsi'          => 'nullable|string',
         ]);
@@ -73,7 +71,7 @@ class AdminProdukController extends Controller
             'harga_jual' => (int) str_replace('.', '', $request->harga_jual),
         ]);
 
-        $data = $request->all();
+        $data = $request->except(['stok', 'foto']);
 
         if ($request->hasFile('foto')) {
             $data['foto'] = $request->file('foto')->store('produk', 'public');

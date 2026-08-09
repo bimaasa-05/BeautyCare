@@ -305,15 +305,6 @@
                                         Filter
                                     </button>
                                 </form>
-                                <a href="{{ route('admin.stok.create') }}"
-                                    class="flex items-center gap-1.5 px-3 py-2 bg-gradient-to-r from-[#EC4899] to-[#BE185D] text-white rounded-xl text-xs font-bold shadow-sm hover:opacity-95">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round">
-                                        <path d="M5 12h14"></path>
-                                        <path d="M12 5v14"></path>
-                                    </svg> Catat Barang Masuk
-                                </a>
                                 <a href="{{ route('admin.stok.refund-create') }}"
                                     class="flex items-center gap-1.5 px-3 py-2 bg-gradient-to-r from-violet-500 to-purple-700 text-white rounded-xl text-xs font-bold shadow-sm hover:opacity-95">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"
@@ -327,7 +318,7 @@
                         </div>
                         <div class="px-5 pt-4 text-[11px] text-gray-400">
                             <i class="fa-solid fa-circle-info text-[#EC4899] mr-1"></i>
-                            Stok produk adalah stok keseluruhan toko saat ini, bukan stok per supplier. Setiap catatan barang masuk otomatis menambah stok produk.
+                            Pembelian stok dari supplier dicatat melalui menu Transaksi → Pengeluaran. Setiap catatan barang masuk otomatis menambah stok produk.
                         </div>
                         <div class="flex items-center gap-2 px-5 pt-4 flex-wrap">
                             <a href="{{ route('admin.stok.index', request()->only(['dari', 'sampai'])) }}"

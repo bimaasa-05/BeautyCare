@@ -41,55 +41,6 @@ class AdminStokController extends Controller
         ));
     }
 
-    public function create()
-    {
-        $produk   = Produk::orderBy('nm_produk')->get();
-        $supplier = Supplier::with('produk')->where('status', 'Aktif')->orderBy('nm_supplier')->get();
-
-        return view('admin.stok.create', compact('produk', 'supplier'));
-    }
-
-    public function store(Request $request)
-    {
-        $request->validate([
-            'id_produk'   => 'required|integer|exists:produk,id_produk',
-            'id_supplier' => 'required|integer|exists:supplier,id_supplier',
-            'tanggal'     => 'nullable|date',
-            'jumlah'      => 'required|integer|min:1',
-            'keterangan'  => 'nullable|string|max:255',
-        ]);
-
-        $supplier = Supplier::with('produk')->findOrFail($request->id_supplier);
-
-        if (!$supplier->produk->contains('id_produk', $request->id_produk)) {
-            return back()->withErrors(['id_produk' => 'Produk harus sesuai dengan produk yang disuplai oleh ' . $supplier->nm_supplier . '.']);
-        }
-
-        $hargaSatuan = $supplier->produk->firstWhere('id_produk', $request->id_produk)->pivot->harga_beli;
-
-        $produk    = Produk::findOrFail($request->id_produk);
-        $stokLama  = $produk->stok;
-        $produk->increment('stok', $request->jumlah);
-
-        catatStok(
-            $produk->id_produk,
-            'Masuk',
-            $request->jumlah,
-            $stokLama,
-            $produk->stok,
-            $request->keterangan ?? 'Barang masuk dari supplier',
-            $request->id_supplier,
-            $produk->id_produk,
-            'Restok',
-            $hargaSatuan
-        );
-
-        buatNotif(auth()->id(), 'Barang Masuk', $produk->nm_produk . ' +' . $request->jumlah . ' dari supplier', 'Lainnya', route('admin.stok.index'));
-
-        return redirect()->route('admin.stok.index')
-            ->with('success', 'Stok masuk berhasil dicatat.');
-    }
-
     public function refundCreate()
     {
         $produk   = Produk::orderBy('nm_produk')->get();
