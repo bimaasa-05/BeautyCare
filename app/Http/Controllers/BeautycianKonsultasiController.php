@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\ActivityLogger;
 use App\Models\Konsultasi;
 use Illuminate\Http\Request;
 
@@ -35,6 +36,8 @@ class BeautycianKonsultasiController extends Controller
         }
 
         $konsultasi->update(['status' => 'selesai']);
+
+        ActivityLogger::log('Mengubah Status', auth()->user()->nama . ' menyelesaikan konsultasi "' . $konsultasi->topik . '" untuk ' . ($konsultasi->pelanggan->nm_pelanggan ?? 'Pelanggan'), 'Konsultasi', $konsultasi->id_konsultasi, ['status' => 'dikonfirmasi'], ['status' => 'selesai']);
 
         if ($konsultasi->pelanggan && $konsultasi->pelanggan->id_user) {
             buatNotif($konsultasi->pelanggan->id_user, 'Konsultasi Selesai', 'Konsultasi "' . $konsultasi->topik . '" telah selesai. Terima kasih telah berkonsultasi dengan kami.', 'Konsultasi', route('pelanggan.konsultasi.index'));
