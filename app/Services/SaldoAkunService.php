@@ -50,6 +50,46 @@ class SaldoAkunService
         });
     }
 
+    public function kreditTopUp(int $idPelanggan, float $nominal, int $idTransaksi): ?SaldoMutasi
+    {
+        return $this->kreditCashback($idPelanggan, $nominal, $idTransaksi, 'topup', 'Top up saldo');
+    }
+
+    public function kreditRefund(int $idPelanggan, float $nominal, int $refId, string $keterangan = 'Pengembalian saldo pesanan'): ?SaldoMutasi
+    {
+        if ($nominal <= 0) return null;
+
+        // Guard anti-dobel: sekali refund per referensi (ref_type 'refund' terpisah dari 'transaksi' agar tidak memblokir cashback)
+        $sudahAda = SaldoMutasi::where('id_pelanggan', $idPelanggan)
+            ->where('type', 'kredit')
+            ->where('ref_type', 'refund')
+            ->where('ref_id', $refId)
+            ->exists();
+
+        if ($sudahAda) return null;
+
+        return DB::transaction(function () use ($idPelanggan, $nominal, $refId, $keterangan) {
+            $pelanggan = Pelanggan::lockForUpdate()->find($idPelanggan);
+            if (!$pelanggan) return null;
+
+            $sebelum = (float) $pelanggan->saldo;
+            $sesudah = $sebelum + $nominal;
+
+            $pelanggan->update(['saldo' => $sesudah]);
+
+            return SaldoMutasi::create([
+                'id_pelanggan' => $idPelanggan,
+                'type' => 'kredit',
+                'nominal' => $nominal,
+                'saldo_sebelum' => $sebelum,
+                'saldo_sesudah' => $sesudah,
+                'keterangan' => $keterangan,
+                'ref_type' => 'refund',
+                'ref_id' => $refId,
+            ]);
+        });
+    }
+
     public function pakaiSaldo(int $idPelanggan, float $nominal, int $refId, string $refType = 'transaksi', string $keterangan = 'Pembayaran pakai saldo'): ?SaldoMutasi
     {
         if ($nominal <= 0) return null;
