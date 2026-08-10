@@ -2,6 +2,7 @@
 @php
     $masterDataActive = request()->routeIs('admin.user.index', 'admin.pelanggan.index', 'admin.karyawan.index', 'admin.supplier.index', 'admin.bank.*');
     $layananProdukActive = request()->routeIs('admin.layanan.index', 'admin.kategori.index', 'admin.produk.index', 'admin.stok.*');
+    $operasionalActive = request()->routeIs('admin.reservasi.index', 'admin.transaksi.index', 'admin.pengeluaran.*', 'admin.konsultasi.*');
 @endphp
 <aside class="sidebar" id="sidebar">
     <div class="sidebar-logo">
@@ -159,24 +160,8 @@
         </div>
 
         <div class="nav-section">
-            <div class="nav-section-title">Operasional</div>
-            <a href="{{ route('admin.reservasi.index') }}"
-                class="nav-item {{ request()->routeIs('admin.reservasi.index') ? 'active' : '' }}"
-                title="Kelola semua reservasi / booking">
-                <span class="nav-icon">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-                        <line x1="16" y1="2" x2="16" y2="6" />
-                        <line x1="8" y1="2" x2="8" y2="6" />
-                        <line x1="3" y1="10" x2="21" y2="10" />
-                    </svg>
-                </span>
-                Data Reservasi
-            </a>
-            <a href="{{ route('admin.transaksi.index') }}"
-                class="nav-item {{ request()->routeIs('admin.transaksi.index') ? 'active' : '' }}"
-                title="Kelola semua data transaksi">
+            <div class="nav-item {{ $operasionalActive ? 'active' : '' }}" onclick="toggleSubnav(this)"
+                title="Kelola operasional bisnis">
                 <span class="nav-icon">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                         stroke-linecap="round" stroke-linejoin="round">
@@ -187,30 +172,28 @@
                         <polyline points="10 9 9 9 8 9"></polyline>
                     </svg>
                 </span>
-                Data Transaksi
-            </a>
-            <a href="{{ route('admin.pengeluaran.index') }}"
-                class="nav-item {{ request()->routeIs('admin.pengeluaran.*') ? 'active' : '' }}"
-                title="Kelola semua data pengeluaran">
-                <span class="nav-icon">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                Operasional
+                <span class="nav-arrow {{ $operasionalActive ? 'open' : '' }}">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                         stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+                        <polyline points="6 9 12 15 18 9" />
                     </svg>
                 </span>
-                Pengeluaran
-            </a>
-            <a href="{{ route('admin.konsultasi.index') }}"
-                class="nav-item {{ request()->routeIs('admin.konsultasi.*') ? 'active' : '' }}"
-                title="Monitor permintaan konsultasi member">
-                <span class="nav-icon">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-                    </svg>
-                </span>
-                Konsultasi
-            </a>
+            </div>
+            <div class="sub-nav {{ $operasionalActive ? 'open' : '' }}">
+                <a href="{{ route('admin.reservasi.index') }}"
+                    class="sub-item {{ request()->routeIs('admin.reservasi.index') ? 'active' : '' }}"
+                    title="Kelola semua reservasi / booking">Data Reservasi</a>
+                <a href="{{ route('admin.transaksi.index') }}"
+                    class="sub-item {{ request()->routeIs('admin.transaksi.index') ? 'active' : '' }}"
+                    title="Kelola semua data transaksi">Data Transaksi</a>
+                <a href="{{ route('admin.pengeluaran.index') }}"
+                    class="sub-item {{ request()->routeIs('admin.pengeluaran.*') ? 'active' : '' }}"
+                    title="Kelola semua data pengeluaran">Pengeluaran</a>
+                <a href="{{ route('admin.konsultasi.index') }}"
+                    class="sub-item {{ request()->routeIs('admin.konsultasi.*') ? 'active' : '' }}"
+                    title="Monitor permintaan konsultasi member">Konsultasi</a>
+            </div>
         </div>
 
         <div class="nav-section">
