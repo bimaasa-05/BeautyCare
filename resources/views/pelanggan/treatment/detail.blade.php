@@ -614,11 +614,7 @@
 
                         @if($booking->karyawan)
                         <div class="beautycian-strip">
-                            @if($booking->karyawan->foto)
-                                <img class="bs-avatar" src="{{ asset('storage/' . $booking->karyawan->foto) }}" alt="{{ $booking->karyawan->nama }}">
-                            @else
-                                <div class="bs-avatar">{{ strtoupper(substr($booking->karyawan->nama, 0, 1)) }}</div>
-                            @endif
+                            <img class="bs-avatar" src="{{ $booking->karyawan->user?->foto_url ?? 'https://ui-avatars.com/api/?name=' . urlencode($booking->karyawan->nama) . '&background=FF4F87&color=fff&size=80' }}" alt="{{ $booking->karyawan->nama }}">
                             <div>
                                 <div class="bs-name">{{ $booking->karyawan->nama }}</div>
                                 <div class="bs-role">
