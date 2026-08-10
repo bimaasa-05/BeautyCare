@@ -27,6 +27,16 @@ class ExpirePesanan extends Command
                 continue;
             }
 
+            $saldoTerpakai = (float) ($transaksi->saldo_terpakai ?? 0);
+            if ($saldoTerpakai > 0 && $transaksi->id_pelanggan) {
+                (new \App\Services\SaldoAkunService())->kreditRefund(
+                    $transaksi->id_pelanggan,
+                    $saldoTerpakai,
+                    $transaksi->id_transaksi,
+                    'Pengembalian saldo — pembayaran kadaluarsa (INV ' . $transaksi->no_invoice . ')'
+                );
+            }
+
             $transaksi->update(['status' => 'Kadaluarsa']);
             $bayar->update(['status' => 'Kadaluarsa']);
 
