@@ -459,8 +459,8 @@
                         <div class="booking-list card-scroll">
                             @forelse($checkinHariIni as $b)
                                 <div class="booking-item">
-                                    <img src="https://ui-avatars.com/api/?name={{ urlencode($b->pelanggan->nm_pelanggan ?? 'Unknown') }}&background=FFE5EF&color=FF4F87&size=40"
-                                        alt="{{ $b->pelanggan->nm_pelanggan ?? '-' }}">
+                                    <img src="{{ $b->pelanggan?->foto_url ?? 'https://ui-avatars.com/api/?name=Unknown&background=FFE5EF&color=FF4F87&size=40' }}"
+                                        alt="{{ $b->pelanggan->nm_pelanggan ?? '-' }}" class="booking-avatar" style="width:40px;height:40px;border-radius:50%;object-fit:cover;flex-shrink:0;">
                                     <div class="booking-info">
                                         <h4>{{ $b->pelanggan->nm_pelanggan ?? '-' }}</h4>
                                         <p>{{ $b->detail->pluck('layanan.nm_layanan')->implode(', ') ?: 'Tanpa detail' }}
