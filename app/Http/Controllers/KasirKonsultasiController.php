@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\ActivityLogger;
 use App\Models\Konsultasi;
 use App\Models\Pelanggan;
 use App\Models\User;
@@ -47,6 +48,8 @@ class KasirKonsultasiController extends Controller
 
         $nama = $konsultasi->pelanggan->nm_pelanggan ?? 'Pelanggan';
 
+        ActivityLogger::log('Mengubah Status', auth()->user()->nama . ' mengkonfirmasi konsultasi ' . $nama . ' "' . $konsultasi->topik . '" dan menugaskan ke terapis', 'Konsultasi', $konsultasi->id_konsultasi, ['status' => 'menunggu'], ['status' => 'dikonfirmasi', 'id_karyawan' => $request->id_karyawan]);
+
         buatNotif($konsultasi->id_karyawan, 'Konsultasi Ditugaskan', 'Konsultasi ' . $nama . ' "' . $konsultasi->topik . '" ditugaskan ke Anda. Segera hubungi pelanggan.', 'Konsultasi', route('beautycian.konsultasi.index'));
 
         if ($konsultasi->pelanggan && $konsultasi->pelanggan->id_user) {
@@ -69,6 +72,8 @@ class KasirKonsultasiController extends Controller
         ]);
 
         $konsultasi->update(['status' => 'ditolak']);
+
+        ActivityLogger::log('Mengubah Status', auth()->user()->nama . ' menolak konsultasi "' . $konsultasi->topik . '"' . ($request->alasan ? ' dengan alasan: ' . $request->alasan : ''), 'Konsultasi', $konsultasi->id_konsultasi, ['status' => 'menunggu'], ['status' => 'ditolak']);
 
         if ($konsultasi->pelanggan && $konsultasi->pelanggan->id_user) {
             buatNotif($konsultasi->pelanggan->id_user, 'Konsultasi Ditolak', 'Konsultasi "' . $konsultasi->topik . '" ditolak' . ($request->alasan ? ' dengan alasan: ' . $request->alasan : '.') . ' Kuota Anda tidak terpakai.', 'Konsultasi', route('pelanggan.konsultasi.index'));
