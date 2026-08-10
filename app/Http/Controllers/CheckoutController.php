@@ -152,7 +152,7 @@ class CheckoutController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'metode' => 'required|in:QRIS,Transfer',
+            'metode' => 'required|in:QRIS,Transfer,Saldo',
             'provider' => 'required|string|max:50',
             'bank_id' => 'nullable|required_if:metode,Transfer|integer|exists:banks,id',
             'id_promo' => 'nullable|integer',
@@ -165,6 +165,7 @@ class CheckoutController extends Controller
         $providers = [
             'QRIS' => ['QRIS'],
             'Transfer' => Bank::active()->transfer()->pluck('nama_bank')->toArray(),
+            'Saldo' => ['Saldo Akun'],
         ];
 
         abort_unless(in_array($request->provider, $providers[$request->metode]), 422);
@@ -255,6 +256,23 @@ class CheckoutController extends Controller
         $noInvoice = 'INV-' . date('Ymd') . '-' . str_pad($lastId, 4, '0', STR_PAD_LEFT);
 
         return DB::transaction(function () use ($request, $user, $pelanggan, $isMembership, $items, $subtotal, $diskon, $pakaiPromo, $idPromo, $catatanDiskon, $promoDiskon, $memberInfo, $total, $bank, $noInvoice, $isCashbackPromo) {
+            // Pembayaran saldo penuh: validasi sebelum transaksi dibuat
+            $pakaiSaldo = (float) $request->input('pakai_saldo', 0);
+            $bayarSaldoPenuh = $request->metode === 'Saldo';
+
+            if ($bayarSaldoPenuh) {
+                if ($isMembership) {
+                    return back()->with('error', 'Membership tidak dapat dibayar dengan saldo akun.');
+                }
+
+                $saldoTersedia = (float) $pelanggan->saldo;
+                if ($saldoTersedia < (float) $total) {
+                    return back()->with('error', 'Saldo akun Anda Rp ' . number_format($saldoTersedia, 0, ',', '.') . ' tidak cukup untuk total Rp ' . number_format((float) $total, 0, ',', '.') . '. Silakan pilih metode kedua untuk sisa pembayaran.');
+                }
+                $pakaiSaldo = (float) $total;
+                $catatanDiskon = trim($catatanDiskon . ($catatanDiskon ? ' | ' : '') . 'Bayar saldo akun');
+            }
+
             $transaksi = Transaksi::create([
                 'id_pelanggan' => $pelanggan->id_pelanggan,
                 'id_user' => $user->id,
@@ -274,7 +292,6 @@ class CheckoutController extends Controller
             ]);
 
             // Proses saldo (debit saja di sini); cashback dikredit setelah Lunas
-            $pakaiSaldo = (float) $request->input('pakai_saldo', 0);
             if ($pakaiSaldo > 0 && !$isMembership) {
                 $saldoService = new SaldoAkunService();
                 $saldoResult = $saldoService->prosesCheckout(
@@ -327,43 +344,80 @@ class CheckoutController extends Controller
                 ]);
             }
 
-            $expiresAt = $request->metode === 'QRIS'
-                ? now()->addMinutes(3) // Hitung Mundur Dalam 3 Menit
-                : now()->addMinutes(15); // Transfer 15 menit
+            $transaksiStatus = 'Menunggu Pembayaran';
 
-            $pembayaranData = [
-                'id_transaksi' => $transaksi->id_transaksi,
-                'metode' => $request->metode,
-                'provider' => $request->provider,
-                'kode_pembayaran' => self::generateKodePembayaran($request->metode, $transaksi->id_transaksi, $bank),
-                'nominal' => $total,
-                'status' => 'Menunggu',
-                'expires_at' => $expiresAt,
-            ];
+            if ($bayarSaldoPenuh) {
+                $now = now();
+                $pembayaranData = [
+                    'id_transaksi' => $transaksi->id_transaksi,
+                    'metode' => 'Saldo',
+                    'provider' => 'Saldo Akun',
+                    'kode_pembayaran' => 'SLD-' . str_pad((string) $transaksi->id_transaksi, 8, '0', STR_PAD_LEFT),
+                    'nominal' => 0,
+                    'status' => 'Dibayar',
+                    'expires_at' => $now,
+                    'paid_at' => $now,
+                    'no_referensi' => 'SALDO-' . $transaksi->id_transaksi,
+                ];
 
-            // Add bank info for Transfer
-            if ($bank) {
-                $pembayaranData['bank_id'] = $bank->id;
-                $pembayaranData['no_rekening_tujuan'] = $bank->no_rekening;
-                $pembayaranData['atas_nama_tujuan'] = $bank->atas_nama;
+                Pembayaran::create($pembayaranData);
+
+                $transaksiStatus = 'Sedang Diproses';
+            } else {
+                $expiresAt = $request->metode === 'QRIS'
+                    ? now()->addMinutes(3) // Hitung Mundur Dalam 3 Menit
+                    : now()->addMinutes(15); // Transfer 15 menit
+
+                $pembayaranData = [
+                    'id_transaksi' => $transaksi->id_transaksi,
+                    'metode' => $request->metode,
+                    'provider' => $request->provider,
+                    'kode_pembayaran' => self::generateKodePembayaran($request->metode, $transaksi->id_transaksi, $bank),
+                    'nominal' => $total,
+                    'status' => 'Menunggu',
+                    'expires_at' => $expiresAt,
+                ];
+
+                // Add bank info for Transfer
+                if ($bank) {
+                    $pembayaranData['bank_id'] = $bank->id;
+                    $pembayaranData['no_rekening_tujuan'] = $bank->no_rekening;
+                    $pembayaranData['atas_nama_tujuan'] = $bank->atas_nama;
+                }
+
+                Pembayaran::create($pembayaranData);
             }
 
-            Pembayaran::create($pembayaranData);
+            $transaksi->update(['status' => $transaksiStatus]);
 
             if (!$request->beli && !$isMembership) {
                 Troli::where('id_user', $user->id)->delete();
             }
 
-            ActivityLogger::log('Menambahkan', $user->nama . ' membuat pesanan ' . $noInvoice . ' via ' . $request->provider . ' (menunggu pembayaran)', 'Transaksi', $transaksi->id_transaksi);
+            $targetPesanan = $bayarSaldoPenuh
+                ? route('pelanggan.pesanan.show', $transaksi->id_transaksi)
+                : route('pelanggan.pembayaran.show', $transaksi->id_transaksi);
 
-            buatNotif($user->id, 'Pesanan Dibuat', 'Pesanan ' . $noInvoice . ' berhasil dibuat. Silakan selesaikan pembayaran.', 'Transaksi', route('pelanggan.pembayaran.show', $transaksi->id_transaksi));
+            if ($bayarSaldoPenuh) {
+                ActivityLogger::log('Menambahkan', $user->nama . ' membuat pesanan ' . $noInvoice . ' dibayar penuh dengan saldo akun (menunggu verifikasi kasir)', 'Transaksi', $transaksi->id_transaksi);
+
+                buatNotif($user->id, 'Pesanan Dibuat', 'Pesanan ' . $noInvoice . ' dibayar penuh dengan saldo akun. Menunggu verifikasi kasir.', 'Transaksi', $targetPesanan);
+            } else {
+                ActivityLogger::log('Menambahkan', $user->nama . ' membuat pesanan ' . $noInvoice . ' via ' . $request->provider . ' (menunggu pembayaran)', 'Transaksi', $transaksi->id_transaksi);
+
+                buatNotif($user->id, 'Pesanan Dibuat', 'Pesanan ' . $noInvoice . ' berhasil dibuat. Silakan selesaikan pembayaran.', 'Transaksi', $targetPesanan);
+            }
 
             $petugas = \App\Models\User::whereIn('role', ['kasir', 'admin'])->get();
             foreach ($petugas as $petugasUser) {
-                buatNotif($petugasUser->id, 'Pesanan Baru', $user->nama . ' membuat pesanan ' . $noInvoice . ' menunggu pembayaran (' . $request->provider . ').', 'Transaksi', route('kasir.pembayaran.pesanan-online'));
+                $judulPetugas = $bayarSaldoPenuh ? 'Pesanan Baru (Saldo Akun)' : 'Pesanan Baru';
+                $isiPetugas = $bayarSaldoPenuh
+                    ? $user->nama . ' membuat pesanan ' . $noInvoice . ' dibayar penuh dengan saldo akun. Segera verifikasi.'
+                    : $user->nama . ' membuat pesanan ' . $noInvoice . ' menunggu pembayaran (' . $request->provider . ').';
+                buatNotif($petugasUser->id, $judulPetugas, $isiPetugas, 'Transaksi', route('kasir.pembayaran.pesanan-online'));
             }
 
-            return redirect()->route('pelanggan.pembayaran.show', $transaksi->id_transaksi);
+            return redirect($targetPesanan);
         });
     }
 
