@@ -17,6 +17,7 @@ class Pelanggan extends Model
         'alamat',
         'id_member',
         'tgl_mulai_member',
+        'saldo',
         'catatan_alergi',
         'foto',
         'id_user',
@@ -63,6 +64,17 @@ class Pelanggan extends Model
      * Kalau ketemu lewat email/nama tapi id_user masih kosong, otomatis diikat
      * supaya semua alur (checkout, membership, dashboard) memakai baris yang sama.
      */
+    /**
+     * Accessor untuk URL foto profil dengan fallback UI Avatars
+     */
+    public function getFotoUrlAttribute(): string
+    {
+        if ($this->foto) {
+            return asset('storage/' . $this->foto);
+        }
+        return 'https://ui-avatars.com/api/?name=' . urlencode($this->nm_pelanggan) . '&background=FF4F87&color=fff&size=140';
+    }
+
     public static function dariUser($user): ?self
     {
         if (!$user || !$user->id) {
