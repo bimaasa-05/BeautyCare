@@ -114,14 +114,8 @@
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                         <div class="lg:col-span-1">
                             <div class="flex flex-col items-center bg-gradient-to-br from-pink-50/80 to-white rounded-2xl p-6 border border-pink-100/50">
-                                @if($pelanggan->foto)
-                                    <img src="{{ asset('storage/' . $pelanggan->foto) }}" alt="{{ $pelanggan->nm_pelanggan }}"
-                                        class="w-28 h-28 rounded-full object-cover border-4 border-white shadow-md">
-                                @else
-                                    <div class="w-28 h-28 rounded-full bg-pink-400 text-white flex items-center justify-center font-bold text-3xl border-4 border-white shadow-md">
-                                        {{ strtoupper(substr($pelanggan->nm_pelanggan, 0, 2)) }}
-                                    </div>
-                                @endif
+                                <img src="{{ $pelanggan->foto_url }}" alt="{{ $pelanggan->nm_pelanggan }}"
+                                    class="w-28 h-28 rounded-full object-cover border-4 border-white shadow-md">
                                 <h4 class="text-[16px] font-bold text-gray-800 mt-4">{{ $pelanggan->nm_pelanggan }}</h4>
                                 <p class="text-[12px] text-gray-400">{{ $pelanggan->email }}</p>
 
