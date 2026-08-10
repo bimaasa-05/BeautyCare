@@ -34,6 +34,7 @@
         .kanban-card { background: #fff; border-radius: 12px; padding: 14px; margin-bottom: 12px; border: 1px solid var(--border); transition: all 0.2s ease; }
         .kanban-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.06); transform: translateY(-2px); }
         .kanban-card .kc-card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+        .kanban-card .kc-card-header .kc-header-right { margin-left: auto; display: flex; align-items: center; gap: 8px; }
         .kanban-card .kc-card-header .kc-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), #FF7BA6); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0; }
         .kanban-card .kc-card-header .kc-name { font-size: 14px; font-weight: 600; color: var(--dark); }
         .kanban-card .kc-card-body { padding-left: 46px; }
@@ -125,7 +126,7 @@
                         @forelse($akanDimulai as $item)
                         <div class="kanban-card">
                             <div class="kc-card-header">
-                                <div class="kc-avatar">{{ $item->pelanggan ? substr($item->pelanggan->nm_pelanggan, 0, 1) : '?' }}</div>
+                                <div class="kc-avatar"><img src="{{ $item->pelanggan?->foto_url ?? 'https://ui-avatars.com/api/?name=%3F&background=FFE5EF&color=FF4F87&size=40' }}" alt="{{ $item->pelanggan->nm_pelanggan ?? '?' }}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;display:block;"></div>
                                 <div>
                                     <div class="kc-name">{{ $item->pelanggan ? $item->pelanggan->nm_pelanggan : '#' . $item->id_pelanggan }}</div>
                                 </div>
@@ -191,9 +192,15 @@
                         @forelse($sedangBerjalan as $item)
                         <div class="kanban-card">
                             <div class="kc-card-header">
-                                <div class="kc-avatar">{{ $item->pelanggan ? substr($item->pelanggan->nm_pelanggan, 0, 1) : '?' }}</div>
+                                <div class="kc-avatar"><img src="{{ $item->pelanggan?->foto_url ?? 'https://ui-avatars.com/api/?name=%3F&background=FFE5EF&color=FF4F87&size=40' }}" alt="{{ $item->pelanggan->nm_pelanggan ?? '?' }}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;display:block;"></div>
                                 <div>
                                     <div class="kc-name">{{ $item->pelanggan ? $item->pelanggan->nm_pelanggan : '#' . $item->id_pelanggan }}</div>
+                                </div>
+                                <div class="kc-header-right">
+                                    <span class="timer-badge" data-mulai="{{ $item->jam_mulai_aktual ? \Carbon\Carbon::parse($item->jam_mulai_aktual)->format('Y-m-d H:i:s') : \Carbon\Carbon::parse($item->tanggal . ' ' . $item->jam)->format('Y-m-d H:i:s') }}">
+                                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                        Mulai {{ $item->mulaiAktualTxt }} · Berjalan <span class="tick">00:00:00</span>
+                                    </span>
                                 </div>
                             </div>
                             <div class="kc-card-body">
@@ -207,12 +214,6 @@
                                 <div class="kc-time">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                                     {{ \Carbon\Carbon::parse($item->jam)->format('H:i') }}
-                                </div>
-                                <div style="margin-top:6px;">
-                                    <span class="timer-badge" data-mulai="{{ $item->jam_mulai_aktual ? \Carbon\Carbon::parse($item->jam_mulai_aktual)->format('Y-m-d H:i:s') : \Carbon\Carbon::parse($item->tanggal . ' ' . $item->jam)->format('Y-m-d H:i:s') }}">
-                                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                                        Mulai {{ $item->mulaiAktualTxt }} · Berjalan <span class="tick">00:00:00</span>
-                                    </span>
                                 </div>
                                 @if($item->riwayatTreatment)
                                     <div style="margin-top:6px;">
@@ -269,7 +270,7 @@
                         @forelse($selesaiHariIni as $item)
                         <div class="kanban-card">
                             <div class="kc-card-header">
-                                <div class="kc-avatar">{{ $item->pelanggan ? substr($item->pelanggan->nm_pelanggan, 0, 1) : '?' }}</div>
+                                <div class="kc-avatar"><img src="{{ $item->pelanggan?->foto_url ?? 'https://ui-avatars.com/api/?name=%3F&background=FFE5EF&color=FF4F87&size=40' }}" alt="{{ $item->pelanggan->nm_pelanggan ?? '?' }}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;display:block;"></div>
                                 <div>
                                     <div class="kc-name">{{ $item->pelanggan ? $item->pelanggan->nm_pelanggan : '#' . $item->id_pelanggan }}</div>
                                 </div>
