@@ -181,6 +181,15 @@ class CheckoutController extends Controller
         $isMembership = (bool) $request->beli_membership;
 
         $promoDiskon = 0;
+        $pakaiPromo = false;
+        $isCashbackPromo = false;
+        $memberInfo = [
+            'diskon' => 0,
+            'aktif' => false,
+            'level' => null,
+            'diskon_pct' => 0,
+            'sisa' => 0,
+        ];
 
         if ($isMembership) {
             $member = Membership::where('id_member', $request->beli_membership)
