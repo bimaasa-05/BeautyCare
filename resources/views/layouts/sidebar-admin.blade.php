@@ -2,7 +2,7 @@
 @php
     $masterDataActive = request()->routeIs('admin.user.index', 'admin.pelanggan.index', 'admin.karyawan.index', 'admin.supplier.index', 'admin.bank.*');
     $layananProdukActive = request()->routeIs('admin.layanan.index', 'admin.kategori.index', 'admin.produk.index', 'admin.stok.*');
-    $operasionalActive = request()->routeIs('admin.reservasi.index', 'admin.transaksi.index', 'admin.pengeluaran.*', 'admin.konsultasi.*');
+    $operasionalActive = request()->routeIs('admin.reservasi.index', 'admin.transaksi.*', 'admin.konsultasi.*');
 @endphp
 <aside class="sidebar" id="sidebar">
     <div class="sidebar-logo">
@@ -185,11 +185,8 @@
                     class="sub-item {{ request()->routeIs('admin.reservasi.index') ? 'active' : '' }}"
                     title="Kelola semua reservasi / booking">Data Reservasi</a>
                 <a href="{{ route('admin.transaksi.index') }}"
-                    class="sub-item {{ request()->routeIs('admin.transaksi.index') ? 'active' : '' }}"
+                    class="sub-item {{ request()->routeIs('admin.transaksi.*') ? 'active' : '' }}"
                     title="Kelola semua data transaksi">Data Transaksi</a>
-                <a href="{{ route('admin.pengeluaran.index') }}"
-                    class="sub-item {{ request()->routeIs('admin.pengeluaran.*') ? 'active' : '' }}"
-                    title="Kelola semua data pengeluaran">Pengeluaran</a>
                 <a href="{{ route('admin.konsultasi.index') }}"
                     class="sub-item {{ request()->routeIs('admin.konsultasi.*') ? 'active' : '' }}"
                     title="Monitor permintaan konsultasi member">Konsultasi</a>
