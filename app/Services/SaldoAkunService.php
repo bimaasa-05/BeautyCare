@@ -100,9 +100,11 @@ class SaldoAkunService
             $mutasiCashback = $this->kreditCashback($idPelanggan, $cashback, $idTransaksi, 'transaksi', "Cashback promo {$promo->nm_promo}");
         }
 
-        Transaksi::where('id_transaksi', $idTransaksi)->update([
-            'saldo_terpakai' => $pakaiSaldo,
-        ]);
+        if ($pakaiSaldo > 0) {
+            Transaksi::where('id_transaksi', $idTransaksi)->update([
+                'saldo_terpakai' => $pakaiSaldo,
+            ]);
+        }
 
         return [
             'pakai_saldo' => $pakaiSaldo,
