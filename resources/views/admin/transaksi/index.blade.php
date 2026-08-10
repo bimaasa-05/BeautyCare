@@ -184,7 +184,7 @@
                         </div>
                         <div class="ph-text">
                             <h3>Data Transaksi</h3>
-                            <p>Pantau seluruh transaksi penjualan.</p>
+                            <p>Pantau seluruh data transaksi (penjualan, pengeluaran, pemasukan).</p>
                         </div>
                     </div>
                 </div>
@@ -206,8 +206,27 @@
                         </h3>
                         <p class="text-[12px] text-gray-400 mt-0.5">
                             <i class="fa-regular fa-circle-check text-pink-300 mr-1"></i>
-                            Riwayat seluruh transaksi penjualan (kasir & admin)
+                            Riwayat seluruh transaksi (kasir & admin)
                         </p>
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-2 mb-4" id="jenisTabs">
+                        @php
+                            $tabs = [
+                                'semua' => 'Semua',
+                                'penjualan' => 'Penjualan',
+                                'pemasukan' => 'Pemasukan',
+                                'pengeluaran' => 'Pengeluaran',
+                            ];
+                        @endphp
+                        @foreach ($tabs as $key => $label)
+                            <button type="button"
+                                onclick="filterByJenis('{{ $key }}')"
+                                data-tab="{{ $key }}"
+                                class="jenis-tab px-4 py-1.5 rounded-full text-[12px] font-semibold transition-colors border {{ $key === 'semua' ? 'bg-pink-500 text-white border-pink-500 shadow-sm' : 'bg-white text-gray-500 border-gray-200 hover:border-pink-300 hover:text-pink-500' }}">
+                                {{ $label }}
+                            </button>
+                        @endforeach
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-4">
@@ -215,7 +234,7 @@
                             <div class="flex items-center justify-between">
                                 <div>
                                     <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Total Transaksi</p>
-                                    <p class="text-[26px] font-bold text-gray-800 mt-1">{{ $totalTransaksi }}</p>
+                                    <p class="text-[26px] font-bold text-gray-800 mt-1">{{ $snapTotal }}</p>
                                 </div>
                                 <div class="w-11 h-11 rounded-full bg-sky-100 flex items-center justify-center">
                                     <i class="fa-solid fa-rectangle-list text-sky-500 text-lg"></i>
@@ -226,19 +245,52 @@
                             <div class="flex items-center justify-between">
                                 <div>
                                     <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Pendapatan</p>
-                                    <p class="text-[26px] font-bold text-emerald-600 mt-1">Rp {{ number_format($totalPendapatan, 0, ',', '.') }}</p>
+                                    <p class="text-[26px] font-bold text-emerald-600 mt-1">Rp {{ number_format($snapPendapatan, 0, ',', '.') }}</p>
                                 </div>
                                 <div class="w-11 h-11 rounded-full bg-emerald-100 flex items-center justify-center">
                                     <i class="fa-solid fa-money-bill-trend-up text-emerald-500 text-lg"></i>
                                 </div>
                             </div>
                         </div>
+                        <div class="stat-card bg-gradient-to-br from-red-50 to-white rounded-xl p-4 border border-red-100">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Pengeluaran</p>
+                                    <p class="text-[26px] font-bold text-red-600 mt-1">Rp {{ number_format($snapPengeluaran, 0, ',', '.') }}</p>
+                                </div>
+                                <div class="w-11 h-11 rounded-full bg-red-100 flex items-center justify-center">
+                                    <i class="fa-solid fa-arrow-trend-down text-red-500 text-lg"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stat-card bg-gradient-to-br from-purple-50 to-white rounded-xl p-4 border border-purple-100">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Total Bersih</p>
+                                    <p class="text-[26px] font-bold {{ $snapBersih >= 0 ? 'text-purple-600' : 'text-red-600' }} mt-1">Rp {{ number_format($snapBersih, 0, ',', '.') }}</p>
+                                </div>
+                                <div class="w-11 h-11 rounded-full bg-purple-100 flex items-center justify-center">
+                                    <i class="fa-solid fa-wallet text-purple-500 text-lg"></i>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
-                    <form method="GET" action="{{ route('admin.transaksi.index') }}" class="flex flex-wrap items-center justify-end gap-2 mb-4">
+                    <div class="flex flex-wrap items-center gap-2 mb-4">
+                        <a href="{{ route('admin.transaksi.pembelian-create') }}"
+                            class="flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white text-[12px] font-semibold px-4 py-2 rounded-full transition-colors">
+                            <i class="fa-solid fa-truck"></i> Pembelian Stok
+                        </a>
+                        <button type="button" onclick="openTambahModal()"
+                            class="flex items-center gap-2 bg-gradient-to-r from-[#EC4899] to-[#BE185D] hover:shadow-md text-white text-[12px] font-semibold px-4 py-2 rounded-full transition-all shadow-sm">
+                            <i class="fa-solid fa-plus"></i> Tambah Transaksi
+                        </button>
+                    </div>
+
+                    <form method="GET" action="{{ route('admin.transaksi.index') }}" class="flex flex-wrap items-center justify-between gap-2 mb-4">
                         <div class="relative">
                             <i class="fa-solid fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-[12px]"></i>
-                            <input type="text" placeholder="Cari invoice, pelanggan..." name="keyword"
+                            <input type="text" placeholder="Cari invoice, pelanggan, kategori..." name="keyword"
                                 class="bg-gray-50 border border-gray-100 text-[12px] rounded-full pl-9 pr-4 py-2 w-full sm:w-[180px] focus:outline-none focus:border-pink-300 transition-all placeholder-gray-400"
                                 value="{{ request()->keyword }}">
                         </div>
@@ -270,7 +322,7 @@
                                     <th class="py-3 px-4 w-10">#</th>
                                     <th class="py-3 px-4 w-[130px]">No. Invoice</th>
                                     <th class="py-3 px-4 w-[110px]">Jenis</th>
-                                    <th class="py-3 px-4">Pelanggan</th>
+                                    <th class="py-3 px-4">Pelanggan/Supplier</th>
                                     <th class="py-3 px-4 w-[100px]">Tanggal</th>
                                     <th class="py-3 px-4 w-[120px]">Total</th>
                                     <th class="py-3 px-4 w-[100px]">Metode</th>
@@ -281,23 +333,50 @@
                             </thead>
                             <tbody class="text-[13px] text-gray-700 divide-y divide-gray-50">
                                 @forelse($transaksi as $t)
-                                    <tr class="table-row-hover">
+                                    <tr class="table-row-hover" data-jenis="{{ strtolower($t->jenis_transaksi) }}">
                                         <td data-label="#" class="py-3.5 px-4 text-gray-400 font-medium text-center text-[12px]">{{ $loop->iteration }}</td>
                                         <td data-label="Invoice" class="py-3.5 px-4">
                                             <span class="font-mono font-semibold text-gray-700 text-[12px]">{{ $t->no_invoice }}</span>
                                         </td>
                                         <td data-label="Jenis" class="py-3.5 px-4">
-                                            <span class="badge-status" style="background:#E8F8EE;color:#22C55E;">
-                                                <i class="fa-solid fa-arrow-trend-up"></i> Penjualan
-                                            </span>
+                                            @if ($t->jenis_transaksi === 'Pengeluaran')
+                                                <span class="badge-status" style="background:#FDE8E8;color:#EF4444;">
+                                                    <i class="fa-solid fa-arrow-trend-down"></i> Pengeluaran
+                                                </span>
+                                            @elseif ($t->jenis_transaksi === 'Pemasukan')
+                                                <span class="badge-status" style="background:#E6FFFA;color:#0D9488;">
+                                                    <i class="fa-solid fa-gift"></i> Pemasukan
+                                                </span>
+                                            @else
+                                                <span class="badge-status" style="background:#E8F8EE;color:#22C55E;">
+                                                    <i class="fa-solid fa-arrow-trend-up"></i> Penjualan
+                                                </span>
+                                            @endif
                                         </td>
-                                        <td data-label="Pelanggan" class="py-3.5 px-4">
-                                            <div class="flex items-center gap-2">
-                                                <div class="w-7 h-7 rounded-full bg-pink-200 text-pink-600 flex items-center justify-center font-bold text-[10px]">
-                                                    {{ $t->pelanggan ? strtoupper(substr($t->pelanggan->nm_pelanggan, 0, 2)) : '??' }}
+                                        <td data-label="Pelanggan/Supplier" class="py-3.5 px-4">
+                                            @if (in_array($t->jenis_transaksi, ['Pengeluaran', 'Pemasukan']))
+                                                @php
+                                                    if ($t->jenis_transaksi === 'Pengeluaran') {
+                                                        $pihakKat = $t->supplier->nm_supplier ?? ($t->pengeluaran->kategori ?? 'Umum');
+                                                    } else {
+                                                        $bag = explode(' — ', $t->catatan, 2);
+                                                        $pihakKat = $bag[0] ?? 'Umum';
+                                                    }
+                                                @endphp
+                                                <div class="flex items-center gap-2">
+                                                    <div class="w-7 h-7 rounded-full bg-red-100 text-red-500 flex items-center justify-center font-bold text-[10px]">
+                                                        <i class="fa-solid fa-tag"></i>
+                                                    </div>
+                                                    <span class="font-medium text-gray-700">{{ $pihakKat }}</span>
                                                 </div>
-                                                <span class="font-medium text-gray-700">{{ $t->pelanggan->nm_pelanggan ?? 'Umum' }}</span>
-                                            </div>
+                                            @else
+                                                <div class="flex items-center gap-2">
+                                                    <div class="w-7 h-7 rounded-full bg-pink-200 text-pink-600 flex items-center justify-center font-bold text-[10px]">
+                                                        {{ $t->pelanggan ? strtoupper(substr($t->pelanggan->nm_pelanggan, 0, 2)) : '??' }}
+                                                    </div>
+                                                    <span class="font-medium text-gray-700">{{ $t->pelanggan->nm_pelanggan ?? 'Umum' }}</span>
+                                                </div>
+                                            @endif
                                         </td>
                                         <td data-label="Tanggal" class="py-3.5 px-4 text-gray-500">{{ \Carbon\Carbon::parse($t->tanggal)->format('d/m/Y') }}</td>
                                         <td data-label="Total" class="py-3.5 px-4 font-semibold text-gray-800">Rp {{ number_format($t->total, 0, ',', '.') }}</td>
@@ -358,6 +437,29 @@
                                                 <a href="{{ route('admin.transaksi.show', $t->id_transaksi) }}"
                                                     class="w-7 h-7 text-blue-500 bg-blue-50 hover:bg-blue-100 rounded-md transition-colors flex items-center justify-center"
                                                     title="Detail"><i class="fa-regular fa-eye text-xs"></i></a>
+                                                @if (in_array($t->jenis_transaksi, ['Pengeluaran', 'Pemasukan']))
+                                                    @php
+                                                        if ($t->jenis_transaksi === 'Pemasukan') {
+                                                            $bagi = explode(' — ', $t->catatan, 2);
+                                                            $kategoriEdit = $bagi[0] ?? '';
+                                                            $ketEdit = $bagi[1] ?? '';
+                                                        } else {
+                                                            $kategoriEdit = $t->pengeluaran->kategori ?? '';
+                                                            $ketEdit = $t->pengeluaran->keterangan ?? '';
+                                                        }
+                                                    @endphp
+                                                    <button onclick="editTransaksi({{ $t->id_transaksi }}, '{{ $t->jenis_transaksi }}', '{{ $t->tanggal }}', '{{ addslashes($kategoriEdit) }}', {{ $t->total }}, '{{ addslashes($ketEdit) }}')"
+                                                        class="w-7 h-7 text-amber-500 bg-amber-50 hover:bg-amber-100 rounded-md transition-colors flex items-center justify-center"
+                                                        title="Edit"><i class="fa-regular fa-pen-to-square text-xs"></i></button>
+                                                    <form action="{{ route('admin.transaksi.destroy', $t->id_transaksi) }}" method="POST"
+                                                        onsubmit="return confirm('Hapus transaksi ini?')">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit"
+                                                            class="w-7 h-7 text-red-500 bg-red-50 hover:bg-red-100 rounded-md transition-colors flex items-center justify-center"
+                                                            title="Hapus"><i class="fa-regular fa-trash-can text-xs"></i></button>
+                                                    </form>
+                                                @endif
                                             </div>
                                         </td>
                                     </tr>
@@ -372,7 +474,7 @@
                                                     {{ request()->keyword || request()->dari || request()->sampai ? 'Transaksi tidak ditemukan' : 'Belum ada data transaksi' }}
                                                 </p>
                                                 <p class="text-gray-300 text-[12px] -mt-2">
-                                                    {{ request()->keyword || request()->dari || request()->sampai ? 'Coba gunakan filter yang berbeda' : 'Transaksi penjualan akan tampil di sini' }}
+                                                    {{ request()->keyword || request()->dari || request()->sampai ? 'Coba gunakan filter yang berbeda' : 'Data transaksi akan tampil di sini' }}
                                                 </p>
                                             </div>
                                         </td>
@@ -392,17 +494,187 @@
         </main>
     </div>
 
+    <!-- Modal Tambah Transaksi -->
+    <div id="modalTambah" class="hidden fixed inset-0 z-[200] flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="closeTambahModal()"></div>
+        <div class="relative bg-white rounded-2xl p-6 w-full max-w-lg shadow-2xl border border-gray-100">
+            <div class="flex items-center justify-between mb-5">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-pink-50 flex items-center justify-center">
+                        <i class="fa-solid fa-plus text-pink-500"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-[15px] font-bold text-gray-800">Tambah Transaksi</h4>
+                        <p class="text-[11px] text-gray-400">Catat pengeluaran atau pemasukan dana luar</p>
+                    </div>
+                </div>
+                <button onclick="closeTambahModal()" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-400 transition-colors">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <form action="{{ route('admin.transaksi.store') }}" method="POST">
+                @csrf
+                <div class="space-y-4">
+                    <div>
+                        <label class="text-[12px] font-semibold text-gray-600 mb-2 block">Jenis Transaksi</label>
+                        <div class="flex gap-2">
+                            <label id="btn-pengeluaran" onclick="selectJenis('Pengeluaran')" class="flex-1 flex items-center justify-center gap-2 cursor-pointer p-3 rounded-xl border-2 border-red-400 bg-red-50 transition-all">
+                                <i class="fa-solid fa-arrow-trend-down text-red-500"></i>
+                                <span class="text-[12px] font-semibold text-red-600">Pengeluaran</span>
+                            </label>
+                            <label id="btn-pemasukan" onclick="selectJenis('Pemasukan')" class="flex-1 flex items-center justify-center gap-2 cursor-pointer p-3 rounded-xl border-2 border-gray-200 bg-white transition-all">
+                                <i class="fa-solid fa-arrow-trend-up text-gray-400"></i>
+                                <span class="text-[12px] font-semibold text-gray-400">Pemasukan</span>
+                            </label>
+                        </div>
+                        <input type="hidden" name="jenis" id="jenis_input" value="Pengeluaran">
+                    </div>
+                    <div>
+                        <label class="text-[12px] font-semibold text-gray-600 mb-1.5 block">Tanggal <span class="text-red-500">*</span></label>
+                        <input type="date" name="tanggal" value="{{ old('tanggal', date('Y-m-d')) }}" class="form-input" required>
+                        @error('tanggal')<p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>@enderror
+                    </div>
+                    <div id="field-kategori">
+                        <label class="text-[12px] font-semibold text-gray-600 mb-1.5 block">Kategori <span class="text-red-500">*</span></label>
+                        <select name="kategori" class="form-input" required>
+                            <option value="">-- Pilih Kategori --</option>
+                            <option value="Operasional">Operasional</option>
+                            <option value="Perawatan Alat">Perawatan Alat</option>
+                            <option value="Bahan & Stok">Bahan & Stok</option>
+                            <option value="Listrik & Air">Listrik & Air</option>
+                            <option value="Kebersihan">Kebersihan</option>
+                            <option value="Lainnya">Lainnya</option>
+                            <option value="Dana Pemasukan">Dana Pemasukan</option>
+                        </select>
+                        @error('kategori')<p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>@enderror
+                    </div>
+                    <div>
+                        <label class="text-[12px] font-semibold text-gray-600 mb-1.5 block">Nominal (Rp) <span class="text-red-500">*</span></label>
+                        <input type="number" name="nominal" min="1" placeholder="Masukkan nominal" class="form-input" required>
+                        @error('nominal')<p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>@enderror
+                    </div>
+                    <div>
+                        <label class="text-[12px] font-semibold text-gray-600 mb-1.5 block">Keterangan</label>
+                        <textarea name="keterangan" rows="2" class="form-input" placeholder="Catatan (opsional)"></textarea>
+                        @error('keterangan')<p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>@enderror
+                    </div>
+                    <div class="flex gap-2 pt-2">
+                        <button type="button" onclick="closeTambahModal()"
+                            class="flex-1 py-2.5 rounded-xl border border-gray-200 text-gray-600 text-[13px] font-semibold hover:bg-gray-50 transition-colors">
+                            Batal
+                        </button>
+                        <button type="submit"
+                            class="flex-1 py-2.5 rounded-xl bg-pink-500 text-white text-[13px] font-semibold hover:bg-pink-600 transition-colors shadow-sm">
+                            <i class="fa-solid fa-check mr-1"></i>Simpan
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Edit Transaksi -->
+    <div id="modalEdit" class="hidden fixed inset-0 z-[200] flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="closeEditModal()"></div>
+        <div class="relative bg-white rounded-2xl p-6 w-full max-w-lg shadow-2xl border border-gray-100">
+            <div class="flex items-center justify-between mb-5">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-amber-50 flex items-center justify-center">
+                        <i class="fa-solid fa-pen-to-square text-amber-500"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-[15px] font-bold text-gray-800">Edit Transaksi</h4>
+                        <p class="text-[11px] text-gray-400">Ubah data transaksi</p>
+                    </div>
+                </div>
+                <button onclick="closeEditModal()" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-400 transition-colors">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <form action="" method="POST" id="formEdit">
+                @csrf
+                @method('PUT')
+                <input type="hidden" name="jenis" id="edit_jenis" value="Pengeluaran">
+                <div class="space-y-4">
+                    <div>
+                        <label class="text-[12px] font-semibold text-gray-600 mb-1.5 block">Tanggal <span class="text-red-500">*</span></label>
+                        <input type="date" name="tanggal" id="edit_tanggal" class="form-input" required>
+                    </div>
+                    <div>
+                        <label class="text-[12px] font-semibold text-gray-600 mb-1.5 block">Kategori <span class="text-red-500">*</span></label>
+                        <input type="text" name="kategori" id="edit_kategori" class="form-input" required>
+                    </div>
+                    <div>
+                        <label class="text-[12px] font-semibold text-gray-600 mb-1.5 block">Nominal (Rp) <span class="text-red-500">*</span></label>
+                        <input type="number" name="nominal" id="edit_nominal" min="1" class="form-input" required>
+                    </div>
+                    <div>
+                        <label class="text-[12px] font-semibold text-gray-600 mb-1.5 block">Keterangan</label>
+                        <textarea name="keterangan" id="edit_keterangan" rows="2" class="form-input"></textarea>
+                    </div>
+                    <div class="flex gap-2 pt-2">
+                        <button type="button" onclick="closeEditModal()"
+                            class="flex-1 py-2.5 rounded-xl border border-gray-200 text-gray-600 text-[13px] font-semibold hover:bg-gray-50 transition-colors">
+                            Batal
+                        </button>
+                        <button type="submit"
+                            class="flex-1 py-2.5 rounded-xl bg-amber-500 text-white text-[13px] font-semibold hover:bg-amber-600 transition-colors shadow-sm">
+                            <i class="fa-solid fa-check mr-1"></i>Simpan Perubahan
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
+        let currentJenis = 'semua';
+
+        function selectJenis(jenis) {
+            document.getElementById('jenis_input').value = jenis;
+            const btnPengeluaran = document.getElementById('btn-pengeluaran');
+            const btnPemasukan = document.getElementById('btn-pemasukan');
+            if (jenis === 'Pengeluaran') {
+                btnPengeluaran.className = 'flex-1 flex items-center justify-center gap-2 cursor-pointer p-3 rounded-xl border-2 border-red-400 bg-red-50 transition-all';
+                btnPengeluaran.querySelector('i').className = 'fa-solid fa-arrow-trend-down text-red-500';
+                btnPengeluaran.querySelector('span').className = 'text-[12px] font-semibold text-red-600';
+                btnPemasukan.className = 'flex-1 flex items-center justify-center gap-2 cursor-pointer p-3 rounded-xl border-2 border-gray-200 bg-white transition-all';
+                btnPemasukan.querySelector('i').className = 'fa-solid fa-arrow-trend-up text-gray-400';
+                btnPemasukan.querySelector('span').className = 'text-[12px] font-semibold text-gray-400';
+            } else {
+                btnPemasukan.className = 'flex-1 flex items-center justify-center gap-2 cursor-pointer p-3 rounded-xl border-2 border-emerald-400 bg-emerald-50 transition-all';
+                btnPemasukan.querySelector('i').className = 'fa-solid fa-arrow-trend-up text-emerald-500';
+                btnPemasukan.querySelector('span').className = 'text-[12px] font-semibold text-emerald-600';
+                btnPengeluaran.className = 'flex-1 flex items-center justify-center gap-2 cursor-pointer p-3 rounded-xl border-2 border-gray-200 bg-white transition-all';
+                btnPengeluaran.querySelector('i').className = 'fa-solid fa-arrow-trend-down text-gray-400';
+                btnPengeluaran.querySelector('span').className = 'text-[12px] font-semibold text-gray-400';
+            }
+        }
+
+        function filterByJenis(jenis) {
+            currentJenis = jenis;
+            document.querySelectorAll('.jenis-tab').forEach(btn => {
+                if (btn.dataset.tab === jenis) {
+                    btn.classList.add('bg-pink-500', 'text-white', 'border-pink-500', 'shadow-sm');
+                    btn.classList.remove('bg-white', 'text-gray-500', 'border-gray-200');
+                } else {
+                    btn.classList.remove('bg-pink-500', 'text-white', 'border-pink-500', 'shadow-sm');
+                    btn.classList.add('bg-white', 'text-gray-500', 'border-gray-200');
+                }
+            });
+            document.querySelectorAll('tbody tr[data-jenis]').forEach(row => {
+                row.style.display = (jenis === 'semua' || row.dataset.jenis === jenis) ? '' : 'none';
+            });
+        }
+
         function exportTransaksi() {
             const params = new URLSearchParams();
             const keyword = document.querySelector('input[name="keyword"]')?.value;
             const dari = document.querySelector('input[name="dari"]')?.value;
             const sampai = document.querySelector('input[name="sampai"]')?.value;
-            const jenis = document.querySelector('input[name="jenis"]')?.value || 'penjualan';
             if (keyword) params.set('keyword', keyword);
             if (dari) params.set('dari', dari);
             if (sampai) params.set('sampai', sampai);
-            params.set('jenis', jenis);
             const qs = params.toString();
             window.location.href = '{{ route('admin.transaksi.export') }}' + (qs ? '?' + qs : '');
         }
@@ -417,6 +689,36 @@
         };
         const dateEl = document.getElementById('currentDate');
         if (dateEl) dateEl.textContent = now.toLocaleDateString('id-ID', options);
+
+        // Tambah transaksi modal
+        function openTambahModal() {
+            const modal = document.getElementById('modalTambah');
+            if (!modal) return;
+            modal.classList.remove('hidden');
+            modal.querySelector('form').reset();
+            selectJenis('Pengeluaran');
+        }
+
+        function closeTambahModal() {
+            const modal = document.getElementById('modalTambah');
+            if (modal) modal.classList.add('hidden');
+        }
+
+        function closeEditModal() {
+            const modal = document.getElementById('modalEdit');
+            if (modal) modal.classList.add('hidden');
+        }
+
+        function editTransaksi(id, jenis, tanggal, kategori, nominal, keterangan) {
+            const form = document.getElementById('formEdit');
+            form.action = "{{ url('admin/transaksi') }}/" + id;
+            document.getElementById('edit_jenis').value = jenis;
+            document.getElementById('edit_tanggal').value = tanggal;
+            document.getElementById('edit_kategori').value = kategori;
+            document.getElementById('edit_nominal').value = nominal;
+            document.getElementById('edit_keterangan').value = keterangan;
+            document.getElementById('modalEdit').classList.remove('hidden');
+        }
     </script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
 </body>
