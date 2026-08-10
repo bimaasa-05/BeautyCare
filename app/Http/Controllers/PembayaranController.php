@@ -23,6 +23,9 @@ class PembayaranController extends Controller
         $transaksi = $this->getTransaksi($id);
 
         if (in_array($transaksi->status, ['Lunas', 'Gagal', 'Kadaluarsa', 'Dibatalkan'])) {
+            if ($transaksi->jenis_transaksi === 'TopUp Saldo') {
+                return redirect()->route('pelanggan.saldo.index');
+            }
             return redirect()->route('pelanggan.pesanan.show', $id);
         }
 
@@ -45,6 +48,10 @@ class PembayaranController extends Controller
 
         if ($transaksi->status !== 'Lunas') {
             return redirect()->route('pelanggan.pesanan.show', $id);
+        }
+
+        if ($transaksi->jenis_transaksi === 'TopUp Saldo') {
+            return view('pelanggan.pembayaran.berhasil-topup', compact('transaksi'));
         }
 
         return view('pelanggan.pembayaran.berhasil', compact('transaksi'));
@@ -94,6 +101,25 @@ class PembayaranController extends Controller
         $expiresAt = in_array($metode, ['QRIS', 'E-Wallet'])
             ? now()->addMinutes(3) //Memulai Hitungan Mundur lagi dalam 3 Menit
             : now()->addHours(24); //Memulai Hitungan Mundur lagi dalam 24 Jam
+
+        // Saldo yang dikembalikan saat kadaluarsa harus didebit ulang saat perpanjang
+        if ($transaksi->status === 'Kadaluarsa') {
+            $saldoTerpakai = (float) ($transaksi->saldo_terpakai ?? 0);
+            if ($saldoTerpakai > 0 && $transaksi->id_pelanggan) {
+                $debitUlang = (new \App\Services\SaldoAkunService())->pakaiSaldo(
+                    $transaksi->id_pelanggan,
+                    $saldoTerpakai,
+                    $transaksi->id_transaksi,
+                    'transaksi',
+                    'Saldo dipakai ulang (perpanjang batas waktu) INV ' . $transaksi->no_invoice
+                );
+                if (!$debitUlang) {
+                    return back()->with('error', 'Saldo akun Anda tidak cukup untuk kembali menggunakan saldo sebesar Rp ' . number_format($saldoTerpakai, 0, ',', '.') . '. Silakan isi saldo terlebih dahulu atau pilih metode lain.');
+                }
+            }
+
+            $transaksi->update(['status' => 'Menunggu Pembayaran']);
+        }
 
         $transaksi->pembayaran?->update([
             'status' => 'Menunggu',
@@ -151,6 +177,16 @@ class PembayaranController extends Controller
             return back()->with('error', 'Pesanan tidak bisa dibatalkan pada status ini.');
         }
 
+        $saldoTerpakai = (float) ($transaksi->saldo_terpakai ?? 0);
+        if ($saldoTerpakai > 0 && $transaksi->id_pelanggan) {
+            (new \App\Services\SaldoAkunService())->kreditRefund(
+                $transaksi->id_pelanggan,
+                $saldoTerpakai,
+                $transaksi->id_transaksi,
+                'Pengembalian saldo — pesanan dibatalkan (INV ' . $transaksi->no_invoice . ')'
+            );
+        }
+
         $transaksi->update(['status' => 'Dibatalkan']);
         $transaksi->pembayaran?->update(['status' => 'Dibatalkan']);
 
@@ -158,8 +194,12 @@ class PembayaranController extends Controller
         buatNotifRole('kasir', 'Pesanan Dibatalkan', $nama . ' membatalkan pesanan ' . $transaksi->no_invoice . '.', 'Transaksi', route('kasir.pembayaran.pesanan-online'));
         ActivityLogger::log('Menghapus', $nama . ' membatalkan pesanan ' . $transaksi->no_invoice, 'Transaksi', $transaksi->id_transaksi);
 
-        buatNotif($transaksi->id_user, 'Pesanan Dibatalkan', 'Pesanan ' . $transaksi->no_invoice . ' berhasil dibatalkan.', 'Transaksi', route('pelanggan.pesanan.show', $transaksi->id_transaksi));
+        $targetPesanan = $transaksi->jenis_transaksi === 'TopUp Saldo'
+            ? route('pelanggan.saldo.index')
+            : route('pelanggan.pesanan.show', $transaksi->id_transaksi);
 
-        return redirect()->route('pelanggan.pesanan.show', $transaksi->id_transaksi);
+        buatNotif($transaksi->id_user, 'Pesanan Dibatalkan', 'Pesanan ' . $transaksi->no_invoice . ' berhasil dibatalkan.', 'Transaksi', $targetPesanan);
+
+        return redirect($targetPesanan);
     }
 }
