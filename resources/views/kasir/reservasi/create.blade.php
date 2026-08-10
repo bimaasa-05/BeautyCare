@@ -85,45 +85,18 @@
                                 <label class="form-label">
                                     <i class="fa-solid fa-user text-pink-400 mr-1"></i>Pelanggan <span class="text-red-500">*</span>
                                 </label>
-                                @php
-                                    $optsPelanggan = $pelanggan->map(fn($p) => [
-                                        'value' => $p->id_pelanggan,
-                                        'label' => $p->nm_pelanggan . ($p->id_member ? ' (' . ($p->membership->tingkat ?? '') . ' - Diskon ' . ($p->membership->diskon ?? 0) . '%)' : '')
-                                    ])->values();
-                                @endphp
-                                <div x-data="searchableSelect()" x-init="init($el.querySelector('select'), @json($optsPelanggan), @json(old('id_pelanggan', '')))" class="relative">
-                                    <select name="id_pelanggan" id="id_pelanggan" class="hidden @error('id_pelanggan') border-red-400 @enderror" onchange="onPelangganChange(this)">
-                                        <option value="">-- Pilih Pelanggan --</option>
-                                        @foreach ($pelanggan as $p)
-                                            <option value="{{ $p->id_pelanggan }}"
-                                                data-member="{{ $p->id_member ?? '' }}"
-                                                data-tingkat="{{ $p->membership->tingkat ?? '' }}"
-                                                data-diskon="{{ $p->membership->diskon ?? 0 }}"
-                                                {{ old('id_pelanggan') == $p->id_pelanggan ? 'selected' : '' }}>
-                                                {{ $p->nm_pelanggan }} @if($p->id_member)({{ $p->membership->tingkat ?? '' }} - Diskon {{ $p->membership->diskon ?? 0 }}%) @endif
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    <button type="button" @click="toggle()"
-                                        class="form-input-custom flex items-center justify-between gap-2 text-left @error('id_pelanggan') border-red-400 @enderror">
-                                        <span :class="selectedText ? 'text-gray-800' : 'text-gray-400'" x-text="selectedText || placeholder" class="truncate"></span>
-                                        <i class="fa-solid fa-chevron-down text-[10px] text-gray-400 transition-transform duration-200 shrink-0" :class="open && 'rotate-180'"></i>
-                                    </button>
-                                    <div x-show="open" @click.outside="open = false" x-transition
-                                        class="absolute z-50 mt-1 w-full bg-white border border-slate-200 rounded-xl shadow-lg overflow-hidden">
-                                        <input type="text" x-model="search" placeholder="Cari pelanggan..."
-                                            class="w-full px-3 py-2.5 text-[12px] border-b border-slate-100 focus:outline-none">
-                                        <ul class="max-h-48 overflow-y-auto py-1">
-                                            <template x-for="opt in filtered" :key="opt.value">
-                                                <li @click="select(opt.value, opt.label)"
-                                                    class="px-3 py-2 text-[12px] cursor-pointer hover:bg-pink-50 hover:text-pink-600 transition-colors"
-                                                    :class="opt.value == value ? 'bg-pink-50 text-pink-600 font-semibold' : 'text-gray-700'"
-                                                    x-text="opt.label"></li>
-                                            </template>
-                                            <li x-show="filtered.length === 0" class="px-3 py-2 text-[11px] text-gray-400">Tidak ada hasil</li>
-                                        </ul>
-                                    </div>
-                                </div>
+                                <select name="id_pelanggan" id="id_pelanggan" class="form-input-custom @error('id_pelanggan') border-red-400 @enderror" onchange="onPelangganChange(this)">
+                                    <option value="">-- Pilih Pelanggan --</option>
+                                    @foreach ($pelanggan as $p)
+                                        <option value="{{ $p->id_pelanggan }}"
+                                            data-member="{{ $p->id_member ?? '' }}"
+                                            data-tingkat="{{ $p->membership->tingkat ?? '' }}"
+                                            data-diskon="{{ $p->membership->diskon ?? 0 }}"
+                                            {{ old('id_pelanggan') == $p->id_pelanggan ? 'selected' : '' }}>
+                                            {{ $p->nm_pelanggan }} @if($p->id_member)({{ $p->membership->tingkat ?? '' }} - Diskon {{ $p->membership->diskon ?? 0 }}%) @endif
+                                        </option>
+                                    @endforeach
+                                </select>
                                 @error('id_pelanggan')
                                     <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
                                 @enderror
@@ -143,7 +116,7 @@
                                         ];
                                     })->values();
                                 @endphp
-                                <div x-data="searchableSelect()" x-init="init($el.querySelector('select'), @json($optsKaryawan), @json(old('id_karyawan', '')))" class="relative">
+                                <div x-data="searchableSelect()" x-init='init($el.querySelector("select"), @json($optsKaryawan), @json(old("id_karyawan", "")))' class="relative">
                                     <select name="id_karyawan" id="id_karyawan" class="hidden @error('id_karyawan') border-red-400 @enderror">
                                         <option value="">-- Pilih Karyawan --</option>
                                         @foreach ($karyawan as $k)
@@ -153,20 +126,21 @@
                                             </option>
                                         @endforeach
                                     </select>
-                                    <button type="button" @click="toggle()"
-                                        class="form-input-custom flex items-center justify-between gap-2 text-left @error('id_karyawan') border-red-400 @enderror">
-                                        <span :class="selectedText ? 'text-gray-800' : 'text-gray-400'" x-text="selectedText || placeholder" class="truncate"></span>
-                                        <i class="fa-solid fa-chevron-down text-[10px] text-gray-400 transition-transform duration-200 shrink-0" :class="open && 'rotate-180'"></i>
-                                    </button>
-                                    <div x-show="open" @click.outside="open = false" x-transition
+                                    <div class="relative">
+                                        <input type="text" x-model="query" @focus="open = true" @click="open = true" @input="onQueryInput()"
+                                            @keydown.escape="open = false" @keydown.down.prevent="moveHighlight(1)" @keydown.up.prevent="moveHighlight(-1)"
+                                            @keydown.enter.prevent="selectHighlighted()" @blur="setTimeout(() => open = false, 150)"
+                                            class="form-input-custom pr-9 @error('id_karyawan') border-red-400 @enderror"
+                                            placeholder="Pilih Karyawan" autocomplete="off">
+                                        <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-[10px] text-gray-400 pointer-events-none"></i>
+                                    </div>
+                                    <div x-show="open" x-transition
                                         class="absolute z-50 mt-1 w-full bg-white border border-slate-200 rounded-xl shadow-lg overflow-hidden">
-                                        <input type="text" x-model="search" placeholder="Cari karyawan..."
-                                            class="w-full px-3 py-2.5 text-[12px] border-b border-slate-100 focus:outline-none">
                                         <ul class="max-h-48 overflow-y-auto py-1">
-                                            <template x-for="opt in filtered" :key="opt.value">
-                                                <li @click="select(opt.value, opt.label)"
+                                            <template x-for="(opt, i) in filtered" :key="opt.value">
+                                                <li @click="select(opt.value, opt.label)" @mouseenter="highlight = i"
                                                     class="px-3 py-2 text-[12px] cursor-pointer hover:bg-pink-50 hover:text-pink-600 transition-colors"
-                                                    :class="opt.value == value ? 'bg-pink-50 text-pink-600 font-semibold' : 'text-gray-700'"
+                                                    :class="i === highlight ? 'bg-pink-50 text-pink-600 font-semibold' : 'text-gray-700'"
                                                     x-text="opt.label"></li>
                                             </template>
                                             <li x-show="filtered.length === 0" class="px-3 py-2 text-[11px] text-gray-400">Tidak ada hasil</li>
@@ -410,18 +384,20 @@
         function searchableSelect() {
             return {
                 open: false,
-                search: '',
+                query: '',
                 options: [],
                 value: '',
                 selectedText: '',
-                placeholder: '-- Pilih --',
+                highlight: -1,
                 init(selectEl, options, initial) {
                     this.options = options;
-                    if (selectEl.options[0]) this.placeholder = selectEl.options[0].textContent.trim() || '-- Pilih --';
                     if (initial && String(initial) !== '') {
                         this.value = String(initial);
                         const found = options.find(o => String(o.value) === String(initial));
-                        if (found) this.selectedText = found.label;
+                        if (found) {
+                            this.query = found.label;
+                            this.selectedText = found.label;
+                        }
                     }
                     this.$watch('value', v => {
                         if (String(selectEl.value) !== String(v)) {
@@ -431,16 +407,30 @@
                     });
                 },
                 get filtered() {
-                    const q = this.search.toLowerCase();
+                    const q = this.query.toLowerCase();
                     return this.options.filter(o => !o.disabled && o.label.toLowerCase().includes(q));
+                },
+                onQueryInput() {
+                    if (this.query !== this.selectedText && this.value !== '') this.value = '';
+                },
+                moveHighlight(dir) {
+                    const n = this.filtered.length;
+                    if (!n) return;
+                    this.highlight = (this.highlight + dir + n) % n;
                 },
                 select(val, label) {
                     this.value = String(val);
+                    this.query = label;
                     this.selectedText = label;
                     this.open = false;
-                    this.search = '';
+                    this.highlight = -1;
                 },
-                toggle() { this.open = !this.open; }
+                selectHighlighted() {
+                    const list = this.filtered;
+                    if (!list.length) return;
+                    const idx = this.highlight >= 0 && this.highlight < list.length ? this.highlight : 0;
+                    this.select(list[idx].value, list[idx].label);
+                }
             };
         }
 
