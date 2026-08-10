@@ -44,6 +44,18 @@
     .page-header-premium .ph-text h3 { font-size: 20px; font-weight: 700; color: var(--dark); margin: 0; }
     .page-header-premium .ph-text p { font-size: 13px; color: var(--gray); margin: 4px 0 0; }
 
+    .btn-topup-header {
+        display: inline-flex; align-items: center; gap: 8px;
+        padding: 12px 24px; border-radius: 100px; border: none;
+        background: linear-gradient(135deg, #10B981, #34D399); color: #fff;
+        font-size: 13px; font-weight: 700; font-family: 'Poppins', sans-serif;
+        cursor: pointer; text-decoration: none;
+        box-shadow: 0 6px 18px rgba(16,185,129,0.3); transition: all 0.2s ease;
+    }
+    .btn-topup-header:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(16,185,129,0.4); color: #fff; }
+
+    @media (max-width: 768px) { .btn-topup-header { width: 100%; justify-content: center; } }
+
     .saldo-big-card {
         background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%);
         border: 1px solid #A7F3D0; border-radius: 20px;
@@ -149,6 +161,9 @@
                                 <p>Kelola saldo dari cashback promo & transaksi</p>
                             </div>
                         </div>
+                        <a href="{{ route('pelanggan.saldo.topup') }}" class="btn-topup-header">
+                            <i class="fa-solid fa-plus"></i> Top Up Saldo
+                        </a>
                     </div>
                 </div>
 
