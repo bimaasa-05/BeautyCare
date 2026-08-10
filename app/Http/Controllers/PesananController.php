@@ -11,6 +11,7 @@ class PesananController extends Controller
         $pesanan = Transaksi::with(['detail', 'pembayaran'])
             ->where('id_user', auth()->id())
             ->where('sumber', 'online')
+            ->where('jenis_transaksi', '!=', 'TopUp Saldo')
             ->orderBy('id_transaksi', 'desc')
             ->get();
 
