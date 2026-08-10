@@ -694,6 +694,12 @@
                                 <span class="dt-label">Metode</span>
                                 <span class="dt-value">{{ $transaksi->pembayaran->provider ?? $transaksi->metode_byr }}</span>
                             </div>
+                            @if((float)($transaksi->saldo_terpakai ?? 0) > 0)
+                            <div class="dt-row">
+                                <span class="dt-label">Dibayar Saldo</span>
+                                <span class="dt-value" style="color:#059669;">- Rp {{ number_format($transaksi->saldo_terpakai, 0, ',', '.') }}</span>
+                            </div>
+                            @endif
                             <div class="dt-row">
                                 <span class="dt-label">Status Pembayaran</span>
                                 <span class="pay-status {{ $payClass }}">
