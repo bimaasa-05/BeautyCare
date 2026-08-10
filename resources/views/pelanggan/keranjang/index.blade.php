@@ -663,8 +663,8 @@
         }
 
         /* ─── Sticky Footer: penyesuaian semua platform (aktif lewat JS) ───
-           Dikendalikan class .footer-fixed supaya perilaku identik di Chrome,
-           Android, dan Safari iOS (tanpa bergantung bug sticky WebKit). */
+           Dikendalikan class .footer-fixed + .show dengan CSS transition
+           supaya muncul/tertutup mulus di Chrome, Android, dan Safari iOS. */
         .keranjang-footer.footer-fixed {
             position: fixed;
             left: 0;
@@ -679,6 +679,19 @@
             -webkit-backdrop-filter: none;
             border: 1px solid rgba(255, 79, 135, 0.08);
             box-shadow: 0 -6px 24px rgba(0, 0, 0, 0.12);
+            transform: translateY(0);
+            opacity: 1;
+            transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+                opacity 0.35s ease;
+            will-change: transform;
+        }
+
+        .keranjang-footer.footer-fixed:not(.show) {
+            transform: translateY(105%);
+            opacity: 0;
+            pointer-events: none;
+            transition: transform 0.35s cubic-bezier(0.4, 0, 1, 1),
+                opacity 0.3s ease;
         }
 
         /* Sidebar tampil (>=1025px): bar dimulai setelah sidebar agar Total Belanja tidak tertutup */
@@ -690,6 +703,7 @@
 
         .dashboard-content.kc-has-bar.kc-spacer {
             padding-bottom: 120px;
+            transition: padding-bottom 0.35s ease;
         }
 
         @media (max-width: 576px) {
@@ -922,6 +936,61 @@
             .keranjang-tools .kt-actions .btn-primary-rounded {
                 flex: 1;
                 justify-content: center;
+            }
+        }
+
+        /* ─── Sticky Footer Mobile/Tablet: satu baris ringkas ─── */
+        @media (max-width: 1024px) {
+            .keranjang-footer.footer-fixed {
+                flex-direction: row;
+                flex-wrap: nowrap;
+                text-align: left;
+                align-items: center;
+                justify-content: space-between;
+                gap: 8px;
+                padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px));
+            }
+
+            .keranjang-footer.footer-fixed .kf-total-label {
+                font-size: 10px;
+            }
+
+            .keranjang-footer.footer-fixed .kf-total {
+                font-size: 17px;
+                line-height: 1.25;
+            }
+
+            .keranjang-footer.footer-fixed .kf-total span {
+                font-size: 11px;
+            }
+
+            .keranjang-footer.footer-fixed .kf-buttons {
+                flex-wrap: nowrap;
+                justify-content: flex-end;
+                gap: 6px;
+                margin-left: auto;
+            }
+
+            .keranjang-footer.footer-fixed .btn-belanja {
+                flex: none;
+                padding: 8px 14px;
+                font-size: 12px;
+                white-space: nowrap;
+                gap: 6px;
+            }
+        }
+
+        @media (max-width: 420px) {
+            .keranjang-footer.footer-fixed .btn-belanja-outline {
+                width: 38px;
+                height: 38px;
+                padding: 0;
+                justify-content: center;
+                font-size: 0;
+            }
+
+            .keranjang-footer.footer-fixed .btn-belanja-outline i {
+                font-size: 13px;
             }
         }
 
@@ -1561,27 +1630,63 @@
         var badge = document.getElementById('cartBadgeSidebar');
         if (badge) badge.style.display = 'none';
 
+        var kfHideTimer = null;
+        var kfShowPending = false;
+
         function updateFooterSticky() {
             var footer = document.querySelector('.keranjang-footer');
             if (!footer) return;
             var content = document.querySelector('.dashboard-content.kc-has-bar');
             var jumlah = document.querySelectorAll('.keranjang-card').length;
             var isMobile = window.innerWidth <= 1024;
-            var aktif = isMobile ? jumlah > 0 : (jumlah > 5 && window.scrollY > 0);
+            var aktif = window.scrollY > 0 && (isMobile ? jumlah > 0 : jumlah > 5);
 
             footer.classList.remove('sticky-active');
             if (aktif) {
-                footer.classList.add('footer-fixed');
+                if (kfHideTimer) {
+                    clearTimeout(kfHideTimer);
+                    kfHideTimer = null;
+                }
+                if (!footer.classList.contains('footer-fixed')) {
+                    footer.classList.add('footer-fixed');
+                    footer.classList.remove('show');
+                    void footer.offsetWidth;
+                    if (!kfShowPending) {
+                        kfShowPending = true;
+                        requestAnimationFrame(function() {
+                            kfShowPending = false;
+                            if (footer.classList.contains('footer-fixed') && !kfHideTimer) {
+                                footer.classList.add('show');
+                            }
+                        });
+                    }
+                } else {
+                    footer.classList.add('show');
+                    kfShowPending = false;
+                }
                 if (content) content.classList.add('kc-spacer');
             } else {
-                footer.classList.remove('footer-fixed');
-                if (content) content.classList.remove('kc-spacer');
+                if (footer.classList.contains('footer-fixed')) {
+                    footer.classList.remove('show');
+                    kfShowPending = false;
+                    if (!kfHideTimer) {
+                        kfHideTimer = setTimeout(function() {
+                            kfHideTimer = null;
+                            footer.classList.remove('show', 'footer-fixed');
+                            if (content) content.classList.remove('kc-spacer');
+                        }, 350);
+                    }
+                } else {
+                    footer.classList.remove('show');
+                    kfShowPending = false;
+                    if (content) content.classList.remove('kc-spacer');
+                }
             }
         }
 
         var kfScrolling = false;
         window.addEventListener('scroll', function() {
-            if (window.innerWidth > 1024 && !kfScrolling) {
+            if (!kfScrolling) {
                 kfScrolling = true;
                 requestAnimationFrame(function() {
                     updateFooterSticky();
@@ -1591,6 +1696,7 @@
         }, { passive: true });
 
         window.addEventListener('resize', updateFooterSticky);
+        window.addEventListener('orientationchange', updateFooterSticky);
         updateFooterSticky();
     </script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
