@@ -42,7 +42,7 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-    /**
+/**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>
@@ -54,6 +54,17 @@ class User extends Authenticatable
             'password' => 'hashed',
             'suspend_until' => 'datetime',
         ];
+    }
+
+    /**
+     * Accessor untuk URL foto profil dengan fallback UI Avatars
+     */
+    public function getFotoUrlAttribute(): string
+    {
+        if ($this->foto) {
+            return asset('storage/' . $this->foto);
+        }
+        return 'https://ui-avatars.com/api/?name=' . urlencode($this->nama) . '&background=FF4F87&color=fff&size=140';
     }
 
     public function karyawan()
