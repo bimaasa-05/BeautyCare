@@ -277,11 +277,7 @@
                                     <td data-label="Foto">
                                         <div class="therapist-cell">
                                             <div class="th-avatar" style="background:#FFE5EF;color:#FF4F87;font-weight:600;">
-                                                @if($p->foto)
-                                                    <img src="{{ asset('storage/' . $p->foto) }}" alt="{{ $p->nm_pelanggan }}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;display:block;">
-                                                @else
-                                                    {{ substr($p->nm_pelanggan, 0, 1) }}
-                                                @endif
+                                                <img src="{{ $p->foto_url }}" alt="{{ $p->nm_pelanggan }}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;display:block;">
                                             </div>
                                         </div>
                                     </td>
