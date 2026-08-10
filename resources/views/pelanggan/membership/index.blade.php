@@ -965,6 +965,9 @@
                                 <div class="mt-validity">
                                     <i class="fa-regular fa-clock"></i> Masa Berlaku {{ $member->masa_berlaku }} hari
                                 </div>
+                                <div class="mt-validity">
+                                    <i class="fa-solid fa-tags"></i> Harga Upgrade {{ formatRupiahSingkat($member->harga) }}
+                                </div>
                                 @if ($isOwnTier)
                                 <a href="{{ route('pelanggan.pembayaran.membership', ['beli_membership' => $member->id_member]) }}" class="mt-btn primary" style="display:block;">
                                     <i class="fa-regular fa-clock"></i> {{ $isCurrent ? 'Perpanjang Masa Aktif' : 'Perpanjang ke ' . $member->tingkat }}

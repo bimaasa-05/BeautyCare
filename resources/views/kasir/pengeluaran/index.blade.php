@@ -297,7 +297,7 @@
     </div>
 
     <!-- Modal Tambah -->
-    <div id="modalTambah" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div id="modalTambah" class="hidden fixed inset-0 z-[200] flex items-center justify-center p-4">
         <div class="absolute inset-0 bg-black/40" onclick="document.getElementById('modalTambah').classList.add('hidden')"></div>
         <div class="relative bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl">
             <div class="flex items-center justify-between mb-4">
