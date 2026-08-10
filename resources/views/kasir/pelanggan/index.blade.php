@@ -174,14 +174,8 @@
                                             <td class="py-3.5 px-4 font-medium text-gray-500 max-w-[120px] truncate">
                                                 {{ $p->catatan_alergi ?? '-' }}</td>
                                             <td class="py-3.5 px-4 font-medium text-gray-500">
-                                                @if ($p->foto)
-                                                    <img src="{{ asset('storage/' . $p->foto) }}" alt="foto"
-                                                        class="w-8 h-8 rounded-full object-cover ring-2 ring-pink-100">
-                                                @else
-                                                    <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 text-[10px]">
-                                                        <i class="fa-solid fa-user"></i>
-                                                    </div>
-                                                @endif
+                                                <img src="{{ $p->foto_url }}" alt="foto"
+                                                    class="w-8 h-8 rounded-full object-cover ring-2 ring-pink-100">
                                             </td>
                                             <td class="py-3.5 px-4 text-center">
                                                 <div class="flex items-center justify-center gap-2">
