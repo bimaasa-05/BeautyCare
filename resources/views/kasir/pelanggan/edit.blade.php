@@ -181,14 +181,10 @@
 
                             <div class="form-group md:col-span-2">
                                 <label class="form-label">Foto Saat Ini</label>
-                                @if($pelanggan->foto)
-                                    <div class="mb-3">
-                                        <img src="{{ asset('storage/' . $pelanggan->foto) }}" alt="foto"
-                                            class="w-20 h-20 rounded-xl object-cover border border-gray-200">
-                                    </div>
-                                @else
-                                    <p class="text-[12px] text-gray-400 mb-3">Belum ada foto</p>
-                                @endif
+                                <div class="mb-3">
+                                    <img src="{{ $pelanggan->foto_url }}" alt="foto"
+                                        class="w-20 h-20 rounded-xl object-cover border border-gray-200">
+                                </div>
                                 <label class="form-label">Ganti Foto</label>
                                 <input type="file" name="foto"
                                     class="form-input @error('foto') border-red-400 @enderror"
