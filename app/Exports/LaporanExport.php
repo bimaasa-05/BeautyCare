@@ -277,7 +277,7 @@ class LaporanTransaksiSheet implements FromCollection, WithHeadings, WithMapping
 
     public function collection()
     {
-        return Transaksi::with('pelanggan', 'supplier')
+        return Transaksi::with('pelanggan', 'supplier', 'pengeluaran')
             ->whereBetween('tanggal', [$this->startDate, $this->endDate])
             ->orderBy('tanggal', 'desc')
             ->get();
@@ -290,12 +290,23 @@ class LaporanTransaksiSheet implements FromCollection, WithHeadings, WithMapping
 
     public function map($transaksi): array
     {
+        $jenis = $transaksi->jenis_transaksi;
+
+        if (in_array($jenis, ['Pembelian', 'Pengeluaran'])) {
+            $label = 'Transaksi Keluar';
+            $pihak = $transaksi->supplier->nm_supplier ?? ($transaksi->pengeluaran->kategori ?? '-');
+        } elseif ($jenis === 'Pemasukan') {
+            $label = 'Pemasukan';
+            $pihak = $transaksi->pengeluaran->kategori ?? 'Dana Luar';
+        } else {
+            $label = 'Penjualan';
+            $pihak = $transaksi->pelanggan->nm_pelanggan ?? '-';
+        }
+
         return [
-            $transaksi->jenis_transaksi === 'Pembelian' ? 'Transaksi Keluar' : 'Penjualan',
+            $label,
             $transaksi->no_invoice,
-            $transaksi->jenis_transaksi === 'Pembelian'
-                ? ($transaksi->supplier->nm_supplier ?? '-')
-                : ($transaksi->pelanggan->nm_pelanggan ?? '-'),
+            $pihak,
             $transaksi->tanggal,
             'Rp ' . number_format($transaksi->total, 0, ',', '.'),
             $transaksi->metode_byr,

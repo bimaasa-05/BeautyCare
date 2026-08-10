@@ -33,6 +33,37 @@
     .badge-dikonfirmasi { background: #DBEAFE; color: #2563EB; }
     .badge-selesai { background: #E8F8EE; color: #22C55E; }
     .badge-ditolak { background: #FDE8E8; color: #EF4444; }
+
+    @media (max-width: 768px) {
+        .table-enhanced thead { display: none; }
+        .table-enhanced tbody tr {
+            display: block;
+            padding: 16px;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            margin-bottom: 10px;
+            background: #fff;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
+        }
+        .table-enhanced tbody td {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            padding: 7px 0;
+            border: none;
+            text-align: right;
+        }
+        .table-enhanced tbody td::before {
+            content: attr(data-label);
+            font-weight: 600;
+            color: var(--gray);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .table-enhanced tbody td .max-w-[200px] { max-width: 55vw; }
+    }
     </style>
 </head>
 
@@ -43,7 +74,7 @@
         <main class="main-content">
             @include('layouts.header2')
 
-            <div class="flex-1 overflow-y-auto p-8">
+            <div class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
                 <div class="bg-white rounded-2xl p-6 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] relative overflow-hidden">
                     <div class="mb-6">
                         <h3 class="text-[16px] font-bold text-gray-800">
@@ -55,7 +86,7 @@
                         </p>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-3 mb-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 mb-4">
                         <div class="stat-card-enhanced card-gradient-amber">
                             <div class="flex items-center justify-between">
                                 <div>
@@ -103,14 +134,14 @@
                     </div>
 
                     <form method="GET" action="" class="flex flex-wrap items-center justify-end gap-2 mb-4">
-                        <div class="relative">
+                        <div class="relative flex-1 sm:flex-none sm:min-w-[200px] max-w-full">
                             <i class="fa-solid fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-[12px]"></i>
                             <input type="text" placeholder="Cari konsultasi..." name="keyword"
-                                class="bg-gray-50 border border-gray-100 text-[12px] rounded-full pl-9 pr-4 py-2 w-[200px] focus:outline-none focus:border-pink-300 transition-all placeholder-gray-400"
+                                class="bg-gray-50 border border-gray-100 text-[12px] rounded-full pl-9 pr-4 py-2 w-full sm:w-[200px] focus:outline-none focus:border-pink-300 transition-all placeholder-gray-400"
                                 value="{{ Request()->keyword }}">
                         </div>
                         <select name="status" onchange="this.form.submit()"
-                            class="bg-gray-50 border border-gray-100 text-[12px] rounded-full pl-4 pr-8 py-2 focus:outline-none focus:border-pink-300 transition-all">
+                            class="bg-gray-50 border border-gray-100 text-[12px] rounded-full pl-4 pr-8 py-2 focus:outline-none focus:border-pink-300 transition-all w-full sm:w-auto">
                             <option value="">Semua Status</option>
                             <option value="menunggu" {{ $filterStatus === 'menunggu' ? 'selected' : '' }}>Menunggu</option>
                             <option value="dikonfirmasi" {{ $filterStatus === 'dikonfirmasi' ? 'selected' : '' }}>Dikonfirmasi</option>
@@ -134,7 +165,7 @@
                             <tbody>
                                 @forelse($konsultasi as $item)
                                 <tr class="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
-                                    <td class="px-3 py-3">
+                                    <td class="px-3 py-3" data-label="Pelanggan">
                                         <div class="flex items-center gap-2">
                                             <div class="w-8 h-8 rounded-full bg-pink-100 text-pink-500 flex items-center justify-center text-[12px] font-bold flex-shrink-0">
                                                 {{ substr($item->pelanggan->nm_pelanggan ?? '?', 0, 1) }}
@@ -145,23 +176,23 @@
                                             </div>
                                         </div>
                                     </td>
-                                    <td class="px-3 py-3">
+                                    <td class="px-3 py-3" data-label="Jadwal">
                                         <div class="text-[12px] text-gray-600 font-medium">{{ \Carbon\Carbon::parse($item->tanggal)->isoFormat('D MMM YYYY') }}</div>
                                         <div class="text-[10px] text-gray-400">{{ str_replace(':', '.', substr($item->jam, 0, 5)) }}</div>
                                     </td>
-                                    <td class="px-3 py-3">
+                                    <td class="px-3 py-3" data-label="Topik">
                                         <div class="text-[12px] font-semibold text-gray-700 max-w-[200px] truncate">{{ $item->topik }}</div>
                                         @if($item->pesan)
                                         <div class="text-[10px] text-gray-400 max-w-[200px] truncate">{{ $item->pesan }}</div>
                                         @endif
                                     </td>
-                                    <td class="px-3 py-3">
+                                    <td class="px-3 py-3" data-label="Mode">
                                         <span class="badge-status {{ $item->mode === 'online' ? 'bg-purple-50 text-purple-600' : 'bg-sky-50 text-sky-600' }}">
                                             <i class="fa-solid {{ $item->mode === 'online' ? 'fa-globe' : 'fa-store' }}"></i>
                                             {{ ucfirst($item->mode) }}
                                         </span>
                                     </td>
-                                    <td class="px-3 py-3">
+                                    <td class="px-3 py-3" data-label="Terapis">
                                         @if($item->karyawan)
                                         <div class="flex items-center gap-1.5">
                                             <i class="fa-solid fa-user text-gray-300 text-[10px]"></i>
@@ -171,7 +202,7 @@
                                         <span class="text-[11px] text-amber-500 italic">Belum ditugaskan</span>
                                         @endif
                                     </td>
-                                    <td class="px-3 py-3">
+                                    <td class="px-3 py-3" data-label="Status">
                                         <span class="badge-status badge-{{ $item->status }}">
                                             <span class="w-1.5 h-1.5 rounded-full bg-current"></span>
                                             {{ ucfirst($item->status) }}
@@ -196,6 +227,8 @@
             </div>
         </main>
     </div>
+
+    <script src="{{ asset('assets/js/dashboard.js') }}"></script>
 </body>
 
 </html>
