@@ -181,7 +181,7 @@
                                     </td>
                                     <td data-label="Pelanggan">
                                         <div class="therapist-cell">
-                                            <div class="th-avatar">{{ $item->pelanggan ? substr($item->pelanggan->nm_pelanggan, 0, 1) : '?' }}</div>
+                                            <div class="th-avatar"><img src="{{ $item->pelanggan?->foto_url ?? 'https://ui-avatars.com/api/?name=%3F&background=FFE5EF&color=FF4F87&size=40' }}" alt="{{ $item->pelanggan->nm_pelanggan ?? '?' }}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;display:block;"></div>
                                             <span class="th-name">{{ $item->pelanggan ? $item->pelanggan->nm_pelanggan : 'Pelanggan #'.$item->id_pelanggan }}</span>
                                         </div>
                                     </td>
