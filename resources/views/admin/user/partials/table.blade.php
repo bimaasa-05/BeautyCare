@@ -7,12 +7,8 @@
         <span class="px-2.5 py-0.5 bg-amber-50 text-amber-600 border border-amber-100 rounded-full text-[11px] font-semibold">{{ Str::limit($user->password, 15) }}</span>
     </td>
     <td class="py-3.5 px-4" data-label="Foto">
-        @if ($user->foto)
-            <img src="{{ asset('storage/' . $user->foto) }}" alt="foto"
-                class="w-8 h-8 rounded-full object-cover">
-        @else
-            <span class="text-gray-400">-</span>
-        @endif
+        <img src="{{ $user->foto_url }}" alt="foto"
+            class="w-8 h-8 rounded-full object-cover">
     </td>
     <td class="py-3.5 px-4 text-gray-500" data-label="Nomor Hp">{{ $user->no_hp ?? '-' }}
     </td>
