@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Print Struk RPP02</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+
+    <div class="bg-white rounded-xl shadow-lg p-6 w-full max-w-md">
+        <div class="text-center mb-6">
+            <h1 class="text-2xl font-bold text-gray-800">Test Print RPP02</h1>
+            <p class="text-sm text-gray-500">Cetak struk via Web Bluetooth (ESC/POS)</p>
+        </div>
+
+        <!-- Status Bar -->
+        <div id="statusBox" class="mb-6 p-3 rounded-lg bg-yellow-50 text-yellow-700 border border-yellow-200 flex items-center text-sm">
+            <i class="fas fa-info-circle mr-2 text-lg"></i>
+            <span id="statusText">Printer belum terhubung.</span>
+        </div>
+
+        <!-- Controls -->
+        <div class="space-y-4">
+            <button id="btnConnect" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200 flex items-center justify-center">
+                <i class="fab fa-bluetooth mr-2"></i> Hubungkan Printer
+            </button>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Isi Struk (Teks Bebas)</label>
+                <textarea id="receiptText" rows="6" class="w-full border border-gray-300 rounded-lg p-3 text-sm font-mono focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-none">
+Toko Dummy Nusantara
+Jl. Teknologi No. 99
+================================
+Item 1          1x    Rp 15.000
+Item 2          2x    Rp 20.000
+Diskon                -Rp 5.000
+--------------------------------
+TOTAL                 Rp 50.000
+================================
+Terima Kasih Atas Kunjungan Anda
+                </textarea>
+                <p class="text-xs text-gray-500 mt-1">* Teks ini akan dicetak menggunakan format standar ESC/POS.</p>
+            </div>
+
+            <button id="btnPrint" disabled class="w-full bg-gray-400 cursor-not-allowed text-white font-semibold py-3 px-4 rounded-lg transition duration-200 flex items-center justify-center text-lg shadow-sm">
+                <i class="fas fa-print mr-2"></i> Cetak Struk
+            </button>
+        </div>
+        
+        <div class="mt-6 text-xs text-gray-400 text-center">
+            Catatan: Hanya berfungsi di Google Chrome/Edge via HTTPS atau Localhost. Pastikan Bluetooth perangkat Anda aktif.
+        </div>
+    </div>
+
+    <script>
+        // UUID Umum untuk Printer Bluetooth POS / Thermal (seperti RPP02)
+        const PRINTER_SERVICES = [
+            '000018f0-0000-1000-8000-00805f9b34fb', // Standard Printer Service
+            'e7810a71-73ae-499d-8c15-faa9aef0c3f2', // Generic POS
+            '49535343-fe7d-4ae5-8fa9-9fafd205e455'  // Generic POS 2
+        ];
+
+        let printCharacteristic = null;
+        let bluetoothDevice = null;
+
+        const btnConnect = document.getElementById('btnConnect');
+        const btnPrint = document.getElementById('btnPrint');
+        const statusBox = document.getElementById('statusBox');
+        const statusText = document.getElementById('statusText');
+        const receiptText = document.getElementById('receiptText');
+
+        function updateStatus(message, type = 'info') {
+            statusText.innerText = message;
+            statusBox.className = 'mb-6 p-3 rounded-lg flex items-center text-sm border';
+            
+            if (type === 'error') {
+                statusBox.classList.add('bg-red-50', 'text-red-700', 'border-red-200');
+                statusBox.innerHTML = `<i class="fas fa-exclamation-circle mr-2 text-lg"></i> <span id="statusText">${message}</span>`;
+            } else if (type === 'success') {
+                statusBox.classList.add('bg-green-50', 'text-green-700', 'border-green-200');
+                statusBox.innerHTML = `<i class="fas fa-check-circle mr-2 text-lg"></i> <span id="statusText">${message}</span>`;
+            } else {
+                statusBox.classList.add('bg-yellow-50', 'text-yellow-700', 'border-yellow-200');
+                statusBox.innerHTML = `<i class="fas fa-info-circle mr-2 text-lg"></i> <span id="statusText">${message}</span>`;
+            }
+        }
+
+        async function connectPrinter() {
+            if (!navigator.bluetooth) {
+                updateStatus('Web Bluetooth API tidak didukung di browser ini.', 'error');
+                return;
+            }
+
+            try {
+                updateStatus('Mencari perangkat Bluetooth...');
+                
+                // Meminta perangkat Bluetooth dengan service yang diketahui
+                bluetoothDevice = await navigator.bluetooth.requestDevice({
+                    acceptAllDevices: true,
+                    optionalServices: PRINTER_SERVICES
+                });
+
+                updateStatus(`Menghubungkan ke ${bluetoothDevice.name || 'Printer'}...`);
+                bluetoothDevice.addEventListener('gattserverdisconnected', onDisconnected);
+
+                const server = await bluetoothDevice.gatt.connect();
+                
+                // Mencari service printer yang valid
+                let serviceFound = false;
+                for (const uuid of PRINTER_SERVICES) {
+                    try {
+                        const service = await server.getPrimaryService(uuid);
+                        const characteristics = await service.getCharacteristics();
+                        
+                        // Cari karakteristik yang bisa ditulis (write)
+                        for (const char of characteristics) {
+                            if (char.properties.write || char.properties.writeWithoutResponse) {
+                                printCharacteristic = char;
+                                serviceFound = true;
+                                break;
+                            }
+                        }
+                    } catch (e) {
+                        // Lanjut ke UUID berikutnya jika tidak ditemukan
+                    }
+                    if (serviceFound) break;
+                }
+
+                if (!printCharacteristic) {
+                    throw new Error('Karakteristik Write tidak ditemukan pada perangkat ini.');
+                }
+
+                updateStatus(`Terhubung ke: ${bluetoothDevice.name || 'Printer Bluetooth'}`, 'success');
+                
+                // Ubah status tombol
+                btnConnect.classList.replace('bg-blue-600', 'bg-green-600');
+                btnConnect.classList.replace('hover:bg-blue-700', 'hover:bg-green-700');
+                btnConnect.innerHTML = '<i class="fas fa-check mr-2"></i> Terhubung';
+                
+                btnPrint.disabled = false;
+                btnPrint.classList.replace('bg-gray-400', 'bg-indigo-600');
+                btnPrint.classList.replace('cursor-not-allowed', 'hover:bg-indigo-700');
+
+            } catch (error) {
+                console.error(error);
+                updateStatus('Gagal terhubung: ' + error.message, 'error');
+            }
+        }
+
+        function onDisconnected() {
+            updateStatus('Koneksi printer terputus.', 'error');
+            printCharacteristic = null;
+            
+            btnConnect.classList.replace('bg-green-600', 'bg-blue-600');
+            btnConnect.classList.replace('hover:bg-green-700', 'hover:bg-blue-700');
+            btnConnect.innerHTML = '<i class="fab fa-bluetooth mr-2"></i> Hubungkan Printer';
+            
+            btnPrint.disabled = true;
+            btnPrint.classList.replace('bg-indigo-600', 'bg-gray-400');
+            btnPrint.classList.replace('hover:bg-indigo-700', 'cursor-not-allowed');
+        }
+
+        async function printReceipt() {
+            if (!printCharacteristic) {
+                updateStatus('Printer belum terhubung!', 'error');
+                return;
+            }
+
+            try {
+                updateStatus('Sedang mencetak...', 'info');
+                
+                const textToPrint = receiptText.value;
+                const escPosData = generateEscPos(textToPrint);
+                
+                // Bluetooth BLE memiliki batasan ukuran paket (biasanya 20 bytes). 
+                // Kita perlu memotong data menjadi bagian-bagian kecil (chunk).
+                const CHUNK_SIZE = 20; 
+                for (let i = 0; i < escPosData.length; i += CHUNK_SIZE) {
+                    const chunk = escPosData.slice(i, i + CHUNK_SIZE);
+                    await printCharacteristic.writeValue(chunk);
+                    // Beri sedikit jeda agar buffer printer tidak penuh
+                    await new Promise(resolve => setTimeout(resolve, 10)); 
+                }
+
+                updateStatus('Berhasil mencetak!', 'success');
+            } catch (error) {
+                console.error(error);
+                updateStatus('Gagal mencetak: ' + error.message, 'error');
+            }
+        }
+
+        // Fungsi untuk mengonversi teks ke format ESC/POS
+        function generateEscPos(text) {
+            let encoder = new TextEncoder();
+            let data = [];
+            
+            // 1. Inisialisasi Printer (ESC @)
+            data.push(0x1B, 0x40);
+            
+            // 2. Ratakan Tengah untuk Header (ESC a 1)
+            data.push(0x1B, 0x61, 0x01);
+            
+            // Teks Struk
+            const encodedText = encoder.encode(text + '\n');
+            for(let i=0; i<encodedText.length; i++) {
+                data.push(encodedText[i]);
+            }
+            
+            // 3. Tambahkan Paper Feed (Jeda kertas di akhir agar mudah dirobek)
+            data.push(0x0A, 0x0A, 0x0A, 0x0A); 
+            
+            return new Uint8Array(data);
+        }
+
+        // Event Listeners
+        btnConnect.addEventListener('click', connectPrinter);
+        btnPrint.addEventListener('click', printReceipt);
+
+    </script>
+</body>
+</html>
+
