@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Transaksi extends Model
 {
     protected $table = 'transaksi';
-    protected $primaryKey = 'id_transaksi';
+    protected $primaryKey = 'id_transaksi';  
     public $timestamps = false;
 
      protected $fillable = [
@@ -15,6 +15,7 @@ class Transaksi extends Model
         'sumber',
         'id_pelanggan',
         'id_supplier',
+        'id_pengeluaran',
         'jenis_transaksi',
         'id_user',
         'id_kasir',
@@ -63,5 +64,10 @@ class Transaksi extends Model
     public function pembayaran()
     {
         return $this->hasOne(Pembayaran::class, 'id_transaksi', 'id_transaksi');
+    }
+
+    public function pengeluaran()
+    {
+        return $this->belongsTo(Pengeluaran::class, 'id_pengeluaran', 'id_pengeluaran');
     }
 }
