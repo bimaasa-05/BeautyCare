@@ -77,12 +77,8 @@
     <td class="py-3.5 px-4 font-medium text-gray-500" data-label="Catatan Alergi">{{ $p->catatan_alergi ?? '-' }}
     </td>
     <td class="py-3.5 px-4" data-label="Foto">
-        @if ($p->foto)
-            <img src="{{ asset('storage/' . $p->foto) }}" alt="foto"
-                class="w-8 h-8 rounded-full object-cover">
-        @else
-            <span class="text-gray-400">-</span>
-        @endif
+        <img src="{{ $p->foto_url }}" alt="foto"
+            class="w-8 h-8 rounded-full object-cover">
     </td>
     <td class="py-3.5 px-4 text-center" data-label="Aksi">
         <div class="flex items-center justify-center gap-2">
