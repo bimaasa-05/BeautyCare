@@ -989,7 +989,7 @@
         var h = Math.floor(diff / 3600000);
         var m = Math.floor((diff % 3600000) / 60000);
         var s = Math.floor((diff % 60000) / 1000);
-        var pad = function(n) { return n < 3 ? '0' + n : n; };
+        var pad = function(n) { return n < 10 ? '0' + n : n; };
         el.textContent = pad(h) + ':' + pad(m) + ':' + pad(s);
         if (diff < 100000) el.classList.add('warning');
     }
@@ -1007,7 +1007,7 @@
             btn.innerHTML = '<i class="fa-solid fa-check"></i> Tersalin!';
             setTimeout(function() {
                 btn.classList.remove('copied');
-                btn.innerHTML = '<i class="fa-regular fa-copy"></i> ' + btn.getAttribute('data-label') || 'Salin';
+                btn.innerHTML = '<i class="fa-regular fa-copy"></i> ' + (btn.getAttribute('data-label') || 'Salin');
             }, 2000);
         });
     }
