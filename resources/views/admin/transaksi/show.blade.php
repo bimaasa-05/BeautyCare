@@ -186,13 +186,13 @@
                             </p>
                         </div>
                         <div class="flex flex-wrap items-center gap-2 no-print">
-                            @if ($transaksi->jenis_transaksi !== 'Pembelian')
+                            @if (!in_array($transaksi->jenis_transaksi, ['Pembelian', 'Pengeluaran', 'Pemasukan']))
                             <a href="{{ route('admin.transaksi.invoice', $transaksi->id_transaksi) }}" target="_blank"
                                 class="flex items-center gap-2 bg-gradient-to-r from-[#EC4899] to-[#BE185D] text-white text-[12px] font-semibold px-4 py-2 rounded-full hover:shadow-md transition-all shadow-sm">
                                 <i class="fa-solid fa-print"></i> Cetak Invoice
                             </a>
                             @endif
-                            <a href="{{ route('admin.transaksi.index', ['jenis' => $transaksi->jenis_transaksi === 'Pembelian' ? 'pengeluaran' : 'penjualan']) }}"
+                            <a href="{{ route('admin.transaksi.index') }}"
                                 class="flex items-center gap-2 border border-gray-200 text-gray-600 text-[12px] font-medium px-4 py-2 rounded-full hover:bg-gray-50 transition-colors">
                                 <i class="fa-solid fa-arrow-left"></i> Kembali
                             </a>
@@ -254,11 +254,28 @@
                                     <p class="info-label"><i class="fa-solid fa-tags mr-1 text-pink-300"></i> Jenis</p>
                                     <p class="info-value">Transaksi Keluar</p>
                                 </div>
-                                @else
+                                @elseif ($transaksi->jenis_transaksi === 'Pengeluaran')
                                 <div class="info-box">
-                                    <p class="info-label"><i class="fa-solid fa-user mr-1 text-pink-300"></i> Pelanggan</p>
-                                    <p class="info-value">{{ $transaksi->pelanggan->nm_pelanggan ?? '-' }}</p>
+                                    <p class="info-label"><i class="fa-solid fa-tags mr-1 text-pink-300"></i> Kategori</p>
+                                    <p class="info-value">{{ $transaksi->pengeluaran->kategori ?? '-' }}</p>
                                 </div>
+                                <div class="info-box">
+                                    <p class="info-label"><i class="fa-solid fa-truck mr-1 text-pink-300"></i> Supplier</p>
+                                    <p class="info-value">{{ $transaksi->supplier->nm_supplier ?? '-' }}</p>
+                                </div>
+                                @elseif ($transaksi->jenis_transaksi === 'Pemasukan')
+                                @php
+                                    $pemasukanBagi = explode(' — ', $transaksi->catatan ?? '', 2);
+                                @endphp
+                                <div class="info-box">
+                                    <p class="info-label"><i class="fa-solid fa-tags mr-1 text-pink-300"></i> Kategori</p>
+                                    <p class="info-value">{{ ($pemasukanBagi[0] ?? '') ?: '-' }}</p>
+                                </div>
+                                <div class="info-box">
+                                    <p class="info-label"><i class="fa-solid fa-wallet mr-1 text-pink-300"></i> Sumber</p>
+                                    <p class="info-value">Dana Luar</p>
+                                </div>
+                                @else
                                 @endif
                                 <div class="info-box">
                                     <p class="info-label"><i class="fa-solid fa-hashtag mr-1 text-pink-300"></i> No. Invoice</p>
