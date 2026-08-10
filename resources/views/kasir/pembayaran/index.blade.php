@@ -137,9 +137,7 @@
                                         <td class="py-3 px-4 text-gray-400 font-medium">{{ $loop->iteration }}</td>
                                         <td class="py-3 px-4">
                                             <div class="flex items-center gap-2.5">
-                                                <div class="w-8 h-8 rounded-full bg-green-200 text-green-600 flex items-center justify-center font-bold text-[11px]">
-                                                    {{ $r->pelanggan ? strtoupper(substr($r->pelanggan->nm_pelanggan, 0, 2)) : '??' }}
-                                                </div>
+                                                <img src="{{ $r->pelanggan?->foto_url ?? 'https://ui-avatars.com/api/?name=Unknown&background=FFE5EF&color=FF4F87&size=40' }}" class="w-8 h-8 rounded-full object-cover flex-shrink-0" alt="{{ $r->pelanggan->nm_pelanggan ?? '-' }}">
                                                 <div>
                                                     <span class="font-semibold text-gray-700 block leading-tight">{{ $r->pelanggan->nm_pelanggan ?? '-' }}</span>
                                                     <span class="text-[11px] text-gray-400">{{ $r->pelanggan->no_hp ?? '' }}</span>
