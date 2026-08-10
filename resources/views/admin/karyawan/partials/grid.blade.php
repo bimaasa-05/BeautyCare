@@ -6,8 +6,8 @@
     <div class="flex justify-between items-start mb-6">
         <div class="flex items-center gap-3 min-w-0">
             <div class="w-12 h-12 rounded-full overflow-hidden bg-[#f472b6] flex-shrink-0">
-                @if ($b->user?->foto)
-                    <img src="{{ asset('storage/' . $b->user->foto) }}" alt="foto"
+                @if ($b->user)
+                    <img src="{{ $b->user->foto_url }}" alt="foto"
                         class="w-full h-full object-cover">
                 @else
                     <div class="w-full h-full flex items-center justify-center text-white font-bold text-lg">
