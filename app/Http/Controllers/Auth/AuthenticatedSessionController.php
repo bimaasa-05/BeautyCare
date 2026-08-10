@@ -35,9 +35,16 @@ class AuthenticatedSessionController extends Controller
             Auth::guard('web')->logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();
-            $pesan = $user->status === 'menunggu_persetujuan'
-                ? 'Akun Anda sedang menunggu persetujuan admin. Silakan hubungi admin.'
-                : 'Akun Anda belum diaktifkan oleh admin. Silakan hubungi admin.';
+
+            if ($user->status === 'suspend') {
+                $until = $user->suspend_until ? $user->suspend_until->locale('id')->isoFormat('D MMMM YYYY, HH:mm') . ' WIB' : 'tidak ditentukan';
+                $pesan = "Akun Anda dengan Nama \"{$user->nama}\" dan Email \"{$user->email}\" sedang disuspend sampai {$until}. Silakan hubungi admin.";
+            } elseif ($user->status === 'menunggu_persetujuan') {
+                $pesan = 'Akun Anda sedang menunggu persetujuan admin. Silakan hubungi admin.';
+            } else {
+                $pesan = 'Akun Anda belum diaktifkan oleh admin. Silakan hubungi admin.';
+            }
+
             return back()->withErrors([
                 'email' => $pesan,
             ]);
