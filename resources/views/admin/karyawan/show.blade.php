@@ -165,8 +165,8 @@
                     <div class="print-area bg-white rounded-3xl shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] border border-pink-50/50 overflow-hidden">
                         <div class="bg-gradient-to-r from-[#de3b7c] to-[#ff7ba6] px-6 sm:px-10 py-8 flex flex-col sm:flex-row items-center gap-6">
                             <div class="w-24 h-24 rounded-full overflow-hidden bg-white/30 ring-4 ring-white/50 flex-shrink-0">
-                                @if ($beautician->user?->foto)
-                                    <img src="{{ asset('storage/' . $beautician->user->foto) }}" alt="foto"
+                                @if ($beautician->user)
+                                    <img src="{{ $beautician->user->foto_url }}" alt="foto"
                                         class="w-full h-full object-cover">
                                 @else
                                     <div class="w-full h-full flex items-center justify-center text-white font-bold text-3xl">
