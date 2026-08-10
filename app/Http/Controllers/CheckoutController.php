@@ -61,7 +61,7 @@ class CheckoutController extends Controller
                 ->first();
 
             if (!$member || (float) $member->harga <= 0) {
-                return redirect()->route('pelanggan.membership')->with('error', 'Paket membership tidak tersedia.');
+                return redirect()->route('pelanggan.membership')->with('error', 'Paket membership tidak tersedia atau harganya belum diatur.');
             }
 
             $error = $this->cekSyaratMembership($this->getOrCreatePelanggan(auth()->user()), $member);
@@ -132,7 +132,7 @@ class CheckoutController extends Controller
             ->first();
 
         if (!$member || (float) $member->harga <= 0) {
-            return redirect()->route('pelanggan.membership')->with('error', 'Paket membership tidak tersedia.');
+            return redirect()->route('pelanggan.membership')->with('error', 'Paket membership tidak tersedia atau harganya belum diatur.');
         }
 
         $error = $this->cekSyaratMembership($this->getOrCreatePelanggan(auth()->user()), $member);
@@ -181,6 +181,8 @@ class CheckoutController extends Controller
         $isMembership = (bool) $request->beli_membership;
 
         $promoDiskon = 0;
+        $pakaiPromo = false;
+        $memberInfo = ['diskon' => 0, 'aktif' => false, 'level' => null, 'diskon_pct' => 0, 'sisa' => 0];
 
         if ($isMembership) {
             $member = Membership::where('id_member', $request->beli_membership)
@@ -188,7 +190,7 @@ class CheckoutController extends Controller
                 ->first();
 
             if (!$member || (float) $member->harga <= 0) {
-                return back()->with('error', 'Paket membership tidak tersedia.');
+                return back()->with('error', 'Paket membership tidak tersedia atau harganya belum diatur.');
             }
 
             $error = $this->cekSyaratMembership($pelanggan, $member);
