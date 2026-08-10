@@ -49,7 +49,7 @@ class KasirTransaksiController extends Controller
         $pelanggan = Pelanggan::with('membership')->get();
         $layanan = Layanan::where('status', 'Tersedia')->get();
         $produk = Produk::where('status', 'Tersedia')->get();
-        $karyawan = Karyawan::with('user')->get();
+        $karyawan = Karyawan::with('user')->whereHas('user', fn ($q) => $q->where('role', 'beautycian'))->get();
         $banks = Bank::active()->transfer()->get(['id', 'nama_bank', 'no_rekening', 'kode_bank', 'logo', 'atas_nama']);
         $ewallets = Bank::active()->ewallet()->get(['id', 'nama_bank', 'nomor_telepon', 'atas_nama']);
 
@@ -264,7 +264,7 @@ class KasirTransaksiController extends Controller
         $pelanggan = Pelanggan::with('membership')->get();
         $layanan = Layanan::where('status', 'Tersedia')->get();
         $produk = Produk::where('status', 1)->get();
-        $karyawan = Karyawan::with('user')->get();
+        $karyawan = Karyawan::with('user')->whereHas('user', fn ($q) => $q->where('role', 'beautycian'))->get();
         $banks = Bank::active()->transfer()->get(['id', 'nama_bank', 'no_rekening', 'kode_bank', 'logo', 'atas_nama']);
         $ewallets = Bank::active()->ewallet()->get(['id', 'nama_bank', 'nomor_telepon', 'atas_nama']);
 
