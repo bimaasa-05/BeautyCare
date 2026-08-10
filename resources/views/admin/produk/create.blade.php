@@ -278,7 +278,7 @@
                         <div class="mt-5 bg-[#FFF7FA] border border-pink-100 rounded-xl px-4 py-3 flex items-center gap-2 text-[12px] text-gray-500">
                             <i class="fa-solid fa-circle-info text-[#EC4899]"></i>
                             Produk baru dibuat dengan stok 0. Tambah stok melalui menu
-                            <a href="{{ route('admin.transaksi.index', ['jenis' => 'pengeluaran']) }}" class="font-semibold text-[#BE185D] hover:underline">Transaksi → Pengeluaran</a>.
+                            <a href="{{ route('admin.transaksi.index') }}" class="font-semibold text-[#BE185D] hover:underline">Transaksi</a>.
                         </div>
 
                         <div class="flex items-center gap-3 mt-6 pt-5 border-t border-gray-100">

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\ActivityLogger;
 use App\Models\Konsultasi;
 use App\Models\Pelanggan;
 use Illuminate\Http\Request;
@@ -114,6 +115,8 @@ class KonsultasiPelangganController extends Controller
         ]);
 
         buatNotifRole('kasir', 'Permintaan Konsultasi Baru', $pelanggan->nm_pelanggan . ' mengajukan konsultasi "' . $validated['topik'] . '" dan menunggu konfirmasi.', 'Konsultasi', route('kasir.konsultasi.index'));
+
+        ActivityLogger::log('Menambahkan', auth()->user()->nama . ' mengajukan konsultasi "' . $validated['topik'] . '" via ' . ($validated['mode'] === 'online' ? 'online (' . $validated['media'] . ')' : 'offline'), 'Konsultasi', $konsultasi->id_konsultasi);
 
         return redirect()->route('pelanggan.konsultasi.index')
             ->with('message', 'Permintaan konsultasi terkirim. Silakan tunggu konfirmasi dari kasir.');
