@@ -176,11 +176,7 @@
                     <div class="kc-top">
                         <div class="kc-customer">
                             <div class="kc-avatar">
-                                @if($item->pelanggan && $item->pelanggan->foto)
-                                    <img src="{{ asset('storage/' . $item->pelanggan->foto) }}" alt="{{ $item->pelanggan->nm_pelanggan }}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">
-                                @else
-                                    {{ $item->pelanggan ? substr($item->pelanggan->nm_pelanggan, 0, 1) : '?' }}
-                                @endif
+                                <img src="{{ $item->pelanggan?->foto_url ?? 'https://ui-avatars.com/api/?name=%3F&background=FFE5EF&color=FF4F87&size=40' }}" alt="{{ $item->pelanggan->nm_pelanggan ?? '?' }}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">
                             </div>
                             <div>
                                 <div class="kc-name">{{ $item->pelanggan->nm_pelanggan ?? '#' . $item->id_pelanggan }}</div>
