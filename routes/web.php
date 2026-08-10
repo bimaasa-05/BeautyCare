@@ -394,6 +394,8 @@ Route::middleware('auth')->group(function () {
 
         //Route Saldo Akun
         Route::get('/pelanggan/saldo', [App\Http\Controllers\PelangganSaldoController::class, 'index'])->name('pelanggan.saldo.index');
+        Route::get('/pelanggan/saldo/topup', [App\Http\Controllers\SaldoTopUpController::class, 'create'])->name('pelanggan.saldo.topup');
+        Route::post('/pelanggan/saldo/topup', [App\Http\Controllers\SaldoTopUpController::class, 'store'])->name('pelanggan.saldo.topup.store');
 
         //Route Produk
         Route::get('/pelanggan/produk', [PelangganProdukController::class, 'index'])->name('pelanggan.produk');
