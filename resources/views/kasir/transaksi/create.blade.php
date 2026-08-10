@@ -38,6 +38,19 @@
         .form-input-custom::placeholder { color: #aaa; }
         .form-input-custom[readonly] { background-color: #f9f9f9; cursor: not-allowed; }
         select.form-input-custom { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 40px; }
+        .bank-card-hero { border-radius: 18px; padding: 24px 22px; color: #fff; box-shadow: 0 10px 24px rgba(0,0,0,0.18); position: relative; overflow: hidden; }
+        .bank-card-hero::after { content: ''; position: absolute; right: -40px; top: -40px; width: 140px; height: 140px; border-radius: 50%; background: rgba(255,255,255,0.08); }
+        .bank-card-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+        .bank-card-name { font-size: 17px; font-weight: 800; letter-spacing: 2px; }
+        .bank-card-chip { width: 36px; height: 28px; border-radius: 6px; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 13px; }
+        .bank-card-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.75; font-weight: 600; }
+        .bank-card-va { font-size: 20px; font-weight: 800; letter-spacing: 1.5px; font-family: 'Courier New', monospace; margin-top: 4px; word-break: break-all; }
+        .bank-card-owner { margin-top: 14px; padding-top: 12px; border-top: 1px dashed rgba(255,255,255,0.35); display: flex; flex-direction: column; gap: 3px; }
+        .bank-card-owner span { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.75; font-weight: 600; }
+        .bank-card-owner b { font-size: 13px; font-weight: 700; letter-spacing: 0.5px; word-break: break-all; }
+        .bank-card-copy { margin-top: 16px; width: 100%; padding: 10px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.35); background: rgba(255,255,255,0.12); color: #fff; font-size: 12px; font-weight: 600; font-family: 'Poppins', sans-serif; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: background 0.2s; }
+        .bank-card-copy:hover { background: rgba(255,255,255,0.22); }
+        .bank-card-copy.copied { background: #10B981; border-color: #10B981; }
     </style>
 </head>
 
@@ -67,7 +80,7 @@
                         </a>
                     </div>
 
-                    <form action="{{ route('kasir.transaksi.store') }}" method="POST" enctype="multipart/form-data" onsubmit="stopPaymentTimer()">
+                    <form action="{{ route('kasir.transaksi.store') }}" method="POST" enctype="multipart/form-data">
                         @csrf
 
                         <!-- SECTION 1: Pelanggan & Tanggal -->
@@ -80,9 +93,9 @@
                                     $optsPelanggan = $pelanggan->map(fn($p) => [
                                         'value' => $p->id_pelanggan,
                                         'label' => $p->nm_pelanggan . ($p->id_member ? ' (' . ($p->membership->tingkat ?? '') . ' - Diskon ' . ($p->membership->diskon ?? 0) . '%)' : '')
-                                    ])->values();
+                                    ])->sortBy('label')->values();
                                 @endphp
-                                <div x-data="searchableSelect()" x-init="init($el.querySelector('select'), @json($optsPelanggan), @json(old('id_pelanggan', '')))" class="relative">
+                                <div x-data="searchableSelect()" x-init='init($el.querySelector("select"), @json($optsPelanggan), @json(old("id_pelanggan", "")))' class="relative">
                                     <select name="id_pelanggan" id="id_pelanggan" class="hidden @error('id_pelanggan') border-red-400 @enderror" onchange="onPelangganChange(this)">
                                         <option value="">-- Pilih Pelanggan --</option>
                                         @foreach ($pelanggan as $p)
@@ -95,20 +108,21 @@
                                             </option>
                                         @endforeach
                                     </select>
-                                    <button type="button" @click="toggle()"
-                                        class="form-input-custom flex items-center justify-between gap-2 text-left @error('id_pelanggan') border-red-400 @enderror">
-                                        <span :class="selectedText ? 'text-gray-800' : 'text-gray-400'" x-text="selectedText || placeholder" class="truncate"></span>
-                                        <i class="fa-solid fa-chevron-down text-[10px] text-gray-400 transition-transform duration-200 shrink-0" :class="open && 'rotate-180'"></i>
-                                    </button>
-                                    <div x-show="open" @click.outside="open = false" x-transition
+                                    <div class="relative">
+                                        <input type="text" x-model="query" @focus="open = true" @click="open = true" @input="onQueryInput()"
+                                            @keydown.escape="open = false" @keydown.down.prevent="moveHighlight(1)" @keydown.up.prevent="moveHighlight(-1)"
+                                            @keydown.enter.prevent="selectHighlighted()" @blur="setTimeout(() => open = false, 150)"
+                                            class="form-input-custom pr-9 @error('id_pelanggan') border-red-400 @enderror"
+                                            placeholder="Pilih Pelanggan" autocomplete="off">
+                                        <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-[10px] text-gray-400 pointer-events-none"></i>
+                                    </div>
+                                    <div x-show="open" x-transition
                                         class="absolute z-50 mt-1 w-full bg-white border border-slate-200 rounded-xl shadow-lg overflow-hidden">
-                                        <input type="text" x-model="search" placeholder="Cari pelanggan..."
-                                            class="w-full px-3 py-2.5 text-[12px] border-b border-slate-100 focus:outline-none">
                                         <ul class="max-h-48 overflow-y-auto py-1">
-                                            <template x-for="opt in filtered" :key="opt.value">
-                                                <li @click="select(opt.value, opt.label)"
+                                            <template x-for="(opt, i) in filtered" :key="opt.value">
+                                                <li @click="select(opt.value, opt.label)" @mouseenter="highlight = i"
                                                     class="px-3 py-2 text-[12px] cursor-pointer hover:bg-pink-50 hover:text-pink-600 transition-colors"
-                                                    :class="opt.value == value ? 'bg-pink-50 text-pink-600 font-semibold' : 'text-gray-700'"
+                                                    :class="i === highlight ? 'bg-pink-50 text-pink-600 font-semibold' : 'text-gray-700'"
                                                     x-text="opt.label"></li>
                                             </template>
                                             <li x-show="filtered.length === 0" class="px-3 py-2 text-[11px] text-gray-400">Tidak ada hasil</li>
@@ -163,6 +177,22 @@
                             </h4>
                             <p class="text-[12px] text-gray-400 mb-4">Silakan pilih salah satu opsi pembayaran di bawah ini</p>
 
+                            @php
+                                $bankColors = [
+                                    'BRI' => 'linear-gradient(135deg,#00529C,#003A6E)',
+                                    'BCA' => 'linear-gradient(135deg,#CC0000,#990000)',
+                                    'Mandiri' => 'linear-gradient(135deg,#003D79,#00264D)',
+                                    'BNI' => 'linear-gradient(135deg,#FF6600,#CC5200)',
+                                    'BSI' => 'linear-gradient(135deg,#005747,#003A2E)',
+                                ];
+                                $ewalletColors = [
+                                    'GoPay' => 'linear-gradient(135deg,#00AED6,#007B99)',
+                                    'DANA' => 'linear-gradient(135deg,#0B95D6,#0865A8)',
+                                    'ShopeePay' => 'linear-gradient(135deg,#EE4D2D,#C2331A)',
+                                    'OVO' => 'linear-gradient(135deg,#4C2B82,#3A1F66)',
+                                    'QRIS' => 'linear-gradient(135deg,#10B981,#047857)',
+                                ];
+                            @endphp
                             <div x-data="paymentBox()" x-init="init()" class="space-y-4">
                                 <input type="hidden" name="metode_byr" :value="metode">
                                 <input type="hidden" name="bank_id" :value="bankId">
@@ -201,10 +231,22 @@
                                                     </div>
                                                 </div>
 
-                                                <div x-show="bankId === {{ $bank->id }}" x-transition
-                                                    class="bg-slate-50 border border-t-0 border-slate-200/80 rounded-b-2xl p-3.5 text-[10px] space-y-1.5 -mt-2.5 z-0 shadow-inner">
-                                                    <div class="flex justify-between"><span class="text-slate-400 font-bold">No. Rekening:</span><span class="font-black text-slate-800 select-all">{{ $bank->no_rekening ?? '-' }}</span></div>
-                                                    <div class="flex justify-between"><span class="text-slate-400 font-bold">Atas Nama:</span><span class="font-extrabold text-slate-700">{{ $bank->atas_nama }}</span></div>
+                                                <div x-show="bankId === {{ $bank->id }}" x-transition class="mt-3 space-y-2">
+                                                    <div class="bank-card-hero" style="background:{{ $bankColors[$bank->nama_bank] ?? 'linear-gradient(135deg,#64748B,#475569)' }};">
+                                                        <div class="bank-card-head">
+                                                            <span class="bank-card-name">BANK {{ $bank->nama_bank }}</span>
+                                                            <span class="bank-card-chip"><i class="fa-solid fa-building-columns"></i></span>
+                                                        </div>
+                                                        <div class="bank-card-label">No Rekening</div>
+                                                        <div class="bank-card-va">{{ $bank->no_rekening ?? '-' }}</div>
+                                                        <div class="bank-card-owner">
+                                                            <span>Atas Nama</span>
+                                                            <b>{{ $bank->atas_nama }}</b>
+                                                        </div>
+                                                        <button type="button" class="bank-card-copy" data-label="Salin Nomor Rekening" onclick="salinKode(this)">
+                                                            <i class="fa-regular fa-copy"></i> Salin Nomor Rekening
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             </div>
                                             @endforeach
@@ -245,10 +287,22 @@
                                                     </div>
                                                 </div>
 
-                                                <div x-show="ewalletType === '{{ $ew->nama_bank }}'" x-transition
-                                                    class="bg-slate-50 border border-t-0 border-slate-200/80 rounded-b-2xl p-3.5 text-[10px] space-y-1.5 -mt-2.5 z-0 shadow-inner">
-                                                    <div class="flex justify-between"><span class="text-slate-400 font-bold">No. Rekening / HP:</span><span class="font-black text-slate-800 select-all">{{ $ew->nomor_telepon ?? '-' }}</span></div>
-                                                    <div class="flex justify-between"><span class="text-slate-400 font-bold">Atas Nama:</span><span class="font-extrabold text-slate-700">{{ $ew->atas_nama }}</span></div>
+                                                <div x-show="ewalletType === '{{ $ew->nama_bank }}'" x-transition class="mt-3 space-y-2">
+                                                    <div class="bank-card-hero" style="background:{{ $ewalletColors[$ew->nama_bank] ?? 'linear-gradient(135deg,#0D9488,#0F766E)' }};">
+                                                        <div class="bank-card-head">
+                                                            <span class="bank-card-name">{{ strtoupper($ew->nama_bank) }}</span>
+                                                            <span class="bank-card-chip"><i class="fa-solid fa-wallet"></i></span>
+                                                        </div>
+                                                        <div class="bank-card-label">No Rekening</div>
+                                                        <div class="bank-card-va">{{ $ew->nomor_telepon ?? '-' }}</div>
+                                                        <div class="bank-card-owner">
+                                                            <span>Atas Nama</span>
+                                                            <b>{{ $ew->atas_nama }}</b>
+                                                        </div>
+                                                        <button type="button" class="bank-card-copy" data-label="Salin Nomor" onclick="salinKode(this)">
+                                                            <i class="fa-regular fa-copy"></i> Salin Nomor
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             </div>
                                             @endforeach
@@ -474,7 +528,7 @@
         // ========== Item Functions ==========
         function getItemTemplate(index) {
             return `
-            <div class="item-row flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-3 p-3 bg-gray-50 rounded-xl border border-gray-100" data-index="${index}">
+            <div class="item-row flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-2 sm:gap-3 mb-3 p-3 bg-gray-50 rounded-xl border border-gray-100" data-index="${index}">
                 <input type="hidden" name="items[${index}][jenis]" class="item-jenis-hidden" value="Layanan">
                 <input type="hidden" name="items[${index}][id_item]" class="item-id-hidden" value="">
                 <input type="hidden" name="items[${index}][nm_item]" class="item-nama-hidden" value="">
@@ -499,15 +553,15 @@
                     oninput="onQtyChange(this)">
                 <span class="item-subtotal-display text-[13px] text-pink-600 font-bold w-full sm:w-32 text-right sm:flex-shrink-0">Rp 0</span>
                 
-                <!-- Layanan fields: Jam & Karyawan (hidden by default, shown for Layanan) -->
-                <div class="item-layanan-fields hidden sm:flex gap-2 flex-wrap" style="width: 100%;">
+                <!-- Layanan fields: Jam & Karyawan (hidden for Produk) -->
+                <div class="item-layanan-fields gap-2 flex-wrap" style="width: 100%; display: flex;">
                     <input type="time" class="form-input-custom item-jam-input w-full sm:!w-32 !py-2 !text-[12px]"
                         onchange="onLayananFieldChange(this)" placeholder="Jam">
                     <select class="form-input-custom item-karyawan-select w-full sm:!w-48 !py-2 !text-[12px]"
                         onchange="onLayananFieldChange(this)">
                         <option value="">-- Karyawan --</option>
                         @foreach($karyawan as $k)
-                        <option value="{{ $k->id }}">{{ $k->user->nama ?? $k->nama }}</option>
+                        <option value="{{ $k->user->id }}">{{ $k->user->nama ?? $k->nama }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -568,7 +622,7 @@ function onJenisChange(select) {
             const jamInput = row.querySelector('.item-jam-input');
             const karyawanSelect = row.querySelector('.item-karyawan-select');
             if (jenis === 'Layanan') {
-                layananFields.classList.remove('hidden');
+                layananFields.style.display = 'flex';
                 // Set default jam to now
                 if (!jamInput.value) {
                     const now = new Date();
@@ -577,7 +631,7 @@ function onJenisChange(select) {
                 row.querySelector('.item-jam-hidden').value = jamInput.value || '';
                 row.querySelector('.item-karyawan-hidden').value = karyawanSelect.value || '';
             } else {
-                layananFields.classList.add('hidden');
+                layananFields.style.display = 'none';
                 jamInput.value = '';
                 karyawanSelect.value = '';
                 row.querySelector('.item-jam-hidden').value = '';
@@ -698,18 +752,20 @@ function onJenisChange(select) {
         function searchableSelect() {
             return {
                 open: false,
-                search: '',
+                query: '',
                 options: [],
                 value: '',
                 selectedText: '',
-                placeholder: '-- Pilih --',
+                highlight: -1,
                 init(selectEl, options, initial) {
                     this.options = options;
-                    if (selectEl.options[0]) this.placeholder = selectEl.options[0].textContent.trim() || '-- Pilih --';
                     if (initial && String(initial) !== '') {
                         this.value = String(initial);
                         const found = options.find(o => String(o.value) === String(initial));
-                        if (found) this.selectedText = found.label;
+                        if (found) {
+                            this.query = found.label;
+                            this.selectedText = found.label;
+                        }
                     }
                     this.$watch('value', v => {
                         if (String(selectEl.value) !== String(v)) {
@@ -719,20 +775,48 @@ function onJenisChange(select) {
                     });
                 },
                 get filtered() {
-                    const q = this.search.toLowerCase();
+                    const q = this.query.toLowerCase();
                     return this.options.filter(o => !o.disabled && o.label.toLowerCase().includes(q));
+                },
+                onQueryInput() {
+                    if (this.query !== this.selectedText && this.value !== '') this.value = '';
+                },
+                moveHighlight(dir) {
+                    const n = this.filtered.length;
+                    if (!n) return;
+                    this.highlight = (this.highlight + dir + n) % n;
                 },
                 select(val, label) {
                     this.value = String(val);
+                    this.query = label;
                     this.selectedText = label;
                     this.open = false;
-                    this.search = '';
+                    this.highlight = -1;
                 },
-                toggle() { this.open = !this.open; }
+                selectHighlighted() {
+                    const list = this.filtered;
+                    if (!list.length) return;
+                    const idx = this.highlight >= 0 && this.highlight < list.length ? this.highlight : 0;
+                    this.select(list[idx].value, list[idx].label);
+                }
             };
         }
 
         // ========== Payment Method (Alpine) ==========
+        function salinKode(btn) {
+            const card = btn.closest('.bank-card-hero');
+            const kode = (card.querySelector('.bank-card-va').textContent || '').trim();
+            if (!kode) return;
+            navigator.clipboard.writeText(kode).then(function() {
+                btn.classList.add('copied');
+                btn.innerHTML = '<i class="fa-solid fa-check"></i> Tersalin!';
+                setTimeout(function() {
+                    btn.classList.remove('copied');
+                    btn.innerHTML = '<i class="fa-regular fa-copy"></i> ' + (btn.getAttribute('data-label') || 'Salin');
+                }, 2000);
+            });
+        }
+
         function paymentBox() {
             return {
                 cat: 'bank',
