@@ -165,9 +165,7 @@
                                 <tr class="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
                                     <td class="px-3 py-3">
                                         <div class="flex items-center gap-2">
-                                            <div class="w-8 h-8 rounded-full bg-pink-100 text-pink-500 flex items-center justify-center text-[12px] font-bold flex-shrink-0">
-                                                {{ substr($item->pelanggan->nm_pelanggan ?? '?', 0, 1) }}
-                                            </div>
+                                            <img src="{{ $item->pelanggan?->foto_url ?? 'https://ui-avatars.com/api/?name=%3F&background=FFE5EF&color=FF4F87&size=40' }}" class="w-8 h-8 rounded-full object-cover flex-shrink-0" alt="{{ $item->pelanggan->nm_pelanggan ?? '-' }}">
                                             <div>
                                                 <div class="text-[12px] font-semibold text-gray-700">{{ $item->pelanggan->nm_pelanggan ?? '-' }}</div>
                                                 <div class="text-[10px] text-gray-400">{{ $item->pelanggan->no_hp ?? '' }}</div>
