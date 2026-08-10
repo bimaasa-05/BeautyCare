@@ -159,9 +159,7 @@
                                         </td>
                                         <td class="py-3 px-4">
                                             <div class="flex items-center gap-2.5">
-                                                <div class="w-8 h-8 rounded-full bg-pink-200 text-pink-600 flex items-center justify-center font-bold text-[11px]">
-                                                    {{ $i->pelanggan ? strtoupper(substr($i->pelanggan->nm_pelanggan, 0, 2)) : '??' }}
-                                                </div>
+                                                <img src="{{ $i->pelanggan?->foto_url ?? 'https://ui-avatars.com/api/?name=Unknown&background=FFE5EF&color=FF4F87&size=40' }}" class="w-8 h-8 rounded-full object-cover flex-shrink-0" alt="{{ $i->pelanggan->nm_pelanggan ?? '-' }}">
                                                 <span class="font-medium text-gray-700">{{ $i->pelanggan->nm_pelanggan ?? '-' }}</span>
                                             </div>
                                         </td>
