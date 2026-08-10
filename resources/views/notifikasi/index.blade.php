@@ -152,8 +152,8 @@
                                         <td class="px-5 py-4 text-sm text-gray-600">{{ $loop->iteration + ($notif->currentPage() - 1) * $notif->perPage() }}</td>
                                         <td class="px-5 py-4" data-label="Aktor">
                                             <div class="flex items-center gap-2.5">
-                                                @if ($n->aktor && $n->aktor->foto)
-                                                    <img src="{{ asset('storage/' . $n->aktor->foto) }}"
+                                                @if ($n->aktor)
+                                                    <img src="{{ $n->aktor->foto_url }}"
                                                         class="w-8 h-8 rounded-full object-cover">
                                                 @else
                                                     <div class="w-8 h-8 rounded-full bg-gradient-to-br from-pink-400 to-rose-500 flex items-center justify-center text-white text-xs font-bold">
