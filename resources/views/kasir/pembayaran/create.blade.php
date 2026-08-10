@@ -37,6 +37,19 @@
         .form-input-custom::placeholder { color: #aaa; }
         select.form-input-custom { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 40px; }
         .badge { border-radius: 999px; font-size: 11px; font-weight: 600; padding: 4px 12px; display: inline-flex; align-items: center; gap: 4px; }
+        .bank-card-hero { border-radius: 18px; padding: 24px 22px; color: #fff; box-shadow: 0 10px 24px rgba(0,0,0,0.18); position: relative; overflow: hidden; }
+        .bank-card-hero::after { content: ''; position: absolute; right: -40px; top: -40px; width: 140px; height: 140px; border-radius: 50%; background: rgba(255,255,255,0.08); }
+        .bank-card-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+        .bank-card-name { font-size: 17px; font-weight: 800; letter-spacing: 2px; }
+        .bank-card-chip { width: 36px; height: 28px; border-radius: 6px; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 13px; }
+        .bank-card-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.75; font-weight: 600; }
+        .bank-card-va { font-size: 20px; font-weight: 800; letter-spacing: 1.5px; font-family: 'Courier New', monospace; margin-top: 4px; word-break: break-all; }
+        .bank-card-owner { margin-top: 14px; padding-top: 12px; border-top: 1px dashed rgba(255,255,255,0.35); display: flex; flex-direction: column; gap: 3px; }
+        .bank-card-owner span { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.75; font-weight: 600; }
+        .bank-card-owner b { font-size: 13px; font-weight: 700; letter-spacing: 0.5px; word-break: break-all; }
+        .bank-card-copy { margin-top: 16px; width: 100%; padding: 10px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.35); background: rgba(255,255,255,0.12); color: #fff; font-size: 12px; font-weight: 600; font-family: 'Poppins', sans-serif; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: background 0.2s; }
+        .bank-card-copy:hover { background: rgba(255,255,255,0.22); }
+        .bank-card-copy.copied { background: #10B981; border-color: #10B981; }
     </style>
 </head>
 
@@ -147,6 +160,22 @@
                             </h4>
                             <p class="text-[12px] text-gray-400 mb-4">Pilih metode pembayaran</p>
 
+                            @php
+                                $bankColors = [
+                                    'BRI' => 'linear-gradient(135deg,#00529C,#003A6E)',
+                                    'BCA' => 'linear-gradient(135deg,#CC0000,#990000)',
+                                    'Mandiri' => 'linear-gradient(135deg,#003D79,#00264D)',
+                                    'BNI' => 'linear-gradient(135deg,#FF6600,#CC5200)',
+                                    'BSI' => 'linear-gradient(135deg,#005747,#003A2E)',
+                                ];
+                                $ewalletColors = [
+                                    'GoPay' => 'linear-gradient(135deg,#00AED6,#007B99)',
+                                    'DANA' => 'linear-gradient(135deg,#0B95D6,#0865A8)',
+                                    'ShopeePay' => 'linear-gradient(135deg,#EE4D2D,#C2331A)',
+                                    'OVO' => 'linear-gradient(135deg,#4C2B82,#3A1F66)',
+                                    'QRIS' => 'linear-gradient(135deg,#10B981,#047857)',
+                                ];
+                            @endphp
                             <div x-data="paymentBox()" x-init="init()" class="space-y-4">
                                 <input type="hidden" name="metode_byr" :value="metode">
                                 <input type="hidden" name="bank_id" :value="bankId">
@@ -192,10 +221,22 @@
                                                     </div>
                                                 </div>
 
-                                                <div x-show="bankId === {{ $bank->id }}" x-transition
-                                                    class="bg-slate-50 border border-t-0 border-slate-200/80 rounded-b-2xl p-3.5 text-[10px] space-y-1.5 -mt-2.5 z-0 shadow-inner">
-                                                    <div class="flex justify-between"><span class="text-slate-400 font-bold">No. Rekening:</span><span class="font-black text-slate-800 select-all">{{ $bank->no_rekening ?? '-' }}</span></div>
-                                                    <div class="flex justify-between"><span class="text-slate-400 font-bold">Atas Nama:</span><span class="font-extrabold text-slate-700">{{ $bank->atas_nama }}</span></div>
+                                                <div x-show="bankId === {{ $bank->id }}" x-transition class="mt-3 space-y-2">
+                                                    <div class="bank-card-hero" style="background:{{ $bankColors[$bank->nama_bank] ?? 'linear-gradient(135deg,#64748B,#475569)' }};">
+                                                        <div class="bank-card-head">
+                                                            <span class="bank-card-name">BANK {{ $bank->nama_bank }}</span>
+                                                            <span class="bank-card-chip"><i class="fa-solid fa-building-columns"></i></span>
+                                                        </div>
+                                                        <div class="bank-card-label">No Rekening</div>
+                                                        <div class="bank-card-va">{{ $bank->no_rekening ?? '-' }}</div>
+                                                        <div class="bank-card-owner">
+                                                            <span>Atas Nama</span>
+                                                            <b>{{ $bank->atas_nama }}</b>
+                                                        </div>
+                                                        <button type="button" class="bank-card-copy" data-label="Salin Nomor Rekening" onclick="salinKode(this)">
+                                                            <i class="fa-regular fa-copy"></i> Salin Nomor Rekening
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             </div>
                                             @endforeach
@@ -241,10 +282,22 @@
                                                     </div>
                                                 </div>
 
-                                                <div x-show="ewalletType === '{{ $ew->nama_bank }}'" x-transition
-                                                    class="bg-slate-50 border border-t-0 border-slate-200/80 rounded-b-2xl p-3.5 text-[10px] space-y-1.5 -mt-2.5 z-0 shadow-inner">
-                                                    <div class="flex justify-between"><span class="text-slate-400 font-bold">No. Rekening / HP:</span><span class="font-black text-slate-800 select-all">{{ $ew->nomor_telepon ?? '-' }}</span></div>
-                                                    <div class="flex justify-between"><span class="text-slate-400 font-bold">Atas Nama:</span><span class="font-extrabold text-slate-700">{{ $ew->atas_nama }}</span></div>
+                                                <div x-show="ewalletType === '{{ $ew->nama_bank }}'" x-transition class="mt-3 space-y-2">
+                                                    <div class="bank-card-hero" style="background:{{ $ewalletColors[$ew->nama_bank] ?? 'linear-gradient(135deg,#0D9488,#0F766E)' }};">
+                                                        <div class="bank-card-head">
+                                                            <span class="bank-card-name">{{ strtoupper($ew->nama_bank) }}</span>
+                                                            <span class="bank-card-chip"><i class="fa-solid fa-wallet"></i></span>
+                                                        </div>
+                                                        <div class="bank-card-label">No Rekening</div>
+                                                        <div class="bank-card-va">{{ $ew->nomor_telepon ?? '-' }}</div>
+                                                        <div class="bank-card-owner">
+                                                            <span>Atas Nama</span>
+                                                            <b>{{ $ew->atas_nama }}</b>
+                                                        </div>
+                                                        <button type="button" class="bank-card-copy" data-label="Salin Nomor" onclick="salinKode(this)">
+                                                            <i class="fa-regular fa-copy"></i> Salin Nomor
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             </div>
                                             @endforeach
@@ -362,6 +415,20 @@
 
     <script>
         // ========== Payment Method (Alpine) ==========
+        function salinKode(btn) {
+            const card = btn.closest('.bank-card-hero');
+            const kode = (card.querySelector('.bank-card-va').textContent || '').trim();
+            if (!kode) return;
+            navigator.clipboard.writeText(kode).then(function() {
+                btn.classList.add('copied');
+                btn.innerHTML = '<i class="fa-solid fa-check"></i> Tersalin!';
+                setTimeout(function() {
+                    btn.classList.remove('copied');
+                    btn.innerHTML = '<i class="fa-regular fa-copy"></i> ' + (btn.getAttribute('data-label') || 'Salin');
+                }, 2000);
+            });
+        }
+
         function paymentBox() {
             const totalBayar = @json((float) $totalBayar);
             return {
