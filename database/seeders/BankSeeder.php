@@ -14,7 +14,7 @@ class BankSeeder extends Seeder
             [
                 'nama_bank' => 'BCA',
                 'kode_bank' => '014',
-                'no_rekening' => null,
+                'no_rekening' => '0140123456789',
                 'atas_nama' => 'BeautyCare Overpower',
                 'logo' => null,
                 'tipe' => 'transfer',
@@ -24,7 +24,7 @@ class BankSeeder extends Seeder
             [
                 'nama_bank' => 'BRI',
                 'kode_bank' => '002',
-                'no_rekening' => null,
+                'no_rekening' => '0020123456789',
                 'atas_nama' => 'BeautyCare Overpower',
                 'logo' => null,
                 'tipe' => 'transfer',
@@ -34,7 +34,7 @@ class BankSeeder extends Seeder
             [
                 'nama_bank' => 'Mandiri',
                 'kode_bank' => '008',
-                'no_rekening' => null,
+                'no_rekening' => '0080123456789',
                 'atas_nama' => 'BeautyCare Overpower',
                 'logo' => null,
                 'tipe' => 'transfer',
@@ -44,7 +44,7 @@ class BankSeeder extends Seeder
             [
                 'nama_bank' => 'BNI',
                 'kode_bank' => '009',
-                'no_rekening' => null,
+                'no_rekening' => '0090123456789',
                 'atas_nama' => 'BeautyCare Overpower',
                 'logo' => null,
                 'tipe' => 'transfer',
@@ -54,7 +54,7 @@ class BankSeeder extends Seeder
             [
                 'nama_bank' => 'BSI',
                 'kode_bank' => '451',
-                'no_rekening' => null,
+                'no_rekening' => '4510123456789',
                 'atas_nama' => 'BeautyCare Overpower',
                 'logo' => null,
                 'tipe' => 'transfer',
@@ -69,7 +69,7 @@ class BankSeeder extends Seeder
                 'atas_nama' => 'BeautyCare Overpower',
                 'logo' => null,
                 'tipe' => 'ewallet',
-                'nomor_telepon' => '+628xx-xxxx-xxxx',
+                'nomor_telepon' => '081234567890',
                 'is_active' => true,
             ],
             [
@@ -79,7 +79,7 @@ class BankSeeder extends Seeder
                 'atas_nama' => 'BeautyCare Overpower',
                 'logo' => null,
                 'tipe' => 'ewallet',
-                'nomor_telepon' => '+628xx-xxxx-xxxx',
+                'nomor_telepon' => '081234567890',
                 'is_active' => true,
             ],
             [
@@ -89,7 +89,7 @@ class BankSeeder extends Seeder
                 'atas_nama' => 'BeautyCare Overpower',
                 'logo' => null,
                 'tipe' => 'ewallet',
-                'nomor_telepon' => '+628xx-xxxx-xxxx',
+                'nomor_telepon' => '081234567890',
                 'is_active' => true,
             ],
             // QRIS
