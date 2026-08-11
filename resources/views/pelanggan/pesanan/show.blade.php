@@ -694,6 +694,12 @@
                                 <span class="dt-label">Metode</span>
                                 <span class="dt-value">{{ $transaksi->pembayaran->provider ?? $transaksi->metode_byr }}</span>
                             </div>
+                            @if((float)($transaksi->saldo_terpakai ?? 0) > 0)
+                            <div class="dt-row">
+                                <span class="dt-label">Dibayar Saldo</span>
+                                <span class="dt-value" style="color:#059669;">- Rp {{ number_format($transaksi->saldo_terpakai, 0, ',', '.') }}</span>
+                            </div>
+                            @endif
                             <div class="dt-row">
                                 <span class="dt-label">Status Pembayaran</span>
                                 <span class="pay-status {{ $payClass }}">
@@ -738,7 +744,7 @@
                                 </a>
                                 <form action="{{ route('pelanggan.pembayaran.batal', $transaksi->id_transaksi) }}" method="POST" style="margin-top:10px;">
                                     @csrf
-                                    <button type="submit" class="btn-batal" onclick="return confirm('Batalkan pesanan ini?')">
+                                    <button type="submit" class="btn-batal" data-confirm-title="Batalkan Pesanan" data-confirm-body="Apakah Anda yakin ingin membatalkan pesanan ini? Tindakan ini tidak dapat dibatalkan." data-confirm-icon="fa-circle-xmark" data-confirm-type="danger" data-confirm-yes="Ya, Batalkan">
                                         <i class="fa-solid fa-xmark"></i> Batalkan Pesanan
                                     </button>
                                 </form>
@@ -770,6 +776,7 @@
     if (dateEl) dateEl.textContent = now.toLocaleDateString('id-ID', options);
     </script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
+    @include('partials.confirm-modal')
 </body>
 
 </html>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Pengeluaran;
 use App\Helpers\ActivityLogger;
+use App\Services\PengeluaranService;
 use Illuminate\Http\Request;
 
 class KasirPengeluaranController extends Controller
@@ -63,11 +64,13 @@ class KasirPengeluaranController extends Controller
             'id_user' => auth()->id(),
         ]);
 
+        app(PengeluaranService::class)->buatTransaksi($pengeluaran, null, 'kasir');
+
         ActivityLogger::log('Menambahkan', auth()->user()->nama . ' mencatat pengeluaran ' . $request->kategori . ' sebesar Rp ' . number_format($request->nominal, 0, ',', '.'), 'Pengeluaran', $pengeluaran->id_pengeluaran);
 
         $admins = \App\Models\User::where('role', 'admin')->get();
         foreach ($admins as $admin) {
-            buatNotif($admin->id, 'Pengeluaran Baru', auth()->user()->nama . ' mencatat pengeluaran ' . $request->kategori . ' sebesar Rp ' . number_format($request->nominal, 0, ',', '.') . '.', 'Pengeluaran', url('/admin/pengeluaran'));
+            buatNotif($admin->id, 'Pengeluaran Baru', auth()->user()->nama . ' mencatat pengeluaran ' . $request->kategori . ' sebesar Rp ' . number_format($request->nominal, 0, ',', '.') . '.', 'Pengeluaran', route('admin.transaksi.index', ['jenis' => 'pengeluaran']));
         }
 
         return redirect()->route('kasir.pengeluaran.index')->with('success', 'Pengeluaran berhasil dicatat!');
@@ -79,6 +82,7 @@ class KasirPengeluaranController extends Controller
             ->where('id_user', auth()->id())
             ->firstOrFail();
 
+        app(PengeluaranService::class)->hapusTransaksi($pengeluaran);
         $pengeluaran->delete();
 
         ActivityLogger::log('Menghapus', auth()->user()->nama . ' menghapus pengeluaran #' . $id, 'Pengeluaran', $id);

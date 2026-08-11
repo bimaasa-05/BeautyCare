@@ -234,6 +234,39 @@
             border: 1px solid #FECACA;
         }
 
+        .login-card .alert-suspend {
+            background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+            color: #92400E;
+            border: 1px solid #FCD34D;
+            padding: 16px;
+            border-radius: var(--radius-md);
+            font-size: 13px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .login-card .alert-suspend .suspend-icon {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 8px;
+            color: #B45309;
+        }
+
+        .login-card .alert-suspend .suspend-detail {
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 8px;
+            padding: 10px 12px;
+            margin-top: 8px;
+        }
+
+        .login-card .alert-suspend .suspend-detail span {
+            font-weight: 600;
+            color: #78350F;
+        }
+
         .login-card .alert-success {
             background: #E8F8EE;
             color: var(--success);
@@ -296,11 +329,24 @@
                 </div>
 
                 @if ($errors->any())
-                    <div class="alert alert-danger">
-                        @foreach ($errors->all() as $error)
-                            {{ $error }}
-                        @endforeach
-                    </div>
+                    @php
+                        $firstError = $errors->first('email');
+                        $isSuspend = str_contains($firstError, 'disuspend');
+                    @endphp
+                    @if ($isSuspend)
+                        <div class="alert-suspend">
+                            <div class="suspend-icon">
+                                <i class="fa-solid fa-ban"></i> Akun Disuspend
+                            </div>
+                            <div>{{ $firstError }}</div>
+                        </div>
+                    @else
+                        <div class="alert alert-danger">
+                            @foreach ($errors->all() as $error)
+                                {{ $error }}
+                            @endforeach
+                        </div>
+                    @endif
                 @endif
 
                 @if (session('status'))

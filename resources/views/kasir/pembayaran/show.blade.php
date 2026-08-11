@@ -323,7 +323,29 @@
                                 </div>
                             </div>
 
-                            @if ($transaksi->metode_byr === 'E-Wallet')
+                            @if ($transaksi->metode_byr === 'Saldo Akun')
+                                <div class="mt-4">
+                                    <h4 class="text-[13px] font-bold text-emerald-600 mb-3 flex items-center gap-2">
+                                        <i class="fa-solid fa-wallet"></i> Detail Pembayaran Saldo Akun
+                                    </h4>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                        @if ($transaksi->saldo_terpakai > 0)
+                                            <div class="info-box bg-emerald-50/30 border-emerald-100/50">
+                                                <p class="info-label"><i
+                                                        class="fa-solid fa-coins mr-1 text-emerald-400"></i> Saldo Terpakai</p>
+                                                <p class="info-value">Rp {{ number_format($transaksi->saldo_terpakai, 0, ',', '.') }}</p>
+                                            </div>
+                                        @endif
+                                        @if ($transaksi->no_referensi)
+                                            <div class="info-box bg-emerald-50/30 border-emerald-100/50">
+                                                <p class="info-label"><i
+                                                        class="fa-solid fa-hashtag mr-1 text-emerald-400"></i> No. Referensi</p>
+                                                <p class="info-value">{{ $transaksi->no_referensi }}</p>
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
+                            @elseif ($transaksi->metode_byr === 'E-Wallet')
                                 <div class="mt-4">
                                     <h4 class="text-[13px] font-bold text-teal-600 mb-3 flex items-center gap-2">
                                         <i class="fa-solid fa-wallet"></i> Detail Pembayaran E-Wallet

@@ -90,7 +90,7 @@
             <form
                 action="{{ route('admin.pelanggan.destroy', $p->id_pelanggan) }}"
                 method="POST"
-                onsubmit="return confirm('Yakin ingin menghapus pelanggan ini?')"
+                data-confirm-title="Hapus Pelanggan" data-confirm-body="Apakah Anda yakin ingin menghapus pelanggan ini? Tindakan ini tidak dapat dibatalkan." data-confirm-icon="fa-trash-can" data-confirm-type="danger" data-confirm-yes="Ya, Hapus"
                 class="inline">
                 @csrf
                 @method('DELETE')

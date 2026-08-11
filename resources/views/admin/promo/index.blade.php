@@ -272,7 +272,7 @@
                                                     d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z">
                                                 </path>
                                             </svg></a>
-                                        <form action="{{ route('admin.promo.destroy', $promo->id_promo) }}" method="POST" class="inline" onsubmit="return confirm('Yakin ingin menghapus promo {{ $promo->nm_promo }}?')">
+                                        <form action="{{ route('admin.promo.destroy', $promo->id_promo) }}" method="POST" class="inline" data-confirm-title="Hapus Promo" data-confirm-body="Apakah Anda yakin ingin menghapus promo {{ $promo->nm_promo }}? Tindakan ini tidak dapat dibatalkan." data-confirm-icon="fa-trash-can" data-confirm-type="danger" data-confirm-yes="Ya, Hapus">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit"
@@ -327,6 +327,7 @@
         if (dateEl) dateEl.textContent = now.toLocaleDateString('id-ID', options);
     </script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
+    @include('partials.confirm-modal')
 </body>
 
 </html>

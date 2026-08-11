@@ -421,7 +421,7 @@
                                                     </svg>
                                                 </a>
                                                 <form action="{{ route('admin.produk.destroy', $p->id_produk) }}" method="POST"
-                                                    onsubmit="return confirm('Yakin ingin menghapus produk ini?')" class="inline">
+                                                    data-confirm-title="Hapus Produk" data-confirm-body="Apakah Anda yakin ingin menghapus produk ini? Tindakan ini tidak dapat dibatalkan." data-confirm-icon="fa-trash-can" data-confirm-type="danger" data-confirm-yes="Ya, Hapus" class="inline">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit"
@@ -493,6 +493,7 @@
         document.getElementById('searchProduk').addEventListener('input', applyProdukFilter);
     </script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
+    @include('partials.confirm-modal')
 </body>
 
 </html>
