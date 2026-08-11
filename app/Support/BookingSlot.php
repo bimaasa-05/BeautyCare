@@ -41,7 +41,7 @@ class BookingSlot
     /** Normalisasi jam ke H:i:00 (fix bug bentrok H:i vs H:i:s) */
     public static function normalJam($jam)
     {
-        return date('H:i:00', strtotime(substr($jam, 0, 5)));
+        return date('H:i', strtotime(substr($jam, 0, 5)));
     }
 
     /** Total durasi (menit) layanan pada sebuah booking */
