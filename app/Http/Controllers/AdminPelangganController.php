@@ -185,7 +185,17 @@ class AdminPelangganController extends Controller
 
             if ($request->id_member) {
                 if ($pelanggan->id_member != $request->id_member || !$pelanggan->tgl_mulai_member) {
-                    $data['tgl_mulai_member'] = now()->toDateString();
+                    // Extend from current expiry if still active, else from now
+                    $currentExpiry = null;
+                    if ($pelanggan->id_member && $pelanggan->tgl_mulai_member) {
+                        $oldTier = Membership::find($pelanggan->id_member);
+                        if ($oldTier) {
+                            $currentExpiry = $oldTier->tanggalBerakhir($pelanggan->tgl_mulai_member);
+                        }
+                    }
+                    $data['tgl_mulai_member'] = ($currentExpiry && $currentExpiry->isFuture())
+                        ? $currentExpiry->copy()->startOfDay()->format('Y-m-d H:i:s')
+                        : now()->format('Y-m-d H:i:s');
                 }
             } else {
                 $data['tgl_mulai_member'] = null;
