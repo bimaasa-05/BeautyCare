@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detail Pembayaran - BeautyCare</title>
     @include('partials.head-meta')
-    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -163,6 +162,10 @@
                             <a href="{{ route('kasir.invoice.show', $transaksi->id_transaksi) }}" target="_blank"
                                 class="flex items-center gap-2 bg-[#FF4F87] text-white text-[12px] font-semibold px-4 py-2 rounded-full hover:bg-[#ff3a78] transition-all shadow-sm">
                                 <i class="fa-solid fa-print"></i> Cetak Invoice
+                            </a>
+                            <a href="{{ route('kasir.struk', $transaksi->id_transaksi) }}" target="_blank"
+                                class="flex items-center gap-2 bg-white border border-gray-200 text-gray-700 text-[12px] font-semibold px-4 py-2 rounded-full hover:bg-gray-50 transition-colors">
+                                <i class="fa-solid fa-receipt"></i> Cetak Struk
                             </a>
                             <a href="{{ route('kasir.pembayaran.index') }}"
                                 class="flex items-center gap-2 border border-gray-200 text-gray-600 text-[12px] font-medium px-4 py-2 rounded-full hover:bg-gray-50 transition-colors">
