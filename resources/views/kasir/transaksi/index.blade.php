@@ -212,7 +212,7 @@
                                                  </a>
                                                  <form action="{{ route('kasir.transaksi.destroy', $t->id_transaksi) }}"
                                                      method="POST" class="inline"
-                                                     onsubmit="return confirm('Yakin ingin menghapus transaksi {{ $t->no_invoice }}?')">
+                                                     data-confirm-title="Hapus Transaksi" data-confirm-body="Apakah Anda yakin ingin menghapus transaksi {{ $t->no_invoice }}? Tindakan ini tidak dapat dibatalkan." data-confirm-icon="fa-trash-can" data-confirm-type="danger" data-confirm-yes="Ya, Hapus">
                                                      @csrf
                                                      @method('DELETE')
                                                      <button type="submit"
@@ -260,6 +260,7 @@
         document.getElementById('currentDate').textContent = now.toLocaleDateString('id-ID', options);
     </script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
+    @include('partials.confirm-modal')
 </body>
 
 </html>

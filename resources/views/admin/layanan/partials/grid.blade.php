@@ -21,7 +21,7 @@
                     <path d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z"></path>
                 </svg>
             </a>
-            <form action="{{ route('admin.layanan.destroy', $l->id_layanan) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus layanan ini?')" class="inline">
+            <form action="{{ route('admin.layanan.destroy', $l->id_layanan) }}" method="POST" data-confirm-title="Hapus Layanan" data-confirm-body="Apakah Anda yakin ingin menghapus layanan ini? Tindakan ini tidak dapat dibatalkan." data-confirm-icon="fa-trash-can" data-confirm-type="danger" data-confirm-yes="Ya, Hapus" class="inline">
                 @csrf
                 @method('DELETE')
                 <button type="submit" class="w-7 h-7 bg-white rounded-lg flex items-center justify-center shadow text-red-400 hover:bg-red-50">

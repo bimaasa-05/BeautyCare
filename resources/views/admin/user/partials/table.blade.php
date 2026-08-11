@@ -48,7 +48,7 @@
             </a>
             <form action="{{ route('admin.user.destroy', $user->id) }}"
                 method="POST"
-                onsubmit="return confirm('Yakin ingin menghapus user ini?')"
+                data-confirm-title="Hapus User" data-confirm-body="Apakah Anda yakin ingin menghapus user ini? Tindakan ini tidak dapat dibatalkan." data-confirm-icon="fa-trash-can" data-confirm-type="danger" data-confirm-yes="Ya, Hapus"
                 class="inline">
                 @csrf
                 @method('DELETE')
