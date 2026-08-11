@@ -200,6 +200,12 @@ class AdminTransaksiController extends Controller
         return $pdf->download('Invoice-' . $transaksi->no_invoice . '.pdf');
     }
 
+    public function struk($id)
+    {
+        $transaksi = Transaksi::with('pelanggan', 'supplier', 'detail', 'user')->findOrFail($id);
+        return view('kasir.struk.index', compact('transaksi'));
+    }
+
     public function export(Request $request)
     {
         $keyword = $request->keyword;
