@@ -256,7 +256,7 @@
                                     <td class="text-center">
                                         <form action="{{ route('kasir.pengeluaran.destroy', $p->id_pengeluaran) }}" method="POST"
                                             class="form-hapus"
-                                            onsubmit="return confirm('Hapus pengeluaran ini?')">
+                                            data-confirm-title="Hapus Pengeluaran" data-confirm-body="Apakah Anda yakin ingin menghapus pengeluaran ini? Tindakan ini tidak dapat dibatalkan." data-confirm-icon="fa-trash-can" data-confirm-type="danger" data-confirm-yes="Ya, Hapus">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="w-8 h-8 inline-flex items-center justify-center text-red-500 bg-red-50 hover:bg-red-100 rounded-lg transition-colors" title="Hapus">
@@ -375,6 +375,7 @@
         @endif
     </script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
+    @include('partials.confirm-modal')
 </body>
 
 </html>

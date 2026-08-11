@@ -209,7 +209,7 @@
                                                         <button type="submit"
                                                             class="text-amber-500 bg-amber-50 hover:bg-amber-100 w-7 h-7 rounded-md transition-colors flex items-center justify-center"
                                                             title="Batalkan check in"
-                                                            onclick="return confirm('Batalkan check in untuk {{ $r->pelanggan->nm_pelanggan ?? 'pelanggan ini' }}?')">
+                                                            data-confirm-title="Batalkan Check In" data-confirm-body="Batalkan check in untuk {{ $r->pelanggan->nm_pelanggan ?? 'pelanggan ini' }}?" data-confirm-icon="fa-user-xmark" data-confirm-type="warning" data-confirm-yes="Ya, Batalkan">
                                                             <i class="fa-solid fa-rotate-left text-xs"></i>
                                                         </button>
                                                     </form>
@@ -261,6 +261,7 @@
         if (dateEl) dateEl.textContent = now.toLocaleDateString('id-ID', options);
     </script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
+    @include('partials.confirm-modal')
 </body>
 
 </html>

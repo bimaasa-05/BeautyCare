@@ -3,14 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Transaksi;
-use App\Models\DetailTransaksi;
-use App\Models\Produk;
-use App\Models\Pelanggan;
-use App\Models\Layanan;
+use App\Models\Pengeluaran;
+use App\Models\Supplier;
 use App\Helpers\ActivityLogger;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
-use App\Services\SaldoAkunService;
+use App\Services\PengeluaranService;
 
 class AdminTransaksiController extends Controller
 {
@@ -20,171 +18,55 @@ class AdminTransaksiController extends Controller
         $dari       = $request->dari;
         $sampai     = $request->sampai;
 
-        $transaksi = Transaksi::with('pelanggan', 'supplier', 'detail', 'user')
-            ->where('jenis_transaksi', 'Penjualan')
-            ->when($keyword, function ($q, $keyword) {
+        $query = Transaksi::with('pelanggan', 'supplier', 'pengeluaran', 'user')
+            ->when($keyword, function ($q) use ($keyword) {
                 return $q->where(function ($q) use ($keyword) {
                     $q->where('no_invoice', 'like', "%{$keyword}%")
+                        ->orWhere('catatan', 'like', "%{$keyword}%")
                         ->orWhereHas('pelanggan', function ($q) use ($keyword) {
                             $q->where('nm_pelanggan', 'like', "%{$keyword}%")
                                 ->orWhere('no_hp', 'like', "%{$keyword}%");
                         })
                         ->orWhereHas('supplier', function ($q) use ($keyword) {
                             $q->where('nm_supplier', 'like', "%{$keyword}%");
+                        })
+                        ->orWhereHas('pengeluaran', function ($q) use ($keyword) {
+                            $q->where('kategori', 'like', "%{$keyword}%")
+                                ->orWhere('keterangan', 'like', "%{$keyword}%");
                         });
                 });
             })
             ->when($dari, fn($q, $d) => $q->whereDate('tanggal', '>=', $d))
             ->when($sampai, fn($q, $s) => $q->whereDate('tanggal', '<=', $s))
-            ->orderBy('id_transaksi', 'desc')
-            ->paginate(15);
+            ->orderBy('id_transaksi', 'desc');
 
-        $totalTransaksi   = Transaksi::where('jenis_transaksi', 'Penjualan')->count();
-        $totalPendapatan  = Transaksi::where('jenis_transaksi', 'Penjualan')->where('status', 'Lunas')->sum('total');
+        $transaksi = (clone $query)->paginate(15)->withQueryString();
+
+        $totalTransaksi = (clone $query)->count();
+        $totalNominal   = (clone $query)->sum('total');
+
+        $snapTotal = Transaksi::count();
+        $snapPendapatan = Transaksi::whereIn('jenis_transaksi', ['Penjualan', 'Pemasukan'])
+            ->where('status', 'Lunas')
+            ->sum('total');
+        $snapPengeluaran = Transaksi::where('jenis_transaksi', 'Pengeluaran')->sum('total');
+        $snapBersih = $snapPendapatan - $snapPengeluaran;
 
         return view('admin.transaksi.index', compact(
             'transaksi',
             'totalTransaksi',
-            'totalPendapatan'
+            'totalNominal',
+            'snapTotal',
+            'snapPendapatan',
+            'snapPengeluaran',
+            'snapBersih'
         ));
     }
 
     public function show($id)
     {
-        $transaksi = Transaksi::with('pelanggan', 'supplier', 'detail')->findOrFail($id);
+        $transaksi = Transaksi::with('pelanggan', 'supplier', 'pengeluaran', 'detail')->findOrFail($id);
         return view('admin.transaksi.show', compact('transaksi'));
-    }
-
-    public function edit($id)
-    {
-        $transaksi = Transaksi::with('detail')->findOrFail($id);
-        $pelanggan = Pelanggan::with('membership')->get();
-        $layanan   = Layanan::where('status', 1)->get();
-        $produk    = Produk::where('status', 1)->get();
-        $karyawan  = Karyawan::with('user')->get();
-
-        return view('admin.transaksi.edit', compact('transaksi', 'pelanggan', 'layanan', 'produk', 'karyawan'));
-    }
-
-    public function update(Request $request, $id)
-    {
-        $request->validate([
-            'id_pelanggan' => 'required|integer',
-            'tanggal'      => 'required|date',
-            'subtotal'     => 'required|numeric|min:0',
-            'diskon'       => 'nullable|numeric|min:0',
-            'pajak'        => 'nullable|numeric|min:0',
-            'total'        => 'required|numeric|min:0',
-            'metode_byr'   => 'required|in:Tunai,Transfer,Debit,QRIS,E-Wallet',
-            'dibayar'      => 'required|numeric|min:0',
-            'kembali'      => 'required|numeric|min:0',
-            'catatan'      => 'nullable|string',
-            'bukti_bayar'  => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'no_referensi' => 'nullable|string|max:50',
-            'ewallet_type' => 'nullable|in:Dana,GoPay,ShopeePay',
-            'status'       => 'nullable|in:Lunas,Proses,Batal',
-        ]);
-
-        $data = [
-            'id_pelanggan' => $request->id_pelanggan,
-            'tanggal'      => $request->tanggal,
-            'subtotal'     => $request->subtotal,
-            'diskon'       => $request->diskon ?? 0,
-            'pajak'        => $request->pajak ?? 0,
-            'total'        => $request->total,
-            'metode_byr'   => $request->metode_byr,
-            'dibayar'      => $request->dibayar,
-            'kembali'      => $request->kembali,
-            'catatan'      => $request->catatan ?? '',
-            'no_referensi' => $request->no_referensi,
-            'ewallet_type' => $request->ewallet_type,
-        ];
-
-        if ($request->filled('status')) {
-            $data['status'] = $request->status;
-        } elseif (in_array($request->metode_byr, ['Tunai', 'QRIS', 'E-Wallet'])) {
-            $data['status'] = 'Lunas';
-        } else {
-            $data['status'] = 'Proses';
-        }
-
-        if ($request->hasFile('bukti_bayar')) {
-            $transaksi = Transaksi::findOrFail($id);
-            if ($transaksi->bukti_bayar) {
-                \Illuminate\Support\Facades\Storage::disk('public')->delete($transaksi->bukti_bayar);
-            }
-            $data['bukti_bayar'] = $request->file('bukti_bayar')->store('uploads/bukti_bayar', 'public');
-        }
-
-        $transaksiLama = Transaksi::findOrFail($id);
-        $dataLama = $transaksiLama->toArray();
-
-        Transaksi::where('id_transaksi', $id)->update($data);
-
-        // Proses saldo & cashback jika status jadi Lunas
-        $transaksiBaru = Transaksi::findOrFail($id);
-        if (($data['status'] ?? $transaksiBaru->status) === 'Lunas' && ($transaksiLama->status !== 'Lunas')) {
-            $saldoService = new SaldoAkunService();
-            $saldoService->prosesCheckout(
-                $transaksiBaru->id_pelanggan,
-                (float) $transaksiBaru->total,
-                0, // hanya cashback
-                $transaksiBaru->id_transaksi,
-                $transaksiBaru->detail->firstWhere('id_promo')?->id_promo
-            );
-        }
-
-        ActivityLogger::log('Mengubah', auth()->user()->nama . ' mengubah transaksi ' . $transaksiLama->no_invoice, 'Transaksi', $id, $dataLama, $data);
-
-        if ($request->has('items') && is_array($request->items)) {
-            $oldDetails = DetailTransaksi::where('id_transaksi', $id)->get();
-            foreach ($oldDetails as $old) {
-                if ($old->jenis === 'Produk') {
-                    $produk = Produk::find($old->id_item);
-                    if ($produk) {
-                        $stokLama = $produk->stok;
-                        $produk->increment('stok', $old->qty);
-                        catatStok($produk->id_produk, 'Masuk', $old->qty, $stokLama, $produk->stok, 'Pengembalian stok dari perubahan transaksi', null, $id, 'Transaksi');
-                    }
-                }
-            }
-
-            DetailTransaksi::where('id_transaksi', $id)->delete();
-            foreach ($request->items as $item) {
-                if (!empty($item['id_item'])) {
-                    DetailTransaksi::create([
-                        'id_transaksi' => $id,
-                        'jenis'        => $item['jenis'] ?? 'Layanan',
-                        'id_item'      => $item['id_item'],
-                        'nm_item'      => $item['nm_item'] ?? '',
-                        'qty'          => $item['qty'] ?? 1,
-                        'harga'        => $item['harga'] ?? 0,
-                        'diskon'       => 0,
-                        'subtotal'     => $item['subtotal'] ?? 0,
-                        'jam'          => $item['jam'] ?? null,
-                        'id_karyawan'  => $item['id_karyawan'] ?? null,
-                    ]);
-
-                    if (($item['jenis'] ?? 'Layanan') === 'Produk') {
-                        $produk = Produk::find($item['id_item']);
-                        if ($produk && $produk->stok >= ($item['qty'] ?? 1)) {
-                            $stokLama = $produk->stok;
-                            $produk->decrement('stok', $item['qty'] ?? 1);
-                            catatStok($produk->id_produk, 'Keluar', $item['qty'] ?? 1, $stokLama, $produk->stok, 'Penjualan pada perubahan transaksi', null, $id, 'Transaksi');
-                        }
-                    }
-                }
-            }
-        }
-
-        if ($data['status'] === 'Lunas') {
-            $transaksi = Transaksi::with('booking')->find($id);
-            if ($transaksi && $transaksi->booking && $transaksi->booking->status !== 'selesai') {
-                $transaksi->booking->update(['status' => 'selesai', 'jam_selesai_aktual' => now()]);
-            }
-        }
-
-        return redirect()->route('admin.transaksi.index')->with('success', 'Transaksi berhasil diperbarui');
     }
 
     public function invoice($id)
@@ -200,10 +82,217 @@ class AdminTransaksiController extends Controller
         return $pdf->download('Invoice-' . $transaksi->no_invoice . '.pdf');
     }
 
+
     public function struk($id)
     {
         $transaksi = Transaksi::with('pelanggan', 'supplier', 'detail', 'user')->findOrFail($id);
         return view('kasir.struk.index', compact('transaksi'));
+    }
+    public function createPembelian()
+    {
+        $supplier = Supplier::with(['produk' => fn($q) => $q->orderBy('nm_produk')])
+            ->where('status', 'Aktif')
+            ->orderBy('nm_supplier')
+            ->get();
+
+        $supplierData = $supplier->map(fn($s) => [
+            'id' => $s->id_supplier,
+            'produk' => $s->produk->map(fn($p) => [
+                'id' => $p->id_produk,
+                'nm' => $p->nm_produk,
+                'harga_beli' => (float) $p->pivot->harga_beli,
+            ])->values()->all(),
+        ])->keyBy('id');
+
+        return view('admin.transaksi.pembelian', compact('supplier', 'supplierData'));
+    }
+
+    public function storePembelian(Request $request)
+    {
+        $request->validate([
+            'id_supplier' => 'required|integer|exists:supplier,id_supplier',
+            'tanggal'     => 'required|date',
+            'metode_byr'  => 'required|string|max:50',
+            'subtotal'    => 'required|numeric|min:0',
+            'total'       => 'required|numeric|min:0',
+            'catatan'     => 'nullable|string',
+            'items'       => 'required|array|min:1',
+            'items.*.id_produk' => 'required|integer|exists:produk,id_produk',
+            'items.*.qty'       => 'required|integer|min:1',
+        ]);
+
+        $supplier = Supplier::with('produk')->findOrFail($request->id_supplier);
+
+        $rincian = [];
+        foreach ($request->items as $item) {
+            $produk = $supplier->produk->firstWhere('id_produk', (int) $item['id_produk']);
+
+            if (!$produk) {
+                return back()->withErrors(['items' => 'Produk harus sesuai dengan produk yang disuplai oleh ' . $supplier->nm_supplier . '.']);
+            }
+
+            $rincian[] = $produk->nm_produk . ' x' . (int) $item['qty'];
+        }
+
+        $keterangan = 'Pembelian stok dari ' . $supplier->nm_supplier . ' (' . implode(', ', $rincian) . ')';
+        if ($request->filled('catatan')) {
+            $keterangan .= ' — ' . $request->catatan;
+        }
+
+        $pengeluaran = Pengeluaran::create([
+            'tanggal'    => $request->tanggal,
+            'kategori'   => 'Bahan & Stok',
+            'keterangan' => $keterangan,
+            'nominal'    => (int) $request->total,
+            'id_user'    => auth()->user()->id,
+        ]);
+
+        foreach ($request->items as $item) {
+            $produk = $supplier->produk->firstWhere('id_produk', (int) $item['id_produk']);
+
+            $hargaBeli = (float) $produk->pivot->harga_beli;
+            $qty       = (int) $item['qty'];
+
+            $stokLama = $produk->stok;
+            $produk->increment('stok', $qty);
+            catatStok(
+                $produk->id_produk,
+                'Masuk',
+                $qty,
+                $stokLama,
+                $produk->stok,
+                'Pembelian stok dari supplier (' . $supplier->nm_supplier . ')',
+                $supplier->id_supplier,
+                $pengeluaran->id_pengeluaran,
+                'Pengeluaran',
+                $hargaBeli
+            );
+        }
+
+        app(PengeluaranService::class)->buatTransaksi($pengeluaran, $supplier->id_supplier, 'admin');
+
+        ActivityLogger::log('Menambahkan', auth()->user()->nama . ' mencatat pembelian stok dari ' . $supplier->nm_supplier . ' sebesar Rp ' . number_format((int) $request->total, 0, ',', '.'), 'Pengeluaran', $pengeluaran->id_pengeluaran);
+
+        return redirect()->route('admin.transaksi.index')
+            ->with('success', 'Pembelian stok berhasil dicatat! Stok produk telah ditambahkan.');
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'jenis'      => 'required|in:Pengeluaran,Pemasukan',
+            'tanggal'    => 'required|date',
+            'kategori'   => 'required|string|max:100',
+            'nominal'    => 'required|numeric|min:1',
+            'keterangan' => 'nullable|string|max:500',
+        ]);
+
+        $nominal = (int) $request->nominal;
+
+        if ($request->jenis === 'Pengeluaran') {
+            $pengeluaran = Pengeluaran::create([
+                'tanggal'    => $request->tanggal,
+                'kategori'   => $request->kategori,
+                'keterangan' => $request->keterangan ?? '',
+                'nominal'    => $nominal,
+                'id_user'    => auth()->user()->id,
+            ]);
+
+            app(PengeluaranService::class)->buatTransaksi($pengeluaran, null, 'admin');
+
+            ActivityLogger::log('Menambahkan', auth()->user()->nama . ' mencatat pengeluaran ' . $request->kategori . ' sebesar Rp ' . number_format($nominal, 0, ',', '.'), 'Pengeluaran', $pengeluaran->id_pengeluaran);
+
+            return redirect()->route('admin.transaksi.index')
+                ->with('success', 'Pengeluaran berhasil dicatat!');
+        }
+
+        $noInvoice = 'PMK-' . date('Ymd') . '-' . str_pad(Transaksi::max('id_transaksi') + 1, 4, '0', STR_PAD_LEFT);
+
+        $transaksi = Transaksi::create([
+            'id_booking'       => null,
+            'sumber'           => 'admin',
+            'id_pelanggan'     => null,
+            'id_supplier'      => null,
+            'jenis_transaksi'  => 'Pemasukan',
+            'id_user'          => auth()->user()->id,
+            'id_kasir'         => null,
+            'no_invoice'       => $noInvoice,
+            'tanggal'          => $request->tanggal,
+            'subtotal'         => $nominal,
+            'diskon'           => 0,
+            'pajak'            => 0,
+            'total'            => $nominal,
+            'metode_byr'       => 'Tunai',
+            'dibayar'          => $nominal,
+            'kembali'          => 0,
+            'catatan'          => $request->kategori . ($request->keterangan ? ' — ' . $request->keterangan : ''),
+            'status'           => 'Lunas',
+            'no_referensi'     => null,
+        ]);
+
+        ActivityLogger::log('Menambahkan', auth()->user()->nama . ' mencatat pemasukan ' . $request->kategori . ' sebesar Rp ' . number_format($nominal, 0, ',', '.'), 'Transaksi', $transaksi->id_transaksi);
+
+        return redirect()->route('admin.transaksi.index')
+            ->with('success', 'Pemasukan berhasil dicatat!');
+    }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'jenis'      => 'required|in:Pengeluaran,Pemasukan,Penjualan',
+            'tanggal'    => 'required|date',
+            'kategori'   => 'nullable|string|max:100',
+            'nominal'    => 'required|numeric|min:1',
+            'keterangan' => 'nullable|string|max:500',
+            'status'     => 'nullable|in:Lunas,Pending,Batal',
+        ]);
+
+        $transaksi = Transaksi::with('pengeluaran')->findOrFail($id);
+
+        $nominal = (int) $request->nominal;
+        $kategori = $request->kategori ?? '';
+        $catatan = $kategori . ($request->keterangan ? ' — ' . $request->keterangan : '');
+
+        $transaksi->update([
+            'tanggal'  => $request->tanggal,
+            'subtotal' => $nominal,
+            'total'    => $nominal,
+            'dibayar'  => $nominal,
+            'catatan'  => $catatan,
+            'status'   => $request->status ?? $transaksi->status,
+        ]);
+
+        if ($transaksi->id_pengeluaran && $transaksi->pengeluaran) {
+            $transaksi->pengeluaran->update([
+                'tanggal'    => $request->tanggal,
+                'kategori'   => $kategori ?: $transaksi->pengeluaran->kategori,
+                'keterangan' => $request->keterangan ?? $transaksi->pengeluaran->keterangan,
+                'nominal'    => $nominal,
+            ]);
+
+            app(PengeluaranService::class)->sinkronTransaksi($transaksi->pengeluaran);
+        }
+
+        ActivityLogger::log('Mengubah', auth()->user()->nama . ' mengubah transaksi ' . $transaksi->no_invoice, 'Transaksi', $id);
+
+        return redirect()->back()->with('success', 'Transaksi berhasil diperbarui!');
+    }
+
+    public function destroy($id)
+    {
+        $transaksi = Transaksi::with('pengeluaran')->findOrFail($id);
+
+        if ($transaksi->id_pengeluaran && $transaksi->pengeluaran) {
+            app(PengeluaranService::class)->hapusTransaksi($transaksi->pengeluaran);
+            $transaksi->pengeluaran->delete();
+        }
+
+        $transaksi->delete();
+
+        ActivityLogger::log('Menghapus', auth()->user()->nama . ' menghapus transaksi ' . $transaksi->no_invoice, 'Transaksi', $id);
+
+        return redirect()->route('admin.transaksi.index')
+            ->with('success', 'Transaksi berhasil dihapus!');
     }
 
     public function export(Request $request)
@@ -212,17 +301,21 @@ class AdminTransaksiController extends Controller
         $dari    = $request->dari;
         $sampai  = $request->sampai;
 
-        $transaksi = Transaksi::with('pelanggan', 'supplier', 'detail', 'user')
-            ->where('jenis_transaksi', 'Penjualan')
-            ->when($keyword, function ($q, $keyword) {
+        $transaksi = Transaksi::with('pelanggan', 'supplier', 'pengeluaran', 'user')
+            ->when($keyword, function ($q) use ($keyword) {
                 return $q->where(function ($q) use ($keyword) {
                     $q->where('no_invoice', 'like', "%{$keyword}%")
+                        ->orWhere('catatan', 'like', "%{$keyword}%")
                         ->orWhereHas('pelanggan', function ($q) use ($keyword) {
                             $q->where('nm_pelanggan', 'like', "%{$keyword}%")
                                 ->orWhere('no_hp', 'like', "%{$keyword}%");
                         })
                         ->orWhereHas('supplier', function ($q) use ($keyword) {
                             $q->where('nm_supplier', 'like', "%{$keyword}%");
+                        })
+                        ->orWhereHas('pengeluaran', function ($q) use ($keyword) {
+                            $q->where('kategori', 'like', "%{$keyword}%")
+                                ->orWhere('keterangan', 'like', "%{$keyword}%");
                         });
                 });
             })
@@ -246,10 +339,14 @@ class AdminTransaksiController extends Controller
             fputcsv($file, $columns);
 
             foreach ($transaksi as $t) {
+                $pihak = $t->jenis_transaksi !== 'Penjualan'
+                    ? ($t->supplier->nm_supplier ?? ($t->pengeluaran->kategori ?? '-'))
+                    : ($t->pelanggan->nm_pelanggan ?? 'Umum');
+
                 fputcsv($file, [
                     $t->jenis_transaksi,
                     $t->no_invoice,
-                    $t->pelanggan->nm_pelanggan ?? 'Umum',
+                    $pihak,
                     $t->tanggal,
                     $t->subtotal,
                     $t->diskon,

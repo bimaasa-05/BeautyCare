@@ -1,6 +1,9 @@
 @php
     $pembayaran = $transaksi->pembayaran;
     $bank = $pembayaran->bank;
+    $paySisa = (float) ($pembayaran->nominal ?? $transaksi->total);
+    $dibayarSaldo = (float) ($transaksi->saldo_terpakai ?? 0);
+    $labelBayar = $dibayarSaldo > 0 ? 'Sisa yang Dibayar' : 'Total Pembayaran';
 @endphp
 <div class="pm-box">
     <div class="pm-va-wrap">
@@ -14,9 +17,16 @@
         </button>
     </div>
 
+    @if($dibayarSaldo > 0)
+    <div class="pm-saldo-info">
+        <span><i class="fa-solid fa-wallet"></i> Dibayar dengan saldo</span>
+        <b>Rp {{ number_format($dibayarSaldo, 0, ',', '.') }}</b>
+    </div>
+    @endif
+
     <div class="pm-nominal">
-        <div class="pm-nominal-label">Total Pembayaran</div>
-        <div class="pm-nominal-value">Rp {{ number_format($transaksi->total, 0, ',', '.') }}</div>
+        <div class="pm-nominal-label">{{ $labelBayar }}</div>
+        <div class="pm-nominal-value">Rp {{ number_format($paySisa, 0, ',', '.') }}</div>
     </div>
 
     @if($bank && $bank->nomor_telepon)
@@ -43,7 +53,7 @@
         </div>
         <div class="pm-step">
             <span class="pm-step-num">3</span>
-            <span>Masukkan nominal <b>Rp {{ number_format($transaksi->total, 0, ',', '.') }}</b> atau gunakan kode referensi <b>{{ $pembayaran->kode_pembayaran }}</b></span>
+            <span>Masukkan nominal <b>Rp {{ number_format($paySisa, 0, ',', '.') }}</b> atau gunakan kode referensi <b>{{ $pembayaran->kode_pembayaran }}</b></span>
         </div>
         <div class="pm-step">
             <span class="pm-step-num">4</span>

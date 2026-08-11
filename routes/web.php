@@ -32,7 +32,6 @@ use App\Http\Controllers\KasirDashboardController;
 use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\AdminPengaturanController;
 use App\Http\Controllers\AdminRiwayatController;
-use App\Http\Controllers\AdminPengeluaranController;
 use App\Http\Controllers\KasirPengeluaranController;
 use App\Http\Controllers\BeatycianJadwalTreatmentController;
 use App\Http\Controllers\MembershipPelangganController;
@@ -187,7 +186,12 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/admin/transaksi', [AdminTransaksiController::class, 'index'])->name('admin.transaksi.index');
         Route::get('/admin/transaksi/export', [AdminTransaksiController::class, 'export'])->name('admin.transaksi.export');
-        Route::get('/admin/transaksi/{id}', [AdminTransaksiController::class, 'show'])->name('admin.transaksi.show');
+        Route::get('/admin/transaksi/pembelian', [AdminTransaksiController::class, 'createPembelian'])->name('admin.transaksi.pembelian-create');
+        Route::post('/admin/transaksi/pembelian', [AdminTransaksiController::class, 'storePembelian'])->name('admin.transaksi.pembelian-store');
+        Route::post('/admin/transaksi', [AdminTransaksiController::class, 'store'])->name('admin.transaksi.store');
+        Route::put('/admin/transaksi/{id}', [AdminTransaksiController::class, 'update'])->name('admin.transaksi.update');
+        Route::delete('/admin/transaksi/{id}', [AdminTransaksiController::class, 'destroy'])->name('admin.transaksi.destroy');
+        Route::get('/admin/transaksi/{id}', [AdminTransaksiController::class, 'show'])->name('admin.transaksi.show')->where('id', '[0-9]+');
         Route::get('/admin/transaksi/{id}/invoice', [AdminTransaksiController::class, 'invoice'])->name('admin.transaksi.invoice');
         Route::get('/admin/transaksi/{id}/invoice-pdf', [AdminTransaksiController::class, 'invoicePdf'])->name('admin.transaksi.invoice-pdf');
         Route::get('/admin/transaksi/{id}/struk', [AdminTransaksiController::class, 'struk'])->name('admin.transaksi.struk');
@@ -205,13 +209,6 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/admin/riwayat', [AdminRiwayatController::class, 'index'])->name('admin.riwayat.index');
         Route::get('/admin/riwayat/{id}', [AdminRiwayatController::class, 'show'])->name('admin.riwayat.show');
-
-        Route::get('/admin/pengeluaran', [AdminPengeluaranController::class, 'index'])->name('admin.pengeluaran.index');
-        Route::get('/admin/pengeluaran/pembelian', [AdminPengeluaranController::class, 'createPembelian'])->name('admin.pengeluaran.pembelian-create');
-        Route::post('/admin/pengeluaran/pembelian', [AdminPengeluaranController::class, 'storePembelian'])->name('admin.pengeluaran.pembelian-store');
-        Route::post('/admin/pengeluaran', [AdminPengeluaranController::class, 'store'])->name('admin.pengeluaran.store');
-        Route::put('/admin/pengeluaran/{id}', [AdminPengeluaranController::class, 'update'])->name('admin.pengeluaran.update');
-        Route::delete('/admin/pengeluaran/{id}', [AdminPengeluaranController::class, 'destroy'])->name('admin.pengeluaran.destroy');
 
         //Route Konsultasi Admin
         Route::get('/admin/konsultasi', [AdminKonsultasiController::class, 'index'])->name('admin.konsultasi.index');
@@ -396,6 +393,8 @@ Route::middleware('auth')->group(function () {
 
         //Route Saldo Akun
         Route::get('/pelanggan/saldo', [App\Http\Controllers\PelangganSaldoController::class, 'index'])->name('pelanggan.saldo.index');
+        Route::get('/pelanggan/saldo/topup', [App\Http\Controllers\SaldoTopUpController::class, 'create'])->name('pelanggan.saldo.topup');
+        Route::post('/pelanggan/saldo/topup', [App\Http\Controllers\SaldoTopUpController::class, 'store'])->name('pelanggan.saldo.topup.store');
 
         //Route Produk
         Route::get('/pelanggan/produk', [PelangganProdukController::class, 'index'])->name('pelanggan.produk');

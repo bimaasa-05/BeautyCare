@@ -21,22 +21,17 @@
         .sidebar-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.3); z-index: 90; }
         .sidebar-overlay.active { display: block; }
         @media (max-width: 768px) { .sidebar-toggle { display: flex; align-items: center; } }
-    </style>
-    <style>
         body { font-family: 'Poppins', sans-serif; }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-
         .float-icon { position: absolute; pointer-events: none; opacity: 0.1; font-size: 80px; }
         .form-input-custom { border: 1.5px solid #ECECEC; border-radius: 12px; padding: 10px 14px; font-size: 13px; width: 100%; transition: all 0.3s ease; font-family: 'Poppins', sans-serif; }
         .form-input-custom:focus { border-color: #FF4F87; box-shadow: 0 0 0 3px rgba(255,79,135,0.12); outline: none; }
         .form-input-custom::placeholder { color: #aaa; }
         .form-input-custom[readonly] { background-color: #f9f9f9; cursor: not-allowed; }
-        select.form-input-custom { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 40px; }
         .form-label { font-size: 12px; font-weight: 600; color: #555; margin-bottom: 6px; display: block; }
-
         .page-header-premium {
             background: linear-gradient(135deg, #FFF5F8 0%, #FFE5EF 50%, #FFD6E6 100%);
             border-radius: 20px;
@@ -151,7 +146,7 @@
             </div>
                 @if (session('success'))
                 <div class="mb-4 p-4 bg-emerald-50 border border-emerald-100 rounded-xl flex items-center gap-2 text-sm text-emerald-700">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-check text-emerald-500"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg>
                     {{ session('success') }}
                 </div>
                 @endif
@@ -168,13 +163,13 @@
                                 <i class="fa-solid fa-circle-info text-pink-300 mr-1"></i>Pilih supplier lalu tambahkan produk yang dibeli
                             </p>
                         </div>
-                        <a href="{{ route('admin.pengeluaran.index') }}"
+                        <a href="{{ route('admin.transaksi.index') }}"
                             class="flex items-center gap-2 border border-gray-200 text-gray-600 text-[12px] font-medium px-4 py-2 rounded-full hover:bg-gray-50 transition-colors">
                             <i class="fa-solid fa-arrow-left"></i> Kembali
                         </a>
                     </div>
 
-                    <form action="{{ route('admin.pengeluaran.pembelian-store') }}" method="POST">
+                    <form action="{{ route('admin.transaksi.pembelian-store') }}" method="POST">
                         @csrf
 
                         <!-- SECTION 1: Supplier & Tanggal -->
@@ -276,7 +271,7 @@
                                 </div>
                             </div>
                             <div class="flex items-center gap-3">
-                                <a href="{{ route('admin.pengeluaran.index') }}"
+                        <a href="{{ route('admin.transaksi.index') }}"
                                     class="flex items-center gap-2 border border-gray-200 text-gray-600 text-[12px] font-medium px-5 py-2.5 rounded-full hover:bg-gray-50 transition-colors">
                                     Batal
                                 </a>
@@ -317,9 +312,9 @@
         }
 
         function getItemTemplate(index) {
-            const produk = getProdukSupplier();
-            const options = produk
-                ? produk.produk.map(p =>
+            const supplier = getProdukSupplier();
+            const options = supplier
+                ? supplier.produk.map(p =>
                     `<option value="${p.id}" data-nama="${p.nm}" data-harga="${p.harga_beli}">${p.nm} — Rp ${formatRp(p.harga_beli)}</option>`
                 ).join('')
                 : '';
@@ -327,7 +322,7 @@
             <div class="item-row flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 mb-3 p-3 bg-gray-50 rounded-xl border border-gray-100">
                 <select name="items[${index}][id_produk]" class="form-input-custom item-select !w-full !py-2 !text-[12px] flex-1"
                     onchange="onItemChange(this)">
-                    <option value="">${produk ? '-- Pilih Produk --' : 'Pilih supplier terlebih dahulu'}</option>
+                    <option value="">${supplier ? '-- Pilih Produk --' : 'Pilih supplier terlebih dahulu'}</option>
                     ${options}
                 </select>
                 <span class="item-harga-display text-[12px] text-gray-600 font-medium w-28 text-right flex-shrink-0">Rp 0</span>
@@ -387,9 +382,9 @@
                 const select = row.querySelector('.item-select');
                 const option = select.options[select.selectedIndex];
                 if (option && option.value) {
-                    const harga = parseFloat(option.dataset.harga) || 0;
+                    const huruf = parseFloat(option.dataset.harga) || 0;
                     const qty = parseInt(row.querySelector('.item-qty').value) || 0;
-                    total += harga * qty;
+                    total += huruf * qty;
                 }
             });
             document.getElementById('subtotal').value = total;

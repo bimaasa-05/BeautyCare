@@ -1,3 +1,8 @@
+@php
+    $paySisa = (float) ($transaksi->pembayaran->nominal ?? $transaksi->total);
+    $dibayarSaldo = (float) ($transaksi->saldo_terpakai ?? 0);
+    $labelBayar = $dibayarSaldo > 0 ? 'Sisa yang Dibayar' : 'Total Pembayaran';
+@endphp
 <div class="pm-box">
     <div class="pm-qr-wrap">
         <img src="{{ asset('assets/img/qris-merchant.png') }}" alt="QRIS BeautyCare" class="pm-qr-img">
@@ -7,9 +12,16 @@
         </div>
     </div>
 
+    @if($dibayarSaldo > 0)
+    <div class="pm-saldo-info">
+        <span><i class="fa-solid fa-wallet"></i> Dibayar dengan saldo</span>
+        <b>Rp {{ number_format($dibayarSaldo, 0, ',', '.') }}</b>
+    </div>
+    @endif
+
     <div class="pm-nominal">
-        <div class="pm-nominal-label">Total Pembayaran</div>
-        <div class="pm-nominal-value">Rp {{ number_format($transaksi->total, 0, ',', '.') }}</div>
+        <div class="pm-nominal-label">{{ $labelBayar }}</div>
+        <div class="pm-nominal-value">Rp {{ number_format($paySisa, 0, ',', '.') }}</div>
     </div>
 
     <div class="pm-steps">
@@ -23,7 +35,7 @@
         </div>
         <div class="pm-step">
             <span class="pm-step-num">3</span>
-            <span>Pastikan nominal <b>Rp {{ number_format($transaksi->total, 0, ',', '.') }}</b> sesuai lalu konfirmasi pembayaran</span>
+            <span>Pastikan nominal <b>Rp {{ number_format($paySisa, 0, ',', '.') }}</b> sesuai lalu konfirmasi pembayaran</span>
         </div>
         <div class="pm-step">
             <span class="pm-step-num">4</span>

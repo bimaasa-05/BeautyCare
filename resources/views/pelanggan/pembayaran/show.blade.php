@@ -436,6 +436,83 @@
         border-radius: 14px;
     }
 
+    .pm-saldo-info {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 14px;
+        padding: 10px 14px;
+        background: #ECFDF5;
+        border: 1px solid #A7F3D0;
+        border-radius: 12px;
+    }
+
+    .pm-saldo-info span {
+        font-size: 12px;
+        font-weight: 600;
+        color: #047857;
+    }
+
+    .pm-saldo-info b {
+        font-size: 13px;
+        font-weight: 700;
+        color: #059669;
+        font-variant-numeric: tabular-nums;
+    }
+
+    .pm-kombinasi {
+        background: #FFF9FB;
+        border: 1px solid #FFE5EF;
+        border-radius: 14px;
+        padding: 14px 16px;
+        margin-bottom: 14px;
+    }
+
+    .pm-kombinasi .pk-title {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--dark);
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .pm-kombinasi .pk-title i {
+        color: var(--primary);
+        margin-right: 6px;
+    }
+
+    .pm-kombinasi .pk-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 12.5px;
+        color: var(--gray);
+        padding: 4px 0;
+    }
+
+    .pm-kombinasi .pk-row b {
+        color: var(--dark);
+        font-variant-numeric: tabular-nums;
+    }
+
+    .pm-kombinasi .pk-total {
+        border-top: 1px dashed #FFD6E6;
+        margin-top: 6px;
+        padding-top: 10px;
+    }
+
+    .pm-kombinasi .pk-total span {
+        font-weight: 600;
+        color: var(--dark);
+    }
+
+    .pm-kombinasi .pk-total b {
+        font-size: 16px;
+        font-weight: 800;
+        color: var(--primary);
+    }
+
     .pm-nominal-label {
         font-size: 11px;
         color: var(--gray);
@@ -853,6 +930,8 @@
                                     QRIS
                                     @elseif($transaksi->pembayaran->metode === 'Transfer')
                                     Transfer Bank - {{ $transaksi->pembayaran->provider }}
+                                    @elseif($transaksi->pembayaran->metode === 'Saldo')
+                                    Saldo Akun
                                     @else
                                     E-Wallet - {{ $transaksi->pembayaran->provider }}
                                     @endif
@@ -861,16 +940,38 @@
                             </div>
                         </div>
 
+                        @php $dibayarSaldoP = (float) ($transaksi->saldo_terpakai ?? 0); @endphp
+
+                        @if($dibayarSaldoP > 0 && $transaksi->pembayaran->metode !== 'Saldo')
+                        <div class="pm-kombinasi">
+                            <div class="pk-title"><i class="fa-solid fa-layer-group"></i> Pembayaran Kombinasi</div>
+                            <div class="pk-row">
+                                <span>Total Pesanan</span>
+                                <b>Rp {{ number_format($transaksi->total, 0, ',', '.') }}</b>
+                            </div>
+                            <div class="pk-row">
+                                <span>Dibayar Saldo Akun</span>
+                                <b style="color:#059669;">- Rp {{ number_format($dibayarSaldoP, 0, ',', '.') }}</b>
+                            </div>
+                            <div class="pk-row pk-total">
+                                <span>Sisa via {{ $transaksi->pembayaran->provider }}</span>
+                                <b>Rp {{ number_format($transaksi->pembayaran->nominal, 0, ',', '.') }}</b>
+                            </div>
+                        </div>
+                        @endif
+
                         @if($transaksi->pembayaran->metode === 'QRIS')
                         @include('pelanggan.pembayaran.partials.qris')
                         @elseif($transaksi->pembayaran->metode === 'Transfer')
                         @include('pelanggan.pembayaran.partials.transfer')
+                        @elseif($transaksi->pembayaran->metode === 'Saldo')
+                        @include('pelanggan.pembayaran.partials.saldo')
                         @else
                         @include('pelanggan.pembayaran.partials.ewallet')
                         @endif
                     </div>
 
-                    @if(in_array($transaksi->status, ['Menunggu Pembayaran', 'Sedang Diproses']))
+                    @if(in_array($transaksi->status, ['Menunggu Pembayaran', 'Sedang Diproses']) && $transaksi->pembayaran->metode !== 'Saldo')
                     <div class="pay-card">
                         <div class="pc-header">
                             <div class="pc-icon"><i class="fa-solid fa-paperclip"></i></div>
@@ -903,13 +1004,13 @@
                     <div class="pay-actions">
                         <form action="{{ route('pelanggan.pembayaran.sudah-bayar', $transaksi->id_transaksi) }}" method="POST">
                             @csrf
-                            <button type="submit" class="btn-pay btn-pay-confirm" style="width:100%;" onclick="return confirm('Pastikan Anda sudah melakukan pembayaran sesuai nominal. Lanjutkan?')">
+                            <button type="submit" class="btn-pay btn-pay-confirm" style="width:100%;" data-confirm-title="Saya Sudah Bayar" data-confirm-body="Pastikan Anda sudah melakukan pembayaran sesuai nominal. Lanjutkan?" data-confirm-icon="fa-money-check-dollar" data-confirm-type="warning" data-confirm-yes="Ya, Sudah Bayar">
                                 <i class="fa-solid fa-check-circle"></i> Saya Sudah Bayar
                             </button>
                         </form>
                         <form action="{{ route('pelanggan.pembayaran.batal', $transaksi->id_transaksi) }}" method="POST">
                             @csrf
-                            <button type="submit" class="btn-pay btn-pay-batal" style="width:100%;" onclick="return confirm('Batalkan pesanan ini?')">
+                            <button type="submit" class="btn-pay btn-pay-batal" style="width:100%;" data-confirm-title="Batalkan Pesanan" data-confirm-body="Apakah Anda yakin ingin membatalkan pesanan ini? Tindakan ini tidak dapat dibatalkan." data-confirm-icon="fa-circle-xmark" data-confirm-type="danger" data-confirm-yes="Ya, Batalkan">
                                 <i class="fa-solid fa-xmark"></i> Batalkan Pesanan
                             </button>
                         </form>
@@ -941,7 +1042,7 @@
                 </form>
                 <form action="{{ route('pelanggan.pembayaran.batal', $transaksi->id_transaksi) }}" method="POST" style="display:contents;">
                     @csrf
-                    <button type="submit" class="em-btn em-btn-batal" onclick="return confirm('Batalkan pesanan ini?')">
+                    <button type="submit" class="em-btn em-btn-batal" data-confirm-title="Batalkan Pesanan" data-confirm-body="Apakah Anda yakin ingin membatalkan pesanan ini? Tindakan ini tidak dapat dibatalkan." data-confirm-icon="fa-circle-xmark" data-confirm-type="danger" data-confirm-yes="Ya, Batalkan">
                         <i class="fa-solid fa-xmark"></i> Batal Pembayaran
                     </button>
                 </form>
@@ -1044,6 +1145,7 @@
     if (dateEl) dateEl.textContent = now.toLocaleDateString('id-ID', options);
     </script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
+    @include('partials.confirm-modal')
 </body>
 
 </html>

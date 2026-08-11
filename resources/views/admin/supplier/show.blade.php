@@ -250,7 +250,7 @@
                             <i class="fa-solid fa-pen"></i> Edit
                         </a>
                         <form action="{{ route('admin.supplier.destroy', $supplier->id_supplier) }}" method="POST"
-                            onsubmit="return confirm('Yakin ingin menghapus supplier ini?')" class="inline">
+                            data-confirm-title="Hapus Supplier" data-confirm-body="Apakah Anda yakin ingin menghapus supplier ini? Tindakan ini tidak dapat dibatalkan." data-confirm-icon="fa-trash-can" data-confirm-type="danger" data-confirm-yes="Ya, Hapus" class="inline">
                             @csrf
                             @method('DELETE')
                             <button type="submit"
@@ -276,6 +276,7 @@
         if (dateEl) dateEl.textContent = now.toLocaleDateString('id-ID', options);
     </script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
+    @include('partials.confirm-modal')
 </body>
 
 </html>

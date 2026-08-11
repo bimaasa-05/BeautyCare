@@ -2,6 +2,9 @@
     $pembayaran = $transaksi->pembayaran;
     $bank = $pembayaran->bank;
     $provider = $pembayaran->provider;
+    $paySisa = (float) ($pembayaran->nominal ?? $transaksi->total);
+    $dibayarSaldo = (float) ($transaksi->saldo_terpakai ?? 0);
+    $labelBayar = $dibayarSaldo > 0 ? 'Sisa yang Dibayar' : 'Total Pembayaran';
     $bankColors = [
         'BRI' => 'linear-gradient(135deg,#00529C,#003A6E)',
         'BCA' => 'linear-gradient(135deg,#CC0000,#990000)',
@@ -25,9 +28,16 @@
         </button>
     </div>
 
+    @if($dibayarSaldo > 0)
+    <div class="pm-saldo-info">
+        <span><i class="fa-solid fa-wallet"></i> Dibayar dengan saldo</span>
+        <b>Rp {{ number_format($dibayarSaldo, 0, ',', '.') }}</b>
+    </div>
+    @endif
+
     <div class="pm-nominal">
-        <div class="pm-nominal-label">Total Pembayaran</div>
-        <div class="pm-nominal-value">Rp {{ number_format($transaksi->total, 0, ',', '.') }}</div>
+        <div class="pm-nominal-label">{{ $labelBayar }}</div>
+        <div class="pm-nominal-value">Rp {{ number_format($paySisa, 0, ',', '.') }}</div>
     </div>
 
     <div class="pm-bank-info">
@@ -62,7 +72,7 @@
         </div>
         <div class="pm-step">
             <span class="pm-step-num">3</span>
-            <span>Pastikan nominal <b>Rp {{ number_format($transaksi->total, 0, ',', '.') }}</b> sesuai lalu konfirmasi</span>
+            <span>Pastikan nominal <b>Rp {{ number_format($paySisa, 0, ',', '.') }}</b> sesuai lalu konfirmasi</span>
         </div>
         <div class="pm-step">
             <span class="pm-step-num">4</span>

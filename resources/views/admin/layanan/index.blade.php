@@ -354,6 +354,7 @@
         }
     </script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
+    @include('partials.confirm-modal')
 </body>
 
 </html>

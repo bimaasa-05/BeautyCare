@@ -209,6 +209,7 @@
                             <option value="user" {{ request()->tipe == 'user' ? 'selected' : '' }}>User</option>
                             <option value="produk" {{ request()->tipe == 'produk' ? 'selected' : '' }}>Produk</option>
                             <option value="layanan" {{ request()->tipe == 'layanan' ? 'selected' : '' }}>Layanan</option>
+                            <option value="konsultasi" {{ request()->tipe == 'konsultasi' ? 'selected' : '' }}>Konsultasi</option>
                         </select>
                         <div class="relative">
                             <i class="fa-solid fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-[12px]"></i>

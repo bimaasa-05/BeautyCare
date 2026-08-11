@@ -234,13 +234,17 @@ class KasirPembayaranController extends Controller
 
                 // Proses saldo & cashback
                 $saldoService = new SaldoAkunService();
-                $saldoService->prosesCheckout(
-                    $transaksi->id_pelanggan,
-                    (float) $transaksi->total,
-                    0, // hanya cashback, tidak pakai saldo
-                    $transaksi->id_transaksi,
-                    $transaksi->detail->firstWhere('id_promo')?->id_promo
-                );
+                if ($transaksi->jenis_transaksi === 'TopUp Saldo') {
+                    $saldoService->kreditTopUp($transaksi->id_pelanggan, (float) $transaksi->total, $transaksi->id_transaksi);
+                } else {
+                    $saldoService->prosesCheckout(
+                        $transaksi->id_pelanggan,
+                        (float) $transaksi->total,
+                        0, // hanya cashback, tidak pakai saldo
+                        $transaksi->id_transaksi,
+                        $transaksi->detail->firstWhere('id_promo')?->id_promo
+                    );
+                }
 
                 $detailMembership = $transaksi->detail->firstWhere('jenis', 'Membership');
                 if ($detailMembership && $transaksi->id_pelanggan) {
@@ -261,7 +265,12 @@ class KasirPembayaranController extends Controller
 
             ActivityLogger::log('Menambahkan', auth()->user()->nama . ' mengkonfirmasi pesanan ' . $transaksi->no_invoice . ' lunas', 'Transaksi', $transaksi->id_transaksi);
 
-            buatNotif($transaksi->id_user, 'Pembayaran Diterima', 'Pesanan ' . $transaksi->no_invoice . ' telah diverifikasi dan berhasil.', 'Transaksi', route('pelanggan.pesanan.show', $transaksi->id_transaksi));
+            if ($transaksi->jenis_transaksi === 'TopUp Saldo') {
+                $nominalTopUp = number_format((float) $transaksi->total, 0, ',', '.');
+                buatNotif($transaksi->id_user, 'Top Up Berhasil', 'Top up saldo ' . $transaksi->no_invoice . ' telah terverifikasi. Saldo Anda bertambah Rp ' . $nominalTopUp . '.', 'Saldo', route('pelanggan.saldo.index'));
+            } else {
+                buatNotif($transaksi->id_user, 'Pembayaran Diterima', 'Pesanan ' . $transaksi->no_invoice . ' telah diverifikasi dan berhasil.', 'Transaksi', route('pelanggan.pesanan.show', $transaksi->id_transaksi));
+            }
 
             $admins = \App\Models\User::where('role', 'admin')->get();
             foreach ($admins as $admin) {
@@ -271,10 +280,24 @@ class KasirPembayaranController extends Controller
             return back()->with('message', 'Pesanan ' . $transaksi->no_invoice . ' dikonfirmasi lunas.');
         }
 
+        $saldoTerpakai = (float) ($transaksi->saldo_terpakai ?? 0);
+        if ($saldoTerpakai > 0 && $transaksi->id_pelanggan) {
+            (new SaldoAkunService())->kreditRefund(
+                $transaksi->id_pelanggan,
+                $saldoTerpakai,
+                $transaksi->id_transaksi,
+                'Pengembalian saldo — pembayaran ditolak kasir (INV ' . $transaksi->no_invoice . ')'
+            );
+        }
+
         $transaksi->update(['status' => 'Gagal']);
         $transaksi->pembayaran?->update(['status' => 'Gagal']);
 
-        buatNotif($transaksi->id_user, 'Pembayaran Ditolak', 'Pembayaran pesanan ' . $transaksi->no_invoice . ' ditolak oleh kasir.', 'Transaksi', route('pelanggan.pesanan.show', $transaksi->id_transaksi));
+        $pesanTolak = 'Pembayaran pesanan ' . $transaksi->no_invoice . ' ditolak oleh kasir.';
+        if ($saldoTerpakai > 0) {
+            $pesanTolak .= ' Saldo akun Rp ' . number_format($saldoTerpakai, 0, ',', '.') . ' telah dikembalikan ke saldo Anda.';
+        }
+        buatNotif($transaksi->id_user, 'Pembayaran Ditolak', $pesanTolak, 'Transaksi', route('pelanggan.pesanan.show', $transaksi->id_transaksi));
 
         return back()->with('message', 'Pesanan ' . $transaksi->no_invoice . ' ditolak.');
     }
