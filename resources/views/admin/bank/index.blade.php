@@ -333,7 +333,7 @@
                                                     </svg>
                                                 </a>
                                                 <form action="{{ route('admin.bank.destroy', $bank->id) }}" method="POST"
-                                                    onsubmit="return confirm('Yakin ingin menghapus bank ini?')"
+                                                    data-confirm-title="Hapus Bank" data-confirm-body="Apakah Anda yakin ingin menghapus bank ini? Tindakan ini tidak dapat dibatalkan." data-confirm-icon="fa-trash-can" data-confirm-type="danger" data-confirm-yes="Ya, Hapus"
                                                     class="inline">
                                                     @csrf
                                                     @method('DELETE')
@@ -389,6 +389,7 @@
                 });
             </script>
             <script src="{{ asset('assets/js/dashboard.js') }}"></script>
+    @include('partials.confirm-modal')
 </body>
 
 </html>

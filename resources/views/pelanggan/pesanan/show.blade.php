@@ -744,7 +744,7 @@
                                 </a>
                                 <form action="{{ route('pelanggan.pembayaran.batal', $transaksi->id_transaksi) }}" method="POST" style="margin-top:10px;">
                                     @csrf
-                                    <button type="submit" class="btn-batal" onclick="return confirm('Batalkan pesanan ini?')">
+                                    <button type="submit" class="btn-batal" data-confirm-title="Batalkan Pesanan" data-confirm-body="Apakah Anda yakin ingin membatalkan pesanan ini? Tindakan ini tidak dapat dibatalkan." data-confirm-icon="fa-circle-xmark" data-confirm-type="danger" data-confirm-yes="Ya, Batalkan">
                                         <i class="fa-solid fa-xmark"></i> Batalkan Pesanan
                                     </button>
                                 </form>
@@ -776,6 +776,7 @@
     if (dateEl) dateEl.textContent = now.toLocaleDateString('id-ID', options);
     </script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
+    @include('partials.confirm-modal')
 </body>
 
 </html>

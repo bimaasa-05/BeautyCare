@@ -161,7 +161,7 @@
                                 @endif
                             </div>
                             <div class="kc-card-footer">
-                                <form action="{{ route('beautycian.jadwal-treatment.update') }}" method="POST" onsubmit="return confirm('Mulai treatment ini?')">
+                                <form action="{{ route('beautycian.jadwal-treatment.update') }}" method="POST" data-confirm-title="Mulai Treatment" data-confirm-body="Mulai treatment ini? Pastikan pelanggan sudah siap." data-confirm-icon="fa-play" data-confirm-type="brand" data-confirm-yes="Ya, Mulai">
                                     @csrf
                                     <input type="hidden" name="id_booking" value="{{ $item->id_booking }}">
                                     <button type="submit" class="btn-kanban btn-primary-kanban">
@@ -238,7 +238,7 @@
                                     Isi Dokumentasi
                                 </button>
                                 @else
-                                <form action="{{ route('beautycian.status-treatment.complete') }}" method="POST" onsubmit="return confirm('Selesaikan treatment ini?')">
+                                <form action="{{ route('beautycian.status-treatment.complete') }}" method="POST" data-confirm-title="Selesaikan Treatment" data-confirm-body="Selesaikan treatment ini? Pastikan dokumentasi sudah lengkap." data-confirm-icon="fa-circle-check" data-confirm-type="success" data-confirm-yes="Ya, Selesaikan">
                                     @csrf
                                     <input type="hidden" name="id_booking" value="{{ $item->id_booking }}">
                                     <button type="submit" class="btn-kanban btn-success-kanban">
@@ -428,6 +428,7 @@
 
     <script src="{{ asset('assets/js/beautycian.js') }}"></script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
+    @include('partials.confirm-modal')
 </body>
 
 </html>

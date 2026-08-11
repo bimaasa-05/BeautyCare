@@ -188,7 +188,7 @@
                                                     <form
                                                         action="{{ route('kasir.pelanggan.destroy', $p->id_pelanggan) }}"
                                                         method="POST" class="inline"
-                                                        onsubmit="return confirm('Yakin ingin menghapus pelanggan {{ $p->nm_pelanggan }}?')">
+                                                        data-confirm-title="Hapus Pelanggan" data-confirm-body="Apakah Anda yakin ingin menghapus pelanggan {{ $p->nm_pelanggan }}? Tindakan ini tidak dapat dibatalkan." data-confirm-icon="fa-trash-can" data-confirm-type="danger" data-confirm-yes="Ya, Hapus">
                                                         @csrf
                                                         @method('DELETE')
                                                         <button type="submit"
@@ -241,6 +241,7 @@
         document.getElementById('currentDate').textContent = now.toLocaleDateString('id-ID', options);
     </script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
+    @include('partials.confirm-modal')
 </body>
 
 </html>

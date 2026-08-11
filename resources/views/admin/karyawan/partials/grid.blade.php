@@ -79,7 +79,7 @@
             class="w-10 h-10 flex items-center justify-center text-amber-500 bg-amber-50 border border-amber-100 hover:bg-amber-100 rounded-2xl transition-colors"><i
                 class="fa-solid fa-pen-to-square text-[13px]"></i></a>
         <form action="{{ route('admin.karyawan.destroy', $b->id_karyawan) }}" method="POST"
-            onsubmit="return confirm('Yakin ingin menghapus karyawan ini?')" class="inline">
+            data-confirm-title="Hapus Karyawan" data-confirm-body="Apakah Anda yakin ingin menghapus karyawan ini? Tindakan ini tidak dapat dibatalkan." data-confirm-icon="fa-trash-can" data-confirm-type="danger" data-confirm-yes="Ya, Hapus" class="inline">
             @csrf
             @method('DELETE')
             <button type="submit"

@@ -264,7 +264,7 @@
                                                         <i class="fa-regular fa-pen-to-square text-[11px]"></i>
                                                     </a>
 <form action="{{ route('admin.kategori.destroy', ['id' => $item->id_kategori_layanan, 'type' => 'layanan']) }}" method="POST"
-                                                         onsubmit="return confirm('Yakin ingin menghapus kategori ini?')">
+                                                         data-confirm-title="Hapus Kategori" data-confirm-body="Apakah Anda yakin ingin menghapus kategori ini? Tindakan ini tidak dapat dibatalkan." data-confirm-icon="fa-trash-can" data-confirm-type="danger" data-confirm-yes="Ya, Hapus">
                                                          @csrf
                                                          @method('DELETE')
                                                          <button type="submit"
@@ -337,7 +337,7 @@
                                                         <i class="fa-regular fa-pen-to-square text-[11px]"></i>
                                                     </a>
                                                     <form action="{{ route('admin.kategori.destroy', ['id' => $item->id_kategori_produk, 'type' => 'produk']) }}" method="POST"
-                                                        onsubmit="return confirm('Yakin ingin menghapus kategori ini?')">
+                                                        data-confirm-title="Hapus Kategori" data-confirm-body="Apakah Anda yakin ingin menghapus kategori ini? Tindakan ini tidak dapat dibatalkan." data-confirm-icon="fa-trash-can" data-confirm-type="danger" data-confirm-yes="Ya, Hapus">
                                                         @csrf
                                                         @method('DELETE')
                                                         <button type="submit"
@@ -378,6 +378,7 @@
         if (dateEl) dateEl.textContent = now.toLocaleDateString('id-ID', options);
     </script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
+    @include('partials.confirm-modal')
 </body>
 
 </html>
