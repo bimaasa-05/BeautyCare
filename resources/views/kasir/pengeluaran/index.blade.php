@@ -7,7 +7,6 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Pengeluaran Kasir - BeautyCare</title>
     @include('partials.head-meta')
-    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -294,9 +293,16 @@
     </div>
 
     <!-- Modal Tambah -->
-    <div id="modalTambah" class="hidden fixed inset-0 z-[200] flex items-center justify-center p-4">
-        <div class="absolute inset-0 bg-black/40" onclick="document.getElementById('modalTambah').classList.add('hidden')"></div>
-        <div class="relative bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl">
+    <style>
+        @keyframes pengFadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes pengPopIn { from { opacity: 0; transform: scale(0.92) translateY(12px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+        #modalTambah { z-index: 9999 !important; }
+        #modalTambah .modal-backdrop { animation: pengFadeIn 0.2s ease-out; }
+        #modalTambah .modal-card { animation: pengPopIn 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
+    </style>
+    <div id="modalTambah" class="hidden fixed inset-0 flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/40 modal-backdrop" onclick="document.getElementById('modalTambah').classList.add('hidden')"></div>
+        <div class="relative bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl modal-card">
             <div class="flex items-center justify-between mb-4">
                 <h4 class="text-[15px] font-bold text-gray-800">
                     <i class="fa-solid fa-arrow-down text-red-500 mr-2"></i>Tambah Pengeluaran
