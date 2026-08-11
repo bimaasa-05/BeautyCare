@@ -190,6 +190,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/transaksi/{id}', [AdminTransaksiController::class, 'show'])->name('admin.transaksi.show');
         Route::get('/admin/transaksi/{id}/invoice', [AdminTransaksiController::class, 'invoice'])->name('admin.transaksi.invoice');
         Route::get('/admin/transaksi/{id}/invoice-pdf', [AdminTransaksiController::class, 'invoicePdf'])->name('admin.transaksi.invoice-pdf');
+        Route::get('/admin/transaksi/{id}/struk', [AdminTransaksiController::class, 'struk'])->name('admin.transaksi.struk');
 
         Route::get('/admin/laporan', [AdminLaporanController::class, 'index'])->name('admin.laporan.index');
         Route::get('/admin/laporan/export-pdf', [AdminLaporanController::class, 'exportPDF'])->name('admin.laporan.export-pdf');
@@ -261,6 +262,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/kasir/invoice', [KasirTransaksiController::class, 'invoiceIndex'])->name('kasir.invoice.index');
         Route::get('/kasir/invoice/{id}', [KasirTransaksiController::class, 'invoice'])->name('kasir.invoice.show');
         Route::get('/kasir/invoice/{id}/pdf', [KasirTransaksiController::class, 'invoicePdf'])->name('kasir.invoice.pdf');
+        Route::get('/kasir/struk/{id}', [KasirTransaksiController::class, 'struk'])->name('kasir.struk');
         Route::get('/kasir/riwayat-transaksi', [KasirRiwayatTransaksiController::class, 'index'])->name('kasir.riwayat-transaksi.index');
         Route::get('/kasir/riwayat-transaksi/{id}', [KasirRiwayatTransaksiController::class, 'show'])->name('kasir.riwayat-transaksi.show');
 
