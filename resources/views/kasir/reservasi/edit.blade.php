@@ -7,7 +7,6 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Edit Reservasi - BeautyCare</title>
     @include('partials.head-meta')
-    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
@@ -229,16 +228,28 @@
                         @csrf
                         @method('PUT')
 
+                        @if($errors->any())
+                            <div class="mb-3 px-4 py-3 bg-red-50 border border-red-200 text-red-600 text-[12px] font-semibold rounded-xl">
+                                @foreach($errors->all() as $error)
+                                    <div>{{ $error }}</div>
+                                @endforeach
+                            </div>
+                        @endif
+
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                             <div class="form-group">
                                 <label class="form-label">
                                     <i class="fa-solid fa-user text-pink-400 mr-1"></i>Pelanggan <span
                                         class="text-red-500">*</span>
                                 </label>
-                                <div class="custom-select-wrapper">
-                                    <select name="id_pelanggan" id="id_pelanggan"
-                                        class="form-input-custom @error('id_pelanggan') border-red-400 @enderror"
-                                        onchange="onPelangganChange(this)">
+                                @php
+                                    $optsPelanggan = $pelanggan->map(fn($p) => [
+                                        'value' => $p->id_pelanggan,
+                                        'label' => $p->nm_pelanggan . ($p->id_member ? ' (' . ($p->membership->tingkat ?? '') . ' - Diskon ' . ($p->membership->diskon ?? 0) . '%)' : '')
+                                    ])->sortBy('label')->values();
+                                @endphp
+                                <div x-data="searchableSelect()" x-init='init($el.querySelector("select"), @json($optsPelanggan), @json(old("id_pelanggan", $reservasi->id_pelanggan)))' class="relative">
+                                    <select name="id_pelanggan" id="id_pelanggan" class="hidden @error('id_pelanggan') border-red-400 @enderror" onchange="onPelangganChange(this)">
                                         <option value="">-- Pilih Pelanggan --</option>
                                         @foreach ($pelanggan as $p)
                                             <option value="{{ $p->id_pelanggan }}"
@@ -253,6 +264,26 @@
                                             </option>
                                         @endforeach
                                     </select>
+                                    <div class="relative">
+                                        <input type="text" x-model="query" @focus="open = true" @click="open = true" @input="onQueryInput()"
+                                            @keydown.escape="open = false" @keydown.down.prevent="moveHighlight(1)" @keydown.up.prevent="moveHighlight(-1)"
+                                            @keydown.enter.prevent="selectHighlighted()" @blur="setTimeout(() => open = false, 150)"
+                                            class="form-input-custom pr-9 @error('id_pelanggan') border-red-400 @enderror"
+                                            placeholder="Pilih Pelanggan" autocomplete="off">
+                                        <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-[10px] text-gray-400 pointer-events-none"></i>
+                                    </div>
+                                    <div x-show="open" x-transition
+                                        class="absolute z-50 mt-1 w-full bg-white border border-slate-200 rounded-xl shadow-lg overflow-hidden">
+                                        <ul class="max-h-48 overflow-y-auto py-1">
+                                            <template x-for="(opt, i) in filtered" :key="opt.value">
+                                                <li @click="select(opt.value, opt.label)" @mouseenter="highlight = i"
+                                                    class="px-3 py-2 text-[12px] cursor-pointer hover:bg-pink-50 hover:text-pink-600 transition-colors"
+                                                    :class="i === highlight ? 'bg-pink-50 text-pink-600 font-semibold' : 'text-gray-700'"
+                                                    x-text="opt.label"></li>
+                                            </template>
+                                            <li x-show="filtered.length === 0" class="px-3 py-2 text-[11px] text-gray-400">Tidak ada hasil</li>
+                                        </ul>
+                                    </div>
                                 </div>
                                 @error('id_pelanggan')
                                     <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
@@ -750,13 +781,169 @@
             if (tanggalInput) {
                 tanggalInput.addEventListener('change', refreshSlotData);
             }
-            if (karyawanSelect) {
+if (karyawanSelect) {
                 karyawanSelect.addEventListener('change', applyJamAvailability);
             }
             applyJamAvailability();
+
+            // Normalize harga[] & diskon[] before submit (strip dots from Indonesian format)
+            document.querySelector('form').addEventListener('submit', function() {
+                document.querySelectorAll('input[name="harga[]"]').forEach(function(el) {
+                    el.value = el.value.replace(/[^0-9]/g, '');
+                });
+                document.querySelectorAll('input[name="diskon[]"]').forEach(function(el) {
+                    el.value = el.value.replace(/[^0-9]/g, '');
+                });
+            });
         });
-    </script>
+
+        // Searchable Select for Pelanggan (copied from Transaksi)
+        function searchableSelect() {
+            return {
+                open: false,
+                query: '',
+                options: [],
+                value: '',
+                selectedText: '',
+                highlight: -1,
+                init(selectEl, options, initial) {
+                    this.options = options;
+                    if (initial && String(initial) !== '') {
+                        this.value = String(initial);
+                        const found = options.find(o => String(o.value) === String(initial));
+                        if (found) {
+                            this.query = found.label;
+                            this.selectedText = found.label;
+                        }
+                    }
+                    this.$watch('value', v => {
+                        if (String(selectEl.value) !== String(v)) {
+                            selectEl.value = v;
+                            selectEl.dispatchEvent(new Event('change'));
+                        }
+                    });
+                },
+                get filtered() {
+                    const q = this.query.toLowerCase();
+                    return this.options.filter(o => !o.disabled && o.label.toLowerCase().includes(q));
+                },
+                onQueryInput() {
+                    if (this.query !== this.selectedText && this.value !== '') this.value = '';
+                },
+                moveHighlight(dir) {
+                    const n = this.filtered.length;
+                    if (!n) return;
+                    this.highlight = (this.highlight + dir + n) % n;
+                },
+                select(val, label) {
+                    this.value = String(val);
+                    this.query = label;
+                    this.selectedText = label;
+                    this.open = false;
+                    this.highlight = -1;
+                },
+                selectHighlighted() {
+                    const list = this.filtered;
+                    if (!list.length) return;
+                    const idx = this.highlight >= 0 && this.highlight < list.length ? this.highlight : 0;
+                    this.select(list[idx].value, list[idx].label);
+                }
+            };
+        }
+
+        function initCustomSelects() {
+            document.querySelectorAll('.custom-select-wrapper').forEach(function(wrapper) {
+                bindCustomSelect(wrapper);
+            });
+            document.addEventListener('click', function() {
+                closeCustomDropdowns();
+            });
+        }
+
+        function bindCustomSelect(wrapper) {
+            var oldTrigger = wrapper.querySelector('.custom-select-trigger');
+            var oldDropdown = wrapper.querySelector('.custom-select-dropdown');
+            if (oldTrigger) oldTrigger.remove();
+            if (oldDropdown) oldDropdown.remove();
+
+            var select = wrapper.querySelector('select');
+            if (!select) return;
+
+            select.style.display = 'none';
+
+            var trigger = document.createElement('div');
+            trigger.className = 'custom-select-trigger form-input-custom';
+
+            var triggerText = document.createElement('span');
+            var idx = select.selectedIndex;
+            triggerText.textContent = idx >= 0 ? select.options[idx].text : '-- Pilih --';
+
+            var arrow = document.createElement('i');
+            arrow.className = 'fa-solid fa-chevron-down';
+
+            trigger.appendChild(triggerText);
+            trigger.appendChild(arrow);
+
+            var dropdown = document.createElement('div');
+            dropdown.className = 'custom-select-dropdown';
+
+            for (var i = 0; i < select.options.length; i++) {
+                (function(idx) {
+                    var opt = select.options[idx];
+                    var optDiv = document.createElement('div');
+                    optDiv.className = 'custom-select-option';
+                    if (opt.selected) optDiv.classList.add('selected');
+                    if (opt.disabled) optDiv.classList.add('custom-select-option-disabled');
+                    optDiv.textContent = opt.text;
+
+                    for (var j = 0; j < opt.attributes.length; j++) {
+                        var attr = opt.attributes[j];
+                        if (attr.name.indexOf('data-') === 0) {
+                            optDiv.setAttribute(attr.name, attr.value);
+                        }
+                    }
+
+                    optDiv.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        if (opt.disabled) return;
+                        select.selectedIndex = idx;
+                        triggerText.textContent = select.options[idx].text;
+                        dropdown.querySelectorAll('.custom-select-option').forEach(function(o) {
+                            o.classList.remove('selected');
+                        });
+                        this.classList.add('selected');
+                        select.dispatchEvent(new Event('change', { bubbles: true }));
+                        closeCustomDropdowns();
+                    });
+                    dropdown.appendChild(optDiv);
+                })(i);
+            }
+
+            trigger.addEventListener('click', function(e) {
+                e.stopPropagation();
+                var isOpen = dropdown.style.display === 'block';
+                closeCustomDropdowns();
+                if (!isOpen) {
+                    dropdown.style.display = 'block';
+                    trigger.classList.add('open');
+                }
+            });
+
+            wrapper.insertBefore(trigger, select);
+            wrapper.appendChild(dropdown);
+        }
+
+        function closeCustomDropdowns() {
+            document.querySelectorAll('.custom-select-dropdown').forEach(function(d) {
+                d.style.display = 'none';
+            });
+            document.querySelectorAll('.custom-select-trigger').forEach(function(t) {
+                t.classList.remove('open');
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            initCustomSelects();
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
 </body>
-
 </html>
