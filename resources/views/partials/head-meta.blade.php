@@ -5,3 +5,5 @@
 
 <link rel="icon" type="image/svg+xml" href="{{ asset('assets/images/logo/favicon.svg') }}">
 <link rel="alternate icon" href="{{ asset('assets/images/logo/favicon.svg') }}">
+
+@vite(['resources/css/app.css', 'resources/js/app.js'])
