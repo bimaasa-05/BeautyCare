@@ -7,7 +7,6 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Proses Pembayaran - BeautyCare</title>
     @include('partials.head-meta')
-    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -15,8 +14,6 @@
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/dashboard.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/responsive.css') }}">
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-
     <style>
         .sidebar-toggle { display: none; background: none; border: none; cursor: pointer; padding: 8px; }
         .sidebar-toggle svg { width: 24px; height: 24px; color: var(--dark); }
@@ -154,7 +151,16 @@
                         <input type="hidden" name="id_booking" value="{{ $booking->id_booking }}">
                         <input type="hidden" name="total" id="total" value="{{ $totalBayar }}">
 
-                        <div class="mt-4 pt-4 border-t border-gray-100">
+                        <!-- Header eror banner (hidden dulu, muncul kalau error) -->
+    @if($errors->any())
+        <div class="mb-3 px-4 py-3 bg-red-50 border border-red-200 text-red-600 text-[12px] font-semibold rounded-xl">
+            @foreach($errors->all() as $error)
+                <div>{{ $error }}</div>
+            @endforeach
+        </div>
+    @endif
+
+    <div class="mt-4 pt-4 border-t border-gray-100">
                             <h4 class="text-[14px] font-bold text-gray-700 mb-1">
                                 <i class="fa-solid fa-credit-card text-pink-500 mr-2"></i>Metode Pembayaran
                             </h4>
@@ -182,6 +188,62 @@
                                 <input type="hidden" name="ewallet_type" :value="ewalletType">
                                 <input type="hidden" name="dibayar" :value="dibayar">
                                 <input type="hidden" name="kembali" :value="kembali">
+
+                                <!-- Accordion: Tunai -->
+                                <div class="border border-slate-200 rounded-3xl overflow-hidden bg-white shadow-sm transition-all duration-300">
+                                    <div @click="cat = cat === 'cash' ? '' : 'cash'"
+                                        class="bg-slate-50/50 px-6 py-4 flex items-center justify-between cursor-pointer select-none border-b border-slate-100 hover:bg-slate-50 transition-colors">
+                                        <div class="flex items-center gap-3">
+                                            <span class="text-lg">💵</span>
+                                            <div>
+                                                <h3 class="text-xs font-black text-slate-800 uppercase tracking-wider">Tunai</h3>
+                                                <p class="text-[10px] text-slate-400 font-semibold mt-0.5">Pembayaran langsung dengan uang tunai</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center gap-3">
+                                            <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700">
+                                                <i class="fa-regular fa-circle-check"></i> Lunas
+                                            </span>
+                                            <i class="fa-solid text-slate-400 transition-transform duration-300" :class="cat === 'cash' ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+                                        </div>
+                                    </div>
+
+                                    <div x-show="cat === 'cash'" x-transition class="p-6 space-y-4 bg-white border-t border-slate-50">
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div class="form-group">
+                                                <label class="form-label">
+                                                    <i class="fa-solid fa-money-bill-1 text-pink-400 mr-1"></i>Jumlah Dibayar <span class="text-red-500">*</span>
+                                                </label>
+                                                <div class="relative">
+                                                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-[13px] font-semibold text-gray-500">Rp</span>
+                                                    <input type="number" id="dibayar_tunai" x-model.number="dibayar"
+                                                        class="form-input-custom !pl-8 @error('dibayar') border-red-400 @enderror"
+                                                        placeholder="0" min="0">
+                                                </div>
+                                                @error('dibayar')
+                                                    <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
+                                                @enderror
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="form-label">
+                                                    <i class="fa-solid fa-coins text-pink-400 mr-1"></i>Kembali
+                                                </label>
+                                                <input type="number" id="kembali_tunai" :value="kembali"
+                                                    class="form-input-custom bg-green-50/50 font-bold text-green-700"
+                                                    placeholder="0" min="0" readonly>
+                                                @error('kembali')
+                                                    <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                        <div class="rounded-2xl bg-emerald-50/50 border border-emerald-100/50 p-4">
+                                            <div class="flex items-center gap-2 text-[12px] text-emerald-700">
+                                                <i class="fa-solid fa-circle-check"></i>
+                                                <span>Status otomatis <b>Lunas</b> — saldo &amp; cashback langsung diproses.</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
 
                                 <!-- Accordion: Bank Transfer -->
                                 <div class="border border-slate-200 rounded-3xl overflow-hidden bg-white shadow-sm transition-all duration-300">
@@ -336,7 +398,8 @@
                                             </label>
                                             <input type="file" name="bukti_bayar"
                                                 class="form-input-custom @error('bukti_bayar') border-red-400 @enderror"
-                                                accept="image/*">
+                                                accept="image/*"
+                                                :disabled="metode !== 'Transfer'">
                                             @error('bukti_bayar')
                                                 <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
                                             @enderror
@@ -378,7 +441,8 @@
                                             </label>
                                             <input type="file" name="bukti_bayar"
                                                 class="form-input-custom @error('bukti_bayar') border-red-400 @enderror"
-                                                accept="image/*">
+                                                accept="image/*"
+                                                :disabled="metode !== 'E-Wallet'">
                                             @error('bukti_bayar')
                                                 <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
                                             @enderror
@@ -387,8 +451,6 @@
                                     </div>
                                 </div>
                             </div>
-                            </div>
-                        </div>
 
                         <div class="form-group mt-4">
                             <label class="form-label">
@@ -433,17 +495,22 @@
             const totalBayar = @json((float) $totalBayar);
             return {
                 cat: 'bank',
-                bankId: @json((int) old('bank_id', 0)),
+                bankId: @json((int) old('bank_id', $banks->first()?->id ?? 0)),
                 ewalletType: @json(old('ewallet_type', '')),
                 totalBayar: totalBayar,
                 dibayar: totalBayar,
                 kembali: 0,
-                selectBank(id) { this.bankId = id; this.ewalletType = ''; this.dibayar = this.totalBayar; },
-                selectEwallet(name) { this.ewalletType = name; this.bankId = 0; this.dibayar = this.totalBayar; },
-                get metode() { return this.ewalletType ? 'E-Wallet' : 'Transfer'; },
+                selectTunai() { this.cat = 'cash'; this.bankId = 0; this.ewalletType = ''; this.dibayar = this.totalBayar; },
+                selectBank(id) { this.cat = 'bank'; this.bankId = id; this.ewalletType = ''; this.dibayar = this.totalBayar; },
+                selectEwallet(name) { this.cat = 'ewallet'; this.ewalletType = name; this.bankId = 0; this.dibayar = this.totalBayar; },
+                get metode() {
+                    if (this.cat === 'cash') return 'Tunai';
+                    return this.ewalletType ? 'E-Wallet' : 'Transfer';
+                },
                 init() {
                     const oldDibayar = @json(old('dibayar', null));
                     if (oldDibayar !== null && oldDibayar !== '') this.dibayar = parseFloat(oldDibayar) || this.totalBayar;
+                    if (@json(old('metode_byr')) === 'Tunai') this.cat = 'cash';
                     if (this.ewalletType) this.cat = 'ewallet';
                     this.$watch('dibayar', v => this.kembali = Math.max(0, v - this.totalBayar));
                     this.kembali = Math.max(0, this.dibayar - this.totalBayar);
