@@ -1004,13 +1004,13 @@
                     <div class="pay-actions">
                         <form action="{{ route('pelanggan.pembayaran.sudah-bayar', $transaksi->id_transaksi) }}" method="POST">
                             @csrf
-                            <button type="submit" class="btn-pay btn-pay-confirm" style="width:100%;" onclick="return confirm('Pastikan Anda sudah melakukan pembayaran sesuai nominal. Lanjutkan?')">
+                            <button type="submit" class="btn-pay btn-pay-confirm" style="width:100%;" data-confirm-title="Saya Sudah Bayar" data-confirm-body="Pastikan Anda sudah melakukan pembayaran sesuai nominal. Lanjutkan?" data-confirm-icon="fa-money-check-dollar" data-confirm-type="warning" data-confirm-yes="Ya, Sudah Bayar">
                                 <i class="fa-solid fa-check-circle"></i> Saya Sudah Bayar
                             </button>
                         </form>
                         <form action="{{ route('pelanggan.pembayaran.batal', $transaksi->id_transaksi) }}" method="POST">
                             @csrf
-                            <button type="submit" class="btn-pay btn-pay-batal" style="width:100%;" onclick="return confirm('Batalkan pesanan ini?')">
+                            <button type="submit" class="btn-pay btn-pay-batal" style="width:100%;" data-confirm-title="Batalkan Pesanan" data-confirm-body="Apakah Anda yakin ingin membatalkan pesanan ini? Tindakan ini tidak dapat dibatalkan." data-confirm-icon="fa-circle-xmark" data-confirm-type="danger" data-confirm-yes="Ya, Batalkan">
                                 <i class="fa-solid fa-xmark"></i> Batalkan Pesanan
                             </button>
                         </form>
@@ -1042,7 +1042,7 @@
                 </form>
                 <form action="{{ route('pelanggan.pembayaran.batal', $transaksi->id_transaksi) }}" method="POST" style="display:contents;">
                     @csrf
-                    <button type="submit" class="em-btn em-btn-batal" onclick="return confirm('Batalkan pesanan ini?')">
+                    <button type="submit" class="em-btn em-btn-batal" data-confirm-title="Batalkan Pesanan" data-confirm-body="Apakah Anda yakin ingin membatalkan pesanan ini? Tindakan ini tidak dapat dibatalkan." data-confirm-icon="fa-circle-xmark" data-confirm-type="danger" data-confirm-yes="Ya, Batalkan">
                         <i class="fa-solid fa-xmark"></i> Batal Pembayaran
                     </button>
                 </form>
@@ -1145,6 +1145,7 @@
     if (dateEl) dateEl.textContent = now.toLocaleDateString('id-ID', options);
     </script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
+    @include('partials.confirm-modal')
 </body>
 
 </html>

@@ -9,9 +9,11 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('pelanggan', function (Blueprint $table) {
-            $table->decimal('saldo', 15, 2)->default(0)->after('id_user');
-        });
+        if (!Schema::hasColumn('pelanggan', 'saldo')) {
+            Schema::table('pelanggan', function (Blueprint $table) {
+                $table->decimal('saldo', 15, 2)->default(0)->after('id_user');
+            });
+        }
 
         $rows = DB::table('saldo_mutasi as m')
             ->select('m.id_pelanggan', 'm.saldo_sesudah')
