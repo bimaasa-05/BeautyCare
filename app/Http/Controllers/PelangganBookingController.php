@@ -80,12 +80,6 @@ class PelangganBookingController extends Controller
             ->orderBy('id_user')
             ->get();
 
-        $karyawanSibukIds = Booking::where('status', 'diproses')
-            ->whereNotNull('id_karyawan')
-            ->distinct()
-            ->pluck('id_karyawan')
-            ->toArray();
-
         $user = auth()->user();
         $diskonMember = 0;
         $pelanggan = Pelanggan::dariUser($user);
