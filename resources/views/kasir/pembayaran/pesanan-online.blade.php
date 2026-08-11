@@ -199,11 +199,11 @@
                                                 @csrf
                                                 <input type="hidden" name="aksi" value="konfirmasi">
                                                 @if($demoMode)
-                                                <button type="submit" class="btn-aksi btn-simulasi" onclick="return confirm('Simulasikan pembayaran berhasil untuk pesanan {{ $p->no_invoice }}?')">
+                                                <button type="submit" class="btn-aksi btn-simulasi" data-confirm-title="Simulasi Pembayaran" data-confirm-body="Simulasikan pembayaran berhasil untuk pesanan {{ $p->no_invoice }}?" data-confirm-icon="fa-flask" data-confirm-type="purple" data-confirm-yes="Ya, Simulasikan">
                                                     <i class="fa-solid fa-flask text-[11px]"></i> Simulasi Bayar Berhasil
                                                 </button>
                                                 @else
-                                                <button type="submit" class="btn-aksi btn-konfirmasi" onclick="return confirm('Konfirmasi pesanan {{ $p->no_invoice }} sudah lunas?')">
+                                                <button type="submit" class="btn-aksi btn-konfirmasi" data-confirm-title="Konfirmasi Lunas" data-confirm-body="Konfirmasi pesanan {{ $p->no_invoice }} sudah lunas? Stok akan dikurangi." data-confirm-icon="fa-circle-check" data-confirm-type="success" data-confirm-yes="Ya, Konfirmasi">
                                                     <i class="fa-solid fa-check text-[11px]"></i> Konfirmasi Lunas
                                                 </button>
                                                 @endif
@@ -211,7 +211,7 @@
                                             <form action="{{ route('kasir.pembayaran.verifikasi', $p->id_transaksi) }}" method="POST">
                                                 @csrf
                                                 <input type="hidden" name="aksi" value="tolak">
-                                                <button type="submit" class="btn-aksi btn-tolak" onclick="return confirm('Tolak pembayaran pesanan {{ $p->no_invoice }}?')">
+                                                <button type="submit" class="btn-aksi btn-tolak" data-confirm-title="Tolak Pembayaran" data-confirm-body="Tolak pembayaran pesanan {{ $p->no_invoice }}? Saldo akun (jika dipakai) akan dikembalikan." data-confirm-icon="fa-circle-xmark" data-confirm-type="danger" data-confirm-yes="Ya, Tolak">
                                                     <i class="fa-solid fa-xmark text-[11px]"></i> Tolak
                                                 </button>
                                             </form>
@@ -244,6 +244,7 @@
     if (dateEl) dateEl.textContent = now.toLocaleDateString('id-ID', options);
     </script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
+    @include('partials.confirm-modal')
 </body>
 
 </html>

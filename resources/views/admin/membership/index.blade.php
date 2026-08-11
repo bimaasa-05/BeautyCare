@@ -205,7 +205,7 @@
                                     <i class="fa-solid fa-pen-to-square"></i> Edit
                                 </a>
                                 <form action="{{ route('admin.membership.destroy', $item->id_member) }}" method="POST"
-                                    onsubmit="return confirm('Yakin ingin menghapus paket membership ini?')">
+                                    data-confirm-title="Hapus Membership" data-confirm-body="Apakah Anda yakin ingin menghapus paket membership ini? Tindakan ini tidak dapat dibatalkan." data-confirm-icon="fa-trash-can" data-confirm-type="danger" data-confirm-yes="Ya, Hapus">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="card-action-btn delete">
@@ -229,6 +229,7 @@
 
     <script src="{{ asset('assets/js/membership.js') }}"></script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
+    @include('partials.confirm-modal')
 </body>
 
 </html>

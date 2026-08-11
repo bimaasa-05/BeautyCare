@@ -452,7 +452,7 @@
                                                         class="w-7 h-7 text-amber-500 bg-amber-50 hover:bg-amber-100 rounded-md transition-colors flex items-center justify-center"
                                                         title="Edit"><i class="fa-regular fa-pen-to-square text-xs"></i></button>
                                                     <form action="{{ route('admin.transaksi.destroy', $t->id_transaksi) }}" method="POST"
-                                                        onsubmit="return confirm('Hapus transaksi ini?')">
+                                                        data-confirm-title="Hapus Transaksi" data-confirm-body="Apakah Anda yakin ingin menghapus transaksi ini? Tindakan ini tidak dapat dibatalkan." data-confirm-icon="fa-trash-can" data-confirm-type="danger" data-confirm-yes="Ya, Hapus">
                                                         @csrf
                                                         @method('DELETE')
                                                         <button type="submit"
@@ -721,6 +721,7 @@
         }
     </script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
+    @include('partials.confirm-modal')
 </body>
 
 </html>

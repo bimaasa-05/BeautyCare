@@ -429,7 +429,7 @@
                                                     </a>
                                                     <form action="{{ route('admin.supplier.destroy', $s->id_supplier) }}"
                                                         method="POST"
-                                                        onsubmit="return confirm('Yakin ingin menghapus supplier ini?')"
+                                                        data-confirm-title="Hapus Supplier" data-confirm-body="Apakah Anda yakin ingin menghapus supplier ini? Tindakan ini tidak dapat dibatalkan." data-confirm-icon="fa-trash-can" data-confirm-type="danger" data-confirm-yes="Ya, Hapus"
                                                         class="inline">
                                                         @csrf
                                                         @method('DELETE')
@@ -486,6 +486,7 @@
                 });
             </script>
             <script src="{{ asset('assets/js/dashboard.js') }}"></script>
+    @include('partials.confirm-modal')
 </body>
 
 </html>
