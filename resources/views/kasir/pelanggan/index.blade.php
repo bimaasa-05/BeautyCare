@@ -15,7 +15,7 @@
 
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/dashboard.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/css/responsive.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/responsive.css') . '?v=3' }}">
 
     <style>
         .sidebar-toggle {
@@ -128,7 +128,7 @@
                             </a>
                         </form>
 
-                        <div class="overflow-x-auto"><table class="w-full text-left border-collapse">
+                        <div class="overflow-x-auto"><table class="w-full text-left border-collapse table-card-mobile">
                                 <thead>
                                     <tr
                                         class="text-[11px] font-bold text-gray-400 uppercase border-b border-gray-100 bg-pink-50/30">
@@ -146,8 +146,8 @@
                                 <tbody class="text-[13px] text-gray-700 divide-y divide-gray-50">
                                     @forelse($pelanggan as $p)
 <tr class="hover:bg-gray-100 transition-colors duration-150">
-                                             <td class="py-3.5 px-4 text-gray-400 font-medium text-center text-[12px]">{{ $loop->iteration }}</td>
-                                            <td class="py-3.5 px-4">
+                                             <td class="py-3.5 px-4 text-gray-400 font-medium text-center text-[12px]" data-label="#">{{ $loop->iteration }}</td>
+                                            <td class="py-3.5 px-4" data-label="Nama Lengkap">
                                                 <div class="flex items-center gap-3">
                                                     <div
                                                         class="w-8 h-8 rounded-full bg-gradient-to-br from-pink-400 to-pink-300 text-white flex items-center justify-center font-bold text-[11px] shadow-sm">
@@ -156,12 +156,12 @@
                                                         class="font-semibold text-gray-800">{{ $p->nm_pelanggan }}</span>
                                                 </div>
                                             </td>
-                                            <td class="py-3.5 px-4 text-gray-500 font-medium">{{ $p->no_hp ?? '-' }}
+                                            <td class="py-3.5 px-4 text-gray-500 font-medium" data-label="Nomor Hp">{{ $p->no_hp ?? '-' }}
                                             </td>
-                                            <td class="py-3.5 px-4 font-medium text-gray-500">{{ $p->email }}</td>
-                                            <td class="py-3.5 px-4 font-medium text-gray-500 max-w-[150px] truncate">
+                                            <td class="py-3.5 px-4 font-medium text-gray-500" data-label="Email">{{ $p->email }}</td>
+                                            <td class="py-3.5 px-4 font-medium text-gray-500 max-w-[150px] truncate" data-label="Alamat">
                                                 {{ $p->alamat }}</td>
-                                            <td class="py-3.5 px-4 font-medium text-gray-500">
+                                            <td class="py-3.5 px-4 font-medium text-gray-500" data-label="Member ID">
                                                 @if($p->id_member)
                                                     <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-semibold bg-pink-50 text-pink-500">
                                                         <i class="fa-regular fa-gem text-[9px]"></i> {{ $p->id_member }}
@@ -170,13 +170,13 @@
                                                     <span class="text-gray-400">-</span>
                                                 @endif
                                             </td>
-                                            <td class="py-3.5 px-4 font-medium text-gray-500 max-w-[120px] truncate">
+                                            <td class="py-3.5 px-4 font-medium text-gray-500 max-w-[120px] truncate" data-label="Catatan Alergi">
                                                 {{ $p->catatan_alergi ?? '-' }}</td>
-                                            <td class="py-3.5 px-4 font-medium text-gray-500">
+                                            <td class="py-3.5 px-4 font-medium text-gray-500" data-label="Foto">
                                                 <img src="{{ $p->foto_url }}" alt="foto"
                                                     class="w-8 h-8 rounded-full object-cover ring-2 ring-pink-100">
                                             </td>
-                                            <td class="py-3.5 px-4 text-center">
+                                            <td class="py-3.5 px-4 text-center" data-label="">
                                                 <div class="flex items-center justify-center gap-2">
                                                     <a href="{{ route('kasir.pelanggan.show', $p->id_pelanggan) }}"
                                                         class="w-7 h-7 text-blue-500 bg-blue-50 hover:bg-blue-100 rounded-md transition-colors flex items-center justify-center"><i

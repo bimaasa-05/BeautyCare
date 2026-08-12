@@ -17,7 +17,7 @@ class KasirRiwayatTransaksiController extends Controller
         $totalTransaksi = Transaksi::where('id_kasir', $userId)->count();
         $totalPendapatan = Transaksi::where('id_kasir', $userId)->where('status', 'Lunas')->sum('total');
 
-        $transaksi = Transaksi::with('pelanggan', 'user')
+        $transaksi = Transaksi::with('pelanggan', 'user', 'kasir')
             ->where('id_kasir', $userId)
             ->whereIn('status', ['Lunas', 'Selesai'])
             ->when($search, function ($query, $search) {
@@ -45,7 +45,7 @@ class KasirRiwayatTransaksiController extends Controller
 
     public function show($id)
     {
-        $transaksi = Transaksi::with('pelanggan', 'user')->findOrFail($id);
+        $transaksi = Transaksi::with('pelanggan', 'user', 'kasir')->findOrFail($id);
         return view('kasir.riwayat-transaksi.show', compact('transaksi'));
     }
 }

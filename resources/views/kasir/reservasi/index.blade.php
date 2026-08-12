@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/dashboard.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/css/responsive.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/responsive.css') . '?v=3' }}">
 
     <style>
         .sidebar-toggle { display: none; background: none; border: none; cursor: pointer; padding: 8px; }
@@ -133,7 +133,7 @@
                     </form>
 
                     <div class="overflow-x-auto table-container">
-                        <div class="overflow-x-auto"><table class="w-full text-left border-collapse table-enhanced">
+                        <div class="overflow-x-auto"><table class="w-full text-left border-collapse table-enhanced table-card-mobile">
                             <thead>
                                 <tr>
                                     <th class="w-10 text-center">#</th>
@@ -148,8 +148,8 @@
                             <tbody class="text-[13px] text-gray-700">
                                 @forelse($reservasi as $r)
                                      <tr class="hover:bg-gray-100 transition-colors duration-150">
-                                         <td class="text-center text-gray-400 font-medium">{{ $loop->iteration }}</td>
-                                        <td>
+                                         <td class="text-center text-gray-400 font-medium" data-label="#"> {{ $loop->iteration }}</td>
+                                        <td data-label="Pelanggan">
                                             <div class="flex items-center gap-2.5">
                                                 <img src="{{ $r->pelanggan?->foto_url ?? 'https://ui-avatars.com/api/?name=Unknown&background=FFE5EF&color=FF4F87&size=40' }}" class="w-8 h-8 rounded-full object-cover flex-shrink-0" alt="{{ $r->pelanggan->nm_pelanggan ?? '-' }}">
                                                 <div>
@@ -158,10 +158,10 @@
                                                 </div>
                                             </div>
                                         </td>
-                                        <td class="text-gray-500">{{ $r->karyawan->nama ?? '-' }}</td>
-                                        <td class="text-gray-500">{{ \Carbon\Carbon::parse($r->tanggal)->format('d/m/Y') }}</td>
-                                        <td class="text-gray-500 font-mono">{{ $r->jam }}</td>
-                                        <td>
+                                        <td class="text-gray-500" data-label="Karyawan">{{ $r->karyawan->nama ?? '-' }}</td>
+                                        <td class="text-gray-500" data-label="Tanggal">{{ \Carbon\Carbon::parse($r->tanggal)->format('d/m/Y') }}</td>
+                                        <td class="text-gray-500 font-mono" data-label="Jam">{{ $r->jam }}</td>
+                                        <td data-label="Status">
                                             @php
                                                 $statusClass = match($r->status) {
                                                     'menunggu' => 'badge-menunggu',
@@ -184,7 +184,7 @@
                                                 <i class="{{ $statusIcon }}"></i> {{ ucfirst($r->status) }}
                                             </span>
                                         </td>
-                                        <td class="text-center">
+                                        <td class="text-center" data-label="">
                                             <div class="flex items-center justify-center gap-1.5">
                                                 <a href="{{ route('kasir.reservasi.show', $r->id_booking) }}"
                                                     class="action-btn action-btn-view" title="Detail">
