@@ -96,10 +96,10 @@
                                 <span class="badge-status {{ $s['class'] }}">{{ $s['label'] }}</span>
                             </td>
                         </tr>
-                        @if ($transaksi->user)
+                        @if ($transaksi->kasir || $transaksi->user)
                         <tr>
                             <td>Kasir</td>
-                            <td>{{ $transaksi->user->nama }}</td>
+                            <td>{{ $transaksi->kasir?->nama ?? $transaksi->user?->nama }}</td>
                         </tr>
                         @endif
                     </table>
