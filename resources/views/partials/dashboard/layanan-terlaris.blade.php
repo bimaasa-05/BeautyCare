@@ -1,5 +1,6 @@
 @forelse($items as $lt)
 <tr>
+    <td data-label="No">{{ $loop->iteration }}</td>
     <td data-label="Layanan">
         <div class="td-flex">{{ $lt->nm_item }}</div>
     </td>
@@ -8,6 +9,6 @@
 </tr>
 @empty
 <tr>
-    <td data-label="Layanan" colspan="3" style="text-align:center;color:var(--gray);">Belum ada data transaksi</td>
+    <td data-label="No" colspan="4" style="text-align:center;color:var(--gray);">Belum ada data transaksi</td>
 </tr>
 @endforelse
