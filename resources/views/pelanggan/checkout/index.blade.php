@@ -262,6 +262,11 @@
         font-size: 13px;
         color: var(--gray);
         padding: 6px 0;
+        gap: 12px;
+    }
+
+    .co-row .co-label {
+        flex-shrink: 0;
     }
 
     .co-row.co-row-total {
@@ -686,8 +691,8 @@
 
                                 @if(isset($claimedPromos) && $claimedPromos->isNotEmpty())
                                 <div class="co-row">
-                                    <div>Promo Saya</div>
-                                    <div style="width: 60%;">
+                                    <div class="co-label">Promo Saya</div>
+                                    <div style="flex: 1; min-width: 0;">
                                         <select class="co-select" name="id_promo" id="coPromo" onchange="hitungRingkasan()">
                                             <option value="">— Tanpa Promo —</option>
                                             @foreach($claimedPromos as $cp)

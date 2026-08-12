@@ -164,10 +164,12 @@
         .booking-table thead { display: none; }
         .booking-table, .booking-table tbody, .booking-table tr, .booking-table td { display: block; width: 100%; }
         .booking-table tr { padding: 16px; border-bottom: 1px solid var(--border); }
-        .booking-table tbody td { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border: none; font-size: 13px; }
+        .booking-table tbody td { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border: none; font-size: 13px; min-width: 0; }
         .booking-table tbody td::before { content: attr(data-label); font-weight: 600; color: var(--gray); font-size: 11px; text-transform: uppercase; }
         .booking-table tbody td:first-child { padding-left: 0; }
         .page-header-premium { padding: 22px 20px; }
+        .page-header-premium .ph-content { flex-wrap: wrap; gap: 16px; }
+        .topik-cell { flex: 1; min-width: 0; max-width: none; }
         .search-input-wrap input { width: 100%; }
         .search-input-wrap { flex: 1 1 100%; }
     }

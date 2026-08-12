@@ -137,6 +137,7 @@
         align-items: center;
         justify-content: space-between;
         gap: 10px;
+        flex-wrap: wrap;
     }
 
     .mb-progres .mb-tier-name {
@@ -146,6 +147,7 @@
         font-size: 13px;
         font-weight: 700;
         color: var(--dark);
+        min-width: 0;
     }
 
     .mb-progres .mb-tier-name i {

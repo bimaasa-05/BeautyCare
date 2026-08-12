@@ -297,6 +297,8 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 8px;
     }
 
     .promo-card .promo-body .promo-footer .promo-code {

@@ -169,6 +169,7 @@
         display: flex;
         align-items: center;
         gap: 10px;
+        flex-wrap: wrap;
     }
 
     .filter-tab {
@@ -630,6 +631,10 @@
             align-items: stretch;
         }
 
+        .search-input-wrap {
+            flex: 1 1 100%;
+        }
+
         .search-input-wrap input {
             width: 100%;
         }
@@ -644,6 +649,7 @@
 
         .page-header-premium { padding: 22px 20px; }
         .filter-tab { padding: 7px 14px; font-size: 11px; }
+        .cart-notif { left: 16px; right: 16px; max-width: none; }
     }
 
     @media (max-width: 576px) {
