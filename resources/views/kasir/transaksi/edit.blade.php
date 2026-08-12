@@ -210,8 +210,46 @@
                             @endphp
                             <div x-data="paymentBox()" x-init="init()" class="space-y-4">
                                 <input type="hidden" name="metode_byr" :value="metode">
-                                <input type="hidden" name="bank_id" :value="bankId">
-                                <input type="hidden" name="ewallet_type" :value="ewalletType">
+                                <input type="hidden" name="bank_id" :value="metode === 'Transfer' ? bankId : ''">
+                                <input type="hidden" name="ewallet_type" :value="metode === 'E-Wallet' ? ewalletType : ''">
+                                <input type="hidden" name="status" id="status" :value="metode === 'Transfer' ? 'Proses' : 'Lunas'">
+
+                                @if($errors->any())
+                                    <div class="mb-3 px-4 py-3 bg-red-50 border border-red-200 text-red-600 text-[12px] font-semibold rounded-xl">
+                                        @foreach($errors->all() as $error)
+                                            <div>{{ $error }}</div>
+                                        @endforeach
+                                    </div>
+                                @endif
+
+                                <!-- Accordion: Tunai -->
+                                <div class="border border-slate-200 rounded-3xl overflow-hidden bg-white shadow-sm transition-all duration-300">
+                                    <div @click="cat = cat === 'cash' ? '' : 'cash'"
+                                        class="bg-slate-50/50 px-6 py-4 flex items-center justify-between cursor-pointer select-none border-b border-slate-100 hover:bg-slate-50 transition-colors">
+                                        <div class="flex items-center gap-3">
+                                            <span class="text-lg">💵</span>
+                                            <div>
+                                                <h3 class="text-xs font-black text-slate-800 uppercase tracking-wider">Tunai</h3>
+                                                <p class="text-[10px] text-slate-400 font-semibold mt-0.5">Pembayaran langsung dengan uang tunai</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center gap-3">
+                                            <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700">
+                                                <i class="fa-regular fa-circle-check"></i> Lunas
+                                            </span>
+                                            <i class="fa-solid text-slate-400 transition-transform duration-300" :class="cat === 'cash' ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+                                        </div>
+                                    </div>
+
+                                    <div x-show="cat === 'cash'" x-transition class="p-6 space-y-4 bg-white border-t border-slate-50">
+                                        <div class="rounded-2xl bg-emerald-50/50 border border-emerald-100/50 p-4">
+                                            <div class="flex items-center gap-2 text-[12px] text-emerald-700">
+                                                <i class="fa-solid fa-circle-check"></i>
+                                                <span>Status otomatis <b>Lunas</b> — isi jumlah dibayar &amp; kembalian di bagian <b>Ringkasan</b>.</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
 
                                 <!-- Accordion: Bank Transfer -->
                                 <div class="border border-slate-200 rounded-3xl overflow-hidden bg-white shadow-sm transition-all duration-300">
@@ -391,6 +429,13 @@
                                         <p class="text-[11px] text-gray-400 mt-1">Screenshot bukti pembayaran E-Wallet</p>
                                     </div>
                                 </div>
+
+                                @error('bank_id')
+                                    <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
+                                @enderror
+                                @error('ewallet_type')
+                                    <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
+                                @enderror
                             </div>
                         </div>
 
@@ -777,16 +822,31 @@
         function paymentBox() {
             return {
                 cat: 'bank',
-                bankId: @json((int) optional($transaksi->pembayaran)->bank_id ?? 0),
+                bankId: @json((int) old('bank_id', $transaksi->pembayaran->bank_id ?? $banks->first()?->id ?? 0)),
                 ewalletType: @json(old('ewallet_type', $transaksi->ewallet_type ?? '')),
-                selectBank(id) { this.bankId = id; this.ewalletType = ''; },
-                selectEwallet(name) { this.ewalletType = name; this.bankId = 0; },
-                get metode() { return this.ewalletType ? 'E-Wallet' : 'Transfer'; },
+                selectTunai() { this.cat = 'cash'; this.bankId = 0; this.ewalletType = ''; },
+                selectBank(id) { this.cat = 'bank'; this.bankId = id; this.ewalletType = ''; },
+                selectEwallet(name) { this.cat = 'ewallet'; this.ewalletType = name; this.bankId = 0; },
+                get metode() {
+                    if (this.cat === 'cash') return 'Tunai';
+                    return this.ewalletType ? 'E-Wallet' : 'Transfer';
+                },
                 init() {
+                    if (@json($transaksi->metode_byr) === 'Tunai') this.cat = 'cash';
                     if (this.ewalletType) this.cat = 'ewallet';
                 }
             };
         }
+
+        // Sync status hidden input with metode changes
+        document.addEventListener('alpine:initialized', () => {
+            const paymentBoxEl = document.querySelector('[x-data="paymentBox()"]');
+            if (paymentBoxEl) {
+                paymentBoxEl.__x.$watch('metode', (val) => {
+                    document.getElementById('status').value = val === 'Transfer' ? 'Proses' : 'Lunas';
+                });
+            }
+        });
 
         function initExistingRows() {
             document.querySelectorAll('.item-row').forEach(function(row) {

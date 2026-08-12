@@ -47,7 +47,6 @@
         .kanban-card .doc-badge.has-doc { background: #D1FAE5; color: #059669; }
         .kanban-card .doc-badge.no-doc { background: #FEF3C7; color: #D97706; }
         .kanban-card .late-badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: 600; background: #FEE2E2; color: #DC2626; }
-        .kanban-card .no-show-badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: 600; background: #FEF3C7; color: #B45309; }
         .kanban-card .timer-badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 6px; font-size: 10px; font-weight: 700; font-variant-numeric: tabular-nums; background: #FEF3C7; color: #D97706; border: 1px solid #FCD34D; }
         .kanban-card .timer-badge .tick { color: #B45309; }
         .kanban-card .done-badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: 600; background: #D1FAE5; color: #059669; }
@@ -130,6 +129,14 @@
                                 <div>
                                     <div class="kc-name">{{ $item->pelanggan ? $item->pelanggan->nm_pelanggan : '#' . $item->id_pelanggan }}</div>
                                 </div>
+                                @if($item->terlambatMenit > 0)
+                                <div class="kc-header-right">
+                                    <span class="late-badge">
+                                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                                        Terlambat {{ $item->terlambatMenit }} menit
+                                    </span>
+                                </div>
+                                @endif
                             </div>
                             <div class="kc-card-body">
                                 <div class="kc-service">
@@ -143,22 +150,6 @@
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                                     {{ \Carbon\Carbon::parse($item->jam)->format('H:i') }}
                                 </div>
-                                @if($item->terlambatMenit > 0)
-                                <div style="margin-top:6px;">
-                                    <span class="late-badge">
-                                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-                                        Terlambat {{ $item->terlambatMenit }} menit
-                                    </span>
-                                </div>
-                                @endif
-                                @if($item->belumDatang)
-                                <div style="margin-top:6px;">
-                                    <span class="no-show-badge">
-                                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                                        Pelanggan belum datang
-                                    </span>
-                                </div>
-                                @endif
                             </div>
                             <div class="kc-card-footer">
                                 <form action="{{ route('beautycian.jadwal-treatment.update') }}" method="POST" data-confirm-title="Mulai Treatment" data-confirm-body="Mulai treatment ini? Pastikan pelanggan sudah siap." data-confirm-icon="fa-play" data-confirm-type="brand" data-confirm-yes="Ya, Mulai">
@@ -274,6 +265,17 @@
                                 <div>
                                     <div class="kc-name">{{ $item->pelanggan ? $item->pelanggan->nm_pelanggan : '#' . $item->id_pelanggan }}</div>
                                 </div>
+                                @if($item->jam_selesai_aktual)
+                                <div class="kc-header-right">
+                                    <span class="done-badge">
+                                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                                        Selesai pukul {{ \Carbon\Carbon::parse($item->jam_selesai_aktual)->format('H:i') }}
+                                        @if($item->jam_mulai_aktual)
+                                        · Durasi {{ gmdate('H:i:s', max(0, \Carbon\Carbon::parse($item->jam_selesai_aktual)->diffInSeconds(\Carbon\Carbon::parse($item->jam_mulai_aktual)))) }}
+                                        @endif
+                                    </span>
+                                </div>
+                                @endif
                             </div>
                             <div class="kc-card-body">
                                 <div class="kc-service">
@@ -287,17 +289,6 @@
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                                     {{ \Carbon\Carbon::parse($item->jam)->format('H:i') }}
                                 </div>
-                                @if($item->jam_selesai_aktual)
-                                <div style="margin-top:6px;">
-                                    <span class="done-badge">
-                                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                                        Selesai pukul {{ \Carbon\Carbon::parse($item->jam_selesai_aktual)->format('H:i') }}
-                                        @if($item->jam_mulai_aktual)
-                                        · Durasi {{ gmdate('H:i:s', max(0, \Carbon\Carbon::parse($item->jam_selesai_aktual)->diffInSeconds(\Carbon\Carbon::parse($item->jam_mulai_aktual)))) }}
-                                        @endif
-                                    </span>
-                                </div>
-                                @endif
                                 @if($item->riwayatTreatment)
                                     <div style="margin-top:6px;">
                                         <span class="doc-badge has-doc">

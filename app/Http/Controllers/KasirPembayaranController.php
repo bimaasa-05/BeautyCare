@@ -69,16 +69,21 @@ class KasirPembayaranController extends Controller
 
     public function store(Request $request)
     {
+        $request->merge([
+            'bank_id' => $request->input('metode_byr') !== 'Transfer' ? null : $request->input('bank_id'),
+            'ewallet_type' => $request->input('metode_byr') !== 'E-Wallet' ? null : $request->input('ewallet_type'),
+        ]);
+
         $request->validate([
             'id_booking' => 'required|integer|exists:booking,id_booking',
-            'metode_byr' => 'required|in:Transfer,E-Wallet',
+            'metode_byr' => 'required|in:Tunai,Transfer,E-Wallet',
             'total' => 'required|numeric|min:0',
             'dibayar' => 'required|numeric|min:0|gte:total',
             'catatan' => 'nullable|string',
             'bukti_bayar' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'no_referensi' => 'nullable|string|max:50',
-            'ewallet_type' => 'required_if:metode_byr,E-Wallet|string|max:50',
-            'bank_id' => 'required_if:metode_byr,Transfer|integer|exists:banks,id',
+            'ewallet_type' => 'nullable|required_if:metode_byr,E-Wallet|string|max:50',
+            'bank_id' => 'nullable|required_if:metode_byr,Transfer|integer|exists:banks,id',
         ]);
 
         $booking = Booking::with(['pelanggan', 'detail.layanan'])->findOrFail($request->id_booking);
@@ -91,7 +96,7 @@ class KasirPembayaranController extends Controller
         $dibayar = $request->dibayar;
         $kembali = max(0, $dibayar - $total);
 
-        $statusPembayaran = $request->metode_byr === 'E-Wallet' ? 'Lunas' : 'Proses';
+        $statusPembayaran = in_array($request->metode_byr, ['E-Wallet', 'Tunai']) ? 'Lunas' : 'Proses';
 
         $lastId = Transaksi::max('id_transaksi') + 1;
         $no_invoice = 'INV-' . date('Ymd') . '-' . str_pad($lastId, 4, '0', STR_PAD_LEFT);

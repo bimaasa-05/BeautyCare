@@ -58,6 +58,11 @@ class KasirTransaksiController extends Controller
 
     public function store(Request $request)
     {
+        $request->merge([
+            'bank_id' => $request->input('metode_byr') !== 'Transfer' ? null : $request->input('bank_id'),
+            'ewallet_type' => $request->input('metode_byr') !== 'E-Wallet' ? null : $request->input('ewallet_type'),
+        ]);
+
         $request->validate([
             'id_pelanggan' => 'required|integer',
             'tanggal' => 'required|date',
@@ -65,14 +70,14 @@ class KasirTransaksiController extends Controller
             'diskon' => 'nullable|numeric|min:0',
             'pajak' => 'nullable|numeric|min:0',
             'total' => 'required|numeric|min:0',
-            'metode_byr' => 'required|in:Transfer,E-Wallet',
+            'metode_byr' => 'required|in:Tunai,Transfer,E-Wallet',
             'dibayar' => 'required|numeric|min:0',
             'kembali' => 'required|numeric|min:0',
             'catatan' => 'nullable|string',
             'bukti_bayar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'no_referensi' => 'nullable|string|max:50',
-            'ewallet_type' => 'required_if:metode_byr,E-Wallet|string|max:50',
-            'bank_id' => 'required_if:metode_byr,Transfer|integer|exists:banks,id',
+            'ewallet_type' => 'nullable|required_if:metode_byr,E-Wallet|string|max:50',
+            'bank_id' => 'nullable|required_if:metode_byr,Transfer|integer|exists:banks,id',
             'status' => 'nullable|in:Lunas,Proses,Batal,Pending',
         ]);
 
@@ -81,8 +86,15 @@ class KasirTransaksiController extends Controller
 
         $status = $request->status;
         if (!$status) {
-            $status = $request->metode_byr === 'E-Wallet' ? 'Lunas' : 'Proses';
+            $status = in_array($request->metode_byr, ['E-Wallet', 'Tunai']) ? 'Lunas' : 'Proses';
         }
+
+        $total = (float) $request->total;
+        $dibayar = (float) $request->dibayar;
+        if ($request->metode_byr === 'Tunai' && $dibayar <= 0) {
+            $dibayar = max(0, $total);
+        }
+        $kembali = max(0, $dibayar - $total);
 
         $data = [
             'id_booking' => null,
@@ -95,10 +107,10 @@ class KasirTransaksiController extends Controller
             'subtotal' => $request->subtotal,
             'diskon' => $request->diskon ?? 0,
             'pajak' => $request->pajak ?? 0,
-            'total' => $request->total,
+            'total' => $total,
             'metode_byr' => $request->metode_byr,
-            'dibayar' => $request->dibayar,
-            'kembali' => $request->kembali,
+            'dibayar' => $dibayar,
+            'kembali' => $kembali,
             'catatan' => $request->catatan ?? '',
             'status' => $status,
             'no_referensi' => $request->no_referensi,
@@ -124,7 +136,7 @@ class KasirTransaksiController extends Controller
                 'metode' => $request->metode_byr,
                 'provider' => $request->metode_byr === 'E-Wallet' ? $request->ewallet_type : $request->metode_byr,
                 'kode_pembayaran' => $this->generateKodePembayaran($request->metode_byr, $transaksi->id_transaksi, $bank),
-                'nominal' => $request->total,
+                'nominal' => $total,
                 'status' => $status === 'Lunas' ? 'Lunas' : 'Menunggu',
                 'expires_at' => $request->metode_byr === 'QRIS'
                     ? now()->addMinutes(3)
@@ -258,6 +270,12 @@ class KasirTransaksiController extends Controller
         return $pdf->download('Invoice-' . $transaksi->no_invoice . '.pdf');
     }
 
+    public function struk($id)
+    {
+        $transaksi = Transaksi::with('pelanggan', 'detail', 'user')->findOrFail($id);
+        return view('kasir.struk.index', compact('transaksi'));
+    }
+
     public function edit($id)
     {
         $transaksi = Transaksi::with('detail')->findOrFail($id);
@@ -273,6 +291,11 @@ class KasirTransaksiController extends Controller
 
     public function update(Request $request, $id)
     {
+        $request->merge([
+            'bank_id' => $request->input('metode_byr') !== 'Transfer' ? null : $request->input('bank_id'),
+            'ewallet_type' => $request->input('metode_byr') !== 'E-Wallet' ? null : $request->input('ewallet_type'),
+        ]);
+
         $request->validate([
             'id_pelanggan' => 'required|integer',
             'tanggal' => 'required|date',
@@ -280,21 +303,28 @@ class KasirTransaksiController extends Controller
             'diskon' => 'nullable|numeric|min:0',
             'pajak' => 'nullable|numeric|min:0',
             'total' => 'required|numeric|min:0',
-            'metode_byr' => 'required|in:Transfer,E-Wallet',
+            'metode_byr' => 'required|in:Tunai,Transfer,E-Wallet',
             'dibayar' => 'required|numeric|min:0',
             'kembali' => 'required|numeric|min:0',
             'catatan' => 'nullable|string',
             'bukti_bayar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'no_referensi' => 'nullable|string|max:50',
-            'ewallet_type' => 'required_if:metode_byr,E-Wallet|string|max:50',
-            'bank_id' => 'required_if:metode_byr,Transfer|integer|exists:banks,id',
+            'ewallet_type' => 'nullable|required_if:metode_byr,E-Wallet|string|max:50',
+            'bank_id' => 'nullable|required_if:metode_byr,Transfer|integer|exists:banks,id',
             'status' => 'nullable|in:Lunas,Proses,Batal,Pending',
         ]);
 
         $status = $request->status;
         if (!$status) {
-            $status = $request->metode_byr === 'E-Wallet' ? 'Lunas' : 'Proses';
+            $status = in_array($request->metode_byr, ['E-Wallet', 'Tunai']) ? 'Lunas' : 'Proses';
         }
+
+        $total = (float) $request->total;
+        $dibayar = (float) $request->dibayar;
+        if ($request->metode_byr === 'Tunai' && $dibayar <= 0) {
+            $dibayar = max(0, $total);
+        }
+        $kembali = max(0, $dibayar - $total);
 
         $data = [
             'id_pelanggan' => $request->id_pelanggan,
@@ -302,10 +332,10 @@ class KasirTransaksiController extends Controller
             'subtotal' => $request->subtotal,
             'diskon' => $request->diskon ?? 0,
             'pajak' => $request->pajak ?? 0,
-            'total' => $request->total,
+            'total' => $total,
             'metode_byr' => $request->metode_byr,
-            'dibayar' => $request->dibayar,
-            'kembali' => $request->kembali,
+            'dibayar' => $dibayar,
+            'kembali' => $kembali,
             'catatan' => $request->catatan ?? '',
             'status' => $status,
             'no_referensi' => $request->no_referensi,
