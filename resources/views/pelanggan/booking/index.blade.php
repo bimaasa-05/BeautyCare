@@ -1153,7 +1153,7 @@
                             <tbody>
                                  @forelse($bookings as $booking)
                                  <tr>
-                                     <td>
+                                     <td data-label="ID Booking">
                                          <span class="booking-id-badge">
                                             <i class="fa-solid fa-receipt" style="font-size:10px;"></i>
                                             #BK{{ str_pad($booking->id_booking, 3, '0', STR_PAD_LEFT) }}
