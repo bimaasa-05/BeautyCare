@@ -11,8 +11,9 @@ class LeaderboardService
         $totals = DB::table('detail_transaksi as dt')
             ->join('transaksi as t', 't.id_transaksi', '=', 'dt.id_transaksi')
             ->join('pelanggan as p', 'p.id_pelanggan', '=', 't.id_pelanggan')
-            ->where('dt.jenis', $jenis)
+            ->where('dt.jenis', 'LIKE', $jenis)
             ->where('t.status', 'Lunas')
+            ->where('t.jenis_transaksi', 'Penjualan')
             ->when($startDate, function ($q) use ($startDate, $endDate) {
                 $q->whereBetween('t.tanggal', [$startDate, $endDate]);
             })
@@ -24,8 +25,9 @@ class LeaderboardService
 
         $favoritRows = DB::table('detail_transaksi as dt')
             ->join('transaksi as t', 't.id_transaksi', '=', 'dt.id_transaksi')
-            ->where('dt.jenis', $jenis)
+            ->where('dt.jenis', 'LIKE', $jenis)
             ->where('t.status', 'Lunas')
+            ->where('t.jenis_transaksi', 'Penjualan')
             ->when($startDate, function ($q) use ($startDate, $endDate) {
                 $q->whereBetween('t.tanggal', [$startDate, $endDate]);
             })
