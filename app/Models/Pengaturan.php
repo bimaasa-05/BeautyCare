@@ -21,6 +21,8 @@ class Pengaturan extends Model
         'jam_tutup',
         'syarat_ketentuan',
         'kebijakan_privasi',
+        'pusat_bantuan_kategori',
+        'pusat_bantuan_faq',
     ];
 
     protected $casts = [
