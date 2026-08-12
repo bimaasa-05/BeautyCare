@@ -196,7 +196,7 @@
                                 <div class="tc-icon"><i class="fa-solid fa-coins"></i></div>
                                 <div>
                                     <div class="tc-title">Pilih Nominal</div>
-                                    <div class="tc-subtitle">Minimal Rp 10.000, maksimal Rp 2.000.000</div>
+                                    <div class="tc-subtitle">Minimal Rp 10.000, maksimal Rp 10.000.000</div>
                                 </div>
                             </div>
                             <div class="tc-body">
@@ -220,7 +220,7 @@
 
                                 <div class="nominal-custom">
                                     <span class="nc-prefix">Rp</span>
-                                    <input type="number" name="nominal" id="inpNominal" min="10000" max="2000000" step="1000"
+                                    <input type="number" name="nominal" id="inpNominal" min="10000" max="10000000" step="1000"
                                         placeholder="Nominal lainnya (contoh: 75000)" oninput="hitungRingkasan()">
                                 </div>
                                 <div class="nominal-note">
@@ -318,7 +318,7 @@
             label.textContent = nominal > 0 ? 'Rp ' + formatAngka(nominal) : 'Rp 0';
             total.textContent = nominal > 0 ? 'Rp ' + formatAngka(nominal) : 'Rp 0';
 
-            btn.disabled = !(nominal >= 10000 && nominal <= 2000000 && pay);
+            btn.disabled = !(nominal >= 10000 && nominal <= 10000000 && pay);
         }
 
         document.querySelectorAll('.nominal-chip').forEach(function(chip) {
@@ -358,9 +358,9 @@
             var metode = document.getElementById('inpMetode').value;
             var bankId = document.getElementById('inpBankId').value;
 
-            if (nominal < 10000 || nominal > 2000000) {
+            if (nominal < 10000 || nominal > 10000000) {
                 e.preventDefault();
-                alert('Nominal top up harus antara Rp 10.000 sampai Rp 2.000.000.');
+                alert('Nominal top up harus antara Rp 10.000 sampai Rp 10.000.000.');
                 return;
             }
             if (!metode || (metode === 'Transfer' && !bankId)) {

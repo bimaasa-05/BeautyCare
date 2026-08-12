@@ -718,7 +718,6 @@
                                      <div class="co-val" id="ringkasTotal">Rp {{ number_format($subtotal, 0, ',', '.') }}</div>
                                  </div>
 
-                                 @if(!$isMembership)
                                  <div class="co-row" id="rowPakaiSaldo" style="display:none;">
                                      <div>Dibayar Saldo Akun</div>
                                      <div class="co-val" id="ringkasPakaiSaldo">Rp 0</div>
@@ -727,7 +726,6 @@
                                      <div>Dibayar <span id="metodeKeduaLabel">Metode Kedua</span></div>
                                      <div class="co-val" id="ringkasMetodeKedua">Rp 0</div>
                                  </div>
-                                 @endif
                             </div>
                         </div>
 
@@ -740,7 +738,6 @@
                                 </div>
                             </div>
                             <div class="cc-body">
-                                @if(!$isMembership)
                                 <div class="alert-saldo-kurang" id="alertSaldoKurang" style="display: none;">
                                     <i class="fa-solid fa-triangle-exclamation"></i>
                                     <div>
@@ -750,9 +747,9 @@
                                     </div>
                                 </div>
 
+                                @if($saldo <= 0)
                                 <div class="pay-group">
                                     <div class="pg-title"><i class="fa-solid fa-wallet" style="color: #10B981;"></i> Saldo Akun</div>
-                                    @if($saldo <= 0)
                                     <label class="pay-option pay-option-saldo disabled" data-metode="Saldo" data-provider="Saldo Akun" aria-disabled="true">
                                         <input type="radio" name="pay_saldo" value="Saldo Akun" disabled>
                                         <div class="po-icon" style="background: #E5E7EB; color: #9CA3AF;"><i class="fa-solid fa-wallet"></i></div>
@@ -762,7 +759,10 @@
                                         </div>
                                     </label>
                                     <a href="{{ route('pelanggan.saldo.topup') }}" class="pay-option-link"><i class="fa-solid fa-plus"></i> Isi Saldo Akun</a>
-                                    @else
+                                </div>
+                                @else
+                                <div class="pay-group">
+                                    <div class="pg-title"><i class="fa-solid fa-wallet" style="color: #10B981;"></i> Saldo Akun</div>
                                     <label class="pay-option pay-option-saldo" data-metode="Saldo" data-provider="Saldo Akun">
                                         <input type="radio" name="pay_saldo" value="Saldo Akun">
                                         <div class="po-icon" style="background: #D1FAE5; color: #059669;"><i class="fa-solid fa-wallet"></i></div>
@@ -777,7 +777,6 @@
                                             </div>
                                         </div>
                                     </label>
-                                    @endif
                                 </div>
                                 @endif
 
