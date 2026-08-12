@@ -590,6 +590,11 @@
         display: block;
     }
 
+    .custom-select-dropdown.open-up {
+        top: auto;
+        bottom: calc(100% + 4px);
+    }
+
     .custom-select-dropdown .csd-item {
         padding: 10px 16px;
         font-size: 13px;
@@ -1042,6 +1047,11 @@
             });
             dropdown.classList.toggle('open');
             trigger.classList.toggle('open');
+            if (dropdown.classList.contains('open')) {
+                const rect = dropdown.getBoundingClientRect();
+                const flip = rect.bottom > window.innerHeight - 8 && rect.top > window.innerHeight / 2;
+                dropdown.classList.toggle('open-up', flip);
+            }
         });
 
         dropdown.addEventListener('click', function(e) {
