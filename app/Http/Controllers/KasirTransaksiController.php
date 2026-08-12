@@ -228,20 +228,20 @@ class KasirTransaksiController extends Controller
         $jenis = $request->jenis;
         $userId = auth()->id();
 
-        $totalInvoice = Transaksi::where('id_user', $userId)
+        $totalInvoice = Transaksi::where('id_kasir', $userId)
             ->when($jenis, fn($q, $j) => $q->where('jenis_transaksi', $j))
             ->count();
-        $totalLunas = Transaksi::where('id_user', $userId)
+        $totalLunas = Transaksi::where('id_kasir', $userId)
             ->when($jenis, fn($q, $j) => $q->where('jenis_transaksi', $j))
             ->where('status', 'Lunas')
             ->count();
-        $totalPending = Transaksi::where('id_user', $userId)
+        $totalPending = Transaksi::where('id_kasir', $userId)
             ->when($jenis, fn($q, $j) => $q->where('jenis_transaksi', $j))
             ->where('status', 'Pending')
             ->count();
 
         $invoices = Transaksi::with('pelanggan')
-            ->where('id_user', $userId)
+            ->where('id_kasir', $userId)
             ->when($jenis, fn($q, $j) => $q->where('jenis_transaksi', $j))
             ->when($search, function ($query, $search) {
                 return $query->where('no_invoice', 'like', "%{$search}%")
@@ -259,20 +259,20 @@ class KasirTransaksiController extends Controller
 
     public function invoice($id)
     {
-        $transaksi = Transaksi::with('pelanggan', 'detail', 'user')->findOrFail($id);
+        $transaksi = Transaksi::with('pelanggan', 'detail', 'user', 'kasir')->findOrFail($id);
         return view('kasir.invoice.show', compact('transaksi'));
     }
 
     public function invoicePdf($id)
     {
-        $transaksi = Transaksi::with('pelanggan', 'detail', 'user')->findOrFail($id);
+        $transaksi = Transaksi::with('pelanggan', 'detail', 'user', 'kasir')->findOrFail($id);
         $pdf = Pdf::loadView('kasir.invoice.pdf', compact('transaksi'));
         return $pdf->download('Invoice-' . $transaksi->no_invoice . '.pdf');
     }
 
     public function struk($id)
     {
-        $transaksi = Transaksi::with('pelanggan', 'detail', 'user')->findOrFail($id);
+        $transaksi = Transaksi::with('pelanggan', 'detail', 'user', 'kasir')->findOrFail($id);
         return view('kasir.struk.index', compact('transaksi'));
     }
 
