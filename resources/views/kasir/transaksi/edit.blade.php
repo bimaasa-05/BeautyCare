@@ -212,7 +212,6 @@
                                 <input type="hidden" name="metode_byr" :value="metode">
                                 <input type="hidden" name="bank_id" :value="metode === 'Transfer' ? bankId : ''">
                                 <input type="hidden" name="ewallet_type" :value="metode === 'E-Wallet' ? ewalletType : ''">
-                                <input type="hidden" name="status" id="status" :value="metode === 'Transfer' ? 'Proses' : 'Lunas'">
 
                                 @if($errors->any())
                                     <div class="mb-3 px-4 py-3 bg-red-50 border border-red-200 text-red-600 text-[12px] font-semibold rounded-xl">
@@ -369,7 +368,7 @@
                                         <label class="form-label">
                                             <i class="fa-solid fa-flag text-pink-400 mr-1"></i>Status <span class="text-red-500">*</span>
                                         </label>
-                                        <select name="status" class="form-input-custom">
+                                        <select name="status" class="form-input-custom" :disabled="metode !== 'Transfer'">
                                             <option value="Proses" {{ old('status', $transaksi->status) == 'Proses' ? 'selected' : '' }}>Proses</option>
                                             <option value="Lunas" {{ old('status', $transaksi->status) == 'Lunas' ? 'selected' : '' }}>Lunas</option>
                                             <option value="Batal" {{ old('status', $transaksi->status) == 'Batal' ? 'selected' : '' }}>Batal</option>
@@ -837,16 +836,6 @@
                 }
             };
         }
-
-        // Sync status hidden input with metode changes
-        document.addEventListener('alpine:initialized', () => {
-            const paymentBoxEl = document.querySelector('[x-data="paymentBox()"]');
-            if (paymentBoxEl) {
-                paymentBoxEl.__x.$watch('metode', (val) => {
-                    document.getElementById('status').value = val === 'Transfer' ? 'Proses' : 'Lunas';
-                });
-            }
-        });
 
         function initExistingRows() {
             document.querySelectorAll('.item-row').forEach(function(row) {
