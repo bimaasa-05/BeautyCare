@@ -1012,7 +1012,7 @@
                     <div class="pay-actions">
                         <form action="{{ route('pelanggan.pembayaran.sudah-bayar', $transaksi->id_transaksi) }}" method="POST">
                             @csrf
-                            <button type="submit" class="btn-pay btn-pay-confirm" style="width:100%;" data-confirm-title="Saya Sudah Bayar" data-confirm-body="Pastikan Anda sudah melakukan pembayaran sesuai nominal. Lanjutkan?" data-confirm-icon="fa-money-check-dollar" data-confirm-type="warning" data-confirm-yes="Ya, Sudah Bayar">
+                            <button type="submit" class="btn-pay btn-pay-confirm" style="width:100%;" data-confirm-title="Saya Sudah Bayar" data-confirm-body="Pastikan Anda sudah melakukan pembayaran sesuai nominal. Lanjutkan?" data-confirm-icon="fa-money-check-dollar" data-confirm-type="success" data-confirm-yes="Ya, Sudah Bayar">
                                 <i class="fa-solid fa-check-circle"></i> Saya Sudah Bayar
                             </button>
                         </form>
