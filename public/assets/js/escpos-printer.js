@@ -100,27 +100,26 @@
      * Markup per baris (opsional):
      *   [C]  rata tengah      [R]  rata kanan
      *   [B]  teks tebal       [CB] tengah + tebal   [RB] kanan + tebal
+     * Semua baris dicetak tebal (ESC E 1) agar teks lebih jelas/hitam di kertas thermal.
      */
     function generateEscPos(text) {
         const encoder = new TextEncoder();
         const data = [];
 
-        // 1. Inisialisasi printer (ESC @)
+        // 1. Inisialisasi printer (ESC @) + aktifkan bold untuk semua baris
         data.push(0x1B, 0x40);
+        data.push(0x1B, 0x45, 1);
 
         const lines = String(text || '').split('\n');
-        let currentBold = false;
         let currentAlign = -1;
 
         for (let raw of lines) {
-            let bold = false;
             let align = 0;
 
             const m = raw.match(/^\[([CLRB]+)\]\s?(.*)$/);
             if (m) {
                 if (m[1].indexOf('C') !== -1) align = 1;
                 else if (m[1].indexOf('R') !== -1) align = 2;
-                if (m[1].indexOf('B') !== -1) bold = true;
                 raw = m[2];
             }
 
@@ -132,12 +131,6 @@
                 raw = ' '.repeat(pad) + raw;
             }
 
-            // Bold toggle (ESC E n)
-            if (bold !== currentBold) {
-                data.push(0x1B, 0x45, bold ? 1 : 0);
-                currentBold = bold;
-            }
-
             // Alignment (ESC a n)
             if (align !== currentAlign) {
                 data.push(0x1B, 0x61, align);
@@ -147,9 +140,6 @@
             const enc = encoder.encode(raw + '\n');
             for (let i = 0; i < enc.length; i++) data.push(enc[i]);
         }
-
-        // Matikan bold
-        if (currentBold) data.push(0x1B, 0x45, 0);
 
         // Jeda kertas agar mudah dirobek
         data.push(0x0A, 0x0A, 0x0A, 0x0A);
