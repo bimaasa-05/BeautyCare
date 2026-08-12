@@ -186,13 +186,16 @@ class AdminDashboardController extends Controller
             ->get();
 
         $layananTerlaris = DetailTransaksi::select(
-                'id_item',
-                'nm_item',
-                DB::raw('SUM(qty) as total_qty'),
-                DB::raw('SUM(subtotal) as total_subtotal')
+                'detail_transaksi.id_item',
+                'detail_transaksi.nm_item',
+                DB::raw('SUM(detail_transaksi.qty) as total_qty'),
+                DB::raw('SUM(detail_transaksi.subtotal) as total_subtotal')
             )
-            ->where('jenis', 'layanan')
-            ->groupBy('id_item', 'nm_item')
+            ->join('transaksi', 'transaksi.id_transaksi', '=', 'detail_transaksi.id_transaksi')
+            ->where('detail_transaksi.jenis', 'like', 'layanan')
+            ->where('transaksi.jenis_transaksi', 'Penjualan')
+            ->where('transaksi.status', 'Lunas')
+            ->groupBy('detail_transaksi.id_item', 'detail_transaksi.nm_item')
             ->orderByDesc('total_qty')
             ->limit(5)
             ->get();
@@ -204,8 +207,9 @@ class AdminDashboardController extends Controller
                 DB::raw('SUM(detail_transaksi.subtotal) as total_subtotal')
             )
             ->join('transaksi', 'transaksi.id_transaksi', '=', 'detail_transaksi.id_transaksi')
-            ->where('detail_transaksi.jenis', 'produk')
+            ->where('detail_transaksi.jenis', 'like', 'produk')
             ->where('transaksi.jenis_transaksi', 'Penjualan')
+            ->where('transaksi.status', 'Lunas')
             ->groupBy('detail_transaksi.id_item', 'detail_transaksi.nm_item')
             ->orderByDesc('total_qty')
             ->limit(5)
