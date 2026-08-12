@@ -214,6 +214,12 @@
         }
     }
 
+    /* ─── Chart body penuh (menyesuaikan tinggi kartu di samping) ─── */
+    .chart-card .chart-body.bc-chart-body {
+        display: flex;
+        flex-direction: column;
+    }
+
     /* ─── Period Dropdown (seperti popup tanggal di booking/create) ─── */
     .period-trigger {
         display: inline-flex;
@@ -565,8 +571,8 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="chart-body" style="padding: 16px 20px 12px;">
-                            <div id="chartBars" style="display:flex;align-items:flex-end;height:220px;gap:12px;position:relative;padding:0 10px 28px;"></div>
+                        <div class="chart-body bc-chart-body" style="padding: 16px 20px 12px;">
+                            <div id="chartBars" style="display:flex;align-items:flex-end;flex:1;gap:12px;position:relative;padding:22px 10px 28px;"></div>
                             <div id="chartLabels" style="display:flex;justify-content:space-between;padding:0 10px;margin-top:-4px;"></div>
                         </div>
                     </div>
@@ -862,6 +868,10 @@
         }
         const maxVal = Math.max(...subsetCounts, 1);
 
+        const topPad = 22;
+        const bottomPad = 28;
+        const availHeight = Math.max(80, (container.clientHeight || 220) - topPad - bottomPad);
+
         const gridValues = [];
         const gridStep = Math.ceil(maxVal / 4);
         for (let i = 0; i <= 4; i++) {
@@ -871,14 +881,14 @@
         for (let i = 0; i < 4; i++) {
             const pct = ((i + 1) / 5) * 100;
             const line = document.createElement('div');
-            line.style.cssText = 'position:absolute;left:0;right:0;bottom:' + (28 + (pct * 192 / 100)) + 'px;height:1px;background:var(--border);';
+            line.style.cssText = 'position:absolute;left:0;right:0;bottom:' + (bottomPad + (pct * availHeight / 100)) + 'px;height:1px;background:var(--border);';
             container.appendChild(line);
         }
 
         subsetMonths.forEach(function(month, i) {
             const count = subsetCounts[i];
             const pct = maxVal > 0 ? (count / maxVal) : 0;
-            const barHeight = Math.round(pct * 192);
+            const barHeight = Math.round(pct * availHeight);
 
             const col = document.createElement('div');
             col.style.cssText = 'flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;';
@@ -1024,6 +1034,9 @@
                 if (wrap && !wrap.contains(e.target)) {
                     closePeriodPopup();
                 }
+            });
+            window.addEventListener('resize', function() {
+                renderChart(periodValue);
             });
         }
 
