@@ -34,6 +34,7 @@ class PelangganBookingController extends Controller
 
         $activeBooking = Booking::where('id_pelanggan', $id_pelanggan)
             ->whereIn('status', ['menunggu', 'dikonfirmasi', 'diproses'])
+            ->whereDate('tanggal', now()->toDateString())
             ->first();
 
         $search = $request->search;
@@ -106,20 +107,31 @@ class PelangganBookingController extends Controller
                     && $klaim->promo->selesai > now()->format('Y-m-d');
             });
 
-        $bookingsPerDay = Booking::where('id_pelanggan', $this->resolveIdPelanggan())
-            ->whereIn('status', ['selesai', 'dibatalkan'])
-            ->get()
+        $bookingsPerDay = Booking::get()
             ->groupBy(fn($b) => \Carbon\Carbon::parse($b->tanggal)->format('Y-m-d'))
             ->map(fn($group) => [
+                'total' => $group->count(),
+                'aktif' => $group->whereIn('status', ['menunggu', 'dikonfirmasi', 'diproses'])->count(),
                 'selesai' => $group->where('status', 'selesai')->count(),
                 'dibatalkan' => $group->where('status', 'dibatalkan')->count(),
             ]);
 
         $slotJam = BookingSlot::slotJam();
         $bookedJamByKaryawan = BookingSlot::blokirJamKaryawan(request('tanggal', now()->toDateString()));
+        $bookedJamGlobal = BookingSlot::blokirJamGlobal(request('tanggal', now()->toDateString()));
         $sedangMelayaniDetail = BookingSlot::sedangMelayaniDetail();
 
-        return view('pelanggan.booking.create', compact('layanans', 'karyawans', 'karyawanSibukIds', 'diskonMember', 'claimedPromos', 'bookingsPerDay', 'slotJam', 'bookedJamByKaryawan', 'sedangMelayaniDetail'));
+        return view('pelanggan.booking.create', compact('layanans', 'karyawans', 'karyawanSibukIds', 'diskonMember', 'claimedPromos', 'bookingsPerDay', 'slotJam', 'bookedJamByKaryawan', 'bookedJamGlobal', 'sedangMelayaniDetail'));
+    }
+
+    public function slotJamData(Request $request)
+    {
+        $tanggal = $request->tanggal ?? now()->toDateString();
+
+        return response()->json([
+            'bookedJamByKaryawan' => BookingSlot::blokirJamKaryawan($tanggal),
+            'bookedJamGlobal' => BookingSlot::blokirJamGlobal($tanggal),
+        ]);
     }
 
     public function store(Request $request)
@@ -432,6 +444,7 @@ class PelangganBookingController extends Controller
 
         return Booking::where('id_pelanggan', $idPelanggan)
             ->whereIn('status', ['menunggu', 'dikonfirmasi', 'diproses'])
+            ->whereDate('tanggal', now()->toDateString())
             ->exists();
     }
 

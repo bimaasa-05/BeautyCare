@@ -371,6 +371,7 @@ Route::middleware('auth')->group(function () {
         //Route Booking
         Route::get('/pelanggan/booking', [PelangganBookingController::class, 'index'])->name('pelanggan.booking');
         Route::get('/pelanggan/booking/create', [PelangganBookingController::class, 'create'])->name('pelanggan.booking.create');
+        Route::get('/pelanggan/booking/slot', [PelangganBookingController::class, 'slotJamData'])->name('pelanggan.booking.slot');
         Route::post('/pelanggan/booking', [PelangganBookingController::class, 'store'])->name('pelanggan.booking.store');
         Route::get('/pelanggan/booking/{id}/detail', [PelangganBookingController::class, 'show'])->name('pelanggan.booking.detail');
         Route::get('/pelanggan/booking/{id}/pdf', [PelangganBookingController::class, 'pdf'])->name('pelanggan.booking.pdf');
