@@ -349,6 +349,7 @@
                         <table class="data-table">
                             <thead>
                                 <tr>
+                                    <th>No</th>
                                     <th>Layanan</th>
                                     <th>Terjual</th>
                                     <th>Pendapatan</th>
@@ -369,6 +370,7 @@
                         <table class="data-table">
                             <thead>
                                 <tr>
+                                    <th>No</th>
                                     <th>Produk</th>
                                     <th>Terjual</th>
                                     <th>Pendapatan</th>
@@ -376,6 +378,51 @@
                             </thead>
                             <tbody id="produk-terlaris-body">
                                 @include('partials.dashboard.produk-terlaris', ['items' => $produkTerlaris, 'fmt' => $fmt])
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Dashboard Leaderboard Grid -->
+                <div class="dashboard-bottom-grid grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+                    <!-- Top Global Pelanggan Layanan -->
+                    <div class="table-widget overflow-x-auto">
+                        <div class="tw-header">
+                            <h3>Top Global Pelanggan Layanan</h3>
+                            <a href="{{ route('admin.leaderboard.index') }}">Lihat Semua</a>
+                        </div>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>Nama Pelanggan</th>
+                                    <th>Layanan</th>
+                                    <th>Nominal</th>
+                                </tr>
+                            </thead>
+                            <tbody id="top-global-layanan-body">
+                                @include('partials.dashboard.top-global-layanan', ['items' => $topGlobalLayanan, 'fmt' => $fmt])
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Top Global Pelanggan Produk -->
+                    <div class="table-widget overflow-x-auto">
+                        <div class="tw-header">
+                            <h3>Top Global Pelanggan Produk</h3>
+                            <a href="{{ route('admin.leaderboard.index') }}">Lihat Semua</a>
+                        </div>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>Nama Pelanggan</th>
+                                    <th>Produk</th>
+                                    <th>Nominal</th>
+                                </tr>
+                            </thead>
+                            <tbody id="top-global-produk-body">
+                                @include('partials.dashboard.top-global-produk', ['items' => $topGlobalProduk, 'fmt' => $fmt])
                             </tbody>
                         </table>
                     </div>
@@ -638,6 +685,8 @@
             setHTML('jadwal-hari-ini-list', data.jadwalHariIni.html);
             setHTML('layanan-terlaris-body', data.layananTerlaris.html);
             setHTML('produk-terlaris-body', data.produkTerlaris.html);
+            setHTML('top-global-layanan-body', data.topGlobalLayanan.html);
+            setHTML('top-global-produk-body', data.topGlobalProduk.html);
             setHTML('karyawan-aktif-grid', data.karyawanAktif.html);
             setHTML('ringkasan-stok-grid', data.ringkasanStok.html);
             setHTML('booking-terbaru-list', data.bookingTerbaru.html);
