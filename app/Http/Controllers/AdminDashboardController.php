@@ -8,6 +8,7 @@ use App\Models\Pelanggan;
 use App\Models\Karyawan;
 use App\Models\Produk;
 use App\Models\DetailTransaksi;
+use App\Services\LeaderboardService;
 use Illuminate\Support\Facades\DB;
 
 class AdminDashboardController extends Controller
@@ -241,6 +242,10 @@ class AdminDashboardController extends Controller
             ->limit(5)
             ->get();
 
+        $leaderboardService = new LeaderboardService();
+        $topGlobalLayanan = $leaderboardService->topPelanggan('Layanan', null, null, 5);
+        $topGlobalProduk = $leaderboardService->topPelanggan('Produk', null, null, 5);
+
         $fmt = function ($amount) {
             if ($amount >= 1000000000) {
                 return 'Rp ' . number_format($amount / 1000000000, 1) . ' M';
@@ -265,6 +270,7 @@ class AdminDashboardController extends Controller
             'notifStok',
             'stokTerisi', 'stokMenipisPct', 'stokHabisPct',
             'bookingTerbaru',
+            'topGlobalLayanan', 'topGlobalProduk',
             'fmt'
         );
     }
@@ -313,6 +319,12 @@ class AdminDashboardController extends Controller
             ],
             'produkTerlaris' => [
                 'html' => view('partials.dashboard.produk-terlaris', ['items' => $produkTerlaris, 'fmt' => $fmt])->render(),
+            ],
+            'topGlobalLayanan' => [
+                'html' => view('partials.dashboard.top-global-layanan', ['items' => $topGlobalLayanan, 'fmt' => $fmt])->render(),
+            ],
+            'topGlobalProduk' => [
+                'html' => view('partials.dashboard.top-global-produk', ['items' => $topGlobalProduk, 'fmt' => $fmt])->render(),
             ],
             'karyawanAktif' => [
                 'html' => view('partials.dashboard.karyawan-aktif', compact('karyawanAktif'))->render(),
