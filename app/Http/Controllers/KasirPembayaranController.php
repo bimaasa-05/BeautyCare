@@ -29,6 +29,7 @@ class KasirPembayaranController extends Controller
                 });
             })
             ->orderBy('tanggal', 'desc')
+            ->orderBy('id_booking', 'desc')
             ->get();
 
         $totalTagihan = Booking::whereIn('status', ['diproses', 'selesai'])->whereDoesntHave('transaksi')
@@ -169,7 +170,7 @@ class KasirPembayaranController extends Controller
 
     public function show($id)
     {
-        $transaksi = Transaksi::with(['pelanggan', 'user', 'detail'])->findOrFail($id);
+        $transaksi = Transaksi::with(['pelanggan', 'user', 'kasir', 'detail'])->findOrFail($id);
         return view('kasir.pembayaran.show', compact('transaksi'));
     }
 
