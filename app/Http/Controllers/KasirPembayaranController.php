@@ -252,8 +252,18 @@ class KasirPembayaranController extends Controller
                     $tier = Membership::find($detailMembership->id_item);
 
                     if ($pelanggan && $tier) {
+                        // Perpanjang/Upgrade: extend from current expiry if still active, else from now
+                        $currentExpiry = null;
+                        if ($pelanggan->id_member && $pelanggan->tgl_mulai_member) {
+                            $oldTier = Membership::find($pelanggan->id_member);
+                            if ($oldTier) {
+                                $currentExpiry = $oldTier->tanggalBerakhir($pelanggan->tgl_mulai_member);
+                            }
+                        }
                         $pelanggan->id_member = $tier->id_member;
-                        $pelanggan->tgl_mulai_member = now();
+                        $pelanggan->tgl_mulai_member = ($currentExpiry && $currentExpiry->isFuture())
+                            ? $currentExpiry->copy()->startOfDay()
+                            : now();
                         $pelanggan->save();
 
                         ActivityLogger::log('Mengubah', $transaksi->user->nama ?? 'Pelanggan' . ' membership diaktifkan ke level ' . $tier->tingkat . ' via pembayaran ' . $transaksi->no_invoice, 'Membership', $pelanggan->id_pelanggan);

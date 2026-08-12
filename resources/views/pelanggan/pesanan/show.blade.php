@@ -699,6 +699,16 @@
                                 <span class="dt-label">Dibayar Saldo</span>
                                 <span class="dt-value" style="color:#059669;">- Rp {{ number_format($transaksi->saldo_terpakai, 0, ',', '.') }}</span>
                             </div>
+                            @php
+                            $sisaMetodeKedua = (float)$transaksi->total - (float)$transaksi->saldo_terpakai;
+                            $providerKedua = $transaksi->pembayaran->provider ?? $transaksi->metode_byr;
+                            @endphp
+                            @if($sisaMetodeKedua > 0)
+                            <div class="dt-row">
+                                <span class="dt-label">Dibayar {{ $providerKedua }}</span>
+                                <span class="dt-value" style="color:var(--primary);">- Rp {{ number_format($sisaMetodeKedua, 0, ',', '.') }}</span>
+                            </div>
+                            @endif
                             @endif
                             <div class="dt-row">
                                 <span class="dt-label">Status Pembayaran</span>

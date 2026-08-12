@@ -708,17 +708,21 @@
                                     <div>Subtotal</div>
                                     <div class="co-val" id="ringkasSubtotal">Rp {{ number_format($subtotal, 0, ',', '.') }}</div>
                                 </div>
-                                <div class="co-row co-row-total">
-                                    <div>Total Bayar</div>
-                                    <div class="co-val" id="ringkasTotal">Rp {{ number_format($subtotal, 0, ',', '.') }}</div>
-                                </div>
+<div class="co-row co-row-total">
+                                     <div>Total Bayar</div>
+                                     <div class="co-val" id="ringkasTotal">Rp {{ number_format($subtotal, 0, ',', '.') }}</div>
+                                 </div>
 
-                                @if(!$isMembership)
-                                <div class="co-row">
-                                    <div>Dibayar Saldo Akun</div>
-                                    <div class="co-val" id="ringkasPakaiSaldo">Rp 0</div>
-                                </div>
-                                @endif
+                                 @if(!$isMembership)
+                                 <div class="co-row" id="rowPakaiSaldo" style="display:none;">
+                                     <div>Dibayar Saldo Akun</div>
+                                     <div class="co-val" id="ringkasPakaiSaldo">Rp 0</div>
+                                 </div>
+                                 <div class="co-row" id="rowMetodeKedua" style="display:none;">
+                                     <div>Dibayar <span id="metodeKeduaLabel">Metode Kedua</span></div>
+                                     <div class="co-val" id="ringkasMetodeKedua">Rp 0</div>
+                                 </div>
+                                 @endif
                             </div>
                         </div>
 
@@ -745,7 +749,7 @@
                                     <div class="pg-title"><i class="fa-solid fa-wallet" style="color: #10B981;"></i> Saldo Akun</div>
                                     @if($saldo <= 0)
                                     <label class="pay-option pay-option-saldo disabled" data-metode="Saldo" data-provider="Saldo Akun" aria-disabled="true">
-                                        <input type="radio" name="pay" value="Saldo Akun" disabled>
+                                        <input type="radio" name="pay_saldo" value="Saldo Akun" disabled>
                                         <div class="po-icon" style="background: #E5E7EB; color: #9CA3AF;"><i class="fa-solid fa-wallet"></i></div>
                                         <div>
                                             <div class="po-label">Saldo Akun (Rp 0)</div>
@@ -755,7 +759,7 @@
                                     <a href="{{ route('pelanggan.saldo.topup') }}" class="pay-option-link"><i class="fa-solid fa-plus"></i> Isi Saldo Akun</a>
                                     @else
                                     <label class="pay-option pay-option-saldo" data-metode="Saldo" data-provider="Saldo Akun">
-                                        <input type="radio" name="pay" value="Saldo Akun">
+                                        <input type="radio" name="pay_saldo" value="Saldo Akun">
                                         <div class="po-icon" style="background: #D1FAE5; color: #059669;"><i class="fa-solid fa-wallet"></i></div>
                                         <div>
                                             <div class="po-label">Saldo Akun (Rp {{ number_format($saldo, 0, ',', '.') }})</div>
@@ -775,7 +779,7 @@
                                 <div class="pay-group">
                                     <div class="pg-title"><i class="fa-solid fa-qrcode"></i> QRIS</div>
                                     <label class="pay-option" data-metode="QRIS" data-provider="QRIS">
-                                        <input type="radio" name="pay" value="QRIS">
+                                        <input type="radio" name="pay_metode" value="QRIS">
                                         <div class="po-icon"><i class="fa-solid fa-qrcode"></i></div>
                                         <div>
                                             <div class="po-label">QRIS (Semua Aplikasi)</div>
@@ -788,7 +792,7 @@
                                     <div class="pg-title"><i class="fa-solid fa-building-columns"></i> Transfer Bank (Virtual Account)</div>
                                     @foreach($banks as $bank)
                                     <label class="pay-option" data-metode="Transfer" data-provider="{{ $bank->nama_bank }}" data-bank-id="{{ $bank->id }}">
-                                        <input type="radio" name="pay" value="{{ $bank->nama_bank }}">
+                                        <input type="radio" name="pay_metode" value="{{ $bank->nama_bank }}">
                                         <div class="po-icon">
                                             @if($bank->logo)
                                                 <img src="{{ asset('storage/' . $bank->logo) }}" alt="{{ $bank->nama_bank }}" style="width:24px;height:24px;object-fit:contain;">
@@ -828,6 +832,9 @@
 
     var saldoTerpakai = 0;
     var diskonGlobal = 0;
+    var metodeKedua = null; // 'QRIS' atau 'Transfer' atau nama bank
+    var providerKedua = null;
+    var bankIdKedua = null;
 
     function fmtAngka(n) {
         return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
@@ -864,71 +871,147 @@
         document.getElementById('ringkasDiskon').textContent = 'Rp ' + fmtAngka(diskon);
         document.getElementById('ringkasDiskonLabel').textContent = label ? '(' + label + ')' : '';
 
-        // Saldo deduction (terkunci saat pilih metode Saldo Akun)
-        var pakaiSaldo = Math.max(0, Math.min(saldoTerpakai, saldoTersedia, subtotal - diskon));
+        var totalSetelahDiskon = subtotal - diskon;
+        var pakaiSaldo = 0;
+        var saldoChecked = document.querySelector('.pay-option-saldo input').checked;
+
+        if (saldoChecked) {
+            pakaiSaldo = Math.max(0, Math.min(saldoTersedia, totalSetelahDiskon));
+        }
         saldoTerpakai = pakaiSaldo;
         document.getElementById('pakaiSaldoHidden').value = pakaiSaldo;
 
         var elPakai = document.getElementById('ringkasPakaiSaldo');
-        if (elPakai) elPakai.textContent = pakaiSaldo > 0 ? 'Rp ' + fmtAngka(pakaiSaldo) : 'Rp 0';
+        var rowPakaiSaldo = document.getElementById('rowPakaiSaldo');
+        if (saldoChecked && pakaiSaldo > 0) {
+            rowPakaiSaldo.style.display = 'flex';
+            elPakai.textContent = 'Rp ' + fmtAngka(pakaiSaldo);
+        } else {
+            rowPakaiSaldo.style.display = 'none';
+            if (elPakai) elPakai.textContent = 'Rp 0';
+        }
 
-        totalGlobal = subtotal - diskon - pakaiSaldo;
+        var sisaBayar = totalSetelahDiskon - pakaiSaldo;
+        var rowMetodeKedua = document.getElementById('rowMetodeKedua');
+        var elMetodeKedua = document.getElementById('ringkasMetodeKedua');
+        var metodeKeduaLabel = document.getElementById('metodeKeduaLabel');
+
+        if (metodeKedua && sisaBayar > 0) {
+            rowMetodeKedua.style.display = 'flex';
+            metodeKeduaLabel.textContent = providerKedua || 'Metode Kedua';
+            elMetodeKedua.textContent = 'Rp ' + fmtAngka(sisaBayar);
+        } else {
+            rowMetodeKedua.style.display = 'none';
+            if (elMetodeKedua) elMetodeKedua.textContent = 'Rp 0';
+        }
+
+        totalGlobal = sisaBayar > 0 ? sisaBayar : totalSetelahDiskon;
         document.getElementById('ringkasTotal').textContent = 'Rp ' + fmtAngka(totalGlobal);
+
+        updateButtonState();
     }
 
-    function pilihSaldo() {
-        hitungRingkasan();
+    function updateButtonState() {
+        var btn = document.getElementById('btnBuatPesanan');
+        var saldoChecked = document.querySelector('.pay-option-saldo input').checked;
         var totalSetelahDiskon = subtotal - diskonGlobal;
-        saldoTerpakai = Math.max(0, Math.min(saldoTersedia, totalSetelahDiskon));
-        hitungRingkasan();
+        var pakaiSaldo = saldoChecked ? Math.max(0, Math.min(saldoTersedia, totalSetelahDiskon)) : 0;
+        var sisaBayar = totalSetelahDiskon - pakaiSaldo;
 
         var alertEl = document.getElementById('alertSaldoKurang');
-        if (!alertEl) return;
-
-        var btn = document.getElementById('btnBuatPesanan');
         var nonSaldoOpts = document.querySelectorAll('.pay-option:not(.pay-option-saldo)');
-        if (saldoTersedia < totalSetelahDiskon) {
+
+        if (saldoChecked && saldoTersedia < totalSetelahDiskon) {
             document.getElementById('alertSaldoNom').textContent = 'Rp ' + fmtAngka(saldoTersedia);
             document.getElementById('alertSaldoTotal').textContent = 'Rp ' + fmtAngka(totalSetelahDiskon);
-            document.getElementById('alertSaldoSisa').textContent = 'Rp ' + fmtAngka(totalSetelahDiskon - saldoTersedia);
+            document.getElementById('alertSaldoSisa').textContent = 'Rp ' + fmtAngka(sisaBayar);
             alertEl.style.display = 'flex';
             nonSaldoOpts.forEach(function(o) {
                 o.classList.add('highlight-kombinasi');
             });
-            btn.disabled = true; // tunggu metode kedua
         } else {
             alertEl.style.display = 'none';
             nonSaldoOpts.forEach(function(o) {
                 o.classList.remove('highlight-kombinasi');
             });
-            btn.disabled = false;
         }
+
+        var canSubmit = false;
+        if (saldoChecked && sisaBayar <= 0) {
+            canSubmit = true;
+        } else if (metodeKedua && saldoChecked && sisaBayar > 0) {
+            canSubmit = true;
+        } else if (metodeKedua && !saldoChecked) {
+            canSubmit = true;
+        }
+
+        btn.disabled = !canSubmit;
     }
 
-    document.querySelectorAll('.pay-option').forEach(function(opt) {
-        opt.addEventListener('click', function() {
-            if (opt.classList.contains('disabled')) return;
-            document.querySelectorAll('.pay-option').forEach(function(o) {
-                o.classList.remove('selected');
-                o.querySelector('input').checked = false;
-            });
-            opt.classList.add('selected');
-            opt.querySelector('input').checked = true;
-            var metode = opt.getAttribute('data-metode');
-            document.getElementById('inpMetode').value = metode;
-            document.getElementById('inpProvider').value = opt.getAttribute('data-provider');
-            document.getElementById('inpBankId').value = opt.getAttribute('data-bank-id') || '';
+    function clearSelection(group) {
+        document.querySelectorAll(group).forEach(function(o) {
+            o.classList.remove('selected');
+            o.querySelector('input').checked = false;
+        });
+    }
 
-            if (metode === 'Saldo') {
-                pilihSaldo();
+    document.querySelectorAll('.pay-option-saldo').forEach(function(opt) {
+        opt.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (opt.classList.contains('disabled')) return;
+            var input = opt.querySelector('input');
+            var wasChecked = input.checked;
+
+            if (wasChecked) {
+                clearSelection('.pay-option-saldo');
+                document.getElementById('inpMetode').value = '';
+                document.getElementById('inpProvider').value = '';
+                document.getElementById('inpBankId').value = '';
             } else {
-                document.getElementById('alertSaldoKurang').style.display = 'none';
-                document.querySelectorAll('.pay-option.highlight-kombinasi').forEach(function(o) {
-                    o.classList.remove('highlight-kombinasi');
-                });
-                document.getElementById('btnBuatPesanan').disabled = false;
-                hitungRingkasan();
+                clearSelection('.pay-option-saldo');
+                opt.classList.add('selected');
+                input.checked = true;
+                document.getElementById('inpMetode').value = 'Saldo';
+                document.getElementById('inpProvider').value = 'Saldo Akun';
+                document.getElementById('inpBankId').value = '';
             }
+            hitungRingkasan();
+        });
+    });
+
+    document.querySelectorAll('.pay-option:not(.pay-option-saldo)').forEach(function(opt) {
+        opt.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (opt.classList.contains('disabled')) return;
+            var input = opt.querySelector('input');
+            var wasChecked = input.checked;
+
+            if (wasChecked) {
+                clearSelection('.pay-option:not(.pay-option-saldo)');
+                metodeKedua = null;
+                providerKedua = null;
+                bankIdKedua = null;
+                document.getElementById('inpMetode').value = '';
+                document.getElementById('inpProvider').value = '';
+                document.getElementById('inpBankId').value = '';
+            } else {
+                clearSelection('.pay-option:not(.pay-option-saldo)');
+                opt.classList.add('selected');
+                input.checked = true;
+                metodeKedua = opt.getAttribute('data-metode');
+                providerKedua = opt.getAttribute('data-provider');
+                bankIdKedua = opt.getAttribute('data-bank-id') || null;
+                document.getElementById('inpMetode').value = metodeKedua;
+                document.getElementById('inpProvider').value = providerKedua;
+                document.getElementById('inpBankId').value = bankIdKedua || '';
+            }
+
+            document.getElementById('alertSaldoKurang').style.display = 'none';
+            document.querySelectorAll('.pay-option.highlight-kombinasi').forEach(function(o) {
+                o.classList.remove('highlight-kombinasi');
+            });
+
+            hitungRingkasan();
         });
     });
 
@@ -936,6 +1019,8 @@
         document.getElementById('ringkasDiskonLabel').textContent = '(' + memberLabel + ')';
         document.getElementById('ringkasTotal').textContent = 'Rp ' + fmtAngka(totalGlobal);
     }
+
+    hitungRingkasan();
 
     document.getElementById('checkoutForm').addEventListener('submit', function(e) {
         var metode = document.getElementById('inpMetode').value;
