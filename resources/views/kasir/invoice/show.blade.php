@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Invoice {{ $transaksi->no_invoice }} - BeautyCare</title>
     @include('partials.head-meta')
-    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -67,13 +66,21 @@
 
     <div class="no-print flex justify-center pt-6 pb-4">
         @php
-            $pdfRoute = request()->routeIs('admin.*')
+            $isAdmin = request()->routeIs('admin.*');
+            $pdfRoute = $isAdmin
                 ? route('admin.transaksi.invoice-pdf', $transaksi->id_transaksi)
                 : route('kasir.invoice.pdf', $transaksi->id_transaksi);
+            $strukRoute = $isAdmin
+                ? route('admin.transaksi.struk', $transaksi->id_transaksi)
+                : route('kasir.struk', $transaksi->id_transaksi);
         @endphp
-        <a href="{{ $pdfRoute }}"
-            class="flex items-center gap-2 bg-[#FF4F87] text-white text-[13px] font-semibold px-6 py-2.5 rounded-full hover:bg-[#ff3a78] transition-all shadow-sm no-underline">
-            <i class="fa-solid fa-file-pdf"></i> Unduh PDF
+        <a href="{{ $strukRoute }}" target="_blank"
+            class="flex items-center gap-2 border border-gray-200 bg-white text-gray-700 text-[13px] font-semibold px-6 py-2.5 rounded-full hover:bg-gray-50 transition-all shadow-sm no-underline">
+            <i class="fa-solid fa-receipt"></i> Cetak Struk
+        </a>
+        <a href="{{ $pdfRoute }}" target="_blank"
+            class="flex items-center gap-2 bg-[#FF4F87] text-white text-[13px] font-semibold px-6 py-2.5 rounded-full hover:bg-[#ff3a78] transition-all shadow-sm ml-2 no-underline">
+            <i class="fa-solid fa-file-pdf"></i> Cetak PDF
         </a>
         <button onclick="window.close()"
             class="flex items-center gap-2 border border-gray-200 text-gray-600 text-[13px] font-medium px-6 py-2.5 rounded-full hover:bg-gray-50 transition-all ml-2">

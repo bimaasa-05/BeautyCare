@@ -108,7 +108,6 @@ class BeatycianJadwalTreatmentController extends Controller
         $akanDimulai = $akanDimulai->map(function ($b) use ($now) {
             $jamMulai = Carbon::parse($b->jam);
             $b->terlambatMenit = $jamMulai->lessThan($now) ? (int) $jamMulai->diffInMinutes($now) : 0;
-            $b->belumDatang = $jamMulai->lessThan($now);
             return $b;
         });
 

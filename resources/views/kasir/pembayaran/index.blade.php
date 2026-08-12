@@ -7,7 +7,6 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Pembayaran - BeautyCare</title>
     @include('partials.head-meta')
-    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -90,7 +89,7 @@
                             <div class="flex items-center justify-between">
                                 <div>
                                     <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Tagihan Baru</p>
-                                    <p class="text-[24px] font-bold text-gray-800 mt-1">{{ $totalTagihan }}</p>
+                                    <p class="text-[24px] font-bold text-gray-800 mt-1">{{ number_format($totalTagihan, 0, ',', '.') }}</p>
                                 </div>
                                 <div class="w-10 h-10 rounded-full bg-pink-100 flex items-center justify-center">
                                     <i class="fa-regular fa-clock text-pink-500"></i>
@@ -101,7 +100,7 @@
                             <div class="flex items-center justify-between">
                                 <div>
                                     <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Sudah Dibayar</p>
-                                    <p class="text-[24px] font-bold text-green-600 mt-1">{{ $totalSudahDibayar }}</p>
+                                    <p class="text-[24px] font-bold text-green-600 mt-1">{{ number_format($totalSudahDibayar, 0, ',', '.') }}</p>
                                 </div>
                                 <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
                                     <i class="fa-regular fa-circle-check text-green-500"></i>

@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Pengeluaran Kasir - BeautyCare</title>
+    <title>Pengeluaran - BeautyCare</title>
     @include('partials.head-meta')
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -131,6 +131,9 @@
 </head>
 
 <body>
+    <div class="page-loader">
+        <div class="loader-spinner"></div>
+    </div>
 
     <div class="dashboard-layout">
         @include('layouts.sidebar')
@@ -151,8 +154,8 @@
                             </span>
                         </div>
                         <div class="ph-text">
-                            <h3>Pengeluaran Kasir</h3>
-                            <p>Catat pengeluaran operasional harian</p>
+                            <h3>Pengeluaran</h3>
+                            <p>Kelola semua data pengeluaran</p>
                         </div>
                     </div>
                 </div>
@@ -162,13 +165,6 @@
                 <div class="mb-4 p-4 bg-emerald-50 border border-emerald-100 rounded-xl flex items-center gap-2 text-sm text-emerald-700">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-check text-emerald-500"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg>
                     {{ session('success') }}
-                </div>
-                @endif
-
-                @if (session('error'))
-                <div class="mb-4 p-4 bg-red-50 border border-red-100 rounded-xl flex items-center gap-2 text-sm text-red-700">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-x text-red-500"><circle cx="12" cy="12" r="10"></circle><path d="m15 9-6 6"></path><path d="m9 9 6 6"></path></svg>
-                    {{ session('error') }}
                 </div>
                 @endif
 
@@ -202,7 +198,7 @@
                         <div class="stat-card bg-gradient-to-br from-pink-50 to-rose-50 rounded-xl p-4 border border-pink-100">
                             <div class="flex items-center justify-between">
                                 <div>
-                                    <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Total Transaksi</p>
+                                    <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Total Catatan</p>
                                     <p class="text-[26px] font-bold text-pink-600 mt-1">{{ $pengeluaran->total() }} catatan</p>
                                 </div>
                                 <div class="w-11 h-11 rounded-full bg-pink-100 flex items-center justify-center">
@@ -213,7 +209,7 @@
                     </div>
 
                     <div class="flex flex-wrap items-start sm:items-center justify-between gap-3 mb-5">
-                        <form action="{{ route('kasir.pengeluaran.index') }}" method="GET" class="flex flex-col sm:flex-row gap-3 flex-1">
+                        <form action="{{ route('admin.pengeluaran.index') }}" method="GET" class="flex flex-col sm:flex-row gap-3 flex-1">
                             <input type="month" name="bulan" value="{{ $bulan }}" class="form-input-custom sm:!w-44">
                             <select name="kategori" class="form-input-custom sm:!w-52">
                                 <option value="">Semua Kategori</option>
@@ -225,10 +221,16 @@
                                 <i class="fa-solid fa-filter mr-1"></i>Filter
                             </button>
                         </form>
-                        <button onclick="document.getElementById('modalTambah').classList.remove('hidden')"
-                            class="flex items-center gap-2 px-4 py-2 rounded-xl bg-red-500 text-white text-[12px] font-semibold hover:bg-red-600 transition-colors">
-                            <i class="fa-solid fa-plus"></i> Tambah Pengeluaran
-                        </button>
+                        <div class="flex gap-2 flex-wrap">
+                            <a href="{{ route('admin.pengeluaran.pembelian-create') }}"
+                                class="flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-500 text-white text-[12px] font-semibold hover:bg-amber-600 transition-colors">
+                                <i class="fa-solid fa-truck"></i> Pembelian Stok
+                            </a>
+                            <button onclick="document.getElementById('modalTambah').classList.remove('hidden')"
+                                class="flex items-center gap-2 px-4 py-2 rounded-xl bg-red-500 text-white text-[12px] font-semibold hover:bg-red-600 transition-colors">
+                                <i class="fa-solid fa-plus"></i> Tambah Pengeluaran
+                            </button>
+                        </div>
                     </div>
 
                     <div class="overflow-x-auto">
@@ -238,6 +240,7 @@
                                     <th class="w-[120px]">Tanggal</th>
                                     <th class="w-[150px]">Kategori</th>
                                     <th>Keterangan</th>
+                                    <th class="w-[160px]">Dicatat Oleh</th>
                                     <th class="w-[140px] text-right">Nominal</th>
                                     <th class="w-[100px] text-center">Aksi</th>
                                 </tr>
@@ -252,22 +255,28 @@
                                         </span>
                                     </td>
                                     <td class="text-gray-600 max-w-[300px] truncate" title="{{ $p->keterangan }}">{{ $p->keterangan ?: '-' }}</td>
+                                    <td class="text-gray-600">{{ $p->user ? $p->user->nama : '-' }}</td>
                                     <td class="text-right font-bold text-red-600">- Rp {{ number_format($p->nominal, 0, ',', '.') }}</td>
                                     <td class="text-center">
-                                        <form action="{{ route('kasir.pengeluaran.destroy', $p->id_pengeluaran) }}" method="POST"
-                                            class="form-hapus"
-                                            data-confirm-title="Hapus Pengeluaran" data-confirm-body="Apakah Anda yakin ingin menghapus pengeluaran ini? Tindakan ini tidak dapat dibatalkan." data-confirm-icon="fa-trash-can" data-confirm-type="danger" data-confirm-yes="Ya, Hapus">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="w-8 h-8 inline-flex items-center justify-center text-red-500 bg-red-50 hover:bg-red-100 rounded-lg transition-colors" title="Hapus">
-                                                <i class="fa-regular fa-trash-can text-xs"></i>
+                                        <div class="flex items-center justify-center gap-1">
+                                            <button onclick="editPengeluaran({{ $p->id_pengeluaran }}, '{{ $p->tanggal }}', '{{ addslashes($p->kategori) }}', {{ $p->nominal }}, '{{ addslashes($p->keterangan ?? '') }}')"
+                                                class="w-8 h-8 inline-flex items-center justify-center text-blue-500 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors" title="Edit">
+                                                <i class="fa-regular fa-pen-to-square text-xs"></i>
                                             </button>
-                                        </form>
+                                            <form action="{{ route('admin.pengeluaran.destroy', $p->id_pengeluaran) }}" method="POST"
+                                                onsubmit="return confirm('Hapus pengeluaran ini?')">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="w-8 h-8 inline-flex items-center justify-center text-red-500 bg-red-50 hover:bg-red-100 rounded-lg transition-colors" title="Hapus">
+                                                    <i class="fa-regular fa-trash-can text-xs"></i>
+                                                </button>
+                                            </form>
+                                        </div>
                                     </td>
                                 </tr>
                                 @empty
                                 <tr>
-                                    <td colspan="5" class="py-14 text-center">
+                                    <td colspan="6" class="py-14 text-center">
                                         <div class="flex flex-col items-center gap-3">
                                             <div class="w-20 h-20 rounded-full bg-red-50 flex items-center justify-center">
                                                 <i class="fa-solid fa-receipt text-3xl text-red-200"></i>
@@ -293,16 +302,9 @@
     </div>
 
     <!-- Modal Tambah -->
-    <style>
-        @keyframes pengFadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes pengPopIn { from { opacity: 0; transform: scale(0.92) translateY(12px); } to { opacity: 1; transform: scale(1) translateY(0); } }
-        #modalTambah { z-index: 9999 !important; }
-        #modalTambah .modal-backdrop { animation: pengFadeIn 0.2s ease-out; }
-        #modalTambah .modal-card { animation: pengPopIn 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
-    </style>
-    <div id="modalTambah" class="hidden fixed inset-0 flex items-center justify-center p-4">
-        <div class="absolute inset-0 bg-black/40 modal-backdrop" onclick="document.getElementById('modalTambah').classList.add('hidden')"></div>
-        <div class="relative bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl modal-card">
+    <div id="modalTambah" class="hidden fixed inset-0 z-[200] flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/40" onclick="document.getElementById('modalTambah').classList.add('hidden')"></div>
+        <div class="relative bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl">
             <div class="flex items-center justify-between mb-4">
                 <h4 class="text-[15px] font-bold text-gray-800">
                     <i class="fa-solid fa-arrow-down text-red-500 mr-2"></i>Tambah Pengeluaran
@@ -311,7 +313,7 @@
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
-            <form action="{{ route('kasir.pengeluaran.store') }}" method="POST" id="formTambahPengeluaran" onsubmit="handleSimpanPengeluaran(event)">
+            <form action="{{ route('admin.pengeluaran.store') }}" method="POST">
                 @csrf
                 <div class="space-y-4">
                     <div>
@@ -342,7 +344,7 @@
                         <textarea name="keterangan" rows="2" placeholder="Catatan pengeluaran (opsional)" class="form-input-custom">{{ old('keterangan') }}</textarea>
                         @error('keterangan')<p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>@enderror
                     </div>
-                    <button type="submit" id="btnSimpanPengeluaran" class="w-full py-2.5 rounded-xl bg-red-500 text-white text-[13px] font-semibold hover:bg-red-600 transition-colors">
+                    <button type="submit" class="w-full py-2.5 rounded-xl bg-red-500 text-white text-[13px] font-semibold hover:bg-red-600 transition-colors">
                         <i class="fa-solid fa-check mr-1"></i>Simpan Pengeluaran
                     </button>
                 </div>
@@ -350,32 +352,65 @@
         </div>
     </div>
 
+    <!-- Modal Edit -->
+    <div id="modalEdit" class="hidden fixed inset-0 z-[200] flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/40" onclick="document.getElementById('modalEdit').classList.add('hidden')"></div>
+        <div class="relative bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl">
+            <div class="flex items-center justify-between mb-4">
+                <h4 class="text-[15px] font-bold text-gray-800">
+                    <i class="fa-solid fa-pen-to-square text-blue-500 mr-2"></i>Edit Pengeluaran
+                </h4>
+                <button onclick="document.getElementById('modalEdit').classList.add('hidden')" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-400">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <form action="" method="POST" id="formEdit">
+                @csrf
+                @method('PUT')
+                <div class="space-y-4">
+                    <div>
+                        <label class="form-label">Tanggal <span class="text-red-500">*</span></label>
+                        <input type="date" name="tanggal" id="edit_tanggal" class="form-input-custom" required>
+                    </div>
+                    <div>
+                        <label class="form-label">Kategori <span class="text-red-500">*</span></label>
+                        <select name="kategori" id="edit_kategori" class="form-input-custom" required>
+                            <option value="">-- Pilih Kategori --</option>
+                            <option value="Operasional">Operasional</option>
+                            <option value="Perawatan Alat">Perawatan Alat</option>
+                            <option value="Bahan & Stok">Bahan & Stok</option>
+                            <option value="Listrik & Air">Listrik & Air</option>
+                            <option value="Kebersihan">Kebersihan</option>
+                            <option value="Lainnya">Lainnya</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="form-label">Nominal (Rp) <span class="text-red-500">*</span></label>
+                        <input type="number" name="nominal" id="edit_nominal" min="1" class="form-input-custom" required>
+                    </div>
+                    <div>
+                        <label class="form-label">Keterangan</label>
+                        <textarea name="keterangan" id="edit_keterangan" rows="2" class="form-input-custom"></textarea>
+                    </div>
+                    <button type="submit" class="w-full py-2.5 rounded-xl bg-blue-500 text-white text-[13px] font-semibold hover:bg-blue-600 transition-colors">
+                        <i class="fa-solid fa-check mr-1"></i>Simpan Perubahan
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
-        // ========== Loading Simpan (#10) ==========
-        function handleSimpanPengeluaran(event) {
-            const btn = document.getElementById('btnSimpanPengeluaran');
-            if (!btn || btn.disabled) { event.preventDefault(); return; }
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i> Menyimpan...';
+        function editPengeluaran(id, tanggal, kategori, nominal, keterangan) {
+            document.getElementById('formEdit').action = "{{ url('admin/pengeluaran') }}/" + id;
+            document.getElementById('edit_tanggal').value = tanggal;
+            document.getElementById('edit_kategori').value = kategori;
+            document.getElementById('edit_nominal').value = nominal;
+            document.getElementById('edit_keterangan').value = keterangan;
+            document.getElementById('modalEdit').classList.remove('hidden');
         }
-
-        // ========== Loading Hapus (#10) ==========
-        document.querySelectorAll('.form-hapus').forEach(function(form) {
-            form.addEventListener('submit', function() {
-                const btn = form.querySelector('button[type="submit"]');
-                if (!btn) return;
-                btn.disabled = true;
-                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-xs"></i>';
-            });
-        });
-
-        // ========== Auto-buka modal saat validasi gagal (#9) ==========
-        @if ($errors->any())
-        document.getElementById('modalTambah').classList.remove('hidden');
-        @endif
     </script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
-    @include('partials.confirm-modal')
 </body>
 
 </html>

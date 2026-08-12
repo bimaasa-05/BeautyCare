@@ -72,7 +72,7 @@ class AdminTransaksiController extends Controller
     public function invoice($id)
     {
         $transaksi = Transaksi::with('pelanggan', 'supplier', 'detail', 'user')->findOrFail($id);
-return view('kasir.invoice.show', compact('transaksi'));
+        return view('kasir.invoice.show', compact('transaksi'));
     }
 
     public function invoicePdf($id)
@@ -82,6 +82,12 @@ return view('kasir.invoice.show', compact('transaksi'));
         return $pdf->download('Invoice-' . $transaksi->no_invoice . '.pdf');
     }
 
+
+    public function struk($id)
+    {
+        $transaksi = Transaksi::with('pelanggan', 'supplier', 'detail', 'user')->findOrFail($id);
+        return view('kasir.struk.index', compact('transaksi'));
+    }
     public function createPembelian()
     {
         $supplier = Supplier::with(['produk' => fn($q) => $q->orderBy('nm_produk')])
