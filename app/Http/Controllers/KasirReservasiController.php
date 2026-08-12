@@ -45,6 +45,11 @@ class KasirReservasiController extends Controller
 
     public function store(Request $request)
     {
+        $request->merge([
+            'harga' => array_map(fn ($h) => (string) preg_replace('/[^0-9]/', '', $h), $request->input('harga', [])),
+            'diskon' => array_map(fn ($h) => (string) preg_replace('/[^0-9]/', '', $h), $request->input('diskon', [])),
+        ]);
+
         $request->validate([
             'id_pelanggan' => 'required|integer',
             'id_karyawan' => 'required|integer',
@@ -138,6 +143,11 @@ class KasirReservasiController extends Controller
 
     public function update(Request $request, $id)
     {
+        $request->merge([
+            'harga' => array_map(fn ($h) => (string) preg_replace('/[^0-9]/', '', $h), $request->input('harga', [])),
+            'diskon' => array_map(fn ($h) => (string) preg_replace('/[^0-9]/', '', $h), $request->input('diskon', [])),
+        ]);
+
         $request->validate([
             'id_pelanggan' => 'required|integer',
             'id_karyawan' => 'required|integer',
