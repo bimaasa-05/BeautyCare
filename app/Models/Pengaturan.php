@@ -19,6 +19,8 @@ class Pengaturan extends Model
         'telepon',
         'jam_buka',
         'jam_tutup',
+        'syarat_ketentuan',
+        'kebijakan_privasi',
     ];
 
     protected $casts = [
