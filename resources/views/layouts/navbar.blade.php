@@ -22,7 +22,15 @@
 
         <div class="navbar-actions">
             @auth
-            <a href="{{ route('dashboard') }}" class="btn btn-primary btn-sm">Dashboard</a>
+            @php
+                $dashboardUrl = match (auth()->user()->role) {
+                    'admin'      => route('admin.dashboard'),
+                    'kasir'      => route('kasir.dashboard'),
+                    'beautycian' => route('beautycian.dashboard'),
+                    default      => route('dashboard'),
+                };
+            @endphp
+            <a href="{{ $dashboardUrl }}" class="btn btn-primary btn-sm">Dashboard</a>
             @else
             <a href="{{ route('login') }}" class="btn btn-outline btn-sm">Masuk</a>
             <a href="{{ route('register') }}" class="btn btn-primary btn-sm">Daftar</a>
