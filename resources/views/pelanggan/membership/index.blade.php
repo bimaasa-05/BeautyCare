@@ -547,6 +547,14 @@
         font-size: 12px;
         font-weight: 500;
         color: var(--dark);
+        flex-wrap: wrap;
+    }
+
+    .member-tier-card .mt-body .mt-syarat-row .mt-syarat-text {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-width: 0;
     }
 
     .member-tier-card .mt-body .mt-syarat-row i {
@@ -950,13 +958,13 @@
                                 </div>
                                 <div class="mt-syarat">
                                     <div class="mt-syarat-row">
-                                        <span><i class="fa-solid fa-bag-shopping"></i> Min. {{ $member->min_transaksi }}x Pembelian Produk</span>
+                                        <span class="mt-syarat-text"><i class="fa-solid fa-bag-shopping"></i> Min. {{ $member->min_transaksi }}x Pembelian Produk</span>
                                         @if($showSyarat)
                                         <span class="mt-syarat-status {{ $meetsTransaksi ? 'ok' : 'kurang' }}">{{ $meetsTransaksi ? 'Terpenuhi' : 'Kurang ' . $kurangTransaksi . 'x' }}</span>
                                         @endif
                                     </div>
                                     <div class="mt-syarat-row">
-                                        <span><i class="fa-solid fa-wallet"></i> Min. Belanja {{ formatRupiahSingkat($member->min_pembelian) }}</span>
+                                        <span class="mt-syarat-text"><i class="fa-solid fa-wallet"></i> Min. Belanja {{ formatRupiahSingkat($member->min_pembelian) }}</span>
                                         @if($showSyarat)
                                         <span class="mt-syarat-status {{ $meetsBelanja ? 'ok' : 'kurang' }}">{{ $meetsBelanja ? 'Terpenuhi' : 'Kurang ' . formatRupiahSingkat($kurangBelanja) }}</span>
                                         @endif
