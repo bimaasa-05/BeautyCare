@@ -55,6 +55,7 @@ class PelangganDashboardController extends Controller
 
         $bookingAktif = Booking::where('id_pelanggan', $idPelanggan)
             ->whereIn('status', ['menunggu', 'dikonfirmasi', 'diproses'])
+            ->whereDate('tanggal', now()->toDateString())
             ->count();
         $riwayatTreatment = Booking::where('id_pelanggan', $idPelanggan)
             ->where('status', 'selesai')
