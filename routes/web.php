@@ -46,6 +46,7 @@ use App\Http\Controllers\KonsultasiPelangganController;
 use App\Http\Controllers\KasirKonsultasiController;
 use App\Http\Controllers\BeautycianKonsultasiController;
 use App\Http\Controllers\AdminKonsultasiController;
+use App\Http\Controllers\AdminLeaderboardController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -212,6 +213,9 @@ Route::middleware('auth')->group(function () {
 
         //Route Konsultasi Admin
         Route::get('/admin/konsultasi', [AdminKonsultasiController::class, 'index'])->name('admin.konsultasi.index');
+
+        //Route Papan Peringkat
+        Route::get('/admin/leaderboard', [AdminLeaderboardController::class, 'index'])->name('admin.leaderboard.index');
     });
 
 
