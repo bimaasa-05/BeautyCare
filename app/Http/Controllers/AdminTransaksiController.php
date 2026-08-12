@@ -18,7 +18,7 @@ class AdminTransaksiController extends Controller
         $dari       = $request->dari;
         $sampai     = $request->sampai;
 
-        $query = Transaksi::with('pelanggan', 'supplier', 'pengeluaran', 'user')
+        $query = Transaksi::with('pelanggan', 'supplier', 'pengeluaran', 'user', 'kasir')
             ->when($keyword, function ($q) use ($keyword) {
                 return $q->where(function ($q) use ($keyword) {
                     $q->where('no_invoice', 'like', "%{$keyword}%")
@@ -71,13 +71,13 @@ class AdminTransaksiController extends Controller
 
     public function invoice($id)
     {
-        $transaksi = Transaksi::with('pelanggan', 'supplier', 'detail', 'user')->findOrFail($id);
+        $transaksi = Transaksi::with('pelanggan', 'supplier', 'detail', 'user', 'kasir')->findOrFail($id);
         return view('kasir.invoice.show', compact('transaksi'));
     }
 
     public function invoicePdf($id)
     {
-        $transaksi = Transaksi::with('pelanggan', 'supplier', 'detail', 'user')->findOrFail($id);
+        $transaksi = Transaksi::with('pelanggan', 'supplier', 'detail', 'user', 'kasir')->findOrFail($id);
         $pdf = Pdf::loadView('kasir.invoice.pdf', compact('transaksi'));
         return $pdf->download('Invoice-' . $transaksi->no_invoice . '.pdf');
     }
@@ -85,7 +85,7 @@ class AdminTransaksiController extends Controller
 
     public function struk($id)
     {
-        $transaksi = Transaksi::with('pelanggan', 'supplier', 'detail', 'user')->findOrFail($id);
+        $transaksi = Transaksi::with('pelanggan', 'supplier', 'detail', 'user', 'kasir')->findOrFail($id);
         return view('kasir.struk.index', compact('transaksi'));
     }
     public function createPembelian()
