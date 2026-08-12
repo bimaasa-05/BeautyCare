@@ -17,7 +17,6 @@ class Pengaturan extends Model
         'konfirmasi_otomatis',
         'nama_salon',
         'telepon',
-        'no_wa',
         'jam_buka',
         'jam_tutup',
         'syarat_ketentuan',
