@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/dashboard.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/css/responsive.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/responsive.css') . '?v=3' }}">
 
     <style>
     .sidebar-toggle { display: none; background: none; border: none; cursor: pointer; padding: 8px; }
@@ -21,6 +21,11 @@
     .sidebar-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.3); z-index: 90; }
     .sidebar-overlay.active { display: block; }
     @media (max-width: 768px) { .sidebar-toggle { display: flex; align-items: center; } }
+    @media (max-width: 768px) {
+        .filter-bar { justify-content: flex-start !important; align-items: stretch !important; }
+        .filter-bar .relative { flex: 1 1 100%; }
+        .filter-bar input, .filter-bar select { width: 100% !important; }
+    }
 
     
     ::-webkit-scrollbar { width: 6px; height: 6px; }
@@ -129,7 +134,7 @@
                         </div>
                     </div>
 
-                    <form method="GET" action="" class="flex flex-wrap items-center justify-end gap-2 mb-4">
+                    <form method="GET" action="" class="flex flex-wrap items-center justify-end gap-2 mb-4 filter-bar">
                         <div class="relative">
                             <i class="fa-solid fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-[12px]"></i>
                             <input type="text" placeholder="Cari konsultasi..." name="keyword"
@@ -147,7 +152,7 @@
                     </form>
 
                     <div class="overflow-x-auto">
-                        <table class="w-full text-left table-enhanced">
+                        <table class="w-full text-left table-enhanced table-card-mobile">
                             <thead>
                                 <tr class="text-[11px] uppercase tracking-wider text-gray-400 border-b border-gray-100">
                                     <th class="px-3 py-3 font-semibold">Pelanggan</th>
@@ -162,7 +167,7 @@
                             <tbody>
                                 @forelse($konsultasi as $item)
                                 <tr class="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
-                                    <td class="px-3 py-3">
+                                    <td class="px-3 py-3" data-label="Pelanggan">
                                         <div class="flex items-center gap-2">
                                             <img src="{{ $item->pelanggan?->foto_url ?? 'https://ui-avatars.com/api/?name=%3F&background=FFE5EF&color=FF4F87&size=40' }}" class="w-8 h-8 rounded-full object-cover flex-shrink-0" alt="{{ $item->pelanggan->nm_pelanggan ?? '-' }}">
                                             <div>
@@ -171,17 +176,17 @@
                                             </div>
                                         </div>
                                     </td>
-                                    <td class="px-3 py-3">
+                                    <td class="px-3 py-3" data-label="Jadwal">
                                         <div class="text-[12px] text-gray-600 font-medium">{{ \Carbon\Carbon::parse($item->tanggal)->isoFormat('D MMM YYYY') }}</div>
                                         <div class="text-[10px] text-gray-400">{{ str_replace(':', '.', substr($item->jam, 0, 5)) }}</div>
                                     </td>
-                                    <td class="px-3 py-3">
+                                    <td class="px-3 py-3" data-label="Topik">
                                         <div class="text-[12px] font-semibold text-gray-700 max-w-[200px] truncate">{{ $item->topik }}</div>
                                         @if($item->pesan)
                                         <div class="text-[10px] text-gray-400 max-w-[200px] truncate">{{ $item->pesan }}</div>
                                         @endif
                                     </td>
-                                    <td class="px-3 py-3">
+                                    <td class="px-3 py-3" data-label="Mode">
                                         <span class="badge-status {{ $item->mode === 'online' ? 'bg-purple-50 text-purple-600' : 'bg-sky-50 text-sky-600' }}">
                                             <i class="fa-solid {{ $item->mode === 'online' ? 'fa-globe' : 'fa-store' }}"></i>
                                             {{ ucfirst($item->mode) }}
@@ -190,7 +195,7 @@
                                         <div class="text-[10px] text-gray-400 mt-1">{{ $item->media === 'whatsapp_chat' ? 'WhatsApp Chat' : 'WhatsApp Video Call' }}</div>
                                         @endif
                                     </td>
-                                    <td class="px-3 py-3">
+                                    <td class="px-3 py-3" data-label="Terapis">
                                         @if($item->karyawan)
                                         <div class="flex items-center gap-1.5">
                                             <i class="fa-solid fa-user text-gray-300 text-[10px]"></i>
@@ -200,13 +205,13 @@
                                         <span class="text-[11px] text-amber-500 italic">Belum ditugaskan</span>
                                         @endif
                                     </td>
-                                    <td class="px-3 py-3">
+                                    <td class="px-3 py-3" data-label="Status">
                                         <span class="badge-status badge-{{ $item->status }}">
                                             <i class="fa-solid {{ $item->status === 'menunggu' ? 'fa-clock' : ($item->status === 'dikonfirmasi' ? 'fa-check' : ($item->status === 'selesai' ? 'fa-circle-check' : 'fa-ban')) }} text-[9px]"></i>
                                             {{ ucfirst($item->status) }}
                                         </span>
                                     </td>
-                                    <td class="px-3 py-3 text-center">
+                                    <td class="px-3 py-3 text-center" data-label="">
                                         @if($item->status === 'menunggu')
                                         <div class="flex items-center justify-center gap-1.5">
                                             <button onclick="bukaKonfirmasi({{ $item->id_konsultasi }}, '{{ addslashes($item->topik) }}')"
@@ -310,6 +315,7 @@
     document.getElementById('tolakModal').addEventListener('click', function(e) { if (e.target === this) tutupTolak(); });
     document.addEventListener('keydown', function(e) { if (e.key === 'Escape') { tutupKonfirmasi(); tutupTolak(); } });
     </script>
+    <script src="{{ asset('assets/js/dashboard.js') }}"></script>
 </body>
 
 </html>

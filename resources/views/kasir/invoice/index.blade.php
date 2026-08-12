@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/dashboard.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/css/responsive.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/responsive.css') . '?v=3' }}">
 
     <style>
         .sidebar-toggle { display: none; background: none; border: none; cursor: pointer; padding: 8px; }
@@ -133,7 +133,7 @@
                         </a>
                     </form>
 
-                    <div class="overflow-x-auto"><table class="w-full text-left border-collapse">
+                    <div class="overflow-x-auto"><table class="w-full text-left border-collapse table-card-mobile">
                             <thead>
                                 <tr class="text-[11px] font-bold text-gray-400 uppercase border-b border-gray-100 bg-gray-50/50">
                                     <th class="py-3 px-4">#</th>
@@ -149,22 +149,22 @@
                             <tbody class="text-[13px] text-gray-700 divide-y divide-gray-50">
                                 @forelse ($invoices as $i)
                                     <tr class="hover:bg-gray-100 transition-colors duration-150">
-                                        <td class="py-3 px-4 text-gray-400 font-medium">{{ $loop->iteration }}</td>
-                                        <td class="py-3 px-4 font-semibold text-gray-700">{{ $i->no_invoice }}</td>
-                                        <td class="py-3 px-4">
+                                        <td class="py-3 px-4 text-gray-400 font-medium" data-label="#">{{ $loop->iteration }}</td>
+                                        <td class="py-3 px-4 font-semibold text-gray-700" data-label="No. Invoice">{{ $i->no_invoice }}</td>
+                                        <td class="py-3 px-4" data-label="Jenis">
                                             <span class="badge-status {{ $i->jenis_transaksi == 'Booking' ? 'badge-lunas' : ($i->jenis_transaksi == 'Pesanan Online' ? 'badge-pending' : '') }}">
                                                 {{ $i->jenis_transaksi ?? 'Penjualan' }}
                                             </span>
                                         </td>
-                                        <td class="py-3 px-4">
+                                        <td class="py-3 px-4" data-label="Pelanggan">
                                             <div class="flex items-center gap-2.5">
                                                 <img src="{{ $i->pelanggan?->foto_url ?? 'https://ui-avatars.com/api/?name=Unknown&background=FFE5EF&color=FF4F87&size=40' }}" class="w-8 h-8 rounded-full object-cover flex-shrink-0" alt="{{ $i->pelanggan->nm_pelanggan ?? '-' }}">
                                                 <span class="font-medium text-gray-700">{{ $i->pelanggan->nm_pelanggan ?? '-' }}</span>
                                             </div>
                                         </td>
-                                        <td class="py-3 px-4 text-gray-500">{{ \Carbon\Carbon::parse($i->tanggal)->format('d/m/Y') }}</td>
-                                        <td class="py-3 px-4 text-right font-semibold text-gray-700">Rp {{ number_format($i->total, 0, ',', '.') }}</td>
-                                        <td class="py-3 px-4 text-center">
+                                        <td class="py-3 px-4 text-gray-500" data-label="Tanggal">{{ \Carbon\Carbon::parse($i->tanggal)->format('d/m/Y') }}</td>
+                                        <td class="py-3 px-4 text-right font-semibold text-gray-700" data-label="Total">Rp {{ number_format($i->total, 0, ',', '.') }}</td>
+                                        <td class="py-3 px-4 text-center" data-label="Status">
                                             <span class="badge-status {{ $i->status == 'Lunas' ? 'badge-lunas' : 'badge-pending' }}">
                                                 @if ($i->status == 'Lunas')
                                                     <i class="fa-regular fa-circle-check"></i>
@@ -174,7 +174,7 @@
                                                 {{ $i->status }}
                                             </span>
                                         </td>
-                                        <td class="py-3 px-4 text-center">
+                                        <td class="py-3 px-4 text-center" data-label="">
                                             <a href="{{ route('kasir.invoice.show', $i->id_transaksi) }}" target="_blank"
                                                 class="inline-flex items-center gap-1.5 bg-pink-500 text-white text-[12px] font-semibold px-4 py-2 rounded-full hover:bg-pink-600 transition-all shadow-sm hover:shadow-md hover:shadow-pink-200">
                                                 <i class="fa-solid fa-print"></i> Cetak

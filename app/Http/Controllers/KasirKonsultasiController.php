@@ -14,7 +14,8 @@ class KasirKonsultasiController extends Controller
     {
         $query = Konsultasi::with(['pelanggan', 'karyawan'])
             ->orderByRaw("FIELD(status, 'menunggu', 'dikonfirmasi', 'selesai', 'ditolak')")
-            ->orderByDesc('tanggal');
+            ->orderByDesc('tanggal')
+            ->orderByDesc('id_konsultasi');
 
         if ($request->filled('status') && in_array($request->status, ['menunggu', 'dikonfirmasi', 'selesai', 'ditolak'])) {
             $query->where('status', $request->status);

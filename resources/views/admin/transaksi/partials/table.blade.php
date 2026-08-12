@@ -50,20 +50,21 @@
     </td>
     <td data-label="Admin" class="py-3.5 px-4">
         @php
-            $roleBadge = match($t->user->role ?? '') {
+            $petugas = $t->kasir ?? $t->user;
+            $roleBadge = match($petugas->role ?? '') {
                 'admin' => 'bg-purple-50 text-purple-600',
                 'kasir' => 'bg-amber-50 text-amber-600',
                 default => 'bg-gray-50 text-gray-500',
             };
-            $roleIcon = match($t->user->role ?? '') {
+            $roleIcon = match($petugas->role ?? '') {
                 'admin' => 'fa-solid fa-shield-halved',
                 'kasir' => 'fa-solid fa-user-tie',
                 default => 'fa-solid fa-user',
             };
         @endphp
         <div class="flex items-center gap-1.5">
-            <span class="text-gray-500 text-[12px]">{{ $t->user->nama ?? '-' }}</span>
-            @if ($t->user && in_array($t->user->role, ['admin', 'kasir']))
+            <span class="text-gray-500 text-[12px]">{{ $petugas->nama ?? '-' }}</span>
+            @if ($petugas && in_array($petugas->role, ['admin', 'kasir']))
                 <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-semibold {{ $roleBadge }}">
                     <i class="{{ $roleIcon }}"></i> {{ ucfirst($t->user->role) }}
                 </span>

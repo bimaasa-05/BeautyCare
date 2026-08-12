@@ -1,6 +1,10 @@
 {
   "resources/css/app.css": {
+<<<<<<< HEAD
     "file": "assets/app-aA5sPdnv.css",
+=======
+    "file": "assets/app-7_uDO_e8.css",
+>>>>>>> 36ced5fbeefb00e7d80edd5cc24006572ac495ff
     "src": "resources/css/app.css",
     "isEntry": true,
     "name": "app",
