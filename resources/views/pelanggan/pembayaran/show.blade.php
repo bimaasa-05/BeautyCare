@@ -363,6 +363,8 @@
         letter-spacing: 1.5px;
         font-family: 'Courier New', monospace;
         margin-top: 4px;
+        overflow-wrap: anywhere;
+        word-break: break-all;
     }
 
     .bank-card-copy {
@@ -445,6 +447,8 @@
         background: #ECFDF5;
         border: 1px solid #A7F3D0;
         border-radius: 12px;
+        gap: 10px;
+        flex-wrap: wrap;
     }
 
     .pm-saldo-info span {
@@ -560,6 +564,8 @@
         padding: 14px;
         margin-top: 8px;
         font-variant-numeric: tabular-nums;
+        overflow-wrap: anywhere;
+        word-break: break-all;
     }
 
     .pm-copy-btn {
@@ -786,6 +792,8 @@
         .expired-modal .em-actions {
             grid-template-columns: 1fr;
         }
+        .pm-va-number { font-size: 20px; letter-spacing: 1px; }
+        .bank-card-va { font-size: 17px; letter-spacing: 0.5px; }
     }
 
     .expired-modal .em-btn {

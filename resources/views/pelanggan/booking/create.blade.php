@@ -146,6 +146,11 @@
         display: block;
     }
 
+    .custom-select-dropdown.open-up {
+        top: auto;
+        bottom: calc(100% + 4px);
+    }
+
     .custom-select-dropdown .csd-item {
         padding: 10px 16px;
         font-size: 13px;
@@ -683,10 +688,45 @@
         display: block;
     }
 
+    .date-calendar-popup.open-up {
+        top: auto;
+        bottom: calc(100% + 6px);
+        transform-origin: bottom center;
+        animation-name: curtainUnrollUp;
+    }
+
     @keyframes curtainUnroll {
         0%   { transform: scaleY(0); opacity: 0.2; }
         55%  { transform: scaleY(1.03); opacity: 1; }
         100% { transform: scaleY(1); opacity: 1; }
+    }
+
+    @keyframes curtainUnrollUp {
+        0%   { transform: scaleY(0); opacity: 0.2; }
+        55%  { transform: scaleY(1.03); opacity: 1; }
+        100% { transform: scaleY(1); opacity: 1; }
+    }
+
+    @media (max-width: 480px) {
+        .date-calendar-popup {
+            position: fixed;
+            left: 50%;
+            transform: translateX(-50%);
+            min-width: 0;
+            width: calc(100vw - 40px);
+            max-width: 340px;
+            max-height: calc(100vh - 16px);
+            overflow-y: auto;
+            top: auto;
+            bottom: auto;
+            animation: curtainUnrollMobile 0.45s cubic-bezier(0.22, 0.61, 0.36, 1);
+        }
+    }
+
+    @keyframes curtainUnrollMobile {
+        0%   { transform: translateX(-50%) scaleY(0); opacity: 0.2; }
+        55%  { transform: translateX(-50%) scaleY(1.03); opacity: 1; }
+        100% { transform: translateX(-50%) scaleY(1); opacity: 1; }
     }
 
     .dcp-header {
@@ -812,6 +852,42 @@
 
     .dcp-days .dcp-day.selected .dcp-count {
         color: #FFD6E6;
+    }
+
+    /* Tanggal lampau: tampilan pudar */
+    .dcp-days .dcp-day.past {
+        color: #B9C0CE;
+        opacity: 0.55;
+        cursor: pointer;
+    }
+
+    .dcp-days .dcp-day.past:hover {
+        background: #EEF0F5;
+    }
+
+    .dcp-days .dcp-day.past.has-count {
+        background: #F5F6FA;
+        color: #B9C0CE;
+    }
+
+    .dcp-days .dcp-day.past.has-count:hover {
+        background: #EDEFF4;
+    }
+
+    .dcp-days .dcp-day.past .dcp-count {
+        color: #B9C0CE;
+    }
+
+    /* Feedback klik pada tanggal lampau (hanya tampilan, tidak bisa dipilih) */
+    .dcp-days .dcp-day.past-click {
+        background: #FFE3EE;
+        color: var(--primary);
+        opacity: 1;
+        box-shadow: inset 0 0 0 1.5px rgba(255, 79, 135, 0.4);
+    }
+
+    .dcp-days .dcp-day.past-click .dcp-count {
+        color: var(--primary);
     }
 
     .dcp-summary {
@@ -1516,6 +1592,9 @@
             updateTrigger();
             dropdown.classList.add('open');
             trigger.classList.add('open');
+            const rect = dropdown.getBoundingClientRect();
+            const flip = rect.bottom > window.innerHeight - 8 && rect.top > window.innerHeight / 2;
+            dropdown.classList.toggle('open-up', flip);
         }
 
         function closeDropdown() {
@@ -1560,6 +1639,7 @@
     let dcpMonth = dcpNow.getMonth();
     let dcpYear = dcpNow.getFullYear();
     let dcpSelected = null;
+    let pastClicked = null;
 
     const tanggalInput = document.getElementById('tanggalInput');
     const dcpPopup = document.getElementById('dateCalendarPopup');
@@ -1607,9 +1687,11 @@
             btn.className = 'dcp-day';
             btn.textContent = d;
 
+            if (isPast) btn.classList.add('past');
             if (isToday) btn.classList.add('today');
             if (count > 0) btn.classList.add('has-count');
             if (isSelected) btn.classList.add('selected');
+            if (isPast && pastClicked === iso) btn.classList.add('past-click');
 
             if (count > 0) {
                 const span = document.createElement('span');
@@ -1624,13 +1706,23 @@
                 spawnBubble(btn, btn.clientWidth / 2, btn.clientHeight / 2, 40, true);
                 showCalendarSummary(d, total, data, isPast);
                 if (!isPast) {
+                    pastClicked = null;
                     dcpSelected = iso;
                     dcpOke.style.display = 'block';
                     renderCalendarPopup();
                 } else {
-                    dcpSelected = null;
-                    dcpOke.style.display = 'none';
-                    renderCalendarPopup();
+                    if (dcpSelected) {
+                        dcpSelected = null;
+                        dcpOke.style.display = 'none';
+                        dcpDays.querySelectorAll('.dcp-day.selected').forEach(function(el) {
+                            el.classList.remove('selected');
+                        });
+                    }
+                    dcpDays.querySelectorAll('.dcp-day.past-click').forEach(function(el) {
+                        el.classList.remove('past-click');
+                    });
+                    pastClicked = iso;
+                    btn.classList.add('past-click');
                 }
             });
 
@@ -1659,6 +1751,27 @@
     function openCalendarPopup() {
         dcpPopup.classList.add('open');
         renderCalendarPopup();
+        const rect = tanggalInput.getBoundingClientRect();
+        const popupH = dcpPopup.offsetHeight;
+        const spaceBelow = window.innerHeight - rect.bottom;
+        const isMobile = window.matchMedia('(max-width: 480px)').matches;
+        if (isMobile) {
+            dcpPopup.style.left = '';
+            if (spaceBelow < popupH + 12 && rect.top > popupH + 12) {
+                dcpPopup.style.top = Math.max(8, rect.top - popupH - 6) + 'px';
+                dcpPopup.classList.add('open-up');
+            } else {
+                dcpPopup.style.top = Math.min(rect.bottom + 6, window.innerHeight - popupH - 8) + 'px';
+                dcpPopup.classList.remove('open-up');
+            }
+        } else {
+            dcpPopup.style.top = '';
+            if (spaceBelow < popupH + 12 && rect.top > popupH + 12) {
+                dcpPopup.classList.add('open-up');
+            } else {
+                dcpPopup.classList.remove('open-up');
+            }
+        }
     }
 
     function spawnBubble(target, x, y, size, small) {
@@ -1745,6 +1858,12 @@
             closeCalendarPopup();
         }
     });
+
+    window.addEventListener('scroll', function() {
+        if (dcpPopup.classList.contains('open')) {
+            closeCalendarPopup();
+        }
+    }, { passive: true });
 
     function updateJamSlots() {
         if (!jamSelect) return;

@@ -160,7 +160,7 @@
     }
 
     /* ─── Dokumen Cetak Standalone (?print=1) ─── */
-    .print-toolbar { display: flex; justify-content: center; align-items: center; gap: 10px; padding: 18px 16px 8px; }
+    .print-toolbar { display: flex; justify-content: center; align-items: center; gap: 10px; padding: 18px 16px 8px; flex-wrap: wrap; }
     .print-toolbar .btn-print { display: inline-flex; align-items: center; gap: 8px; background: var(--primary); color: #fff; font-size: 13px; font-weight: 600; font-family: 'Poppins', sans-serif; padding: 10px 26px; border: none; border-radius: 100px; cursor: pointer; box-shadow: 0 4px 14px rgba(255, 79, 135, 0.3); transition: all 0.2s ease; }
     .print-toolbar .btn-print:hover { background: var(--primary-hover); transform: translateY(-1px); box-shadow: 0 6px 18px rgba(255, 79, 135, 0.4); }
     .print-toolbar .btn-close { display: inline-flex; align-items: center; gap: 8px; background: #fff; color: var(--gray); font-size: 13px; font-weight: 600; font-family: 'Poppins', sans-serif; padding: 10px 26px; border: 1.5px solid var(--border); border-radius: 100px; cursor: pointer; transition: all 0.2s ease; }

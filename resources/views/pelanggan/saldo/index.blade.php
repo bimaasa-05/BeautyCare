@@ -33,7 +33,7 @@
         border-radius: 20px; padding: 28px 32px; margin-bottom: 24px;
         position: relative; overflow: hidden; border: 1px solid rgba(255,79,135,0.08);
     }
-    .page-header-premium .ph-content { display: flex; align-items: center; justify-content: space-between; position: relative; z-index: 1; }
+    .page-header-premium .ph-content { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; position: relative; z-index: 1; }
     .page-header-premium .ph-left { display: flex; align-items: center; gap: 16px; }
     .page-header-premium .ph-icon-wrap {
         width: 52px; height: 52px; border-radius: 16px;
@@ -66,7 +66,7 @@
         background: radial-gradient(circle, rgba(16,185,129,0.1) 0%, transparent 70%);
     }
     .saldo-label { font-size: 14px; font-weight: 600; color: #047857; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
-    .saldo-amount { font-size: 48px; font-weight: 800; color: #065F46; margin: 0; font-variant-numeric: tabular-nums; }
+    .saldo-amount { font-size: 48px; font-weight: 800; color: #065F46; margin: 0; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
     .saldo-desc { font-size: 13px; color: #047857; margin-top: 8px; opacity: 0.8; }
 
     .saldo-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
@@ -138,6 +138,11 @@
         .mutasi-table tbody td { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border: none; font-size: 13px; }
         .mutasi-table tbody td::before { content: attr(data-label); font-weight: 600; color: var(--gray); font-size: 11px; text-transform: uppercase; }
         .page-header-premium { padding: 22px 20px; }
+    }
+
+    @media (max-width: 480px) {
+        .saldo-amount { font-size: 28px; }
+        .saldo-big-card { padding: 24px 16px; }
     }
     </style>
 </head>
