@@ -612,7 +612,7 @@
         font-family: 'Poppins', sans-serif;
         text-align: center;
         text-decoration: none;
-        margin-top: auto;
+        margin-top: 16px;
     }
 
     .mt-btn.primary {

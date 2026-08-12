@@ -109,11 +109,14 @@
             titleEl.textContent = src.getAttribute('data-confirm-title') || 'Konfirmasi';
             bodyEl.innerHTML = src.getAttribute('data-confirm-body') || 'Apakah Anda yakin ingin melanjutkan?';
             iconEl.className = 'fa-solid ' + (src.getAttribute('data-confirm-icon') || 'fa-circle-question');
+            var tipe = src.getAttribute('data-confirm-type') || 'danger';
+            tipe = (tipe === 'danger' || tipe === 'warning') ? 'danger' : 'success';
             ['danger', 'warning', 'success', 'purple', 'brand'].forEach(function (t) {
                 box.classList.remove('cp-' + t);
             });
-            box.classList.add('cp-' + (src.getAttribute('data-confirm-type') || 'danger'));
+            box.classList.add('cp-' + tipe);
             yesBtn.textContent = src.getAttribute('data-confirm-yes') || 'Ya, Lanjutkan';
+            cancelBtn.style.display = '';
             modal.classList.add('show');
         }
 
@@ -164,6 +167,24 @@
                 el.click();
             }
         });
+
+        window.__confirmPremiumShow = function (opts) {
+            opts = opts || {};
+            titleEl.textContent = opts.title || 'Perhatian';
+            bodyEl.innerHTML = opts.body || '';
+            iconEl.className = 'fa-solid ' + (opts.icon || 'fa-circle-exclamation');
+            var tipe = opts.type || 'success';
+            tipe = (tipe === 'danger' || tipe === 'warning') ? 'danger' : 'success';
+            ['danger', 'warning', 'success', 'purple', 'brand'].forEach(function (t) {
+                box.classList.remove('cp-' + t);
+            });
+            box.classList.add('cp-' + tipe);
+            yesBtn.textContent = opts.yes || 'Oke';
+            cancelBtn.style.display = 'none';
+            pendingForm = null;
+            pendingEl = null;
+            modal.classList.add('show');
+        };
     }
 
     if (document.body) { build(); }
