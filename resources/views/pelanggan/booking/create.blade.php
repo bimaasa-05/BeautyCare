@@ -457,6 +457,12 @@
         resize: vertical;
     }
 
+    /* Hilangkan kursor blokir pada dropdown jam booking */
+    #jamSlot,
+    select.fg-input {
+        cursor: pointer !important;
+    }
+
     /* ─── Summary Card Premium ─── */
     .summary-card-premium {
         background: linear-gradient(135deg, #FFF5F8 0%, #FFE5EF 50%, #FFD6E6 100%);
@@ -1265,7 +1271,7 @@
                                         </div>
                                     </div>
                                     <div style="margin-top:6px;">
-                                        <span style="font-size:10px;color:#9CA3AF;"><i class="fa-regular fa-calendar"></i> Klik ikon tanggal untuk melihat kalender riwayat treatment Anda</span>
+                                        <span style="font-size:10px;color:#9CA3AF;"><i class="fa-regular fa-calendar"></i> Klik ikon tanggal untuk melihat jadwal treatment semua pelanggan</span>
                                     </div>
                                 </div>
 
@@ -1281,7 +1287,7 @@
                                         @endforeach
                                     </select>
                                     <div style="margin-top:6px;font-size:11px;color:var(--gray);">
-                                        <i class="fa-solid fa-circle-info"></i> Slot yang sudah dibooking terapis (termasuk durasi layanan) otomatis dinonaktifkan
+                                        <i class="fa-solid fa-circle-info"></i> Slot yang sudah dibooking pelanggan lain (termasuk durasi layanan) otomatis dinonaktifkan dan ditandai "Sudah Dibooking"
                                     </div>
                                 </div>
                             </div>
@@ -1401,7 +1407,7 @@
     function tambahLayanan() {
         const select = document.getElementById('id_layanan_picker');
         if (!select.value) {
-            alert('Silakan pilih layanan terlebih dahulu.');
+            window.__confirmPremiumShow({ title: 'Pilih Layanan', body: 'Silakan pilih layanan terlebih dahulu sebelum menambahkan ke daftar.', icon: 'fa-circle-exclamation' });
             return;
         }
         const opt = select.options[select.selectedIndex];
@@ -1410,7 +1416,7 @@
         const harga = parseInt(opt.getAttribute('data-harga'));
 
         if (selectedServices.some(s => s.id_layanan === id)) {
-            alert('Layanan "' + nama + '" sudah ditambahkan.');
+            window.__confirmPremiumShow({ title: 'Layanan Sudah Ditambahkan', body: 'Layanan "' + nama + '" sudah ada di daftar layanan.', icon: 'fa-circle-exclamation' });
             return;
         }
 
@@ -1629,8 +1635,16 @@
     }
 
     // Set default & init custom select
-    const bookedJamByKaryawan = @json($bookedJamByKaryawan);
+    let bookedJamByKaryawan = @json($bookedJamByKaryawan);
+    let bookedJamGlobal = @json($bookedJamGlobal);
     const jamSelect = document.getElementById('jamSlot');
+    const jamBaseText = {};
+    if (jamSelect) {
+        for (let i = 0; i < jamSelect.options.length; i++) {
+            const opt = jamSelect.options[i];
+            if (opt.value) jamBaseText[opt.value] = opt.text;
+        }
+    }
 
     // ─── Calendar Popup (riwayat treatment pelanggan) ───
     const bookingsPerDay = @json($bookingsPerDay);
@@ -1650,12 +1664,12 @@
 
     function getDataForDate(year, month, day) {
         const key = year + '-' + String(month + 1).padStart(2, '0') + '-' + String(day).padStart(2, '0');
-        return bookingsPerDay[key] || { selesai: 0, dibatalkan: 0 };
+        return bookingsPerDay[key] || { total: 0, aktif: 0, selesai: 0, dibatalkan: 0 };
     }
 
     function getCountForDate(year, month, day) {
         const data = getDataForDate(year, month, day);
-        return (data.selesai || 0) + (data.dibatalkan || 0);
+        return data.total || 0;
     }
 
     function renderCalendarPopup() {
@@ -1702,7 +1716,7 @@
 
             btn.addEventListener('click', function() {
                 const data = getDataForDate(dcpYear, dcpMonth, d);
-                const total = (data.selesai || 0) + (data.dibatalkan || 0);
+                const total = data.total || 0;
                 spawnBubble(btn, btn.clientWidth / 2, btn.clientHeight / 2, 40, true);
                 showCalendarSummary(d, total, data, isPast);
                 if (!isPast) {
@@ -1737,6 +1751,7 @@
         const meta = document.getElementById('dcpSummaryMeta');
         if (count > 0) {
             const parts = [];
+            if (data.aktif) parts.push(data.aktif + ' Aktif');
             if (data.selesai) parts.push(data.selesai + ' Selesai');
             if (data.dibatalkan) parts.push(data.dibatalkan + ' Dibatalkan');
             meta.textContent = parts.join(' · ');
@@ -1839,6 +1854,7 @@
         if (dcpSelected) {
             tanggalInput.value = dcpSelected;
             tanggalInput.dispatchEvent(new Event('change', { bubbles: true }));
+            refreshJamSlots(dcpSelected);
         }
         closeCalendarPopup();
     });
@@ -1849,6 +1865,7 @@
         dcpSelected = todayIso;
         tanggalInput.value = todayIso;
         tanggalInput.dispatchEvent(new Event('change', { bubbles: true }));
+        refreshJamSlots(todayIso);
         closeCalendarPopup();
     });
 
@@ -1872,13 +1889,28 @@
         for (let i = 0; i < jamSelect.options.length; i++) {
             const opt = jamSelect.options[i];
             if (!opt.value) continue;
-            const penuh = booked.indexOf(opt.value) !== -1;
-            opt.disabled = penuh || !karyawanId;
-            opt.textContent = opt.value.replace(':', '.') + (penuh ? ' — Sudah Dibooking' : '');
+            const globalPenuh = bookedJamGlobal.indexOf(opt.value) !== -1;
+            const penuh = globalPenuh || booked.indexOf(opt.value) !== -1;
+            opt.disabled = penuh;
+            opt.text = penuh ? (jamBaseText[opt.value] + ' — Sudah Dibooking') : jamBaseText[opt.value];
         }
         if (jamSelect.value && jamSelect.options[jamSelect.selectedIndex].disabled) {
             jamSelect.value = '';
         }
+    }
+
+    async function refreshJamSlots(tanggal) {
+        if (!jamSelect || !tanggal) return;
+        try {
+            const res = await fetch('/pelanggan/booking/slot?tanggal=' + encodeURIComponent(tanggal), {
+                headers: { 'Accept': 'application/json' }
+            });
+            if (!res.ok) return;
+            const data = await res.json();
+            bookedJamGlobal = data.bookedJamGlobal || [];
+            bookedJamByKaryawan = data.bookedJamByKaryawan || {};
+            updateJamSlots();
+        } catch (e) {}
     }
 
     document.addEventListener('DOMContentLoaded', function() {
@@ -1911,7 +1943,7 @@
         document.getElementById('bookingForm').addEventListener('submit', function(e) {
             if (selectedServices.length === 0) {
                 e.preventDefault();
-                alert('Silakan tambah minimal 1 layanan.');
+                window.__confirmPremiumShow({ title: 'Belum Ada Layanan', body: 'Silakan tambah minimal 1 layanan sebelum mengonfirmasi booking.', icon: 'fa-circle-exclamation' });
             }
         });
     });
@@ -1927,6 +1959,7 @@
     if (dateEl) dateEl.textContent = now.toLocaleDateString('id-ID', options);
     </script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
+    @include('partials.confirm-modal')
 </body>
 
 </html>
