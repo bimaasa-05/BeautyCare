@@ -74,7 +74,7 @@
                         </a>
                     </div>
 
-                    <form action="{{ route('kasir.reservasi.store') }}" method="POST">
+                    <form action="{{ route('kasir.reservasi.store') }}" method="POST" id="formReservasi">
                         @csrf
 
                         @if($errors->any())
@@ -84,6 +84,19 @@
                                 @endforeach
                             </div>
                         @endif
+
+                        @php
+                            $oldRowsData = [];
+                            if (old('id_layanan')) {
+                                foreach (old('id_layanan') as $i => $idL) {
+                                    $oldRowsData[] = [
+                                        'id_layanan' => $idL,
+                                        'harga' => old('harga')[$i] ?? '',
+                                        'diskon' => old('diskon')[$i] ?? '',
+                                    ];
+                                }
+                            }
+                        @endphp
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                             <div class="form-group">
@@ -251,17 +264,11 @@
                                     </div>
                                     <div class="md:col-span-3">
                                         <label class="text-[11px] font-medium text-gray-500 mb-1 block">Harga</label>
-                                        <div class="relative">
-                                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[13px] font-medium pointer-events-none">Rp</span>
-                                            <input type="text" name="harga[]" class="form-input-custom harga-input pl-10" placeholder="0" readonly>
-                                        </div>
+                                        <input type="text" name="harga[]" class="form-input-custom harga-input" placeholder="Rp 0" readonly>
                                     </div>
                                     <div class="md:col-span-3">
                                         <label class="text-[11px] font-medium text-gray-500 mb-1 block">Diskon</label>
-                                        <div class="relative">
-                                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[13px] font-medium pointer-events-none">Rp</span>
-                                            <input type="text" name="diskon[]" class="form-input-custom diskon-input pl-10" placeholder="0" value="0" oninput="hitungSubtotal(this)" onblur="formatDiskon(this)">
-                                        </div>
+                                        <input type="text" name="diskon[]" class="form-input-custom diskon-input" placeholder="Rp 0" value="Rp 0" oninput="hitungSubtotal(this)" onblur="formatDiskon(this)">
                                     </div>
                                     <div class="md:col-span-2 flex items-center gap-2">
                                         <div class="flex-1">
@@ -340,7 +347,7 @@
                 const harga = parseFloat(row.querySelector('.harga-input').value.replace(/[^0-9]/g, '')) || 0;
                 const diskon = harga * diskonPct / 100;
                 var diskonBersih = Math.round(diskon);
-                row.querySelector('.diskon-input').value = diskonBersih.toLocaleString('id-ID');
+                row.querySelector('.diskon-input').value = 'Rp ' + diskonBersih.toLocaleString('id-ID');
                 hitungSubtotal(row.querySelector('.diskon-input'));
             });
         }
@@ -351,7 +358,11 @@
             const newRow = firstRow.cloneNode(true);
 
             newRow.querySelectorAll('input').forEach(function(input) {
-                input.value = '';
+                if (input.classList.contains('diskon-input')) {
+                    input.value = 'Rp 0';
+                } else {
+                    input.value = '';
+                }
             });
 
             const newSelect = newRow.querySelector('select.layanan-select');
@@ -376,19 +387,62 @@
             hitungGrandTotal();
         }
 
+        function restoreOldRows(rows) {
+            const container = document.getElementById('layanan-rows');
+            const firstRow = container.querySelector('.layanan-row');
+            if (!firstRow || !rows.length) return;
+            container.innerHTML = '';
+
+            rows.forEach(function(r) {
+                const newRow = firstRow.cloneNode(true);
+
+                newRow.querySelectorAll('input').forEach(function(input) {
+                    input.value = '';
+                });
+
+                const hargaInput = newRow.querySelector('.harga-input');
+                const diskonInput = newRow.querySelector('.diskon-input');
+                const newSelect = newRow.querySelector('select.layanan-select');
+
+                if (newSelect) {
+                    newSelect.selectedIndex = 0;
+                    if (r.id_layanan) {
+                        for (let i = 0; i < newSelect.options.length; i++) {
+                            if (String(newSelect.options[i].value) === String(r.id_layanan)) {
+                                newSelect.selectedIndex = i;
+                                break;
+                            }
+                        }
+                    }
+                    const wrapper = newSelect.closest('.custom-select-wrapper');
+                    if (wrapper) bindCustomSelect(wrapper);
+                }
+
+                const hargaNum = parseInt(String(r.harga || '0').replace(/[^0-9]/g, '')) || 0;
+                hargaInput.value = 'Rp ' + hargaNum.toLocaleString('id-ID');
+                const diskonNum = parseInt(String(r.diskon || '0').replace(/[^0-9]/g, '')) || 0;
+                diskonInput.value = 'Rp ' + diskonNum.toLocaleString('id-ID');
+
+                container.appendChild(newRow);
+                hitungSubtotal(diskonInput);
+            });
+
+            hitungGrandTotal();
+        }
+
         document.addEventListener('change', function(e) {
             if (e.target.classList.contains('layanan-select')) {
                 const row = e.target.closest('.layanan-row');
                 const selected = e.target.options[e.target.selectedIndex];
                 const harga = selected.getAttribute('data-harga') || 0;
-                row.querySelector('.harga-input').value = parseInt(harga).toLocaleString('id-ID');
+                row.querySelector('.harga-input').value = 'Rp ' + parseInt(harga).toLocaleString('id-ID');
 
                 const pelangganSelect = document.getElementById('id_pelanggan');
                 const opt = pelangganSelect.options[pelangganSelect.selectedIndex];
                 const diskonPct = opt ? parseFloat(opt.dataset.diskon) || 0 : 0;
                 const diskon = parseFloat(harga) * diskonPct / 100;
                 var diskonBersih = Math.round(diskon);
-                row.querySelector('.diskon-input').value = diskonBersih.toLocaleString('id-ID');
+                row.querySelector('.diskon-input').value = 'Rp ' + diskonBersih.toLocaleString('id-ID');
 
                 hitungSubtotal(row.querySelector('.diskon-input'));
             }
@@ -550,7 +604,7 @@
 
         function formatDiskon(el) {
             var val = el.value.replace(/[^0-9]/g, '');
-            el.value = val ? parseInt(val).toLocaleString('id-ID') : '0';
+            el.value = val ? 'Rp ' + parseInt(val).toLocaleString('id-ID') : 'Rp 0';
             hitungSubtotal(el);
         }
 
@@ -567,6 +621,11 @@
             initCustomSelects();
             const pelangganSelect = document.getElementById('id_pelanggan');
             onPelangganChange(pelangganSelect);
+
+            const OLD_ROWS = @json($oldRowsData);
+            if (OLD_ROWS.length > 0) {
+                restoreOldRows(OLD_ROWS);
+            }
 
             let slotDataCache = { slots: @json($slotJam), booked: @json($bookedJamByKaryawan) };
 
@@ -607,7 +666,7 @@ if (karyawanSelect) {
             applyJamAvailability();
 
             // Normalize harga[] & diskon[] before submit (strip dots from Indonesian format)
-            document.querySelector('form').addEventListener('submit', function() {
+            document.getElementById('formReservasi').addEventListener('submit', function() {
                 document.querySelectorAll('input[name="harga[]"]').forEach(function(el) {
                     el.value = el.value.replace(/[^0-9]/g, '');
                 });
@@ -616,154 +675,8 @@ if (karyawanSelect) {
                 });
             });
         });
-
-        // Searchable Select for Pelanggan (copied from Transaksi)
-        function searchableSelect() {
-            return {
-                open: false,
-                query: '',
-                options: [],
-                value: '',
-                selectedText: '',
-                highlight: -1,
-                init(selectEl, options, initial) {
-                    this.options = options;
-                    if (initial && String(initial) !== '') {
-                        this.value = String(initial);
-                        const found = options.find(o => String(o.value) === String(initial));
-                        if (found) {
-                            this.query = found.label;
-                            this.selectedText = found.label;
-                        }
-                    }
-                    this.$watch('value', v => {
-                        if (String(selectEl.value) !== String(v)) {
-                            selectEl.value = v;
-                            selectEl.dispatchEvent(new Event('change'));
-                        }
-                    });
-                },
-                get filtered() {
-                    const q = this.query.toLowerCase();
-                    return this.options.filter(o => !o.disabled && o.label.toLowerCase().includes(q));
-                },
-                onQueryInput() {
-                    if (this.query !== this.selectedText && this.value !== '') this.value = '';
-                },
-                moveHighlight(dir) {
-                    const n = this.filtered.length;
-                    if (!n) return;
-                    this.highlight = (this.highlight + dir + n) % n;
-                },
-                select(val, label) {
-                    this.value = String(val);
-                    this.query = label;
-                    this.selectedText = label;
-                    this.open = false;
-                    this.highlight = -1;
-                },
-                selectHighlighted() {
-                    const list = this.filtered;
-                    if (!list.length) return;
-                    const idx = this.highlight >= 0 && this.highlight < list.length ? this.highlight : 0;
-                    this.select(list[idx].value, list[idx].label);
-                }
-            };
-        }
-
-        function initCustomSelects() {
-            document.querySelectorAll('.custom-select-wrapper').forEach(function(wrapper) {
-                bindCustomSelect(wrapper);
-            });
-            document.addEventListener('click', function() {
-                closeCustomDropdowns();
-            });
-        }
-
-        function bindCustomSelect(wrapper) {
-            var oldTrigger = wrapper.querySelector('.custom-select-trigger');
-            var oldDropdown = wrapper.querySelector('.custom-select-dropdown');
-            if (oldTrigger) oldTrigger.remove();
-            if (oldDropdown) oldDropdown.remove();
-
-            var select = wrapper.querySelector('select');
-            if (!select) return;
-
-            select.style.display = 'none';
-
-            var trigger = document.createElement('div');
-            trigger.className = 'custom-select-trigger form-input-custom';
-
-            var triggerText = document.createElement('span');
-            var idx = select.selectedIndex;
-            triggerText.textContent = idx >= 0 ? select.options[idx].text : '-- Pilih --';
-
-            var arrow = document.createElement('i');
-            arrow.className = 'fa-solid fa-chevron-down';
-
-            trigger.appendChild(triggerText);
-            trigger.appendChild(arrow);
-
-            var dropdown = document.createElement('div');
-            dropdown.className = 'custom-select-dropdown';
-
-            for (var i = 0; i < select.options.length; i++) {
-                (function(idx) {
-                    var opt = select.options[idx];
-                    var optDiv = document.createElement('div');
-                    optDiv.className = 'custom-select-option';
-                    if (opt.selected) optDiv.classList.add('selected');
-                    if (opt.disabled) optDiv.classList.add('custom-select-option-disabled');
-                    optDiv.textContent = opt.text;
-
-                    for (var j = 0; j < opt.attributes.length; j++) {
-                        var attr = opt.attributes[j];
-                        if (attr.name.indexOf('data-') === 0) {
-                            optDiv.setAttribute(attr.name, attr.value);
-                        }
-                    }
-
-                    optDiv.addEventListener('click', function(e) {
-                        e.stopPropagation();
-                        if (opt.disabled) return;
-                        select.selectedIndex = idx;
-                        triggerText.textContent = select.options[idx].text;
-                        dropdown.querySelectorAll('.custom-select-option').forEach(function(o) {
-                            o.classList.remove('selected');
-                        });
-                        this.classList.add('selected');
-                        select.dispatchEvent(new Event('change', { bubbles: true }));
-                        closeCustomDropdowns();
-                    });
-                    dropdown.appendChild(optDiv);
-                })(i);
-            }
-
-            trigger.addEventListener('click', function(e) {
-                e.stopPropagation();
-                var isOpen = dropdown.style.display === 'block';
-                closeCustomDropdowns();
-                if (!isOpen) {
-                    dropdown.style.display = 'block';
-                    trigger.classList.add('open');
-                }
-            });
-
-            wrapper.insertBefore(trigger, select);
-            wrapper.appendChild(dropdown);
-        }
-
-        function closeCustomDropdowns() {
-            document.querySelectorAll('.custom-select-dropdown').forEach(function(d) {
-                d.style.display = 'none';
-            });
-            document.querySelectorAll('.custom-select-trigger').forEach(function(t) {
-                t.classList.remove('open');
-            });
-        }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            initCustomSelects();
+    </script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
 </body>
+
 </html>

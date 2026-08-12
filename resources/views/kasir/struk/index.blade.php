@@ -10,17 +10,19 @@
         .status-box { transition: all 0.2s ease; }
         pre.struk-preview {
             font-family: 'Courier New', Courier, monospace;
-            font-size: 12px;
-            line-height: 1.5;
+            font-size: 15px;
+            font-weight: 700;
+            line-height: 1.65;
             color: #000;
             background: #fff;
             white-space: pre;
-            width: 58mm;
+            width: 360px;
             max-width: 100%;
             margin: 0 auto;
             border: 1px dashed #e2e8f0;
-            border-radius: 10px;
-            padding: 12px 8px;
+            border-radius: 12px;
+            padding: 18px 14px;
+            box-shadow: 0 4px 16px -6px rgba(0,0,0,0.08);
         }
         @media print {
             .no-print { display: none !important; }
@@ -30,75 +32,99 @@
 <body class="bg-gray-100 min-h-screen">
 
     @php
-        $sep   = '--------------------------------';
-        $garis = '================================';
+        // ===== Data toko (dari tabel pengaturan, fallback ke contoh) =====
+        $pg = \Illuminate\Support\Facades\DB::table('pengaturan')->first();
+        $namaToko = ($pg->nama_salon ?? '') ?: 'BeautyCare Official';
+        $telpToko = ($pg->telepon ?? '') ?: '0101010001';
+        $alamat1 = 'Jl. Bandung dan Indramayu';
+        $alamat2 = 'Sahabatan, Kota, oslo';
 
-        $fmt = function ($v) {
-            return number_format((float) $v, 0, ',', '.');
-        };
+        // ===== Konstanta =====
+        $sep   = str_repeat('-', 32);
+        $garis = str_repeat('=', 32);
+        $fmt   = fn ($v) => number_format((float) $v, 0, ',', '.');
 
-        // Baris dua kolom: label kiri, nilai kanan (lebar total 32)
-        $row = function ($label, $value, $bold = false) use ($fmt) {
-            $left  = mb_substr((string) $label, 0, 8);
-            $right = mb_substr((string) $value, 0, 24);
-            return ($bold ? '[RB]' : '') . str_pad($left, 8) . str_pad($right, 24, ' ', STR_PAD_LEFT);
-        };
-
-        $line = [];
-
-        // Header
-        $line[] = '[CB]BEAUTYCARE';
-        $line[] = '[C]Salon & Beauty Treatment';
-        $line[] = '[C]Jl. Contoh No. 123, Kota';
-        $line[] = '[C]Telp: 0812-3456-7890';
-        $line[] = '[C]' . $sep;
-
-        // Info
-        $line[] = $row('No', $transaksi->no_invoice);
-        $line[] = $row('Tgl', \Carbon\Carbon::parse($transaksi->tanggal)->format('d/m/Y H:i'));
-        if ($transaksi->user) {
-            $line[] = $row('Kasir', $transaksi->user->nama);
+        // Waktu pembuatan transaksi (jam dari created_at; fallback jam nyata bila 00:00)
+        $wkt = $transaksi->created_at ?? $transaksi->tanggal;
+        if (!$wkt || \Carbon\Carbon::parse($wkt)->format('H:i') === '00:00') {
+            $wkt = now();
         }
-        $line[] = $row('Pel', $transaksi->pelanggan->nm_pelanggan ?? 'Umum');
-        $line[] = '[C]' . $sep;
+        $wktLabel = \Carbon\Carbon::parse($wkt)->format('d/m/Y H:i');
 
-        // Item
+        // ===== Builder baris: $d = untuk printer (marker), $p = untuk preview (padding) =====
+        $d = [];
+        $p = [];
+
+        $add = function ($teks = '', $a = 'left', $b = false) use (&$d, &$p) {
+            $mark = ($a === 'center' ? 'C' : ($a === 'right' ? 'R' : '')) . ($b ? 'B' : '');
+            $d[] = $mark ? '[' . $mark . ']' . $teks : $teks;
+            if ($a === 'center') {
+                $pad = max(0, floor((32 - mb_strlen($teks)) / 2));
+                $teks = str_repeat(' ', $pad) . $teks;
+            } elseif ($a === 'right') {
+                $teks = str_pad($teks, 32, ' ', STR_PAD_LEFT);
+            }
+            $p[] = $teks;
+        };
+
+        $row2 = function ($label, $value) use (&$d, &$p) {
+            $line = str_pad(mb_substr((string) $label, 0, 14), 14) . str_pad(mb_substr((string) $value, 0, 18), 18, ' ', STR_PAD_LEFT);
+            $d[] = $line;
+            $p[] = $line;
+        };
+
+        // ===== Header toko =====
+        $add(strtoupper($namaToko), 'center');
+        $add('Salon & Beauty Treatment', 'center');
+        $add($alamat1, 'center');
+        $add($alamat2, 'center');
+        $add('Telp. ' . $telpToko, 'center');
+        $add($sep, 'center');
+
+        // ===== Info transaksi =====
+        $row2('No. Transaksi', $transaksi->no_invoice);
+        $row2('Tanggal', $wktLabel);
+        $row2('Kasir', $transaksi->user->nama ?? '-');
+        $row2('Pelanggan', $transaksi->pelanggan->nm_pelanggan ?? 'Umum');
+        $add($sep, 'center');
+
+        // ===== Daftar item =====
         foreach (($transaksi->detail ?? []) as $item) {
-            $nm = mb_substr((string) ($item->nm_item ?? '-'), 0, 20);
-            $line[] = str_pad($nm, 20) . str_pad('Rp ' . $fmt($item->harga ?? 0), 12, ' ', STR_PAD_LEFT);
+            $row2($item->nm_item ?? '-', 'Rp ' . $fmt($item->harga ?? 0));
             if ((int) ($item->qty ?? 1) > 1) {
-                $line[] = '  x ' . (int) $item->qty . str_pad('Rp ' . $fmt($item->subtotal ?? 0), 24, ' ', STR_PAD_LEFT);
+                $add('    x ' . (int) $item->qty . '  ' . str_pad('Rp ' . $fmt($item->subtotal ?? 0), 20, ' ', STR_PAD_LEFT), 'left');
             }
         }
-        $line[] = '[C]' . $sep;
+        $add($sep, 'center');
 
-        // Ringkasan
-        $line[] = $row('Subtotal', 'Rp ' . $fmt($transaksi->subtotal));
+        // ===== Ringkasan =====
+        $row2('Subtotal', 'Rp ' . $fmt($transaksi->subtotal));
         if ((float) $transaksi->diskon > 0) {
-            $line[] = $row('Diskon', '- Rp ' . $fmt($transaksi->diskon));
+            $row2('Diskon', '- Rp ' . $fmt($transaksi->diskon));
         }
         if ((float) $transaksi->pajak > 0) {
-            $line[] = $row('Pajak', 'Rp ' . $fmt($transaksi->pajak));
+            $row2('Pajak', 'Rp ' . $fmt($transaksi->pajak));
         }
-        $line[] = $row('TOTAL', 'Rp ' . $fmt($transaksi->total), true);
-        $line[] = $row('Dibayar', 'Rp ' . $fmt($transaksi->dibayar));
-        $line[] = $row('Kembali', 'Rp ' . $fmt($transaksi->kembali));
-        $line[] = '[C]' . $sep;
+        $row2('TOTAL', 'Rp ' . $fmt($transaksi->total));
+        $row2('Dibayar', 'Rp ' . $fmt($transaksi->dibayar));
+        $row2('Kembali', 'Rp ' . $fmt($transaksi->kembali));
+        $add($sep, 'center');
 
-        // Pembayaran
-        $line[] = $row('Metode', $transaksi->metode_byr);
+        // ===== Metode & status =====
+        $row2('Metode', $transaksi->metode_byr);
         if ($transaksi->no_referensi) {
-            $line[] = $row('Ref', $transaksi->no_referensi);
+            $row2('No. Referensi', $transaksi->no_referensi);
         }
-        $line[] = $row('Status', $transaksi->status);
+        $row2('Status', $transaksi->status);
 
-        // Footer
-        $line[] = '[C]' . $garis;
-        $line[] = '[CB]TERIMA KASIH';
-        $line[] = '[C]Semoga puas dengan layanan kami';
-        $line[] = '[C]' . mb_substr('Dicetak ' . now()->format('d/m/Y H:i') . ' | ' . ($transaksi->user->nama ?? 'kasir'), 0, 32);
+        // ===== Footer =====
+        $add($garis, 'center');
+        $add('TERIMA KASIH', 'center');
+        $add('Semoga puas dengan layanan kami', 'center');
+        $add('Dicetak ' . now()->format('d/m/Y H:i'), 'center');
 
-        $strukTeks = implode("\n", $line);
+        $strukTeks = implode("\n", $d);
+        $strukPreview = implode("\n", $p);
     @endphp
 
     <div class="max-w-xl mx-auto p-6">
@@ -150,14 +176,15 @@
     <script src="{{ asset('assets/js/escpos-printer.js') }}"></script>
     <script>
         const STRUK_TEXT = @json($strukTeks);
+        const STRUK_PREVIEW = @json($strukPreview);
 
         const btnConnect = document.getElementById('btnConnect');
         const btnPrint = document.getElementById('btnPrint');
         const statusBox = document.getElementById('statusBox');
         const statusText = document.getElementById('statusText');
 
-        // Tampilkan pratinjau
-        document.getElementById('strukPreview').textContent = STRUK_TEXT;
+        // Tampilkan pratinjau identik dengan hasil cetak
+        document.getElementById('strukPreview').textContent = STRUK_PREVIEW;
 
         function updateStatus(message, type) {
             statusText.innerText = message;

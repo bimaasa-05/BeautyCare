@@ -271,8 +271,12 @@
                                     <span class="done-badge">
                                         <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
                                         Selesai pukul {{ \Carbon\Carbon::parse($item->jam_selesai_aktual)->format('H:i') }}
-                                        @if($item->jam_mulai_aktual)
-                                        · Durasi {{ gmdate('H:i:s', max(0, \Carbon\Carbon::parse($item->jam_selesai_aktual)->diffInSeconds(\Carbon\Carbon::parse($item->jam_mulai_aktual)))) }}
+                                        @php
+                                            $jamMulaiAktual = $item->jam_mulai_aktual ?? $item->jam;
+                                            $durasiDetik = max(0, \Carbon\Carbon::parse($item->jam_selesai_aktual)->getTimestamp() - \Carbon\Carbon::parse($jamMulaiAktual)->getTimestamp());
+                                        @endphp
+                                        @if($jamMulaiAktual)
+                                        · Durasi {{ gmdate('H:i:s', $durasiDetik) }}
                                         @endif
                                     </span>
                                 </div>
