@@ -4,10 +4,7 @@
         <div class="footer-grid">
             <div class="footer-brand">
                 <a href="{{ url('/') }}" class="footer-logo">
-                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline;vertical-align:middle;margin-right:8px;">
-                        <rect width="32" height="32" rx="8" fill="#FF4F87"/>
-                        <path d="M16 8C14 8 10 10 10 16C10 22 14 24 16 24C18 24 22 22 22 16C22 10 18 8 16 8Z" fill="white" opacity="0.9"/>
-                    </svg>
+                    <img src="{{ asset('assets/images/logo/logo.jpeg') }}" alt="BeautyCare Logo" width="50" height="50">
                     BeautyCare
                 </a>
                 <p>Solusi manajemen bisnis kecantikan terpercaya untuk Salon, Spa, Nail Art, Barbershop, dan Skincare. Kelola bisnis Anda dengan lebih mudah dan efisien.</p>
