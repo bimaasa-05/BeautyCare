@@ -214,6 +214,34 @@
         }
     }
 
+    /* ─── Stats Premium (sama dengan booking index) ─── */
+    .stats-row .stat-card {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .stats-row .stat-card::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        border-radius: 0 0 20px 20px;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .stats-row .stat-card:hover::after {
+        opacity: 1;
+    }
+
+    .stats-row .stat-card:nth-child(1)::after { background: linear-gradient(90deg, var(--primary), #FF7BA6); }
+    .stats-row .stat-card:nth-child(2)::after { background: linear-gradient(90deg, #F59E0B, #FBBF24); }
+    .stats-row .stat-card:nth-child(3)::after { background: linear-gradient(90deg, #3B82F6, #60A5FA); }
+    .stats-row .stat-card:nth-child(4)::after { background: linear-gradient(90deg, #22C55E, #4ADE80); }
+    .stats-row .stat-card:nth-child(5)::after { background: linear-gradient(90deg, #EF4444, #F87171); }
+
     /* ─── Chart body penuh (menyesuaikan tinggi kartu di samping) ─── */
     .chart-card .chart-body.bc-chart-body {
         display: flex;
@@ -476,7 +504,7 @@
                                     <line x1="3" y1="10" x2="21" y2="10" />
                                 </svg>
                             </div>
-                            <span class="stat-change up">{{ $totalBooking }}</span>
+                            <span class="stat-change up">+{{ $totalBooking }}</span>
                         </div>
                         <div class="stat-value">{{ $totalBooking }}</div>
                         <div class="stat-label">Total Booking Saya</div>
@@ -491,7 +519,7 @@
                                     <polyline points="22 4 12 14.01 9 11.01" />
                                 </svg>
                             </div>
-                            <span class="stat-change up">{{ $bookingAktif }}</span>
+                            <span class="stat-change up">+{{ $bookingAktif }}</span>
                         </div>
                         <div class="stat-value">{{ $bookingAktif }}</div>
                         <div class="stat-label">Booking Aktif</div>
@@ -505,7 +533,7 @@
                                     <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
                                 </svg>
                             </div>
-                            <span class="stat-change up">{{ $riwayatTreatment }}</span>
+                            <span class="stat-change up">+{{ $riwayatTreatment }}</span>
                         </div>
                         <div class="stat-value">{{ $riwayatTreatment }}</div>
                         <div class="stat-label">Riwayat Treatment</div>
@@ -537,7 +565,7 @@
                                     <circle cx="12" cy="7" r="4" />
                                 </svg>
                             </div>
-                            <span class="stat-change up">{{ $kunjunganBulanIni }}</span>
+                            <span class="stat-change up">+{{ $kunjunganBulanIni }}</span>
                         </div>
                         <div class="stat-value">{{ $kunjunganBulanIni }}</div>
                         <div class="stat-label">Kunjungan Bulan Ini</div>
