@@ -93,6 +93,36 @@ class BookingSlot
     }
 
     /**
+     * Slot jam yang terblokir GLOBAL (semua karyawan) pada tanggal tertentu.
+     * Dipakai agar pelanggan lain tidak bisa memilih jam yang sudah dibooking
+     * pelanggan mana pun (durasi-aware). Booking 13.00 durasi 90 menit =>
+     * blokir slot 13.00 & 14.00, 15.00 bebas.
+     */
+    public static function blokirJamGlobal($tanggal, $exceptId = null)
+    {
+        $slots = self::slotJam();
+        $bookings = Booking::with('detail.layanan')
+            ->where('tanggal', $tanggal)
+            ->whereIn('status', ['menunggu', 'dikonfirmasi', 'diproses'])
+            ->when($exceptId, fn ($q) => $q->where('id_booking', '!=', $exceptId))
+            ->get();
+
+        $blocked = [];
+        foreach ($bookings as $b) {
+            $mulai = Carbon::parse($b->tanggal . ' ' . substr($b->jam, 0, 5));
+            $selesai = $mulai->copy()->addMinutes(self::durasiBooking($b));
+            foreach ($slots as $slot) {
+                $s = Carbon::parse($b->tanggal . ' ' . $slot);
+                if ($s->gte($mulai) && $s->lt($selesai)) {
+                    $blocked[$slot] = true;
+                }
+            }
+        }
+
+        return collect(array_keys($blocked))->sort()->values()->all();
+    }
+
+    /**
      * Cek bentrok (overlap) jadwal karyawan dengan mempertimbangkan durasi.
      */
     public static function jamBentrok($idKaryawan, $tanggal, $jam, $exceptId = null, $durasi = 60)
