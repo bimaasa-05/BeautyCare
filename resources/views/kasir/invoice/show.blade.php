@@ -116,14 +116,14 @@
                     @endif
                 </div>
                 <div class="text-right">
-                    <div class="overflow-x-auto"><table class="text-[12px]">
+                    <div class="overflow-x-auto"><table class="text-[12px] table-card-mobile">
                         <tr>
-                            <td class="text-gray-400 pr-4">Tanggal</td>
-                            <td class="font-semibold text-gray-700">{{ \Carbon\Carbon::parse($transaksi->tanggal)->isoFormat('D MMMM YYYY') }}</td>
+                            <td data-label="" class="text-gray-400 pr-4">Tanggal</td>
+                            <td data-label="" class="font-semibold text-gray-700">{{ \Carbon\Carbon::parse($transaksi->tanggal)->isoFormat('D MMMM YYYY') }}</td>
                         </tr>
                         <tr>
-                            <td class="text-gray-400 pr-4">Status</td>
-                            <td>
+                            <td data-label="" class="text-gray-400 pr-4">Status</td>
+                            <td data-label="">
                                 @php
                                     $statusMap = [
                                         'Pending' => ['label' => 'Pending', 'class' => 'status-proses', 'icon' => 'fa-regular fa-clock'],
@@ -139,8 +139,8 @@
                         </tr>
                         @if ($transaksi->kasir || $transaksi->user)
                         <tr>
-                            <td class="text-gray-400 pr-4">Kasir</td>
-                            <td class="font-semibold text-gray-700">{{ $transaksi->kasir?->nama ?? $transaksi->user?->nama }}</td>
+                            <td data-label="" class="text-gray-400 pr-4">Kasir</td>
+                            <td data-label="" class="font-semibold text-gray-700">{{ $transaksi->kasir?->nama ?? $transaksi->user?->nama }}</td>
                         </tr>
                         @endif
                     </table></div>
@@ -151,7 +151,7 @@
                 <h3 class="text-[12px] font-bold text-[#FF4F87] uppercase tracking-[1px] mb-4 pb-2 border-b-2 border-[#FF4F87]">
                     Detail Layanan & Produk
                 </h3>
-                <div class="overflow-x-auto"><table class="w-full text-left item-table">
+                <div class="overflow-x-auto"><table class="w-full text-left item-table table-card-mobile">
                     <thead>
                         <tr>
                             <th style="width:5%;text-align:center;">#</th>
@@ -164,11 +164,11 @@
                     <tbody>
                         @forelse ($transaksi->detail ?? [] as $item)
                             <tr>
-                                <td style="text-align:center;">{{ $loop->iteration }}</td>
-                                <td>{{ $item->nm_item }}</td>
-                                <td style="text-align:center;">{{ $item->qty }}</td>
-                                <td style="text-align:right;">Rp {{ number_format($item->harga, 0, ',', '.') }}</td>
-                                <td style="text-align:right;">Rp {{ number_format($item->subtotal, 0, ',', '.') }}</td>
+                                <td data-label="#" style="text-align:center;">{{ $loop->iteration }}</td>
+                                <td data-label="Item">{{ $item->nm_item }}</td>
+                                <td data-label="Qty" style="text-align:center;">{{ $item->qty }}</td>
+                                <td data-label="Harga" style="text-align:right;">Rp {{ number_format($item->harga, 0, ',', '.') }}</td>
+                                <td data-label="Subtotal" style="text-align:right;">Rp {{ number_format($item->subtotal, 0, ',', '.') }}</td>
                             </tr>
                         @empty
                             <tr>
@@ -180,58 +180,58 @@
             </div>
 
             <div class="flex justify-end mb-8">
-                <div class="overflow-x-auto"><table class="w-64 summary-table">
+                <div class="overflow-x-auto"><table class="w-64 summary-table table-card-mobile">
                     <tr>
-                        <td class="text-gray-500">Subtotal</td>
-                        <td>Rp {{ number_format($transaksi->subtotal, 0, ',', '.') }}</td>
+                        <td data-label="" class="text-gray-500">Subtotal</td>
+                        <td data-label="">Rp {{ number_format($transaksi->subtotal, 0, ',', '.') }}</td>
                     </tr>
                     <tr>
-                        <td class="text-gray-500">Diskon</td>
-                        <td class="text-red-500">- Rp {{ number_format($transaksi->diskon, 0, ',', '.') }}</td>
+                        <td data-label="" class="text-gray-500">Diskon</td>
+                        <td data-label="" class="text-red-500">- Rp {{ number_format($transaksi->diskon, 0, ',', '.') }}</td>
                     </tr>
                     <tr>
-                        <td class="text-gray-500">Pajak</td>
-                        <td>+ Rp {{ number_format($transaksi->pajak, 0, ',', '.') }}</td>
+                        <td data-label="" class="text-gray-500">Pajak</td>
+                        <td data-label="">+ Rp {{ number_format($transaksi->pajak, 0, ',', '.') }}</td>
                     </tr>
                     <tr>
-                        <td class="text-gray-500 border-t-2 border-gray-800 pt-3 font-bold text-gray-800">Grand Total</td>
-                        <td class="border-t-2 border-gray-800 pt-3 font-extrabold text-[18px] text-[#FF4F87]">
+                        <td data-label="" class="text-gray-500 border-t-2 border-gray-800 pt-3 font-bold text-gray-800">Grand Total</td>
+                        <td data-label="" class="border-t-2 border-gray-800 pt-3 font-extrabold text-[18px] text-[#FF4F87]">
                             Rp {{ number_format($transaksi->total, 0, ',', '.') }}
                         </td>
                     </tr>
                     <tr>
-                        <td class="text-gray-500">Dibayar</td>
-                        <td>Rp {{ number_format($transaksi->dibayar, 0, ',', '.') }}</td>
+                        <td data-label="" class="text-gray-500">Dibayar</td>
+                        <td data-label="">Rp {{ number_format($transaksi->dibayar, 0, ',', '.') }}</td>
                     </tr>
                     <tr>
-                        <td class="text-gray-500">Kembali</td>
-                        <td class="text-green-600">Rp {{ number_format($transaksi->kembali, 0, ',', '.') }}</td>
+                        <td data-label="" class="text-gray-500">Kembali</td>
+                        <td data-label="" class="text-green-600">Rp {{ number_format($transaksi->kembali, 0, ',', '.') }}</td>
                     </tr>
                 </table></div>
             </div>
 
             <div class="mb-8 p-4 bg-gray-50 rounded-lg border border-gray-100">
-                <div class="overflow-x-auto"><table class="w-full text-[12px]">
+                <div class="overflow-x-auto"><table class="w-full text-[12px] table-card-mobile">
                     <tr>
-                        <td class="text-gray-400">Metode</td>
-                        <td class="font-semibold text-gray-700">{{ $transaksi->metode_byr }}</td>
+                        <td data-label="" class="text-gray-400">Metode</td>
+                        <td data-label="" class="font-semibold text-gray-700">{{ $transaksi->metode_byr }}</td>
                     </tr>
                     @if ($transaksi->no_referensi)
                     <tr>
-                        <td class="text-gray-400">No. Referensi</td>
-                        <td class="font-mono font-semibold text-gray-700">{{ $transaksi->no_referensi }}</td>
+                        <td data-label="" class="text-gray-400">No. Referensi</td>
+                        <td data-label="" class="font-mono font-semibold text-gray-700">{{ $transaksi->no_referensi }}</td>
                     </tr>
                     @endif
                     @if ($transaksi->ewallet_type && $transaksi->metode_byr === 'E-Wallet')
                     <tr>
-                        <td class="text-gray-400">E-Wallet</td>
-                        <td class="font-semibold text-gray-700">{{ $transaksi->ewallet_type }}</td>
+                        <td data-label="" class="text-gray-400">E-Wallet</td>
+                        <td data-label="" class="font-semibold text-gray-700">{{ $transaksi->ewallet_type }}</td>
                     </tr>
                     @endif
                     @if ($transaksi->bukti_bayar)
                     <tr>
-                        <td class="text-gray-400">Bukti Bayar</td>
-                        <td>
+                        <td data-label="" class="text-gray-400">Bukti Bayar</td>
+                        <td data-label="">
                             <a href="{{ asset('storage/' . $transaksi->bukti_bayar) }}" target="_blank"
                                 class="text-blue-500 hover:underline font-medium">
                                 <i class="fa-solid fa-image mr-1"></i> Lihat Bukti
@@ -241,8 +241,8 @@
                     @endif
                     @if ($transaksi->catatan)
                     <tr>
-                        <td class="text-gray-400">Catatan</td>
-                        <td class="text-gray-600">{{ $transaksi->catatan }}</td>
+                        <td data-label="" class="text-gray-400">Catatan</td>
+                        <td data-label="" class="text-gray-600">{{ $transaksi->catatan }}</td>
                     </tr>
                     @endif
                 </table></div>
