@@ -265,7 +265,7 @@
                                 </div>
                                 <div class="info-box">
                                     <p class="info-label"><i class="fa-solid fa-user mr-1 text-pink-300"></i> Kasir</p>
-                                    <p class="info-value">{{ $transaksi->user->nama ?? '-' }}</p>
+                                    <p class="info-value">{{ $transaksi->kasir?->nama ?? $transaksi->user?->nama ?? '-' }}</p>
                                 </div>
                                 <div class="info-box md:col-span-2">
                                     <p class="info-label"><i class="fa-solid fa-note-sticky mr-1 text-pink-300"></i>
