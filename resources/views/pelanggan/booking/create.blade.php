@@ -463,6 +463,122 @@
         cursor: pointer !important;
     }
 
+    /* ─── Jam Slot Chip Grid ─── */
+    .jam-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+        gap: 10px;
+        margin-top: 4px;
+    }
+
+    .jam-chip {
+        padding: 12px 10px;
+        border-radius: 12px;
+        border: 1.5px solid var(--border);
+        background: #FAFAFA;
+        font-family: 'Poppins', sans-serif;
+        cursor: pointer;
+        text-align: center;
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--dark);
+        font-variant-numeric: tabular-nums;
+        transition: all 0.2s ease;
+        user-select: none;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 3px;
+        line-height: 1.2;
+    }
+
+    .jam-chip:hover:not(.booked):not(.selected) {
+        border-color: #FFB3C7;
+        background: #FFF9FB;
+        transform: translateY(-1px);
+        box-shadow: 0 3px 10px rgba(255, 79, 135, 0.12);
+    }
+
+    .jam-chip.selected {
+        border-color: var(--primary);
+        background: linear-gradient(135deg, var(--primary), #FF7BA6);
+        color: #fff;
+        box-shadow: 0 4px 14px rgba(255, 79, 135, 0.35);
+        transform: translateY(-1px);
+    }
+
+    .jam-chip .jc-time {
+        font-size: 14px;
+        font-weight: 800;
+    }
+
+    .jam-chip .jc-status {
+        font-size: 8.5px;
+        font-weight: 600;
+        letter-spacing: 0.3px;
+        text-transform: uppercase;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .jam-chip.selected .jc-status {
+        color: #FFD6E6;
+    }
+
+    .jam-chip.booked {
+        opacity: 0.6;
+        background: #F3F4F6;
+        border-color: #E5E7EB;
+        color: #9CA3AF;
+        cursor: not-allowed;
+        box-shadow: none;
+        transform: none;
+    }
+
+    .jam-chip.booked .jc-time {
+        text-decoration: line-through;
+        text-decoration-color: #DC2626;
+        text-decoration-thickness: 1.5px;
+    }
+
+    .jam-chip.booked .jc-status {
+        color: #DC2626;
+    }
+
+    .jam-legend {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-top: 12px;
+        flex-wrap: wrap;
+    }
+
+    .jam-legend .jl-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 11px;
+        color: var(--gray);
+        font-weight: 500;
+    }
+
+    .jam-legend .jl-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        flex-shrink: 0;
+    }
+
+    .jam-legend .jl-dot.jl-free {
+        background: #10B981;
+    }
+
+    .jam-legend .jl-dot.jl-booked {
+        background: #EF4444;
+    }
+
     /* ─── Summary Card Premium ─── */
     .summary-card-premium {
         background: linear-gradient(135deg, #FFF5F8 0%, #FFE5EF 50%, #FFD6E6 100%);
@@ -1280,14 +1396,19 @@
                                         <i class="fa-regular fa-clock fg-label-icon"></i>
                                         Jam <span class="fg-required">*</span>
                                     </label>
-                                    <select name="jam" id="jamSlot" class="fg-input" required>
+                                    <select name="jam" id="jamSlot" class="fg-input" required style="display:none">
                                         <option value="">— Pilih Jam —</option>
                                         @foreach($slotJam as $jam)
                                         <option value="{{ $jam }}">{{ \App\Support\BookingSlot::formatJamIndo($jam) }}</option>
                                         @endforeach
                                     </select>
+                                    <div class="jam-grid" id="jamGrid"></div>
+                                    <div class="jam-legend">
+                                        <span class="jl-item"><span class="jl-dot jl-free"></span> Tersedia</span>
+                                        <span class="jl-item"><span class="jl-dot jl-booked"></span> Sudah Dibooking</span>
+                                    </div>
                                     <div style="margin-top:6px;font-size:11px;color:var(--gray);">
-                                        <i class="fa-solid fa-circle-info"></i> Slot yang sudah dibooking pelanggan lain (termasuk durasi layanan) otomatis dinonaktifkan dan ditandai "Sudah Dibooking"
+                                        <i class="fa-solid fa-circle-info"></i> Slot yang sudah dibooking pelanggan lain (termasuk durasi layanan) otomatis dinonaktifkan
                                     </div>
                                 </div>
                             </div>
@@ -1882,6 +2003,44 @@
         }
     }, { passive: true });
 
+    function renderJamGrid() {
+        const grid = document.getElementById('jamGrid');
+        if (!jamSelect || !grid) return;
+        grid.innerHTML = '';
+
+        for (let i = 0; i < jamSelect.options.length; i++) {
+            const opt = jamSelect.options[i];
+            if (!opt.value) continue;
+            const booked = opt.disabled;
+            const chip = document.createElement('button');
+            chip.type = 'button';
+            chip.className = 'jam-chip' + (booked ? ' booked' : '');
+            chip.setAttribute('data-jam', opt.value);
+            if (booked) {
+                chip.innerHTML = '<span class="jc-time">' + opt.text.replace(' — Sudah Dibooking', '') + '</span>' +
+                    '<span class="jc-status"><i class="fa-solid fa-lock"></i> Sudah Dibooking</span>';
+            } else {
+                chip.innerHTML = '<span class="jc-time">' + opt.text + '</span>';
+                chip.addEventListener('click', function() {
+                    jamSelect.value = chip.getAttribute('data-jam');
+                    grid.querySelectorAll('.jam-chip').forEach(function(c) {
+                        c.classList.toggle('selected', c === chip);
+                    });
+                });
+            }
+            grid.appendChild(chip);
+        }
+
+        const val = jamSelect.value;
+        grid.querySelectorAll('.jam-chip.selected').forEach(function(c) {
+            c.classList.remove('selected');
+        });
+        if (val) {
+            const sel = grid.querySelector('.jam-chip:not(.booked)[data-jam="' + val + '"]');
+            if (sel) sel.classList.add('selected');
+        }
+    }
+
     function updateJamSlots() {
         if (!jamSelect) return;
         const karyawanId = document.getElementById('id_karyawan').value;
@@ -1897,6 +2056,7 @@
         if (jamSelect.value && jamSelect.options[jamSelect.selectedIndex].disabled) {
             jamSelect.value = '';
         }
+        renderJamGrid();
     }
 
     async function refreshJamSlots(tanggal) {
