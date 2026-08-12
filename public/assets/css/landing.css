@@ -84,6 +84,45 @@ html {
   gap: 12px;
 }
 
+.navbar-help-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 14px;
+  border: 1.5px solid var(--primary);
+  border-radius: 10px;
+  color: var(--primary);
+  background: transparent;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+  text-decoration: none;
+  transition: var(--transition-base);
+  cursor: pointer;
+}
+
+.navbar-help-btn:hover {
+  background: var(--primary);
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.navbar-help-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+@media screen and (max-width: 768px) {
+  .navbar-help-btn span {
+    display: none;
+  }
+
+  .navbar-help-btn {
+    padding: 8px;
+    border-radius: 9px;
+  }
+}
+
 .navbar-toggle {
   display: none;
   flex-direction: column;

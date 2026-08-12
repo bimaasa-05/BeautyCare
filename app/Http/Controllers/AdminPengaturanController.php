@@ -36,6 +36,7 @@ class AdminPengaturanController extends Controller
             'konfirmasi_otomatis' => 'nullable|boolean',
             'nama_salon' => 'nullable|string|max:100',
             'telepon' => 'nullable|string|max:20',
+            'no_wa' => 'nullable|string|max:20',
             'jam_buka' => 'nullable|date_format:H:i',
             'jam_tutup' => 'nullable|date_format:H:i',
             'syarat_ketentuan' => 'nullable|string',
@@ -56,7 +57,7 @@ class AdminPengaturanController extends Controller
             }
         }
 
-        foreach (['nama_salon', 'telepon', 'jam_buka', 'jam_tutup', 'syarat_ketentuan', 'kebijakan_privasi', 'pusat_bantuan_kategori', 'pusat_bantuan_faq'] as $field) {
+        foreach (['nama_salon', 'telepon', 'no_wa', 'jam_buka', 'jam_tutup', 'syarat_ketentuan', 'kebijakan_privasi', 'pusat_bantuan_kategori', 'pusat_bantuan_faq'] as $field) {
             if ($request->has($field)) {
                 $pengaturan->$field = $request->$field;
             }

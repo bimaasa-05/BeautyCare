@@ -12,11 +12,14 @@
             <li><a href="#fitur">Fitur</a></li>
             <li><a href="#layanan">Layanan</a></li>
             <li><a href="#membership">Membership</a></li>
-            <li><a href="{{ route('help.index') }}">Pusat Bantuan</a></li>
             <li><a href="#kontak">Kontak</a></li>
         </ul>
 
         <div class="navbar-actions">
+            <a href="{{ route('help.index') }}" class="navbar-help-btn" title="Pusat Bantuan">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" /><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" /><line x1="12" y1="17" x2="12.01" y2="17" /></svg>
+                <span>Bantuan</span>
+            </a>
             @auth
             @php
                 $dashboardUrl = match (auth()->user()->role) {
