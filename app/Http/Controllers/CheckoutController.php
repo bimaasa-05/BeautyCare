@@ -144,9 +144,11 @@ class CheckoutController extends Controller
         $subtotal = collect($items)->sum('subtotal');
         $banks = self::getBanksForTransfer();
         $bankTujuan = self::bankTujuan();
-        $isRenewal = (int) $this->getOrCreatePelanggan(auth()->user())->id_member === (int) $member->id_member;
+        $pelanggan = $this->getOrCreatePelanggan(auth()->user());
+        $saldo = (float) $pelanggan->saldo;
+        $isRenewal = (int) $pelanggan->id_member === (int) $member->id_member;
 
-        return view('pelanggan.pembayaran.pembayaran-membership', compact('member', 'items', 'subtotal', 'banks', 'bankTujuan', 'isRenewal'));
+        return view('pelanggan.pembayaran.pembayaran-membership', compact('member', 'items', 'subtotal', 'banks', 'bankTujuan', 'isRenewal', 'saldo'));
     }
 
     public function store(Request $request)
@@ -271,10 +273,6 @@ class CheckoutController extends Controller
             $bayarSaldoPenuh = $request->metode === 'Saldo';
 
             if ($bayarSaldoPenuh) {
-                if ($isMembership) {
-                    return back()->with('error', 'Membership tidak dapat dibayar dengan saldo akun.');
-                }
-
                 $saldoTersedia = (float) $pelanggan->saldo;
                 if ($saldoTersedia < (float) $total) {
                     return back()->with('error', 'Saldo akun Anda Rp ' . number_format($saldoTersedia, 0, ',', '.') . ' tidak cukup untuk total Rp ' . number_format((float) $total, 0, ',', '.') . '. Silakan pilih metode kedua untuk sisa pembayaran.');
@@ -302,7 +300,7 @@ class CheckoutController extends Controller
             ]);
 
             // Proses saldo (debit saja di sini); cashback dikredit setelah Lunas
-            if ($pakaiSaldo > 0 && !$isMembership) {
+            if ($pakaiSaldo > 0) {
                 $saldoService = new SaldoAkunService();
                 $saldoResult = $saldoService->prosesCheckout(
                     $pelanggan->id_pelanggan,
@@ -404,9 +402,7 @@ class CheckoutController extends Controller
                 Troli::where('id_user', $user->id)->delete();
             }
 
-            $targetPesanan = $bayarSaldoPenuh
-                ? route('pelanggan.pesanan.show', $transaksi->id_transaksi)
-                : route('pelanggan.pembayaran.show', $transaksi->id_transaksi);
+            $targetPesanan = route('pelanggan.pembayaran.show', $transaksi->id_transaksi);
 
             if ($bayarSaldoPenuh) {
                 ActivityLogger::log('Menambahkan', $user->nama . ' membuat pesanan ' . $noInvoice . ' dibayar penuh dengan saldo akun (menunggu verifikasi kasir)', 'Transaksi', $transaksi->id_transaksi);
