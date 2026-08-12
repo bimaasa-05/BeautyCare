@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/dashboard.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/css/responsive.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/responsive.css') . '?v=3' }}">
 
     <style>
         .sidebar-toggle { display: none; background: none; border: none; cursor: pointer; padding: 8px; }
@@ -126,7 +126,7 @@
                         </div>
                     </div>
 
-                    <div class="overflow-x-auto"><table class="w-full text-left border-collapse">
+                    <div class="overflow-x-auto"><table class="w-full text-left border-collapse table-card-mobile">
                             <thead>
                                 <tr class="text-[11px] font-bold text-gray-400 uppercase border-b border-gray-100 bg-gray-50/50">
                                     <th class="py-3 px-4">#</th>
@@ -142,18 +142,18 @@
                             <tbody class="text-[13px] text-gray-700 divide-y divide-gray-50">
                                 @forelse($pesanan as $index => $p)
                                 <tr class="hover:bg-pink-50/40 transition-all">
-                                    <td class="py-3 px-4 text-gray-400">{{ $index + 1 }}</td>
-                                    <td class="py-3 px-4">
+                                    <td class="py-3 px-4 text-gray-400" data-label="#">{{ $index + 1 }}</td>
+                                    <td class="py-3 px-4" data-label="No. Invoice">
                                         <span class="inline-flex items-center gap-1.5 bg-pink-50 text-pink-500 text-[11.5px] font-semibold rounded-lg px-2.5 py-1">
                                             <i class="fa-solid fa-receipt text-[10px]"></i>{{ $p->no_invoice }}
                                         </span>
                                     </td>
-                                    <td class="py-3 px-4">
+                                    <td class="py-3 px-4" data-label="Pelanggan">
                                         <div class="font-semibold text-gray-800">{{ $p->user->nama ?? '-' }}</div>
                                         <div class="text-[11px] text-gray-400">{{ $p->user->no_hp ?? '-' }}</div>
                                     </td>
-                                    <td class="py-3 px-4 text-[12px]">{{ \Carbon\Carbon::parse($p->tanggal)->isoFormat('D MMM YYYY') }}</td>
-                                    <td class="py-3 px-4">
+                                    <td class="py-3 px-4 text-[12px]" data-label="Tanggal">{{ \Carbon\Carbon::parse($p->tanggal)->isoFormat('D MMM YYYY') }}</td>
+                                    <td class="py-3 px-4" data-label="Metode">
                                         @if(($p->pembayaran->metode ?? null) === 'Saldo')
                                         <div class="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-600 text-[11.5px] font-semibold rounded-lg px-2.5 py-1">
                                             <i class="fa-solid fa-wallet text-[10px]"></i> Saldo Akun
@@ -176,8 +176,8 @@
                                         </div>
                                         @endif
                                     </td>
-                                    <td class="py-3 px-4 text-right font-bold text-gray-800">Rp {{ number_format($p->total, 0, ',', '.') }}</td>
-                                    <td class="py-3 px-4 text-center">
+                                    <td class="py-3 px-4 text-right font-bold text-gray-800" data-label="Total">Rp {{ number_format($p->total, 0, ',', '.') }}</td>
+                                    <td class="py-3 px-4 text-center" data-label="Status">
                                         @php
                                         $badgeMap = [
                                             'Menunggu Pembayaran' => 'badge-menunggu',
@@ -189,7 +189,7 @@
                                             {{ $p->status }}
                                         </span>
                                     </td>
-                                    <td class="py-3 px-4">
+                                    <td class="py-3 px-4" data-label="">
                                         <div class="flex items-center justify-center gap-2">
                                             <a href="{{ route('kasir.pembayaran.show', $p->id_transaksi) }}" class="btn-aksi btn-detail">
                                                 <i class="fa-solid fa-eye text-[11px]"></i> Detail

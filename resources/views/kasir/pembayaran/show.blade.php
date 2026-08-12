@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/dashboard.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/css/responsive.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/responsive.css') . '?v=3' }}">
 
     <style>
         .sidebar-toggle {
@@ -278,7 +278,7 @@
                                 <h4 class="text-[13px] font-bold text-gray-600 mb-3 flex items-center gap-2">
                                     <i class="fa-solid fa-list text-pink-400"></i> Detail Layanan
                                 </h4>
-                                <div class="overflow-x-auto"><table class="w-full text-[13px]">
+                                <div class="overflow-x-auto"><table class="w-full text-[13px] table-card-mobile">
                                         <thead>
                                             <tr class="border-b border-gray-100">
                                                 <th
@@ -298,13 +298,13 @@
                                         <tbody>
                                             @foreach ($transaksi->detail as $d)
                                                 <tr class="border-b border-gray-50">
-                                                    <td class="py-2 font-medium text-gray-700">{{ $d->nm_item }}
+                                                    <td data-label="Layanan" class="py-2 font-medium text-gray-700">{{ $d->nm_item }}
                                                     </td>
-                                                    <td class="py-2 text-right text-gray-700">Rp
+                                                    <td data-label="Harga" class="py-2 text-right text-gray-700">Rp
                                                         {{ number_format($d->harga, 0, ',', '.') }}</td>
-                                                    <td class="py-2 text-right text-red-500">Rp
+                                                    <td data-label="Diskon" class="py-2 text-right text-red-500">Rp
                                                         {{ number_format($d->diskon ?? 0, 0, ',', '.') }}</td>
-                                                    <td class="py-2 text-right font-semibold text-emerald-600">Rp
+                                                    <td data-label="Subtotal" class="py-2 text-right font-semibold text-emerald-600">Rp
                                                         {{ number_format($d->subtotal, 0, ',', '.') }}</td>
                                                 </tr>
                                             @endforeach
