@@ -2,12 +2,7 @@
 <nav class="navbar">
     <div class="container">
         <a href="{{ url('/') }}" class="navbar-brand">
-            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect width="32" height="32" rx="8" fill="#FF4F87" />
-                <path d="M16 8C14 8 10 10 10 16C10 22 14 24 16 24C18 24 22 22 22 16C22 10 18 8 16 8Z" fill="white"
-                    opacity="0.9" />
-                <path d="M14 14L18 18M18 14L14 18" stroke="#FF4F87" stroke-width="1.5" stroke-linecap="round" />
-            </svg>
+            <img src="{{ asset('assets/images/logo/logo.jpeg') }}" alt="BeautyCare Logo" width="100" height="100">
             BeautyCare
         </a>
 
