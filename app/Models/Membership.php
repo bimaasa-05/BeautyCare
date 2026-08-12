@@ -37,7 +37,13 @@ class Membership extends Model
             return null;
         }
 
-        return Carbon::parse($tglMulai)->addDays((int) $this->masa_berlaku)->endOfDay();
+        $start = Carbon::parse($tglMulai);
+        // If only date (no time component), treat as start of day for backward compat
+        if ($start->format('H:i:s') === '00:00:00' && strlen($tglMulai) <= 10) {
+            return $start->addDays((int) $this->masa_berlaku)->endOfDay();
+        }
+        // Exact datetime: add exact days (24h * days)
+        return $start->addDays((int) $this->masa_berlaku);
     }
 
     public function sudahKadaluarsa(?string $tglMulai): bool

@@ -217,6 +217,9 @@
             <div class="dashboard-content">
                 <div class="sukses-main">
                     <div class="sukses-card">
+                        @php
+    $isMembership = $transaksi->detail->where('jenis', 'Membership')->isNotEmpty();
+@endphp
                         <div class="sukses-check">
                             <i class="fa-solid fa-check"></i>
                         </div>
@@ -229,9 +232,11 @@
                             <a href="{{ route('pelanggan.pesanan.show', $transaksi->id_transaksi) }}" class="btn-lanjut">
                                 <i class="fa-solid fa-eye"></i> Lihat Detail Pesanan
                             </a>
+                            @if(!$isMembership)
                             <a href="{{ route('pelanggan.produk') }}" class="btn-kembali-belanja">
                                 <i class="fa-solid fa-store"></i> Belanja Lagi
                             </a>
+                            @endif
                         </div>
                         <div class="redirect-info">
                             Mengalihkan ke detail pesanan dalam <b id="hitungan">5</b> detik...
