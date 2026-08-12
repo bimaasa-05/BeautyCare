@@ -218,6 +218,10 @@
             gap: 14px;
         }
 
+        .field-full {
+            grid-column: 1 / -1;
+        }
+
         @media (min-width: 1024px) {
             .salon-field-grid {
                 grid-template-columns: repeat(4, 1fr);
@@ -512,6 +516,10 @@
                                 <div>
                                     <label class="settings-label" for="telepon">Telepon</label>
                                     <input type="text" id="telepon" name="telepon" value="{{ $pengaturan->telepon }}" class="settings-input">
+                                </div>
+                                <div class="field-full">
+                                    <label class="settings-label" for="no_wa">Nomor WhatsApp</label>
+                                    <input type="text" id="no_wa" name="no_wa" value="{{ $pengaturan->no_wa }}" class="settings-input" placeholder="contoh: 081234567890">
                                 </div>
                                 <div>
                                     <label class="settings-label" for="jam_buka">Jam Buka</label>
