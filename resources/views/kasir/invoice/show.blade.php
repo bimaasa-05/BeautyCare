@@ -137,10 +137,10 @@
                                 </span>
                             </td>
                         </tr>
-                        @if ($transaksi->user)
+                        @if ($transaksi->kasir || $transaksi->user)
                         <tr>
                             <td class="text-gray-400 pr-4">Kasir</td>
-                            <td class="font-semibold text-gray-700">{{ $transaksi->user->nama }}</td>
+                            <td class="font-semibold text-gray-700">{{ $transaksi->kasir?->nama ?? $transaksi->user?->nama }}</td>
                         </tr>
                         @endif
                     </table></div>
