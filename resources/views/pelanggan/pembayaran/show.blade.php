@@ -206,6 +206,7 @@
         border-radius: 16px;
         padding: 12px 22px;
         text-align: center;
+        flex: 1 1 100%;
     }
 
     .countdown-box .cd-label {
@@ -234,6 +235,7 @@
         border-radius: 16px;
         padding: 14px 22px;
         text-align: center;
+        flex: 1 1 100%;
     }
 
     .waiting-box .wb-title {
