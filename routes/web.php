@@ -60,6 +60,10 @@ Route::get('/', function () {
 
 Route::post('/kontak', [App\Http\Controllers\ContactController::class, 'store'])->name('landing.contact');
 
+//Halaman Legal
+Route::get('/syarat-ketentuan', [App\Http\Controllers\LegalController::class, 'terms'])->name('legal.terms');
+Route::get('/kebijakan-privasi', [App\Http\Controllers\LegalController::class, 'privacy'])->name('legal.privacy');
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
