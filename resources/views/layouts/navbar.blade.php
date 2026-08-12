@@ -12,6 +12,7 @@
             <li><a href="#fitur">Fitur</a></li>
             <li><a href="#layanan">Layanan</a></li>
             <li><a href="#membership">Membership</a></li>
+            <li><a href="{{ route('help.index') }}">Pusat Bantuan</a></li>
             <li><a href="#kontak">Kontak</a></li>
         </ul>
 

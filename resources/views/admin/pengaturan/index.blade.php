@@ -284,6 +284,28 @@
                                 placeholder="Tulis kebijakan privasi di sini...">{{ $pengaturan->kebijakan_privasi }}</textarea>
                         </div>
 
+                        <!-- Card: Kategori Pusat Bantuan -->
+                        <div class="bg-white rounded-2xl border border-pink-50 shadow-[0_2px_16px_rgba(236,72,153,0.07)] p-5">
+                            <h3 class="font-bold text-gray-800 mb-1">Kategori Pusat Bantuan</h3>
+                            <p class="text-xs text-gray-400 mb-4">Kelola kategori untuk mengelompokkan pertanyaan di halaman Pusat Bantuan.</p>
+                            <div id="kategori-rows" class="space-y-2"></div>
+                            <button type="button" id="btn-tambah-kategori"
+                                style="margin-top:12px;padding:8px 16px;background:#FFF0F5;border:1px solid #F9A8C9;color:#DB2777;font-weight:700;border-radius:12px;font-size:12px;cursor:pointer;transition:background 0.2s;"
+                                onmouseover="this.style.background='#FFE3EC'" onmouseout="this.style.background='#FFF0F5'">+ Tambah Kategori</button>
+                            <input type="hidden" name="pusat_bantuan_kategori" id="pusat_bantuan_kategori" value="">
+                        </div>
+
+                        <!-- Card: FAQ Pusat Bantuan -->
+                        <div class="bg-white rounded-2xl border border-pink-50 shadow-[0_2px_16px_rgba(236,72,153,0.07)] p-5">
+                            <h3 class="font-bold text-gray-800 mb-1">FAQ Pusat Bantuan</h3>
+                            <p class="text-xs text-gray-400 mb-4">Kelola pertanyaan &amp; jawaban yang tampil di halaman Pusat Bantuan.</p>
+                            <div id="faq-rows"></div>
+                            <button type="button" id="btn-tambah-faq"
+                                style="margin-top:12px;padding:8px 16px;background:#FFF0F5;border:1px solid #F9A8C9;color:#DB2777;font-weight:700;border-radius:12px;font-size:12px;cursor:pointer;transition:background 0.2s;"
+                                onmouseover="this.style.background='#FFE3EC'" onmouseout="this.style.background='#FFF0F5'">+ Tambah FAQ</button>
+                            <input type="hidden" name="pusat_bantuan_faq" id="pusat_bantuan_faq" value="">
+                        </div>
+
                     </div>
                 </form>
             </div>
@@ -354,6 +376,139 @@
         };
         const dateEl = document.getElementById('currentDate');
         if (dateEl) dateEl.textContent = now.toLocaleDateString('id-ID', options);
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const kategoriState = @json(json_decode($pengaturan->pusat_bantuan_kategori ?? '[]', true) ?: []);
+            const faqState = @json(json_decode($pengaturan->pusat_bantuan_faq ?? '[]', true) ?: []);
+
+            const kategoriRows = document.getElementById('kategori-rows');
+            const faqRows = document.getElementById('faq-rows');
+
+            const inputCls =
+                'w-full px-3 py-2.5 bg-[#FFF7FA] border border-pink-100 rounded-xl text-sm focus:outline-none focus:border-pink-400 text-gray-700 font-medium';
+            const labelCls = 'text-[10px] font-bold text-gray-400 mb-1 block uppercase';
+
+            const kategoriNames = () =>
+                Array.from(kategoriRows.querySelectorAll('.kategori-input')).map(i => i.value.trim()).filter(Boolean);
+
+            const esc = (s) => String(s || '').replace(/[&<>"']/g, (c) => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#39;'
+            }[c]));
+
+            const buildFaqSelect = (selected) => {
+                const names = kategoriNames();
+                let opts = '<option value="" disabled>-- Pilih kategori --</option>';
+                names.forEach(n => {
+                    opts += `<option value="${esc(n)}" ${selected === n ? 'selected' : ''}>${esc(n)}</option>`;
+                });
+                return opts;
+            };
+
+            const renderKategori = () => {
+                kategoriRows.innerHTML = '';
+                kategoriState.forEach((k, i) => {
+                    const row = document.createElement('div');
+                    row.className = 'flex items-center gap-2';
+                    row.innerHTML = `
+                        <input type="text" class="kategori-input flex-1 ${inputCls}" placeholder="Nama kategori" value="${esc(k.nama)}">
+                        <button type="button" class="remove-kategori px-3 py-2.5 rounded-xl bg-red-50 text-red-500 text-xs font-bold hover:bg-red-100 transition-all" title="Hapus">Hapus</button>
+                    `;
+                    row.querySelector('.remove-kategori').addEventListener('click', () => {
+                        kategoriState.splice(i, 1);
+                        renderKategori();
+                        renderFaq();
+                    });
+                    kategoriRows.appendChild(row);
+                });
+            };
+
+            const renderFaq = () => {
+                faqRows.innerHTML = '';
+                faqState.forEach((f, i) => {
+                    const row = document.createElement('div');
+                    row.className = 'faq-row border border-pink-100 rounded-xl p-3 mb-3 bg-[#FFFCFD]';
+                    row.innerHTML = `
+                        <div class="grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-2 mb-2">
+                            <div>
+                                <label class="${labelCls}">Kategori</label>
+                                <select class="faq-kategori w-full px-3 py-2.5 bg-white border border-pink-100 rounded-xl text-sm focus:outline-none focus:border-pink-400 text-gray-700 font-medium">
+                                    ${buildFaqSelect(f.kategori || '')}
+                                </select>
+                            </div>
+                            <div class="flex items-end">
+                                <button type="button" class="remove-faq px-3 py-2.5 rounded-xl bg-red-50 text-red-500 text-xs font-bold hover:bg-red-100 transition-all" title="Hapus">Hapus</button>
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <label class="${labelCls}">Pertanyaan</label>
+                            <input type="text" class="faq-pertanyaan ${inputCls}" placeholder="Tulis pertanyaan..." value="${esc(f.pertanyaan)}">
+                        </div>
+                        <div>
+                            <label class="${labelCls}">Jawaban</label>
+                            <textarea rows="3" class="faq-jawaban w-full px-3 py-2.5 bg-[#FFF7FA] border border-pink-100 rounded-xl text-sm focus:outline-none focus:border-pink-400 text-gray-700 font-medium leading-relaxed" placeholder="Tulis jawaban...">${esc(f.jawaban)}</textarea>
+                        </div>
+                    `;
+                    row.querySelector('.remove-faq').addEventListener('click', () => {
+                        faqState.splice(i, 1);
+                        renderFaq();
+                    });
+                    row.querySelector('.faq-kategori').addEventListener('change', (e) => {
+                        f.kategori = e.target.value;
+                    });
+                    row.querySelector('.faq-pertanyaan').addEventListener('input', (e) => {
+                        f.pertanyaan = e.target.value;
+                    });
+                    row.querySelector('.faq-jawaban').addEventListener('input', (e) => {
+                        f.jawaban = e.target.value;
+                    });
+                    faqRows.appendChild(row);
+                });
+            };
+
+            kategoriRows.addEventListener('input', (e) => {
+                if (e.target.classList.contains('kategori-input')) {
+                    const idx = Array.from(kategoriRows.children).indexOf(e.target.closest('.flex'));
+                    kategoriState[idx].nama = e.target.value;
+                }
+            });
+
+            document.getElementById('btn-tambah-kategori').addEventListener('click', () => {
+                kategoriState.push({ nama: '' });
+                renderKategori();
+                renderFaq();
+            });
+
+            document.getElementById('btn-tambah-faq').addEventListener('click', () => {
+                faqState.push({ kategori: '', pertanyaan: '', jawaban: '' });
+                renderFaq();
+            });
+
+            document.getElementById('formPengaturan').addEventListener('submit', () => {
+                const kategori = [];
+                kategoriRows.querySelectorAll('.kategori-input').forEach(i => {
+                    if (i.value.trim()) kategori.push({ nama: i.value.trim() });
+                });
+                const faq = [];
+                faqRows.querySelectorAll('.faq-row').forEach(r => {
+                    const faqKategori = r.querySelector('.faq-kategori').value;
+                    const pertanyaan = r.querySelector('.faq-pertanyaan').value.trim();
+                    const jawaban = r.querySelector('.faq-jawaban').value.trim();
+                    if (faqKategori && pertanyaan && jawaban) {
+                        faq.push({ kategori: faqKategori, pertanyaan, jawaban });
+                    }
+                });
+                document.getElementById('pusat_bantuan_kategori').value = JSON.stringify(kategori);
+                document.getElementById('pusat_bantuan_faq').value = JSON.stringify(faq);
+            });
+
+            renderKategori();
+            renderFaq();
+        });
     </script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
 </body>

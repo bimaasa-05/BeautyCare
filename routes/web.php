@@ -64,6 +64,9 @@ Route::post('/kontak', [App\Http\Controllers\ContactController::class, 'store'])
 Route::get('/syarat-ketentuan', [App\Http\Controllers\LegalController::class, 'terms'])->name('legal.terms');
 Route::get('/kebijakan-privasi', [App\Http\Controllers\LegalController::class, 'privacy'])->name('legal.privacy');
 
+//Pusat Bantuan
+Route::get('/bantuan', [App\Http\Controllers\HelpCenterController::class, 'index'])->name('help.index');
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
