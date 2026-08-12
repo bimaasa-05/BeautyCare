@@ -74,7 +74,7 @@
                         </a>
                     </div>
 
-                    <form action="{{ route('kasir.reservasi.store') }}" method="POST">
+                    <form action="{{ route('kasir.reservasi.store') }}" method="POST" id="formReservasi">
                         @csrf
 
                         @if($errors->any())
@@ -84,6 +84,19 @@
                                 @endforeach
                             </div>
                         @endif
+
+                        @php
+                            $oldRowsData = [];
+                            if (old('id_layanan')) {
+                                foreach (old('id_layanan') as $i => $idL) {
+                                    $oldRowsData[] = [
+                                        'id_layanan' => $idL,
+                                        'harga' => old('harga')[$i] ?? '',
+                                        'diskon' => old('diskon')[$i] ?? '',
+                                    ];
+                                }
+                            }
+                        @endphp
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                             <div class="form-group">
@@ -374,6 +387,49 @@
             hitungGrandTotal();
         }
 
+        function restoreOldRows(rows) {
+            const container = document.getElementById('layanan-rows');
+            const firstRow = container.querySelector('.layanan-row');
+            if (!firstRow || !rows.length) return;
+            container.innerHTML = '';
+
+            rows.forEach(function(r) {
+                const newRow = firstRow.cloneNode(true);
+
+                newRow.querySelectorAll('input').forEach(function(input) {
+                    input.value = '';
+                });
+
+                const hargaInput = newRow.querySelector('.harga-input');
+                const diskonInput = newRow.querySelector('.diskon-input');
+                const newSelect = newRow.querySelector('select.layanan-select');
+
+                if (newSelect) {
+                    newSelect.selectedIndex = 0;
+                    if (r.id_layanan) {
+                        for (let i = 0; i < newSelect.options.length; i++) {
+                            if (String(newSelect.options[i].value) === String(r.id_layanan)) {
+                                newSelect.selectedIndex = i;
+                                break;
+                            }
+                        }
+                    }
+                    const wrapper = newSelect.closest('.custom-select-wrapper');
+                    if (wrapper) bindCustomSelect(wrapper);
+                }
+
+                const hargaNum = parseInt(String(r.harga || '0').replace(/[^0-9]/g, '')) || 0;
+                hargaInput.value = 'Rp ' + hargaNum.toLocaleString('id-ID');
+                const diskonNum = parseInt(String(r.diskon || '0').replace(/[^0-9]/g, '')) || 0;
+                diskonInput.value = 'Rp ' + diskonNum.toLocaleString('id-ID');
+
+                container.appendChild(newRow);
+                hitungSubtotal(diskonInput);
+            });
+
+            hitungGrandTotal();
+        }
+
         document.addEventListener('change', function(e) {
             if (e.target.classList.contains('layanan-select')) {
                 const row = e.target.closest('.layanan-row');
@@ -566,6 +622,11 @@
             const pelangganSelect = document.getElementById('id_pelanggan');
             onPelangganChange(pelangganSelect);
 
+            const OLD_ROWS = @json($oldRowsData);
+            if (OLD_ROWS.length > 0) {
+                restoreOldRows(OLD_ROWS);
+            }
+
             let slotDataCache = { slots: @json($slotJam), booked: @json($bookedJamByKaryawan) };
 
             function applyJamAvailability() {
@@ -605,7 +666,7 @@ if (karyawanSelect) {
             applyJamAvailability();
 
             // Normalize harga[] & diskon[] before submit (strip dots from Indonesian format)
-            document.querySelector('form').addEventListener('submit', function() {
+            document.getElementById('formReservasi').addEventListener('submit', function() {
                 document.querySelectorAll('input[name="harga[]"]').forEach(function(el) {
                     el.value = el.value.replace(/[^0-9]/g, '');
                 });
