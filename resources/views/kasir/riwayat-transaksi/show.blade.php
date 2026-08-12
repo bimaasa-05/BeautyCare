@@ -118,7 +118,7 @@
                                 </tr>
                                 <tr>
                                     <td class="py-1.5 text-gray-400 border-t border-sky-100/50 pt-2">Kasir</td>
-                                    <td class="py-1.5 font-semibold text-gray-700 border-t border-sky-100/50 pt-2">{{ $transaksi->user->nama ?? '-' }}</td>
+                                    <td class="py-1.5 font-semibold text-gray-700 border-t border-sky-100/50 pt-2">{{ $transaksi->kasir?->nama ?? $transaksi->user?->nama ?? '-' }}</td>
                                 </tr>
                             </table></div>
                         </div>
