@@ -793,14 +793,14 @@
         top: calc(100% + 6px);
         left: 0;
         width: 100%;
-        min-width: 280px;
-        max-width: 340px;
+        min-width: 250px;
+        max-width: 290px;
         background: #fff;
-        border-radius: 16px;
+        border-radius: 14px;
         border: 1px solid #FFD6E6;
         box-shadow: 0 12px 40px rgba(255, 79, 135, 0.15);
         z-index: 120;
-        padding: 20px;
+        padding: 14px;
         font-family: 'Poppins', sans-serif;
         transform-origin: top center;
         animation: curtainUnroll 0.45s cubic-bezier(0.22, 0.61, 0.36, 1);
@@ -836,7 +836,7 @@
             transform: translateX(-50%);
             min-width: 0;
             width: calc(100vw - 40px);
-            max-width: 340px;
+            max-width: 300px;
             max-height: calc(100vh - 16px);
             overflow-y: auto;
             top: auto;
@@ -855,11 +855,11 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        margin-bottom: 12px;
+        margin-bottom: 10px;
     }
 
     .dcp-header h4 {
-        font-size: 15px;
+        font-size: 13px;
         font-weight: 700;
         color: var(--dark);
         margin: 0;
@@ -871,8 +871,8 @@
     }
 
     .dcp-header .dcp-nav button {
-        width: 30px;
-        height: 30px;
+        width: 26px;
+        height: 26px;
         border: none;
         border-radius: 8px;
         background: var(--hover);
@@ -881,7 +881,7 @@
         align-items: center;
         justify-content: center;
         cursor: pointer;
-        font-size: 13px;
+        font-size: 11px;
         transition: all 0.2s ease;
     }
 
@@ -893,31 +893,31 @@
         display: grid;
         grid-template-columns: repeat(7, 1fr);
         gap: 2px;
-        margin-bottom: 4px;
+        margin-bottom: 3px;
     }
 
     .dcp-weekdays span {
         text-align: center;
-        font-size: 10px;
+        font-size: 9px;
         font-weight: 700;
         color: #9CA3AF;
-        padding: 4px 0;
+        padding: 3px 0;
         text-transform: uppercase;
     }
 
     .dcp-days {
         display: grid;
         grid-template-columns: repeat(7, 1fr);
-        gap: 2px;
+        gap: 1px;
     }
 
     .dcp-days .dcp-day {
         aspect-ratio: 1;
         position: relative;
         border: none;
-        border-radius: 9px;
+        border-radius: 8px;
         background: transparent;
-        font-size: 12px;
+        font-size: 11px;
         font-weight: 600;
         font-family: 'Poppins', sans-serif;
         color: var(--gray);
@@ -936,10 +936,10 @@
     }
 
     .dcp-days .dcp-day .dcp-count {
-        font-size: 8px;
+        font-size: 7px;
         font-weight: 700;
         color: var(--primary);
-        margin-top: 2px;
+        margin-top: 1px;
         line-height: 1;
     }
 
@@ -1014,8 +1014,8 @@
 
     .dcp-summary {
         display: none;
-        margin-top: 14px;
-        padding: 12px 16px;
+        margin-top: 12px;
+        padding: 10px 14px;
         background: linear-gradient(135deg, #FFF5F8 0%, #FFE5EF 100%);
         border: 1px solid rgba(255, 79, 135, 0.1);
         border-radius: 12px;
@@ -1027,38 +1027,38 @@
     }
 
     .dcp-summary .dcp-summary-date {
-        font-size: 11px;
+        font-size: 10px;
         font-weight: 600;
         color: var(--gray);
         margin-bottom: 2px;
     }
 
     .dcp-summary .dcp-summary-total {
-        font-size: 26px;
+        font-size: 17px;
         font-weight: 800;
         color: var(--primary);
         line-height: 1.2;
     }
 
     .dcp-summary .dcp-summary-meta {
-        font-size: 10px;
+        font-size: 9px;
         color: #9CA3AF;
     }
 
     .dcp-footer {
         display: flex;
-        gap: 10px;
-        margin-top: 12px;
+        gap: 8px;
+        margin-top: 10px;
     }
 
     .dcp-today {
         flex: 1;
-        padding: 10px;
+        padding: 8px;
         border: 1.5px solid var(--primary);
-        border-radius: 12px;
+        border-radius: 10px;
         background: #fff;
         color: var(--primary);
-        font-size: 13px;
+        font-size: 12px;
         font-weight: 700;
         font-family: 'Poppins', sans-serif;
         cursor: pointer;
@@ -1072,12 +1072,12 @@
     .dcp-oke {
         display: none;
         flex: 1;
-        padding: 10px;
+        padding: 8px;
         border: none;
-        border-radius: 12px;
+        border-radius: 10px;
         background: linear-gradient(135deg, var(--primary), #FF7BA6);
         color: #fff;
-        font-size: 13px;
+        font-size: 12px;
         font-weight: 700;
         font-family: 'Poppins', sans-serif;
         cursor: pointer;
@@ -1863,6 +1863,8 @@
 
             dcpDays.appendChild(btn);
         }
+
+        if (window.matchMedia('(max-width: 480px)').matches) positionMobilePopup();
     }
 
     function showCalendarSummary(day, count, data, isPast) {
@@ -1882,6 +1884,22 @@
         if (isPast) {
             meta.textContent += ' · tanggal lampau (hanya info)';
         }
+        if (window.matchMedia('(max-width: 480px)').matches) positionMobilePopup();
+    }
+
+    function positionMobilePopup() {
+        if (!dcpPopup.classList.contains('open')) return;
+        const rect = tanggalInput.getBoundingClientRect();
+        const popupH = dcpPopup.offsetHeight;
+        const vh = window.innerHeight;
+        let top;
+        if (vh - rect.bottom < popupH + 12 && rect.top > popupH + 12) {
+            top = rect.top - popupH - 6;
+        } else {
+            top = rect.bottom + 6;
+        }
+        top = Math.max(8, Math.min(top, vh - popupH - 8));
+        dcpPopup.style.top = top + 'px';
     }
 
     function openCalendarPopup() {
@@ -1893,13 +1911,8 @@
         const isMobile = window.matchMedia('(max-width: 480px)').matches;
         if (isMobile) {
             dcpPopup.style.left = '';
-            if (spaceBelow < popupH + 12 && rect.top > popupH + 12) {
-                dcpPopup.style.top = Math.max(8, rect.top - popupH - 6) + 'px';
-                dcpPopup.classList.add('open-up');
-            } else {
-                dcpPopup.style.top = Math.min(rect.bottom + 6, window.innerHeight - popupH - 8) + 'px';
-                dcpPopup.classList.remove('open-up');
-            }
+            dcpPopup.classList.remove('open-up');
+            positionMobilePopup();
         } else {
             dcpPopup.style.top = '';
             if (spaceBelow < popupH + 12 && rect.top > popupH + 12) {
