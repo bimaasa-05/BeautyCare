@@ -388,7 +388,7 @@
                     <!-- Top Global Pelanggan Layanan -->
                     <div class="table-widget overflow-x-auto">
                         <div class="tw-header">
-                            <h3>Top Global Pelanggan Layanan</h3>
+                            <h3>Top Global Pelanggan (Layanan)</h3>
                             <a href="{{ route('admin.leaderboard.index') }}">Lihat Semua</a>
                         </div>
                         <table class="data-table">
@@ -409,7 +409,7 @@
                     <!-- Top Global Pelanggan Produk -->
                     <div class="table-widget overflow-x-auto">
                         <div class="tw-header">
-                            <h3>Top Global Pelanggan Produk</h3>
+                            <h3>Top Global Pelanggan (Produk)</h3>
                             <a href="{{ route('admin.leaderboard.index') }}">Lihat Semua</a>
                         </div>
                         <table class="data-table">

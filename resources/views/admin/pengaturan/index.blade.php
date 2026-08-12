@@ -266,6 +266,24 @@
                             <button type="submit" class="mt-4 px-5 py-2.5 bg-gradient-to-r from-[#EC4899] to-[#BE185D] text-white font-bold rounded-xl shadow-sm hover:opacity-95 transition-all text-sm">Simpan Pengaturan</button>
                         </div>
 
+                        <!-- Card: Syarat & Ketentuan -->
+                        <div class="bg-white rounded-2xl border border-pink-50 shadow-[0_2px_16px_rgba(236,72,153,0.07)] p-5">
+                            <h3 class="font-bold text-gray-800 mb-4">Syarat &amp; Ketentuan</h3>
+                            <p class="text-xs text-gray-400 mb-3">Konten ini ditampilkan di halaman publik Syarat &amp; Ketentuan.</p>
+                            <textarea name="syarat_ketentuan" rows="10"
+                                class="w-full px-3 py-2.5 bg-[#FFF7FA] border border-pink-100 rounded-xl text-sm focus:outline-none focus:border-pink-400 text-gray-700 font-medium leading-relaxed"
+                                placeholder="Tulis syarat & ketentuan di sini...">{{ $pengaturan->syarat_ketentuan }}</textarea>
+                        </div>
+
+                        <!-- Card: Kebijakan Privasi -->
+                        <div class="bg-white rounded-2xl border border-pink-50 shadow-[0_2px_16px_rgba(236,72,153,0.07)] p-5">
+                            <h3 class="font-bold text-gray-800 mb-4">Kebijakan Privasi</h3>
+                            <p class="text-xs text-gray-400 mb-3">Konten ini ditampilkan di halaman publik Kebijakan Privasi.</p>
+                            <textarea name="kebijakan_privasi" rows="10"
+                                class="w-full px-3 py-2.5 bg-[#FFF7FA] border border-pink-100 rounded-xl text-sm focus:outline-none focus:border-pink-400 text-gray-700 font-medium leading-relaxed"
+                                placeholder="Tulis kebijakan privasi di sini...">{{ $pengaturan->kebijakan_privasi }}</textarea>
+                        </div>
+
                     </div>
                 </form>
             </div>

@@ -38,6 +38,8 @@ class AdminPengaturanController extends Controller
             'telepon' => 'required|string|max:20',
             'jam_buka' => 'required|date_format:H:i',
             'jam_tutup' => 'required|date_format:H:i',
+            'syarat_ketentuan' => 'nullable|string',
+            'kebijakan_privasi' => 'nullable|string',
         ]);
 
         $pengaturan = Pengaturan::first();
@@ -55,6 +57,8 @@ class AdminPengaturanController extends Controller
             'telepon' => $request->telepon,
             'jam_buka' => $request->jam_buka,
             'jam_tutup' => $request->jam_tutup,
+            'syarat_ketentuan' => $request->syarat_ketentuan,
+            'kebijakan_privasi' => $request->kebijakan_privasi,
         ]);
 
         $pengaturan->save();
