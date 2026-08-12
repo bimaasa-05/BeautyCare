@@ -148,10 +148,7 @@
         <div class="login-left">
             <div class="login-left-content">
                 <div class="logo">
-                    <svg width="40" height="40" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <rect width="32" height="32" rx="8" fill="white"/>
-                        <path d="M16 8C14 8 10 10 10 16C10 22 14 24 16 24C18 24 22 22 22 16C22 10 18 8 16 8Z" fill="#FF4F87" opacity="0.9"/>
-                    </svg>
+                    <img src="{{ asset('assets/images/logo/logo.png') }}" alt="BeautyCare Logo" width="100">
                     <span>BeautyCare</span>
                 </div>
                 <h2>Lupa Password?</h2>
