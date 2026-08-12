@@ -229,8 +229,8 @@
                             <i class="fa-solid fa-receipt"></i> {{ $transaksi->no_invoice }}
                         </div>
                         <div class="sukses-actions">
-                            <a href="{{ route('pelanggan.pesanan.show', $transaksi->id_transaksi) }}" class="btn-lanjut">
-                                <i class="fa-solid fa-eye"></i> Lihat Detail Pesanan
+                            <a href="{{ route('pelanggan.pesanan.index') }}" class="btn-lanjut">
+                                <i class="fa-solid fa-receipt"></i> Riwayat Pesanan
                             </a>
                             @if(!$isMembership)
                             <a href="{{ route('pelanggan.produk') }}" class="btn-kembali-belanja">
@@ -239,7 +239,7 @@
                             @endif
                         </div>
                         <div class="redirect-info">
-                            Mengalihkan ke detail pesanan dalam <b id="hitungan">5</b> detik...
+                            Mengalihkan ke riwayat pesanan dalam <b id="hitungan">5</b> detik...
                         </div>
                     </div>
                 </div>
@@ -255,7 +255,7 @@
         if (el) el.textContent = detik;
         if (detik <= 0) {
             clearInterval(timer);
-            window.location.href = '{{ route("pelanggan.pesanan.show", $transaksi->id_transaksi) }}';
+            window.location.href = '{{ route("pelanggan.pesanan.index") }}';
         }
     }, 1000);
 
