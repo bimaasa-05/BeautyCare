@@ -126,6 +126,21 @@
 
         <div class="nav-section">
             <div class="nav-section-title">Marketing</div>
+            <a href="{{ route('admin.leaderboard.index') }}"
+                class="nav-item {{ request()->routeIs('admin.leaderboard.index') ? 'active' : '' }}"
+                title="Lihat papan peringkat pelanggan paling loyal">
+                <span class="nav-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
+                        <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
+                        <path d="M4 22h16" />
+                        <circle cx="12" cy="8" r="2" />
+                        <path d="M8 22v-5a4 4 0 0 1 8 0v5" />
+                    </svg>
+                </span>
+                Papan Peringkat
+            </a>
             <a href="{{ route('admin.membership.index') }}"
                 class="nav-item {{ request()->routeIs('admin.membership.index') ? 'active' : '' }}"
                 title="Kelola membership dan loyalitas pelanggan">
@@ -201,7 +216,7 @@
                         <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
                     </svg>
                 </span>
-                Laporan Pendapatan
+                Laporan Keuangan
             </a>
             <a href="{{ route('admin.laporan-pelanggan.index') }}"
                 class="nav-item {{ request()->routeIs('admin.laporan-pelanggan.*') ? 'active' : '' }}"
