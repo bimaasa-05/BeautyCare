@@ -890,7 +890,11 @@
                             </div>
                             <div class="ph-text">
                                 <h3>Selesaikan Pembayaran</h3>
-                                <p>Pesanan {{ $transaksi->no_invoice }} sedang menunggu pembayaran</p>
+                                <p>@if($transaksi->status === 'Menunggu Pembayaran')
+                                Pesanan {{ $transaksi->no_invoice }} sedang menunggu pembayaran
+                                @else
+                                Pembayaran pesanan {{ $transaksi->no_invoice }} sedang diverifikasi kasir
+                                @endif</p>
                             </div>
                         </div>
                         <a href="{{ route('pelanggan.keranjang.history') }}" class="btn-back">
@@ -926,7 +930,11 @@
                         @else
                         <div class="waiting-box">
                             <div class="wb-title"><i class="fa-solid fa-circle-notch"></i> Menunggu Verifikasi Kasir</div>
-                            <div class="wb-desc">Konfirmasi pembayaran Anda sudah terkirim. Kasir akan memverifikasi pesanan Anda.</div>
+                            <div class="wb-desc">@if($transaksi->pembayaran->metode === 'Saldo')
+                            Pembayaran Anda sudah dilunasi dengan saldo akun. Kasir akan memverifikasi pesanan Anda.
+                            @else
+                            Konfirmasi pembayaran Anda sudah terkirim. Kasir akan memverifikasi pesanan Anda.
+                            @endif</div>
                         </div>
                         @endif
                     </div>

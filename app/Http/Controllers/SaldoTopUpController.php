@@ -31,7 +31,7 @@ class SaldoTopUpController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nominal' => 'required|numeric|min:10000|max:2000000',
+            'nominal' => 'required|numeric|min:10000|max:10000000',
             'metode' => 'required|in:QRIS,Transfer',
             'provider' => 'required|string|max:50',
             'bank_id' => 'nullable|required_if:metode,Transfer|integer|exists:banks,id',
