@@ -183,7 +183,7 @@
                                                 <i class="{{ $metodeIcon }}"></i> {{ $t->metode_byr }}
                                             </span>
                                         </td>
-                                        <td class="py-3.5 px-4 text-gray-500">{{ $t->user->nama ?? '-' }}</td>
+                                        <td class="py-3.5 px-4 text-gray-500">{{ $t->kasir?->nama ?? $t->user?->nama ?? '-' }}</td>
                                         <td class="py-3.5 px-4">
                                             @if ($t->status == 'Lunas')
                                                 <span class="badge-status status-selesai"><i class="fa-regular fa-circle-check"></i> Lunas</span>
