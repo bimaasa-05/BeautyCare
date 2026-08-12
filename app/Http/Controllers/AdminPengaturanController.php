@@ -40,6 +40,8 @@ class AdminPengaturanController extends Controller
             'jam_tutup' => 'required|date_format:H:i',
             'syarat_ketentuan' => 'nullable|string',
             'kebijakan_privasi' => 'nullable|string',
+            'pusat_bantuan_kategori' => 'nullable|json',
+            'pusat_bantuan_faq' => 'nullable|json',
         ]);
 
         $pengaturan = Pengaturan::first();
@@ -59,6 +61,8 @@ class AdminPengaturanController extends Controller
             'jam_tutup' => $request->jam_tutup,
             'syarat_ketentuan' => $request->syarat_ketentuan,
             'kebijakan_privasi' => $request->kebijakan_privasi,
+            'pusat_bantuan_kategori' => $request->pusat_bantuan_kategori,
+            'pusat_bantuan_faq' => $request->pusat_bantuan_faq,
         ]);
 
         $pengaturan->save();
