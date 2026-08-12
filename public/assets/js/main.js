@@ -212,6 +212,10 @@ function initSmoothScroll() {
           top: offsetTop,
           behavior: 'smooth'
         });
+      } else {
+        // Anchor tidak tersedia di halaman ini (mis. Pusat Bantuan / halaman legal)
+        // arahkan ke halaman utama lalu scroll ke section tujuan
+        window.location.href = '/' + targetId;
       }
     });
   });
