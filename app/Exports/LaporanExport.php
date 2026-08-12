@@ -6,12 +6,15 @@ use App\Models\Transaksi;
 use App\Models\Booking;
 use App\Models\Pelanggan;
 use App\Models\Stok;
+use App\Exports\Traits\SheetPengaya;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Concerns\WithCustomStartCell;
+use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
-use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Concerns\WithMultipleSheets;
+use Maatwebsite\Excel\Concerns\WithTitle;
 
 class LaporanExport implements WithMultipleSheets
 {
@@ -36,8 +39,10 @@ class LaporanExport implements WithMultipleSheets
     }
 }
 
-class LaporanTrenPendapatanSheet implements FromCollection, WithHeadings, WithMapping, WithTitle
+class LaporanTrenPendapatanSheet implements FromCollection, WithHeadings, WithMapping, WithTitle, WithEvents, WithCustomStartCell
 {
+    use SheetPengaya;
+
     protected string $startDate;
     protected string $endDate;
 
@@ -45,6 +50,12 @@ class LaporanTrenPendapatanSheet implements FromCollection, WithHeadings, WithMa
     {
         $this->startDate = $startDate;
         $this->endDate = $endDate;
+
+        $this->judulSheet = 'TREN PENDAPATAN';
+        $this->subtitleSheet = 'Periode ' . date('d M Y', strtotime($this->startDate)) . ' – ' . date('d M Y', strtotime($this->endDate));
+        $this->barisHeaderSheet = 3;
+        $this->lebarKolomSheet = [6, 22, 22];
+        $this->kolomUangSheet = [3];
     }
 
     public function collection()
@@ -70,6 +81,7 @@ class LaporanTrenPendapatanSheet implements FromCollection, WithHeadings, WithMa
             while ($current <= $end) {
                 $dateKey = date('Y-m-d', $current);
                 $result[] = [
+                    'no' => count($result) + 1,
                     'label' => date('d M Y', $current),
                     'total' => (float)($data[$dateKey] ?? 0),
                 ];
@@ -97,6 +109,7 @@ class LaporanTrenPendapatanSheet implements FromCollection, WithHeadings, WithMa
         while ($current <= $endDT) {
             $key = $current->format('Y-m');
             $result[] = [
+                'no' => count($result) + 1,
                 'label' => $monthNames[(int)$current->format('m') - 1] . ' ' . $current->format('Y'),
                 'total' => (float)($data[$key] ?? 0),
             ];
@@ -107,12 +120,12 @@ class LaporanTrenPendapatanSheet implements FromCollection, WithHeadings, WithMa
 
     public function headings(): array
     {
-        return ['Periode', 'Total Pendapatan'];
+        return ['No.', 'Periode', 'Total Pendapatan'];
     }
 
     public function map($row): array
     {
-        return [$row['label'], 'Rp ' . number_format($row['total'], 0, ',', '.')];
+        return [$row['no'], $row['label'], $row['total']];
     }
 
     public function title(): string
@@ -121,8 +134,10 @@ class LaporanTrenPendapatanSheet implements FromCollection, WithHeadings, WithMa
     }
 }
 
-class LaporanTrenReservasiSheet implements FromCollection, WithHeadings, WithMapping, WithTitle
+class LaporanTrenReservasiSheet implements FromCollection, WithHeadings, WithMapping, WithTitle, WithEvents, WithCustomStartCell
 {
+    use SheetPengaya;
+
     protected string $startDate;
     protected string $endDate;
 
@@ -130,6 +145,12 @@ class LaporanTrenReservasiSheet implements FromCollection, WithHeadings, WithMap
     {
         $this->startDate = $startDate;
         $this->endDate = $endDate;
+
+        $this->judulSheet = 'TREN RESERVASI';
+        $this->subtitleSheet = 'Periode ' . date('d M Y', strtotime($this->startDate)) . ' – ' . date('d M Y', strtotime($this->endDate));
+        $this->barisHeaderSheet = 3;
+        $this->lebarKolomSheet = [6, 22, 22];
+        $this->kolomUangSheet = [];
     }
 
     public function collection()
@@ -153,6 +174,7 @@ class LaporanTrenReservasiSheet implements FromCollection, WithHeadings, WithMap
             while ($current <= $end) {
                 $dateKey = date('Y-m-d', $current);
                 $result[] = [
+                    'no' => count($result) + 1,
                     'label' => date('d M Y', $current),
                     'total' => (int)($data[$dateKey] ?? 0),
                 ];
@@ -178,6 +200,7 @@ class LaporanTrenReservasiSheet implements FromCollection, WithHeadings, WithMap
         while ($current <= $endDT) {
             $key = $current->format('Y-m');
             $result[] = [
+                'no' => count($result) + 1,
                 'label' => $monthNames[(int)$current->format('m') - 1] . ' ' . $current->format('Y'),
                 'total' => (int)($data[$key] ?? 0),
             ];
@@ -188,12 +211,12 @@ class LaporanTrenReservasiSheet implements FromCollection, WithHeadings, WithMap
 
     public function headings(): array
     {
-        return ['Periode', 'Jumlah Reservasi'];
+        return ['No.', 'Periode', 'Jumlah Reservasi'];
     }
 
     public function map($row): array
     {
-        return [$row['label'], $row['total']];
+        return [$row['no'], $row['label'], $row['total']];
     }
 
     public function title(): string
@@ -202,8 +225,10 @@ class LaporanTrenReservasiSheet implements FromCollection, WithHeadings, WithMap
     }
 }
 
-class LaporanRingkasanSheet implements FromCollection, WithHeadings, WithMapping, WithTitle
+class LaporanRingkasanSheet implements FromCollection, WithHeadings, WithMapping, WithTitle, WithEvents, WithCustomStartCell
 {
+    use SheetPengaya;
+
     protected string $startDate;
     protected string $endDate;
 
@@ -211,6 +236,12 @@ class LaporanRingkasanSheet implements FromCollection, WithHeadings, WithMapping
     {
         $this->startDate = $startDate;
         $this->endDate = $endDate;
+
+        $this->judulSheet = 'LAPORAN PENDAPATAN BEAUTYCARE';
+        $this->subtitleSheet = 'Periode ' . date('d M Y', strtotime($this->startDate)) . ' – ' . date('d M Y', strtotime($this->endDate));
+        $this->barisHeaderSheet = 3;
+        $this->lebarKolomSheet = [6, 32, 26];
+        $this->kolomUangSheet = [3];
     }
 
     public function collection()
@@ -239,23 +270,23 @@ class LaporanRingkasanSheet implements FromCollection, WithHeadings, WithMapping
             ->count();
 
         return collect([
-            ['Total Pendapatan', 'Rp ' . number_format($totalPendapatan, 0, ',', '.')],
-            ['Pengeluaran Pembelian', 'Rp ' . number_format($totalPengeluaran, 0, ',', '.')],
-            ['Saldo Bersih', 'Rp ' . number_format($saldoBersih, 0, ',', '.')],
-            ['Total Reservasi', (string) $totalReservasi],
-            ['Pelanggan Baru', (string) $pelangganBaru],
-            ['Periode', date('d M Y', strtotime($this->startDate)) . ' – ' . date('d M Y', strtotime($this->endDate))],
+            ['no' => 1, 'label' => 'Total Pendapatan', 'value' => (float) $totalPendapatan],
+            ['no' => 2, 'label' => 'Pengeluaran Pembelian', 'value' => (float) $totalPengeluaran],
+            ['no' => 3, 'label' => 'Saldo Bersih', 'value' => (float) $saldoBersih],
+            ['no' => 4, 'label' => 'Total Reservasi', 'value' => $totalReservasi],
+            ['no' => 5, 'label' => 'Pelanggan Baru', 'value' => $pelangganBaru],
+            ['no' => 6, 'label' => 'Periode', 'value' => date('d M Y', strtotime($this->startDate)) . ' – ' . date('d M Y', strtotime($this->endDate))],
         ]);
     }
 
     public function headings(): array
     {
-        return ['Metrik', 'Nilai'];
+        return ['No.', 'Metrik', 'Nilai'];
     }
 
     public function map($row): array
     {
-        return [$row[0], $row[1]];
+        return [$row['no'], $row['label'], $row['value']];
     }
 
     public function title(): string
@@ -264,8 +295,10 @@ class LaporanRingkasanSheet implements FromCollection, WithHeadings, WithMapping
     }
 }
 
-class LaporanTransaksiSheet implements FromCollection, WithHeadings, WithMapping, WithTitle
+class LaporanTransaksiSheet implements FromCollection, WithHeadings, WithMapping, WithTitle, WithEvents, WithCustomStartCell
 {
+    use SheetPengaya;
+
     protected string $startDate;
     protected string $endDate;
 
@@ -273,19 +306,32 @@ class LaporanTransaksiSheet implements FromCollection, WithHeadings, WithMapping
     {
         $this->startDate = $startDate;
         $this->endDate = $endDate;
+
+        $this->judulSheet = 'RINCIAN TRANSAKSI';
+        $this->subtitleSheet = 'Periode ' . date('d M Y', strtotime($this->startDate)) . ' – ' . date('d M Y', strtotime($this->endDate));
+        $this->barisHeaderSheet = 3;
+        $this->lebarKolomSheet = [6, 18, 22, 30, 14, 18, 14, 14];
+        $this->kolomUangSheet = [6];
     }
 
     public function collection()
     {
-        return Transaksi::with('pelanggan', 'supplier', 'pengeluaran')
+        $rows = Transaksi::with('pelanggan', 'supplier', 'pengeluaran')
             ->whereBetween('tanggal', [$this->startDate, $this->endDate])
             ->orderBy('tanggal', 'desc')
             ->get();
+
+        $no = 0;
+        foreach ($rows as $row) {
+            $row->no_urut = ++$no;
+        }
+
+        return $rows;
     }
 
     public function headings(): array
     {
-        return ['Jenis', 'No. Invoice', 'Pelanggan/Supplier', 'Tanggal', 'Total', 'Metode', 'Status'];
+        return ['No.', 'Jenis', 'No. Invoice', 'Pelanggan/Supplier', 'Tanggal', 'Total', 'Metode', 'Status'];
     }
 
     public function map($transaksi): array
@@ -304,11 +350,12 @@ class LaporanTransaksiSheet implements FromCollection, WithHeadings, WithMapping
         }
 
         return [
+            $transaksi->no_urut,
             $label,
             $transaksi->no_invoice,
             $pihak,
             $transaksi->tanggal,
-            'Rp ' . number_format($transaksi->total, 0, ',', '.'),
+            (float) $transaksi->total,
             $transaksi->metode_byr,
             $transaksi->status,
         ];
@@ -320,8 +367,10 @@ class LaporanTransaksiSheet implements FromCollection, WithHeadings, WithMapping
     }
 }
 
-class LaporanReservasiSheet implements FromCollection, WithHeadings, WithMapping, WithTitle
+class LaporanReservasiSheet implements FromCollection, WithHeadings, WithMapping, WithTitle, WithEvents, WithCustomStartCell
 {
+    use SheetPengaya;
+
     protected string $startDate;
     protected string $endDate;
 
@@ -329,27 +378,46 @@ class LaporanReservasiSheet implements FromCollection, WithHeadings, WithMapping
     {
         $this->startDate = $startDate;
         $this->endDate = $endDate;
+
+        $this->judulSheet = 'RINCIAN RESERVASI';
+        $this->subtitleSheet = 'Periode ' . date('d M Y', strtotime($this->startDate)) . ' – ' . date('d M Y', strtotime($this->endDate));
+        $this->barisHeaderSheet = 3;
+        $this->lebarKolomSheet = [6, 14, 26, 26, 14, 16];
+        $this->kolomUangSheet = [];
     }
 
     public function collection()
     {
-        return Booking::with('pelanggan', 'layanan')
+        $rows = Booking::with('pelanggan', 'detail.layanan')
             ->whereBetween('tanggal', [$this->startDate, $this->endDate])
             ->orderBy('tanggal', 'desc')
             ->get();
+
+        $no = 0;
+        foreach ($rows as $row) {
+            $row->no_urut = ++$no;
+        }
+
+        return $rows;
     }
 
     public function headings(): array
     {
-        return ['ID Booking', 'Pelanggan', 'Layanan', 'Tanggal', 'Status'];
+        return ['No.', 'ID Booking', 'Pelanggan', 'Layanan', 'Tanggal', 'Status'];
     }
 
     public function map($booking): array
     {
+        $layanan = $booking->detail
+            ->map(fn($d) => $d->layanan->nm_layanan ?? '')
+            ->filter()
+            ->implode(', ');
+
         return [
-            $booking->id,
+            $booking->no_urut,
+            $booking->id_booking,
             $booking->pelanggan->nm_pelanggan ?? '-',
-            $booking->layanan->nm_layanan ?? '-',
+            $layanan ?: '-',
             $booking->tanggal,
             $booking->status,
         ];
