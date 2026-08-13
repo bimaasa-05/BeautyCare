@@ -226,23 +226,33 @@ class KasirTransaksiController extends Controller
         $dari = $request->dari;
         $sampai = $request->sampai;
         $jenis = $request->jenis;
+        $sumber = $request->sumber;
         $userId = auth()->id();
+
+        $excludePengeluaran = fn ($q) => $q->where('jenis_transaksi', '!=', 'Pengeluaran');
 
         $totalInvoice = Transaksi::where('id_kasir', $userId)
             ->when($jenis, fn($q, $j) => $q->where('jenis_transaksi', $j))
+            ->when($sumber, fn($q, $s) => $q->where('sumber', $s))
+            ->where($excludePengeluaran)
             ->count();
         $totalLunas = Transaksi::where('id_kasir', $userId)
             ->when($jenis, fn($q, $j) => $q->where('jenis_transaksi', $j))
+            ->when($sumber, fn($q, $s) => $q->where('sumber', $s))
+            ->where($excludePengeluaran)
             ->where('status', 'Lunas')
             ->count();
         $totalPending = Transaksi::where('id_kasir', $userId)
             ->when($jenis, fn($q, $j) => $q->where('jenis_transaksi', $j))
+            ->when($sumber, fn($q, $s) => $q->where('sumber', $s))
+            ->where($excludePengeluaran)
             ->where('status', 'Pending')
             ->count();
 
         $invoices = Transaksi::with('pelanggan')
             ->where('id_kasir', $userId)
             ->when($jenis, fn($q, $j) => $q->where('jenis_transaksi', $j))
+            ->when($sumber, fn($q, $s) => $q->where('sumber', $s))
             ->when($search, function ($query, $search) {
                 return $query->where('no_invoice', 'like', "%{$search}%")
                     ->orWhereHas('pelanggan', function ($q) use ($search) {
@@ -254,7 +264,7 @@ class KasirTransaksiController extends Controller
             ->orderBy('id_transaksi', 'desc')
             ->paginate(10);
 
-        return view('kasir.invoice.index', compact('invoices', 'totalInvoice', 'totalLunas', 'totalPending'));
+        return view('kasir.invoice.index', compact('invoices', 'totalInvoice', 'totalLunas', 'totalPending', 'jenis', 'sumber'));
     }
 
     public function invoice($id)
@@ -363,6 +373,11 @@ class KasirTransaksiController extends Controller
 
         if ($request->has('items') && is_array($request->items)) {
             $oldDetails = DetailTransaksi::where('id_transaksi', $id)->get();
+            $oldDetailMap = $oldDetails->keyBy(fn ($d) => $d->jenis . ':' . $d->id_item);
+            $booking = $transaksiLama->id_booking
+                ? \App\Models\Booking::find($transaksiLama->id_booking)
+                : null;
+
             foreach ($oldDetails as $old) {
                 if ($old->jenis === 'Produk') {
                     $produk = Produk::find($old->id_item);
@@ -377,6 +392,9 @@ class KasirTransaksiController extends Controller
             DetailTransaksi::where('id_transaksi', $id)->delete();
             foreach ($request->items as $item) {
                 if (!empty($item['id_item'])) {
+                    $itemKey = ($item['jenis'] ?? 'Layanan') . ':' . $item['id_item'];
+                    $matchingOld = $oldDetailMap->get($itemKey);
+
                     DetailTransaksi::create([
                         'id_transaksi' => $id,
                         'jenis' => $item['jenis'] ?? 'Layanan',
@@ -386,8 +404,8 @@ class KasirTransaksiController extends Controller
                         'harga' => $item['harga'] ?? 0,
                         'diskon' => 0,
                         'subtotal' => $item['subtotal'] ?? 0,
-                        'jam' => $item['jam'] ?? null,
-                        'id_karyawan' => $item['id_karyawan'] ?? null,
+                        'jam' => $item['jam'] ?? $booking?->jam ?? $matchingOld?->jam ?? null,
+                        'id_karyawan' => $item['id_karyawan'] ?? $booking?->id_karyawan ?? $matchingOld?->id_karyawan ?? null,
                     ]);
 
                     if (($item['jenis'] ?? 'Layanan') === 'Produk') {
