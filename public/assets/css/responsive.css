@@ -910,6 +910,22 @@
     max-width: 100%;
     min-width: 0;
   }
+  /* Header menempel di atas (mobile/tablet): pakai fixed seperti
+     sticky footer keranjang, karena sticky rusak oleh overflow-x di body */
+  .navbar-top {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 60;
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+  .main-content {
+    padding-top: var(--navbar-height);
+  }
+  html {
+    scroll-padding-top: calc(var(--navbar-height) + 8px);
+  }
   .main-content > *,
   .card,
   .chart-card,
