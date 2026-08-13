@@ -1,7 +1,7 @@
 <!-- Sidebar Kasir -->
 <aside class="sidebar" id="sidebar">
     <div class="sidebar-logo">
-        <img src="{{ asset('assets/images/logo/logo.jpeg') }}" alt="BeautyCare Logo" width="100" height="100">
+        <img src="{{ asset('assets/images/logo/logo.jpeg') }}" alt="BeautyCare Logo" width="100" height="100" style="border-radius: 10px;">
         <span>BeautyCare</span>
         <button class="sidebar-close" onclick="closeSidebar()" aria-label="Tutup menu">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

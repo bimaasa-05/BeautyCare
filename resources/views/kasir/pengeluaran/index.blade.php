@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/dashboard.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/css/responsive.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/responsive.css') . '?v=3' }}">
 
     <style>
         .sidebar-toggle { display: none; background: none; border: none; cursor: pointer; padding: 8px; }
@@ -232,7 +232,7 @@
                     </div>
 
                     <div class="overflow-x-auto">
-                        <table class="data-table">
+                        <table class="data-table table-card-mobile">
                             <thead>
                                 <tr>
                                     <th class="w-[120px]">Tanggal</th>
@@ -245,15 +245,15 @@
                             <tbody>
                                 @forelse($pengeluaran as $p)
                                 <tr>
-                                    <td class="text-gray-500">{{ \Carbon\Carbon::parse($p->tanggal)->isoFormat('D MMM YYYY') }}</td>
-                                    <td>
+                                    <td class="text-gray-500" data-label="Tanggal">{{ \Carbon\Carbon::parse($p->tanggal)->isoFormat('D MMM YYYY') }}</td>
+                                    <td data-label="Kategori">
                                         <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-red-50 text-red-600 text-[11px] font-semibold">
                                             <i class="fa-solid fa-tag text-[10px]"></i>{{ $p->kategori }}
                                         </span>
                                     </td>
-                                    <td class="text-gray-600 max-w-[300px] truncate" title="{{ $p->keterangan }}">{{ $p->keterangan ?: '-' }}</td>
-                                    <td class="text-right font-bold text-red-600">- Rp {{ number_format($p->nominal, 0, ',', '.') }}</td>
-                                    <td class="text-center">
+                                    <td class="text-gray-600 max-w-[300px] truncate" title="{{ $p->keterangan }}" data-label="Keterangan">{{ $p->keterangan ?: '-' }}</td>
+                                    <td class="text-right font-bold text-red-600" data-label="Nominal">- Rp {{ number_format($p->nominal, 0, ',', '.') }}</td>
+                                    <td class="text-center" data-label="">
                                         <form action="{{ route('kasir.pengeluaran.destroy', $p->id_pengeluaran) }}" method="POST"
                                             class="form-hapus"
                                             data-confirm-title="Hapus Pengeluaran" data-confirm-body="Apakah Anda yakin ingin menghapus pengeluaran ini? Tindakan ini tidak dapat dibatalkan." data-confirm-icon="fa-trash-can" data-confirm-type="danger" data-confirm-yes="Ya, Hapus">

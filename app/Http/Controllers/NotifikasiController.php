@@ -52,21 +52,6 @@ class NotifikasiController extends Controller
 
             // Popup realtime untuk admin: perubahan data oleh kasir/beautycian/pelanggan
             if ($user->role === 'admin') {
-                $aktivitas = RiwayatAktivitas::with('user')
-                    ->whereIn('role', ['kasir', 'beautycian', 'pelanggan'])
-                    ->where('created_at', '>', $since)
-                    ->orderByDesc('created_at')
-                    ->take(5)
-                    ->get();
-
-                foreach ($aktivitas as $a) {
-                    $pelaku = ucfirst($a->role).' '.($a->user?->nama ?? '');
-                    $items[] = [
-                        'message' => trim($pelaku).': '.$a->deskripsi,
-                        'type' => 'success',
-                    ];
-                }
-
                 // Popup notifikasi dari sistem (mis. registrasi pelanggan baru / pesan kontak,
                 // aktor NULL) dan aksi pelanggan, agar admin langsung tahu ada yang menunggu persetujuan
                 $notifBaru = Notifikasi::with('aktor')
@@ -80,8 +65,44 @@ class NotifikasiController extends Controller
                     ->take(5)
                     ->get();
 
+                // Kumpulan waktu notif aksi pelanggan, dipakai untuk menyaring
+                // RiwayatAktivitas duplikat (1 aksi bisa tercatat di kedua tempat)
+                $waktuNotifPelanggan = [];
+                foreach ($notifBaru as $n) {
+                    if ($n->aktor && $n->aktor->role === 'pelanggan' && $n->created_at) {
+                        $waktuNotifPelanggan[] = Carbon::parse($n->created_at);
+                    }
+                }
+
+                $aktivitas = RiwayatAktivitas::with('user')
+                    ->whereIn('role', ['kasir', 'beautycian', 'pelanggan'])
+                    ->where('created_at', '>', $since)
+                    ->orderByDesc('created_at')
+                    ->take(5)
+                    ->get();
+
+                foreach ($aktivitas as $a) {
+                    // Aksi pelanggan yang sama sudah muncul lewat popup Notifikasi,
+                    // lewati riwayat duplikat dalam rentang 30 detik (hindari 2 popup utk 1 perubahan)
+                    if ($a->role === 'pelanggan' && $a->created_at && $waktuNotifPelanggan) {
+                        $waktuRiwayat = Carbon::parse($a->created_at);
+                        foreach ($waktuNotifPelanggan as $w) {
+                            if (abs($waktuRiwayat->diffInSeconds($w)) <= 30) {
+                                continue 2;
+                            }
+                        }
+                    }
+
+                    $pelaku = ucfirst($a->role).' '.($a->user?->nama ?? '');
+                    $items[] = [
+                        'message' => trim($pelaku).': '.$a->deskripsi,
+                        'type' => 'success',
+                    ];
+                }
+
                 foreach ($notifBaru as $n) {
                     $items[] = [
+                        'id_notif' => $n->id_notif,
                         'message' => $n->judul.': '.$n->isi,
                         'type' => 'success',
                     ];
@@ -108,6 +129,20 @@ class NotifikasiController extends Controller
                     ];
                 }
             }
+
+            // Dedup: hanya simpan notifikasi unik per id_notif (atau fallback message+type)
+            $seen = [];
+            $items = array_values(array_filter($items, function ($item) use (&$seen) {
+                $key = $item['message'] ?? '';
+                if (isset($item['id_notif'])) {
+                    $key = 'notif_'.$item['id_notif'];
+                }
+                if (isset($seen[$key])) {
+                    return false;
+                }
+                $seen[$key] = true;
+                return true;
+            }));
         }
 
         return response()->json([

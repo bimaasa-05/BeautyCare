@@ -10,38 +10,8 @@
             <span class="text-amber-500 bg-amber-50 px-2 py-0.5 rounded-full text-[11px] font-semibold whitespace-nowrap">Walk-in</span>
         @endif
     </td>
-    <td class="py-3.5 px-4 font-medium text-gray-500" data-label="Status">
-        @if ($p->user_id)
-            <div class="flex flex-col gap-1">
-                <form action="{{ route('admin.pelanggan.toggle-status', $p->user_id) }}" method="POST" class="inline">
-                    @csrf
-                    @php
-                        $statusLabel = match($p->status) {
-                            'aktif' => 'Aktif',
-                            'non_aktif' => 'Non Aktif',
-                            'suspend' => 'Suspend',
-                            'menunggu_persetujuan' => 'Menunggu Persetujuan',
-                            default => $p->status ?? 'suspend',
-                        };
-                        $statusColor = match($p->status ?? 'suspend') {
-                            'aktif' => 'bg-green-50 text-green-600 hover:bg-green-100',
-                            'non_aktif' => 'bg-red-50 text-red-500 hover:bg-red-100',
-                            'menunggu_persetujuan' => 'bg-blue-50 text-blue-600 hover:bg-blue-100',
-                            default => 'bg-amber-50 text-amber-600 hover:bg-amber-100',
-                        };
-                    @endphp
-                    <button type="submit"
-                        class="text-[11px] font-semibold px-2.5 py-1 rounded-full transition-colors cursor-pointer {{ $statusColor }}">
-                        {{ $statusLabel }}
-                    </button>
-                </form>
-                @if (($p->status ?? 'suspend') === 'suspend' && $p->suspend_until)
-                    <span class="text-[10px] text-amber-500">s/d {{ \Carbon\Carbon::parse($p->suspend_until)->format('d/m/Y H:i') }}</span>
-                @endif
-            </div>
-        @else
-            <span class="text-gray-400">-</span>
-        @endif
+    <td class="py-3.5 px-4 font-medium text-gray-500" data-label="Saldo Akun">
+        <span class="text-emerald-600 font-semibold">Rp {{ number_format($p->saldo ?? 0, 0, ',', '.') }}</span>
     </td>
     <td class="py-3.5 px-4 text-gray-500 font-medium" data-label="Nomor Hp">{{ $p->no_hp ?? '-' }}
     </td>
@@ -107,6 +77,6 @@
 </tr>
 @empty
 <tr>
-    <td colspan="11" class="py-8 text-center text-gray-400 text-[13px]">Belum ada data pelanggan</td>
+    <td colspan="10" class="py-8 text-center text-gray-400 text-[13px]">Belum ada data pelanggan</td>
 </tr>
 @endforelse

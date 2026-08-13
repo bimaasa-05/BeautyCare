@@ -25,7 +25,7 @@ class KasirLaporanController extends Controller
         $dari = $request->dari;
         $sampai = $request->sampai;
 
-        $queryBase = Transaksi::where('id_user', $userId);
+        $queryBase = Transaksi::where('id_kasir', $userId);
 
         $totalTransaksi = (clone $queryBase)->count();
 
@@ -129,7 +129,7 @@ class KasirLaporanController extends Controller
                     DB::raw('DATE(tanggal) as label'),
                     DB::raw('COALESCE(SUM(total),0) as total')
                 )
-                ->where('id_user', $userId)
+                ->where('id_kasir', $userId)
                 ->where('status', 'Lunas')
                 ->whereBetween('tanggal', [$startDate, $endDate])
                 ->groupBy(DB::raw('DATE(tanggal)'))
@@ -141,7 +141,7 @@ class KasirLaporanController extends Controller
                     DB::raw('DATE(tanggal) as label'),
                     DB::raw('COUNT(*) as total')
                 )
-                ->where('id_user', $userId)
+                ->where('id_kasir', $userId)
                 ->whereBetween('tanggal', [$startDate, $endDate])
                 ->groupBy(DB::raw('DATE(tanggal)'))
                 ->orderBy('label')
@@ -167,7 +167,7 @@ class KasirLaporanController extends Controller
                 DB::raw("DATE_FORMAT(tanggal, '%Y-%m') as label"),
                 DB::raw('COALESCE(SUM(total),0) as total')
             )
-            ->where('id_user', $userId)
+            ->where('id_kasir', $userId)
             ->where('status', 'Lunas')
             ->whereBetween('tanggal', [$startDate, $endDate])
             ->groupBy('label')
@@ -179,7 +179,7 @@ class KasirLaporanController extends Controller
                 DB::raw("DATE_FORMAT(tanggal, '%Y-%m') as label"),
                 DB::raw('COUNT(*) as total')
             )
-            ->where('id_user', $userId)
+            ->where('id_kasir', $userId)
             ->whereBetween('tanggal', [$startDate, $endDate])
             ->groupBy('label')
             ->orderBy('label')
@@ -231,11 +231,11 @@ class KasirLaporanController extends Controller
         $startDate = $dateRange['start'];
         $endDate = $dateRange['end'];
 
-        $totalTransaksi = Transaksi::where('id_user', $userId)
+        $totalTransaksi = Transaksi::where('id_kasir', $userId)
             ->whereBetween('tanggal', [$startDate, $endDate])
             ->count();
 
-        $totalPendapatan = Transaksi::where('id_user', $userId)
+        $totalPendapatan = Transaksi::where('id_kasir', $userId)
             ->where('status', 'Lunas')
             ->whereBetween('tanggal', [$startDate, $endDate])
             ->sum('total');
@@ -243,9 +243,10 @@ class KasirLaporanController extends Controller
         $rataTransaksi = $totalTransaksi > 0 ? $totalPendapatan / $totalTransaksi : 0;
 
         $transaksi = Transaksi::with('pelanggan')
-            ->where('id_user', $userId)
+            ->where('id_kasir', $userId)
             ->whereBetween('tanggal', [$startDate, $endDate])
             ->orderBy('tanggal', 'desc')
+            ->orderBy('id_transaksi', 'desc')
             ->get();
 
         $userName = auth()->user()->nama;

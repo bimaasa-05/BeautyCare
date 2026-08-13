@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/dashboard.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/css/responsive.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/responsive.css') . '?v=3' }}">
 
     <style>
         .sidebar-toggle { display: none; background: none; border: none; cursor: pointer; padding: 8px; }
@@ -126,7 +126,7 @@
                         </div>
                     @endif
 
-                    <div class="overflow-x-auto"><table class="w-full text-left border-collapse">
+                    <div class="overflow-x-auto"><table class="w-full text-left border-collapse table-card-mobile">
                             <thead>
                                 <tr class="text-[11px] font-bold text-gray-400 uppercase border-b border-gray-100 bg-pink-50/30">
                                     <th class="py-3 px-4 w-10">#</th>
@@ -141,8 +141,8 @@
                             <tbody class="text-[13px] text-gray-700 divide-y divide-gray-50">
                                 @forelse($reservasi as $r)
                                     <tr class="{{ $r->status == 'diproses' ? 'bg-emerald-50/30' : '' }} hover:bg-gray-100 transition-colors duration-150">
-                                        <td class="py-3.5 px-4 text-gray-400 font-medium text-center text-[12px]">{{ $loop->iteration }}</td>
-                                        <td class="py-3.5 px-4">
+                                        <td class="py-3.5 px-4 text-gray-400 font-medium text-center text-[12px]" data-label="#">{{ $loop->iteration }}</td>
+                                        <td class="py-3.5 px-4" data-label="Pelanggan">
                                             <div class="flex items-center gap-2.5">
                                                 <img src="{{ $r->pelanggan?->foto_url ?? 'https://ui-avatars.com/api/?name=Unknown&background=FFE5EF&color=FF4F87&size=40' }}" class="w-8 h-8 rounded-full object-cover flex-shrink-0" alt="{{ $r->pelanggan->nm_pelanggan ?? '-' }}">
                                                 <div>
@@ -151,12 +151,12 @@
                                                 </div>
                                             </div>
                                         </td>
-                                        <td class="py-3.5 px-4">
+                                        <td class="py-3.5 px-4" data-label="Jam">
                                             <span class="font-mono text-[13px] font-medium {{ $r->jam <= $jamSekarang && $r->status != 'diproses' && $r->status != 'selesai' ? 'text-red-500' : 'text-gray-700' }}">
                                                 <i class="fa-regular fa-clock mr-1 text-pink-300"></i>{{ $r->jam }}
                                             </span>
                                         </td>
-                                        <td class="py-3.5 px-4">
+                                        <td class="py-3.5 px-4" data-label="Layanan">
                                             <div class="flex flex-wrap gap-1">
                                                 @forelse ($r->detail as $d)
                                                     <span class="inline-block text-[11px] bg-pink-50 text-pink-600 px-2 py-0.5 rounded-full font-medium">{{ $d->layanan->nm_layanan ?? '-' }}</span>
@@ -165,8 +165,8 @@
                                                 @endforelse
                                             </div>
                                         </td>
-                                        <td class="py-3.5 px-4 text-gray-500">{{ $r->karyawan->nama ?? '-' }}</td>
-                                        <td class="py-3.5 px-4">
+                                        <td class="py-3.5 px-4 text-gray-500" data-label="Karyawan">{{ $r->karyawan->nama ?? '-' }}</td>
+                                        <td class="py-3.5 px-4" data-label="Status">
                                             @php
                                                 $statusClass = match($r->status) {
                                                     'menunggu' => 'badge-menunggu',
@@ -189,7 +189,7 @@
                                                 <i class="{{ $statusIcon }}"></i> {{ ucfirst($r->status) }}
                                             </span>
                                         </td>
-                                        <td class="py-3.5 px-4 text-center">
+                                        <td class="py-3.5 px-4 text-center" data-label="">
                                             @if ($r->status == 'menunggu' || $r->status == 'dikonfirmasi')
                                                 <form action="{{ route('kasir.checkin.process', $r->id_booking) }}" method="POST" class="inline">
                                                     @csrf

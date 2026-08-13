@@ -34,10 +34,17 @@ class AdminPengaturanController extends Controller
             'sms_notifikasi' => 'nullable|boolean',
             'email_laporan' => 'nullable|boolean',
             'konfirmasi_otomatis' => 'nullable|boolean',
-            'nama_salon' => 'required|string|max:100',
-            'telepon' => 'required|string|max:20',
-            'jam_buka' => 'required|date_format:H:i',
-            'jam_tutup' => 'required|date_format:H:i',
+            'nama_salon' => 'nullable|string|max:100',
+            'telepon' => 'nullable|string|max:20',
+            'alamat' => 'nullable|string|max:255',
+            'email' => 'nullable|email|max:100',
+            'jam_buka' => 'nullable|date_format:H:i',
+            'jam_tutup' => 'nullable|date_format:H:i',
+            'syarat_ketentuan' => 'nullable|string',
+            'kebijakan_privasi' => 'nullable|string',
+            'pusat_bantuan_kategori' => 'nullable|json',
+            'pusat_bantuan_faq' => 'nullable|json',
+            'sosmed' => 'nullable|json',
         ]);
 
         $pengaturan = Pengaturan::first();
@@ -46,16 +53,17 @@ class AdminPengaturanController extends Controller
             $pengaturan = new Pengaturan();
         }
 
-        $pengaturan->fill([
-            'push_notification' => $request->boolean('push_notification'),
-            'sms_notifikasi' => $request->boolean('sms_notifikasi'),
-            'email_laporan' => $request->boolean('email_laporan'),
-            'konfirmasi_otomatis' => $request->boolean('konfirmasi_otomatis'),
-            'nama_salon' => $request->nama_salon,
-            'telepon' => $request->telepon,
-            'jam_buka' => $request->jam_buka,
-            'jam_tutup' => $request->jam_tutup,
-        ]);
+        foreach (['push_notification', 'sms_notifikasi', 'email_laporan', 'konfirmasi_otomatis'] as $field) {
+            if ($request->has($field)) {
+                $pengaturan->$field = $request->boolean($field);
+            }
+        }
+
+        foreach (['nama_salon', 'telepon', 'alamat', 'email', 'jam_buka', 'jam_tutup', 'syarat_ketentuan', 'kebijakan_privasi', 'pusat_bantuan_kategori', 'pusat_bantuan_faq', 'sosmed'] as $field) {
+            if ($request->has($field)) {
+                $pengaturan->$field = $request->$field;
+            }
+        }
 
         $pengaturan->save();
 

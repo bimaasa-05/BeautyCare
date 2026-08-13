@@ -17,8 +17,15 @@ class Pengaturan extends Model
         'konfirmasi_otomatis',
         'nama_salon',
         'telepon',
+        'alamat',
+        'email',
         'jam_buka',
         'jam_tutup',
+        'syarat_ketentuan',
+        'kebijakan_privasi',
+        'pusat_bantuan_kategori',
+        'pusat_bantuan_faq',
+        'sosmed',
     ];
 
     protected $casts = [

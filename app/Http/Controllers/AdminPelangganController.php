@@ -32,6 +32,7 @@ class AdminPelangganController extends Controller
                 'pelanggan.id_member',
                 'pelanggan.tgl_mulai_member',
                 'pelanggan.catatan_alergi',
+                'pelanggan.saldo',
             );
 
         $walkinQuery = Pelanggan::whereNull('id_user')
@@ -50,6 +51,7 @@ class AdminPelangganController extends Controller
                 'id_member',
                 'tgl_mulai_member',
                 'catatan_alergi',
+                'saldo',
             );
 
         if ($request->filled('search')) {

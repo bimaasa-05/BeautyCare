@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/dashboard.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/css/responsive.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/responsive.css') . '?v=3' }}">
 
     <style>
         .sidebar-toggle { display: none; background: none; border: none; cursor: pointer; padding: 8px; }
@@ -145,7 +145,7 @@
                     </form>
 
                     <div class="overflow-x-auto table-container">
-                        <div class="overflow-x-auto"><table class="w-full text-left border-collapse table-enhanced">
+                        <div class="overflow-x-auto"><table class="w-full text-left border-collapse table-enhanced table-card-mobile">
                             <thead>
                                 <tr>
                                     <th class="w-10 text-center">#</th>
@@ -161,11 +161,11 @@
                             <tbody class="text-[13px] text-gray-700">
                                  @forelse($transaksi as $t)
                                       <tr class="hover:bg-gray-100 transition-colors duration-150">
-                                          <td class="text-center text-gray-400 font-medium">{{ $loop->iteration }}</td>
-                                         <td>
+                                          <td class="text-center text-gray-400 font-medium" data-label="#"> {{ $loop->iteration }}</td>
+                                         <td data-label="No. Invoice">
                                              <span class="font-mono font-semibold text-gray-700">{{ $t->no_invoice }}</span>
                                          </td>
-                                         <td>
+                                         <td data-label="Pelanggan">
                                              <div class="flex items-center gap-2.5">
                                                   <img src="{{ $t->pelanggan?->foto_url ?? 'https://ui-avatars.com/api/?name=Umum&background=FFE5EF&color=FF4F87&size=40' }}" class="w-8 h-8 rounded-full object-cover flex-shrink-0" alt="{{ $t->pelanggan->nm_pelanggan ?? 'Umum' }}">
                                                  <div>
@@ -174,9 +174,9 @@
                                                  </div>
                                              </div>
                                          </td>
-                                         <td class="text-gray-500">{{ \Carbon\Carbon::parse($t->tanggal)->format('d/m/Y') }}</td>
-                                         <td class="font-semibold text-gray-800">Rp {{ number_format($t->total, 0, ',', '.') }}</td>
-                                         <td>
+                                         <td class="text-gray-500" data-label="Tanggal">{{ \Carbon\Carbon::parse($t->tanggal)->format('d/m/Y') }}</td>
+                                         <td class="font-semibold text-gray-800" data-label="Total">Rp {{ number_format($t->total, 0, ',', '.') }}</td>
+                                         <td data-label="Metode">
                                              <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-medium 
                                                   @if($t->metode_byr == 'Tunai') bg-blue-50 text-blue-600
                                                   @elseif($t->metode_byr == 'E-Wallet') bg-teal-50 text-teal-600
@@ -191,7 +191,7 @@
                                                  {{ $t->metode_byr }}
                                              </span>
                                          </td>
-                                         <td>
+                                         <td data-label="Status">
                                               @php
                                                   $statusMap = ['Pending' => ['label' => 'Pending', 'class' => 'status-proses', 'icon' => 'fa-regular fa-clock'], 'Lunas' => ['label' => 'Lunas', 'class' => 'status-selesai', 'icon' => 'fa-regular fa-circle-check'], 'Batal' => ['label' => 'Batal', 'class' => 'status-batal', 'icon' => 'fa-regular fa-circle-xmark']];
                                                   $s = $statusMap[$t->status] ?? $statusMap['Pending'];
@@ -200,7 +200,7 @@
                                                  <i class="{{ $s['icon'] }}"></i> {{ $s['label'] }}
                                              </span>
                                          </td>
-                                         <td class="text-center">
+                                         <td data-label="" class="text-center">
                                              <div class="flex items-center justify-center gap-1.5">
                                                  <a href="{{ route('kasir.transaksi.show', $t->id_transaksi) }}"
                                                      class="action-btn action-btn-view" title="Detail">
