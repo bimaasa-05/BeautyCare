@@ -117,6 +117,15 @@
                             <option value="Penjualan" {{ request('jenis') == 'Penjualan' ? 'selected' : '' }}>Penjualan</option>
                             <option value="Booking" {{ request('jenis') == 'Booking' ? 'selected' : '' }}>Booking</option>
                             <option value="Pesanan Online" {{ request('jenis') == 'Pesanan Online' ? 'selected' : '' }}>Pesanan Online</option>
+                            <option value="TopUp Saldo" {{ request('jenis') == 'TopUp Saldo' ? 'selected' : '' }}>Top Up Saldo</option>
+                            <option value="Membership" {{ request('jenis') == 'Membership' ? 'selected' : '' }}>Membership</option>
+                            <option value="Pengeluaran" {{ request('jenis') == 'Pengeluaran' ? 'selected' : '' }}>Pengeluaran</option>
+                        </select>
+                        <select name="sumber" class="bg-gray-50 border border-gray-100 text-[12px] rounded-full px-3 py-2 w-[130px] focus:outline-none focus:border-pink-300 transition-all">
+                            <option value="">Semua Sumber</option>
+                            <option value="kasir" {{ request('sumber') == 'kasir' ? 'selected' : '' }}>Kasir</option>
+                            <option value="online" {{ request('sumber') == 'online' ? 'selected' : '' }}>Online</option>
+                            <option value="admin" {{ request('sumber') == 'admin' ? 'selected' : '' }}>Admin</option>
                         </select>
                         <input type="date" name="dari" value="{{ request('dari') }}"
                             class="bg-gray-50 border border-gray-100 text-[12px] rounded-full px-3 py-2 w-[140px] focus:outline-none focus:border-pink-300 transition-all">
@@ -139,6 +148,7 @@
                                     <th class="py-3 px-4">#</th>
                                     <th class="py-3 px-4">No. Invoice</th>
                                     <th class="py-3 px-4">Jenis</th>
+                                    <th class="py-3 px-4">Sumber</th>
                                     <th class="py-3 px-4">Pelanggan</th>
                                     <th class="py-3 px-4">Tanggal</th>
                                     <th class="py-3 px-4 text-right">Total</th>
@@ -152,9 +162,30 @@
                                         <td class="py-3 px-4 text-gray-400 font-medium" data-label="#">{{ $loop->iteration }}</td>
                                         <td class="py-3 px-4 font-semibold text-gray-700" data-label="No. Invoice">{{ $i->no_invoice }}</td>
                                         <td class="py-3 px-4" data-label="Jenis">
-                                            <span class="badge-status {{ $i->jenis_transaksi == 'Booking' ? 'badge-lunas' : ($i->jenis_transaksi == 'Pesanan Online' ? 'badge-pending' : '') }}">
+                                            @php
+                                                $jenisColor = [
+                                                    'Penjualan' => ['bg-pink-50 text-pink-600 border-pink-100'],
+                                                    'Booking' => ['bg-emerald-50 text-emerald-600 border-emerald-100'],
+                                                    'Pesanan Online' => ['bg-amber-50 text-amber-600 border-amber-100'],
+                                                    'TopUp Saldo' => ['bg-teal-50 text-teal-600 border-teal-100'],
+                                                    'Membership' => ['bg-purple-50 text-purple-600 border-purple-100'],
+                                                    'Pengeluaran' => ['bg-red-50 text-red-600 border-red-100'],
+                                                ];
+                                                $jc = $jenisColor[$i->jenis_transaksi ?? 'Penjualan'] ?? ['bg-gray-50 text-gray-600 border-gray-200'];
+                                            @endphp
+                                            <span class="badge-status border {{ $jc[0] }}">
                                                 {{ $i->jenis_transaksi ?? 'Penjualan' }}
                                             </span>
+                                        </td>
+                                        <td class="py-3 px-4" data-label="Sumber">
+                                            @php
+                                                $sumberLabel = match ($i->sumber ?? 'kasir') {
+                                                    'online' => ['Online', 'bg-sky-50 text-sky-600 border-sky-100'],
+                                                    'admin' => ['Admin', 'bg-indigo-50 text-indigo-600 border-indigo-100'],
+                                                    default => ['Kasir', 'bg-gray-50 text-gray-600 border-gray-200'],
+                                                };
+                                            @endphp
+                                            <span class="badge-status border {{ $sumberLabel[1] }}">{{ $sumberLabel[0] }}</span>
                                         </td>
                                         <td class="py-3 px-4" data-label="Pelanggan">
                                             <div class="flex items-center gap-2.5">
@@ -183,7 +214,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="8" class="py-10 text-center">
+                                        <td colspan="9" class="py-10 text-center">
                                             <div class="flex flex-col items-center gap-2">
                                                 <i class="fa-solid fa-file-invoice text-4xl text-gray-300"></i>
                                                 <p class="text-gray-400 font-medium text-[14px]">Belum ada data invoice</p>
