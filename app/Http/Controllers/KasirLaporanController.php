@@ -27,9 +27,11 @@ class KasirLaporanController extends Controller
 
         $queryBase = Transaksi::where('id_kasir', $userId);
 
-        $totalTransaksi = (clone $queryBase)->count();
+        $queryPendapatan = (clone $queryBase)->where('jenis_transaksi', '!=', 'Pengeluaran');
 
-        $totalPendapatan = (clone $queryBase)
+        $totalTransaksi = (clone $queryPendapatan)->count();
+
+        $totalPendapatan = (clone $queryPendapatan)
             ->where('status', 'Lunas')
             ->sum('total');
 
@@ -41,14 +43,14 @@ class KasirLaporanController extends Controller
 
         $rataTransaksi = $totalTransaksi > 0 ? $totalPendapatan / $totalTransaksi : 0;
 
-        $metodeTerbanyak = (clone $queryBase)
+        $metodeTerbanyak = (clone $queryPendapatan)
             ->select('metode_byr', DB::raw('COUNT(*) as total'))
             ->where('status', 'Lunas')
             ->groupBy('metode_byr')
             ->orderBy('total', 'desc')
             ->first();
 
-        $metodeData = (clone $queryBase)
+        $metodeData = (clone $queryPendapatan)
             ->select('metode_byr', DB::raw('COUNT(*) as total'))
             ->where('status', 'Lunas')
             ->whereBetween('tanggal', [$startDate, $endDate])
@@ -59,7 +61,7 @@ class KasirLaporanController extends Controller
         $chartMetodeLabels = $metodeData->pluck('metode_byr')->toArray();
         $chartMetodeValues = $metodeData->pluck('total')->toArray();
 
-        $periodeTransaksi = (clone $queryBase)
+        $periodeTransaksi = (clone $queryPendapatan)
             ->whereBetween('tanggal', [$startDate, $endDate]);
 
         $periodePendapatan = (clone $periodeTransaksi)
@@ -69,7 +71,7 @@ class KasirLaporanController extends Controller
         $periodeCount = (clone $periodeTransaksi)->count();
 
         $prevStart = $this->getPreviousPeriodStart($periode, $startDate);
-        $prevPendapatan = (clone $queryBase)
+        $prevPendapatan = (clone $queryPendapatan)
             ->whereBetween('tanggal', [$prevStart, $startDate])
             ->where('status', 'Lunas')
             ->sum('total');
@@ -130,6 +132,7 @@ class KasirLaporanController extends Controller
                     DB::raw('COALESCE(SUM(total),0) as total')
                 )
                 ->where('id_kasir', $userId)
+                ->where('jenis_transaksi', '!=', 'Pengeluaran')
                 ->where('status', 'Lunas')
                 ->whereBetween('tanggal', [$startDate, $endDate])
                 ->groupBy(DB::raw('DATE(tanggal)'))
@@ -142,6 +145,7 @@ class KasirLaporanController extends Controller
                     DB::raw('COUNT(*) as total')
                 )
                 ->where('id_kasir', $userId)
+                ->where('jenis_transaksi', '!=', 'Pengeluaran')
                 ->whereBetween('tanggal', [$startDate, $endDate])
                 ->groupBy(DB::raw('DATE(tanggal)'))
                 ->orderBy('label')
@@ -168,6 +172,7 @@ class KasirLaporanController extends Controller
                 DB::raw('COALESCE(SUM(total),0) as total')
             )
             ->where('id_kasir', $userId)
+            ->where('jenis_transaksi', '!=', 'Pengeluaran')
             ->where('status', 'Lunas')
             ->whereBetween('tanggal', [$startDate, $endDate])
             ->groupBy('label')
@@ -180,6 +185,7 @@ class KasirLaporanController extends Controller
                 DB::raw('COUNT(*) as total')
             )
             ->where('id_kasir', $userId)
+            ->where('jenis_transaksi', '!=', 'Pengeluaran')
             ->whereBetween('tanggal', [$startDate, $endDate])
             ->groupBy('label')
             ->orderBy('label')
@@ -231,19 +237,22 @@ class KasirLaporanController extends Controller
         $startDate = $dateRange['start'];
         $endDate = $dateRange['end'];
 
-        $totalTransaksi = Transaksi::where('id_kasir', $userId)
+        $queryPendapatan = Transaksi::where('id_kasir', $userId)
+            ->where('jenis_transaksi', '!=', 'Pengeluaran');
+
+        $totalTransaksi = (clone $queryPendapatan)
             ->whereBetween('tanggal', [$startDate, $endDate])
             ->count();
 
-        $totalPendapatan = Transaksi::where('id_kasir', $userId)
+        $totalPendapatan = (clone $queryPendapatan)
             ->where('status', 'Lunas')
             ->whereBetween('tanggal', [$startDate, $endDate])
             ->sum('total');
 
         $rataTransaksi = $totalTransaksi > 0 ? $totalPendapatan / $totalTransaksi : 0;
 
-        $transaksi = Transaksi::with('pelanggan')
-            ->where('id_kasir', $userId)
+        $transaksi = (clone $queryPendapatan)
+            ->with('pelanggan')
             ->whereBetween('tanggal', [$startDate, $endDate])
             ->orderBy('tanggal', 'desc')
             ->orderBy('id_transaksi', 'desc')
