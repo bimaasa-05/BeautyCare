@@ -148,7 +148,7 @@
         <div class="login-left">
             <div class="login-left-content">
                 <div class="logo">
-                    <img src="{{ asset('assets/images/logo/logo.png') }}" alt="BeautyCare Logo" width="100">
+                    <img src="{{ asset('assets/images/logo/logo.jpeg') }}" alt="BeautyCare Logo" width="100" height="100" style="border-radius: 23px;">
                     <span>BeautyCare</span>
                 </div>
                 <h2>Lupa Password?</h2>
