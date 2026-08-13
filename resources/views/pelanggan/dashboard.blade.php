@@ -199,6 +199,46 @@
         background: linear-gradient(90deg, #22C55E, #4ADE80);
     }
 
+    /* ─── Bar Grafik Mini (Layanan Favorit) ─── */
+    #miniChartFavorit {
+        align-items: flex-end;
+        justify-content: flex-start;
+        gap: 8px;
+    }
+
+    #miniChartFavorit .bar {
+        flex: 1;
+        max-width: 34px;
+        min-width: 14px;
+        height: 0;
+        border-radius: 6px 6px 0 0;
+        display: block;
+        transition: height 0.6s ease;
+    }
+
+    #miniChartFavorit .bar.bar-primary { background: linear-gradient(180deg, #FF4F87, #FF7BA6); }
+    #miniChartFavorit .bar.bar-success { background: linear-gradient(180deg, #22C55E, #4ADE80); }
+    #miniChartFavorit .bar.bar-info    { background: linear-gradient(180deg, #3B82F6, #60A5FA); }
+    #miniChartFavorit .bar.bar-warning { background: linear-gradient(180deg, #F59E0B, #FBBF24); }
+
+    .mini-chart-card .mc-labels {
+        display: flex;
+        justify-content: space-between;
+        gap: 6px;
+        font-size: 11px;
+        color: var(--gray);
+        margin-top: 8px;
+    }
+
+    .mini-chart-card .mc-labels span {
+        flex: 1;
+        min-width: 0;
+        text-align: center;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
     @media (max-width: 768px) {
         .sidebar-toggle {
             display: flex;
@@ -621,7 +661,7 @@
                                 <h3>Layanan Favorit</h3>
                                 <span class="mc-total">{{ $layananFavorit->count() }}</span>
                             </div>
-                            <div class="mc-body" id="miniChartFavorit">
+                            <div class="mc-body" id="miniChartFavorit" style="min-height:140px;">
                                 @php
                                     $maxHeight = $layananFavorit->max('harga') ?: 1;
                                     $colors = ['bar-primary', 'bar-success', 'bar-info', 'bar-warning'];
@@ -630,9 +670,9 @@
                                 <span class="bar {{ $colors[$i % 4] }}" data-height="{{ round(($fav->harga / $maxHeight) * 80) }}"></span>
                                 @endforeach
                             </div>
-                            <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--gray);margin-top:8px;">
+                            <div class="mc-labels">
                                 @foreach($layananFavorit as $fav)
-                                <span>{{ $fav->nm_layanan }}</span>
+                                <span title="{{ $fav->nm_layanan }}">{{ $fav->nm_layanan }}</span>
                                 @endforeach
                             </div>
                         </div>
@@ -970,6 +1010,11 @@
         document.querySelectorAll('.mb-fill').forEach(function(fill) {
             var width = parseInt(fill.getAttribute('data-width')) || 0;
             setTimeout(function() { fill.style.width = width + '%'; }, 200);
+        });
+
+        document.querySelectorAll('#miniChartFavorit .bar').forEach(function(bar) {
+            var height = parseInt(bar.getAttribute('data-height')) || 0;
+            setTimeout(function() { bar.style.height = height + 'px'; }, 200);
         });
 
         const periodTrigger = document.getElementById('periodTrigger');
