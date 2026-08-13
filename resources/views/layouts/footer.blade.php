@@ -4,7 +4,7 @@
         <div class="footer-grid">
             <div class="footer-brand">
                 <a href="{{ url('/') }}" class="footer-logo">
-                    <img src="{{ asset('assets/images/logo/logo.jpeg') }}" alt="BeautyCare Logo" width="50" height="50">
+                    <img src="{{ asset('assets/images/logo/logo.jpeg') }}" alt="BeautyCare Logo" width="50" height="50" style="border-radius: 10px;">
                     BeautyCare
                 </a>
                 <p>Solusi manajemen bisnis kecantikan terpercaya untuk Salon, Spa, Nail Art, Barbershop, dan Skincare. Kelola bisnis Anda dengan lebih mudah dan efisien.</p>
