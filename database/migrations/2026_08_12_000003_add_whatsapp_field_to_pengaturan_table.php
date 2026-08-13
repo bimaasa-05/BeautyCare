@@ -8,15 +8,11 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('pengaturan', function (Blueprint $table) {
-            $table->string('no_wa', 20)->nullable()->after('telepon');
-        });
+        // Kolom no_wa tidak digunakan lagi.
     }
 
     public function down(): void
     {
-        Schema::table('pengaturan', function (Blueprint $table) {
-            $table->dropColumn('no_wa');
-        });
+        //
     }
 };

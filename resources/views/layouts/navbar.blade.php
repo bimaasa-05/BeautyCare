@@ -2,7 +2,7 @@
 <nav class="navbar">
     <div class="container">
         <a href="{{ url('/') }}" class="navbar-brand">
-            <img src="{{ asset('assets/images/logo/logo.jpeg') }}" alt="BeautyCare Logo" width="100" height="100">
+            <img src="{{ asset('assets/images/logo/logo.jpeg') }}" alt="BeautyCare Logo" width="100" height="100" style="border-radius: 10px;">
             BeautyCare
         </a>
 

@@ -609,6 +609,13 @@
         }
         .treatment-table tbody td:first-child { padding-left: 0; }
         .treatment-table tbody td:last-child { padding-right: 0; }
+        .treatment-table tbody td.empty-cell {
+            display: block;
+            padding: 0;
+        }
+        .treatment-table tbody td.empty-cell::before {
+            content: none;
+        }
 
         .page-header-premium { padding: 22px 20px; }
         .page-header-premium .ph-content { flex-wrap: wrap; gap: 16px; }
@@ -764,7 +771,7 @@
                                 </tr>
                                 @empty
                                 <tr>
-                                    <td colspan="8">
+                                    <td colspan="8" class="empty-cell">
                                         <div class="empty-state">
                                             <div class="es-illustration">
                                                 <i class="fa-regular fa-calendar-xmark"></i>
