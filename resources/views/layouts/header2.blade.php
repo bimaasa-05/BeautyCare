@@ -37,7 +37,7 @@ if (!isset($pageTitle)) {
 @media (max-width: 640px) {
     .notif-dropdown {
         position: fixed !important;
-        top: 60px !important;
+        top: 78px !important;
         left: 50% !important;
         transform: translateX(-50%) !important;
         width: calc(100vw - 32px) !important;
