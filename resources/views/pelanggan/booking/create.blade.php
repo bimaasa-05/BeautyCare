@@ -780,6 +780,15 @@
         .form-card-premium .fcp-body { padding: 16px; }
         .steps-indicator .step-item { padding: 8px 10px; }
         .steps-indicator .step-num { width: 20px; height: 20px; font-size: 10px; }
+        .form-actions { gap: 8px; margin-top: 20px; padding-top: 16px; }
+        .form-actions .btn-submit,
+        .form-actions .btn-cancel-form {
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 13px;
+            gap: 6px;
+        }
+        .form-actions .btn-cancel-form { min-width: 0; }
     }
 
     /* ─── Calendar Popup ─── */
