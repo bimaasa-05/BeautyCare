@@ -26,11 +26,15 @@ class PelangganProfileController extends Controller
             return back()->with('error', 'Data pelanggan tidak ditemukan.');
         }
 
-        auth()->user()->update(['alamat' => $req->alamat ?? '']);
-        $pelanggan->update([
-            'alamat' => $req->alamat ?? '',
-            'catatan_alergi' => $req->catatan_alergi ?? '',
-        ]);
+        $data = [];
+        if ($req->has('alamat')) {
+            $data['alamat'] = $req->alamat;
+            auth()->user()->update(['alamat' => $req->alamat]);
+        }
+        if ($req->has('catatan_alergi')) {
+            $data['catatan_alergi'] = $req->catatan_alergi;
+        }
+        $pelanggan->update($data);
 
         buatNotif(auth()->id(), 'Profil Diperbarui', 'Alamat dan catatan alergi berhasil diperbarui.', 'Lainnya', route('pelanggan.profile'));
         return back()->with('success', 'Alamat dan catatan alergi berhasil diperbarui!');

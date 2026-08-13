@@ -7,12 +7,12 @@
     <style>
         .help-page {
             background: linear-gradient(135deg, #FFF5F8 0%, #FFE5EF 50%, #FFD6E6 100%);
-            padding: 0 0 60px;
+            padding: 80px 20px 60px;
             font-family: 'Poppins', sans-serif;
         }
 
         .help-hero {
-            padding: 72px 0 40px;
+            padding: 40px 0 32px;
             text-align: center;
         }
 
@@ -87,7 +87,7 @@
             flex-wrap: wrap;
             gap: 10px;
             justify-content: center;
-            margin: 28px auto 36px;
+            margin: 24px auto 32px;
             max-width: 700px;
         }
 
@@ -271,9 +271,9 @@
 
             <div class="help-contact-cta">
                 <h3>Masih butuh bantuan?</h3>
-                <p>Tim kami siap membantu Anda. Hubungi kami melalui WhatsApp.</p>
+                <p>Tim kami siap membantu Anda. Hubungi kami untuk bantuan lebih lanjut.</p>
                 @php
-                    $noWa = preg_replace('/\D+/', '', $pengaturan->no_wa ?? '');
+                    $noWa = preg_replace('/\D+/', '', $pengaturan->telepon ?? '');
                     if (strlen($noWa) >= 10) {
                         if (str_starts_with($noWa, '0')) {
                             $noWa = '62' . substr($noWa, 1);

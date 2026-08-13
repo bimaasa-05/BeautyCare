@@ -214,12 +214,28 @@
 
         .salon-field-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1fr;
             gap: 14px;
         }
 
         .field-full {
             grid-column: 1 / -1;
+        }
+
+        .field-span-2 {
+            grid-column: span 2;
+        }
+
+        @media (max-width: 639px) {
+            .salon-field-grid > div {
+                grid-column: 1 / -1;
+            }
+        }
+
+        @media (min-width: 640px) {
+            .salon-field-grid {
+                grid-template-columns: 1fr 1fr;
+            }
         }
 
         @media (min-width: 1024px) {
@@ -517,15 +533,19 @@
                                     <label class="settings-label" for="telepon">Telepon</label>
                                     <input type="text" id="telepon" name="telepon" value="{{ $pengaturan->telepon }}" class="settings-input">
                                 </div>
-                                <div class="field-full">
-                                    <label class="settings-label" for="no_wa">Nomor WhatsApp</label>
-                                    <input type="text" id="no_wa" name="no_wa" value="{{ $pengaturan->no_wa }}" class="settings-input" placeholder="contoh: 081234567890">
+                                <div class="field-span-2">
+                                    <label class="settings-label" for="email">Email</label>
+                                    <input type="email" id="email" name="email" value="{{ $pengaturan->email }}" class="settings-input">
                                 </div>
-                                <div>
+                                <div class="field-full">
+                                    <label class="settings-label" for="alamat">Alamat</label>
+                                    <input type="text" id="alamat" name="alamat" value="{{ $pengaturan->alamat }}" class="settings-input">
+                                </div>
+                                <div class="field-span-2">
                                     <label class="settings-label" for="jam_buka">Jam Buka</label>
                                     <input type="time" id="jam_buka" name="jam_buka" value="{{ $pengaturan->jam_buka ? substr($pengaturan->jam_buka, 0, 5) : '08:00' }}" class="settings-input">
                                 </div>
-                                <div>
+                                <div class="field-span-2">
                                     <label class="settings-label" for="jam_tutup">Jam Tutup</label>
                                     <input type="time" id="jam_tutup" name="jam_tutup" value="{{ $pengaturan->jam_tutup ? substr($pengaturan->jam_tutup, 0, 5) : '20:00' }}" class="settings-input">
                                 </div>
@@ -628,6 +648,29 @@
                             </div>
                         </form>
 
+                        <!-- Card: Sosial Media -->
+                        <form id="formSosmed" method="POST" action="{{ route('admin.pengaturan.update') }}" class="settings-card settings-card--wide">
+                            @csrf
+                            <div class="settings-card-header">
+                                <div class="card-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+                                </div>
+                                <div>
+                                    <h3 class="settings-card-title">Sosial Media</h3>
+                                    <p class="settings-sub">Link sosial media yang tampil di footer website</p>
+                                </div>
+                            </div>
+                            <div id="sosmed-rows" class="space-y-2"></div>
+                            <button type="button" id="btn-tambah-sosmed" class="btn-add-soft">+ Tambah Sosial Media</button>
+                            <input type="hidden" name="sosmed" id="sosmed" value="">
+                            <div class="settings-card-footer">
+                                <button type="submit" class="btn-save-pink">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" /><polyline points="17 21 17 13 7 13 7 21" /><polyline points="7 3 7 8 15 8" /></svg>
+                                    Simpan Sosial Media
+                                </button>
+                            </div>
+                        </form>
+
                     </div>
             </div>
         </main>
@@ -666,6 +709,16 @@
         if (dateEl) dateEl.textContent = now.toLocaleDateString('id-ID', options);
     </script>
     <script>
+        function esc(s) {
+            return String(s || '').replace(/[&<>"']/g, (c) => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#39;'
+            }[c]));
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             const kategoriState = @json(json_decode($pengaturan->pusat_bantuan_kategori ?? '[]', true) ?: []);
             const faqState = @json(json_decode($pengaturan->pusat_bantuan_faq ?? '[]', true) ?: []);
@@ -679,14 +732,6 @@
 
             const kategoriNames = () =>
                 Array.from(kategoriRows.querySelectorAll('.kategori-input')).map(i => i.value.trim()).filter(Boolean);
-
-            const esc = (s) => String(s || '').replace(/[&<>"']/g, (c) => ({
-                '&': '&amp;',
-                '<': '&lt;',
-                '>': '&gt;',
-                '"': '&quot;',
-                "'": '&#39;'
-            }[c]));
 
             const buildFaqSelect = (selected) => {
                 const names = kategoriNames();
@@ -799,6 +844,72 @@
 
             renderKategori();
             renderFaq();
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const sosmedState = @json(json_decode($pengaturan->sosmed ?? '[]', true) ?: []);
+
+            const sosmedRows = document.getElementById('sosmed-rows');
+
+            const sosmedInputCls =
+                'w-full px-3 py-2.5 bg-[#FFF7FA] border border-pink-100 rounded-xl text-sm focus:outline-none focus:border-pink-400 text-gray-700 font-medium';
+
+            const sosmedPlatforms = [
+                { value: 'instagram', label: 'Instagram' },
+                { value: 'facebook', label: 'Facebook' },
+                { value: 'twitter', label: 'Twitter / X' },
+                { value: 'youtube', label: 'YouTube' },
+                { value: 'tiktok', label: 'TikTok' },
+                { value: 'whatsapp', label: 'WhatsApp' },
+                { value: 'telegram', label: 'Telegram' },
+                { value: 'line', label: 'LINE' },
+            ];
+
+            const renderSosmed = () => {
+                sosmedRows.innerHTML = '';
+                sosmedState.forEach((s, i) => {
+                    const row = document.createElement('div');
+                    row.className = 'flex items-center gap-2';
+                    const opts = sosmedPlatforms.map(p => {
+                        const selected = (s.platform || '') === p.value ? 'selected' : '';
+                        return `<option value="${p.value}" ${selected}>${p.label}</option>`;
+                    }).join('');
+                    row.innerHTML = `
+                        <select class="sosmed-platform w-44 shrink-0 ${sosmedInputCls}">${opts}</select>
+                        <input type="url" class="sosmed-url flex-1 ${sosmedInputCls}" placeholder="https://..." value="${esc(s.url || '')}">
+                        <button type="button" class="remove-sosmed px-3 py-2.5 rounded-xl bg-red-50 text-red-500 text-xs font-bold hover:bg-red-100 transition-all" title="Hapus">Hapus</button>
+                    `;
+                    row.querySelector('.remove-sosmed').addEventListener('click', () => {
+                        sosmedState.splice(i, 1);
+                        renderSosmed();
+                    });
+                    row.querySelector('.sosmed-platform').addEventListener('change', (e) => {
+                        s.platform = e.target.value;
+                    });
+                    row.querySelector('.sosmed-url').addEventListener('input', (e) => {
+                        s.url = e.target.value;
+                    });
+                    sosmedRows.appendChild(row);
+                });
+            };
+
+            document.getElementById('btn-tambah-sosmed').addEventListener('click', () => {
+                sosmedState.push({ platform: 'instagram', url: '' });
+                renderSosmed();
+            });
+
+            document.getElementById('formSosmed').addEventListener('submit', () => {
+                const sosmed = [];
+                sosmedRows.querySelectorAll('.flex').forEach(r => {
+                    const platform = r.querySelector('.sosmed-platform').value;
+                    const url = r.querySelector('.sosmed-url').value.trim();
+                    if (url) sosmed.push({ platform, url });
+                });
+                document.getElementById('sosmed').value = JSON.stringify(sosmed);
+            });
+
+            renderSosmed();
         });
     </script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
