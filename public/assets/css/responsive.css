@@ -887,3 +887,126 @@
     height: 26px;
   }
 }
+
+/* =============================================
+   HARDENING MOBILE & TABLET
+   Paksa semua halaman (termasuk kasir) agar
+   tidak pernah melebar/zoom-out di perangkat:
+   cegah overflow horizontal tak terduga & pastikan
+   konten selalu muat dalam viewport.
+   ============================================= */
+@media screen and (max-width: 1024px) {
+  html,
+  body {
+    overflow-x: hidden;
+  }
+  body {
+    width: 100%;
+    max-width: 100%;
+  }
+  .dashboard-layout,
+  .main-content {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+  .main-content > *,
+  .card,
+  .chart-card,
+  .mini-chart-card,
+  .table-widget,
+  .list-widget,
+  .stat-card {
+    min-width: 0;
+    max-width: 100%;
+  }
+  img,
+  video {
+    max-width: 100%;
+  }
+  .sidebar {
+    max-width: 100vw;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .page-header,
+  .d-flex,
+  .flex {
+    max-width: 100%;
+  }
+}
+
+/* =============================================
+   TABEL JADI KARTU DI MOBILE (tanpa geser)
+   Aktif di layar <= 640px: setiap baris tabel
+   tampil sebagai kartu, semua kolom tetap
+   terlihat dengan label dari data-label.
+   ============================================= */
+@media screen and (max-width: 640px) {
+  .table-card-mobile {
+    display: block;
+    width: 100%;
+  }
+  .table-card-mobile thead {
+    display: none;
+  }
+  .table-card-mobile tbody {
+    display: block;
+    width: 100%;
+  }
+  .table-card-mobile tbody tr {
+    display: block;
+    width: 100%;
+    background: #fff;
+    border: 1px solid #f1f1f4;
+    border-radius: 14px;
+    padding: 6px 14px;
+    margin-bottom: 12px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+  }
+  .table-card-mobile tbody tr:hover {
+    background: #fff;
+  }
+  .table-card-mobile tbody td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 7px 0;
+    border: none;
+    border-bottom: 1px dashed #f3f3f6;
+    text-align: right;
+    font-size: 12.5px;
+    white-space: normal;
+  }
+  .table-card-mobile tbody tr td:last-child {
+    border-bottom: none;
+  }
+  .table-card-mobile tbody td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: #6b7280;
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    text-align: left;
+    flex-shrink: 0;
+  }
+  .table-card-mobile tbody td[data-label=""]::before,
+  .table-card-mobile tbody td[data-label=" "]::before {
+    display: none;
+  }
+  .table-card-mobile tbody td .flex,
+  .table-card-mobile tbody td .inline-flex,
+  .table-card-mobile tbody td .justify-end {
+    justify-content: flex-end;
+  }
+  .table-card-mobile tbody td .badge-status {
+    white-space: nowrap;
+  }
+  .table-card-mobile ~ .empty-state {
+    width: 100%;
+  }
+}

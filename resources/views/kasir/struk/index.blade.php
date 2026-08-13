@@ -84,7 +84,7 @@
         // ===== Info transaksi =====
         $row2('No. Transaksi', $transaksi->no_invoice);
         $row2('Tanggal', $wktLabel);
-        $row2('Kasir', $transaksi->user->nama ?? '-');
+        $row2('Kasir', $transaksi->kasir?->nama ?? $transaksi->user?->nama ?? '-');
         $row2('Pelanggan', $transaksi->pelanggan->nm_pelanggan ?? 'Umum');
         $add($sep, 'center');
 

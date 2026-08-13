@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/dashboard.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/css/responsive.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/responsive.css') . '?v=3' }}">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -236,7 +236,7 @@
                                 @endif
                             </form>
 
-                            <div class="overflow-x-auto"><table class="w-full text-left border-collapse">
+                            <div class="overflow-x-auto"><table class="w-full text-left border-collapse table-card-mobile">
                                     <thead>
                                         <tr class="text-xs font-bold text-gray-400 uppercase border-b border-gray-100 bg-pink-50/30">
                                             <th class="py-3 px-4 w-10">#</th>
@@ -252,19 +252,19 @@
                                     <tbody class="text-sm text-gray-700 divide-y divide-gray-50">
                                         @forelse($transaksi as $t)
                                             <tr class="hover:bg-gray-100 transition-colors duration-150">
-                                                <td class="py-3.5 px-4 text-gray-400 font-medium text-center text-xs">{{ $loop->iteration }}</td>
-                                                <td class="py-3.5 px-4">
+                                                <td class="py-3.5 px-4 text-gray-400 font-medium text-center text-xs" data-label="#">{{ $loop->iteration }}</td>
+                                                <td class="py-3.5 px-4" data-label="No. Invoice">
                                                     <span class="font-mono font-semibold text-gray-700 text-xs">{{ $t->no_invoice }}</span>
                                                 </td>
-                                                <td class="py-3.5 px-4">
+                                                <td class="py-3.5 px-4" data-label="Pelanggan">
                                                     <div class="flex items-center gap-2">
                                                         <img src="{{ $t->pelanggan?->foto_url ?? 'https://ui-avatars.com/api/?name=Umum&background=FFE5EF&color=FF4F87&size=36' }}" class="w-7 h-7 rounded-full object-cover flex-shrink-0" alt="{{ $t->pelanggan->nm_pelanggan ?? 'Umum' }}">
                                                         <span class="font-medium text-gray-700">{{ $t->pelanggan->nm_pelanggan ?? 'Umum' }}</span>
                                                     </div>
                                                 </td>
-                                                <td class="py-3.5 px-4 text-gray-500">{{ \Carbon\Carbon::parse($t->tanggal)->format('d/m/Y') }}</td>
-                                                <td class="py-3.5 px-4 font-semibold text-gray-800">Rp {{ number_format($t->total, 0, ',', '.') }}</td>
-                                                <td class="py-3.5 px-4">
+                                                <td class="py-3.5 px-4 text-gray-500" data-label="Tanggal">{{ \Carbon\Carbon::parse($t->tanggal)->format('d/m/Y') }}</td>
+                                                <td class="py-3.5 px-4 font-semibold text-gray-800" data-label="Total">Rp {{ number_format($t->total, 0, ',', '.') }}</td>
+                                                <td class="py-3.5 px-4" data-label="Metode">
                                                     @php
                                                         $metodeIcon = match($t->metode_byr) {
                                                             'Tunai' => 'fa-solid fa-money-bill-wave text-emerald-500',
@@ -278,7 +278,7 @@
                                                         <i class="{{ $metodeIcon }}"></i> {{ $t->metode_byr }}
                                                     </span>
                                                 </td>
-                                                <td class="py-3.5 px-4">
+                                                <td class="py-3.5 px-4" data-label="Status">
                                                     @if ($t->status == 'Lunas')
                                                         <span class="badge-status status-selesai"><i class="fa-regular fa-circle-check"></i> Lunas</span>
                                                     @elseif ($t->status == 'Pending')
@@ -287,7 +287,7 @@
                                                         <span class="badge-status status-batal"><i class="fa-regular fa-circle-xmark"></i> Batal</span>
                                                     @endif
                                                 </td>
-                                                <td class="py-3.5 px-4 text-center">
+                                                <td class="py-3.5 px-4 text-center" data-label="">
                                                     <a href="{{ route('kasir.riwayat-transaksi.show', $t->id_transaksi) }}"
                                                         class="w-7 h-7 text-blue-500 bg-blue-50 hover:bg-blue-100 rounded-md transition-colors inline-flex items-center justify-center"
                                                         title="Detail"><i data-lucide="eye" class="w-3.5 h-3.5"></i></a>

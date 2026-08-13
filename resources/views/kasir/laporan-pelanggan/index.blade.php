@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/dashboard.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/css/responsive.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/responsive.css') . '?v=3' }}">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -197,7 +197,7 @@
                                 @endif
                             </form>
 
-                            <div class="overflow-x-auto"><table class="w-full text-left border-collapse">
+                            <div class="overflow-x-auto"><table class="w-full text-left border-collapse table-card-mobile">
                                     <thead>
                                         <tr class="text-xs font-bold text-gray-400 uppercase border-b border-gray-100 bg-pink-50/30">
                                             <th class="py-3 px-4 w-10">#</th>
@@ -213,8 +213,8 @@
                                     <tbody class="text-sm text-gray-700 divide-y divide-gray-50">
                                         @forelse($pelanggan as $p)
                                             <tr class="hover:bg-gray-100 transition-colors duration-150">
-                                                <td class="py-3.5 px-4 text-gray-400 font-medium text-center text-xs">{{ $loop->iteration }}</td>
-                                                <td class="py-3.5 px-4">
+                                                <td class="py-3.5 px-4 text-gray-400 font-medium text-center text-xs" data-label="#">{{ $loop->iteration }}</td>
+                                                <td class="py-3.5 px-4" data-label="Pelanggan">
                                                     <div class="flex items-center gap-2">
                                                         <div class="w-7 h-7 rounded-full bg-pink-200 text-pink-600 flex items-center justify-center font-bold text-[10px]">
                                                             {{ strtoupper(substr($p->nm_pelanggan, 0, 2)) }}
@@ -222,9 +222,9 @@
                                                         <span class="font-medium text-gray-700">{{ $p->nm_pelanggan }}</span>
                                                     </div>
                                                 </td>
-                                                <td class="py-3.5 px-4 text-gray-500 text-xs">{{ $p->no_hp ?? '-' }}</td>
-                                                <td class="py-3.5 px-4 text-gray-500 text-xs">{{ $p->email }}</td>
-                                                <td class="py-3.5 px-4">
+                                                <td class="py-3.5 px-4 text-gray-500 text-xs" data-label="No. HP">{{ $p->no_hp ?? '-' }}</td>
+                                                <td class="py-3.5 px-4 text-gray-500 text-xs" data-label="Email">{{ $p->email }}</td>
+                                                <td class="py-3.5 px-4" data-label="Member">
                                                     @if ($p->membership)
                                                         <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-semibold bg-purple-50 text-purple-600 border border-purple-200">
                                                             <i data-lucide="award" class="w-3 h-3"></i> {{ $p->membership->nm_member }}
@@ -233,9 +233,9 @@
                                                         <span class="text-gray-400 text-xs">-</span>
                                                     @endif
                                                 </td>
-                                                <td class="py-3.5 px-4 text-center font-semibold text-gray-800">{{ $p->total_transaksi ?? 0 }}</td>
-                                                <td class="py-3.5 px-4 font-semibold text-gray-800">{{ $fmt($p->total_belanja ?? 0) }}</td>
-                                                <td class="py-3.5 px-4 text-gray-500 text-xs">
+                                                <td class="py-3.5 px-4 text-center font-semibold text-gray-800" data-label="Transaksi">{{ $p->total_transaksi ?? 0 }}</td>
+                                                <td class="py-3.5 px-4 font-semibold text-gray-800" data-label="Total Belanja">{{ $fmt($p->total_belanja ?? 0) }}</td>
+                                                <td class="py-3.5 px-4 text-gray-500 text-xs" data-label="Terakhir">
                                                     {{ $p->tgl_terakhir ? \Carbon\Carbon::parse($p->tgl_terakhir)->format('d/m/Y') : '-' }}
                                                 </td>
                                             </tr>

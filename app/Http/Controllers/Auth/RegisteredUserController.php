@@ -19,7 +19,9 @@ class RegisteredUserController extends Controller
      */
     public function create(): View
     {
-        return view('login.register');
+        $pengaturan = \App\Models\Pengaturan::first();
+
+        return view('login.register', compact('pengaturan'));
     }
 
     /**

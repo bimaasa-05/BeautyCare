@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/dashboard.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/css/responsive.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/responsive.css') . '?v=3' }}">
 
     <style>
         .sidebar-toggle { display: none; background: none; border: none; cursor: pointer; padding: 8px; }
@@ -79,14 +79,14 @@
                             <h4 class="text-[12px] font-semibold text-gray-500 uppercase tracking-wider mb-3">
                                 <i class="fa-regular fa-circle-info text-pink-400 mr-1"></i>Informasi Umum
                             </h4>
-                            <div class="overflow-x-auto"><table class="w-full text-[13px]">
+                            <div class="overflow-x-auto"><table class="w-full text-[13px] table-card-mobile">
                                 <tr>
-                                    <td class="py-1.5 text-gray-400 w-28">ID Booking</td>
-                                    <td class="py-1.5 font-semibold text-gray-700">#{{ $reservasi->id_booking }}</td>
+                                    <td data-label="" class="py-1.5 text-gray-400 w-28">ID Booking</td>
+                                    <td data-label="" class="py-1.5 font-semibold text-gray-700">#{{ $reservasi->id_booking }}</td>
                                 </tr>
                                 <tr>
-                                    <td class="py-1.5 text-gray-400">Status</td>
-                                    <td class="py-1.5">
+                                    <td data-label="" class="py-1.5 text-gray-400">Status</td>
+                                    <td data-label="" class="py-1.5">
                                         @php
                                             $statusColor = match($reservasi->status) {
                                                 'menunggu' => 'bg-yellow-100 text-yellow-700',
@@ -103,26 +103,26 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td class="py-1.5 text-gray-400">Tanggal</td>
-                                    <td class="py-1.5 font-medium text-gray-700">
+                                    <td data-label="" class="py-1.5 text-gray-400">Tanggal</td>
+                                    <td data-label="" class="py-1.5 font-medium text-gray-700">
                                         <i class="fa-solid fa-calendar text-pink-300 mr-1"></i>
                                         {{ \Carbon\Carbon::parse($reservasi->tanggal)->isoFormat('D MMMM YYYY') }}
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td class="py-1.5 text-gray-400">Jam</td>
-                                    <td class="py-1.5 font-medium text-gray-700">
+                                    <td data-label="" class="py-1.5 text-gray-400">Jam</td>
+                                    <td data-label="" class="py-1.5 font-medium text-gray-700">
                                         <i class="fa-regular fa-clock text-pink-300 mr-1"></i>
                                         {{ \Carbon\Carbon::parse($reservasi->jam)->format('H:i') }} WIB
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td class="py-1.5 text-gray-400">Catatan</td>
-                                    <td class="py-1.5 text-gray-700">{{ $reservasi->catatan ?? '-' }}</td>
+                                    <td data-label="" class="py-1.5 text-gray-400">Catatan</td>
+                                    <td data-label="" class="py-1.5 text-gray-700">{{ $reservasi->catatan ?? '-' }}</td>
                                 </tr>
                                 <tr>
-                                    <td class="py-1.5 text-gray-400">Dibuat</td>
-                                    <td class="py-1.5 text-gray-500 text-[12px]">
+                                    <td data-label="" class="py-1.5 text-gray-400">Dibuat</td>
+                                    <td data-label="" class="py-1.5 text-gray-500 text-[12px]">
                                         {{ $reservasi->created_at ? \Carbon\Carbon::parse($reservasi->created_at)->isoFormat('D MMM YYYY, HH:mm') : '-' }}
                                     </td>
                                 </tr>
@@ -133,28 +133,28 @@
                             <h4 class="text-[12px] font-semibold text-gray-500 uppercase tracking-wider mb-3">
                                 <i class="fa-solid fa-user text-sky-400 mr-1"></i>Pelanggan & Karyawan
                             </h4>
-                            <div class="overflow-x-auto"><table class="w-full text-[13px]">
+                            <div class="overflow-x-auto"><table class="w-full text-[13px] table-card-mobile">
                                 <tr>
-                                    <td class="py-1.5 text-gray-400 w-28">Pelanggan</td>
-                                    <td class="py-1.5 font-semibold text-gray-700">
+                                    <td data-label="" class="py-1.5 text-gray-400 w-28">Pelanggan</td>
+                                    <td data-label="" class="py-1.5 font-semibold text-gray-700">
                                         <i class="fa-solid fa-user text-sky-300 mr-1"></i>
                                         {{ $reservasi->pelanggan->nm_pelanggan ?? '-' }}
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td class="py-1.5 text-gray-400">No. HP</td>
-                                    <td class="py-1.5 text-gray-700">
+                                    <td data-label="" class="py-1.5 text-gray-400">No. HP</td>
+                                    <td data-label="" class="py-1.5 text-gray-700">
                                         <i class="fa-solid fa-phone text-sky-300 mr-1"></i>
                                         {{ $reservasi->pelanggan->no_hp ?? '-' }}
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td class="py-1.5 text-gray-400">Alamat</td>
-                                    <td class="py-1.5 text-gray-700">{{ $reservasi->pelanggan->alamat ?? '-' }}</td>
+                                    <td data-label="" class="py-1.5 text-gray-400">Alamat</td>
+                                    <td data-label="" class="py-1.5 text-gray-700">{{ $reservasi->pelanggan->alamat ?? '-' }}</td>
                                 </tr>
                                 <tr>
-                                    <td class="py-1.5 text-gray-400 border-t border-sky-100/50 pt-2">Karyawan</td>
-                                    <td class="py-1.5 font-semibold text-gray-700 border-t border-sky-100/50 pt-2">
+                                    <td data-label="" class="py-1.5 text-gray-400 border-t border-sky-100/50 pt-2">Karyawan</td>
+                                    <td data-label="" class="py-1.5 font-semibold text-gray-700 border-t border-sky-100/50 pt-2">
                                         <i class="fa-solid fa-user text-sky-300 mr-1"></i>
                                         {{ $reservasi->karyawan->nama ?? '-' }}
                                     </td>
@@ -167,7 +167,7 @@
                         <h4 class="text-[12px] font-semibold text-gray-500 uppercase tracking-wider mb-3">
                             <i class="fa-solid fa-list text-emerald-400 mr-1"></i>Detail Layanan
                         </h4>
-                        <div class="overflow-x-auto"><table class="w-full text-[13px]">
+                        <div class="overflow-x-auto"><table class="w-full text-[13px] table-card-mobile">
                                 <thead>
                                     <tr class="border-b border-emerald-100">
                                         <th class="text-left py-2 text-[11px] font-semibold text-gray-400 uppercase tracking-wider">#</th>
@@ -180,11 +180,11 @@
                                 <tbody>
                                     @forelse ($reservasi->detail as $i => $d)
                                     <tr class="border-b border-emerald-50">
-                                        <td class="py-2 text-gray-400">{{ $i + 1 }}</td>
-                                        <td class="py-2 font-medium text-gray-700">{{ $d->layanan->nm_layanan ?? '-' }}</td>
-                                        <td class="py-2 text-right text-gray-700">Rp {{ number_format($d->harga, 0, ',', '.') }}</td>
-                                        <td class="py-2 text-right text-red-500">Rp {{ number_format($d->diskon ?? 0, 0, ',', '.') }}</td>
-                                        <td class="py-2 text-right font-semibold text-emerald-600">Rp {{ number_format(($d->harga ?? 0) - ($d->diskon ?? 0), 0, ',', '.') }}</td>
+                                        <td data-label="#" class="py-2 text-gray-400">{{ $i + 1 }}</td>
+                                        <td data-label="Layanan" class="py-2 font-medium text-gray-700">{{ $d->layanan->nm_layanan ?? '-' }}</td>
+                                        <td data-label="Harga" class="py-2 text-right text-gray-700">Rp {{ number_format($d->harga, 0, ',', '.') }}</td>
+                                        <td data-label="Diskon" class="py-2 text-right text-red-500">Rp {{ number_format($d->diskon ?? 0, 0, ',', '.') }}</td>
+                                        <td data-label="Subtotal" class="py-2 text-right font-semibold text-emerald-600">Rp {{ number_format(($d->harga ?? 0) - ($d->diskon ?? 0), 0, ',', '.') }}</td>
                                     </tr>
                                     @empty
                                     <tr>

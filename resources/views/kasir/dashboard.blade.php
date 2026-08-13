@@ -15,7 +15,7 @@
 
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/dashboard.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/css/responsive.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/responsive.css') . '?v=3' }}">
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -380,7 +380,7 @@
                             <a href="{{ route('kasir.transaksi.index') }}">Lihat Semua</a>
                         </div>
                         <div class="table-scroll">
-                            <div class="overflow-x-auto"><table class="data-table">
+                            <div class="overflow-x-auto"><table class="data-table table-card-mobile">
                                 <thead>
                                     <tr>
                                         <th>Item</th>
@@ -392,12 +392,12 @@
                                 <tbody>
                                     @forelse($produkTerlaris as $p)
                                         <tr>
-                                            <td>
+                                            <td data-label="Item">
                                                 <div class="td-flex">{{ $p->nm_item }}</div>
                                             </td>
-                                            <td>{{ $p->jenis }}</td>
-                                            <td>{{ $p->total_qty }}</td>
-                                            <td>{{ $fmt($p->total_subtotal) }}</td>
+                                            <td data-label="Tipe">{{ $p->jenis }}</td>
+                                            <td data-label="Terjual">{{ $p->total_qty }}</td>
+                                            <td data-label="Total">{{ $fmt($p->total_subtotal) }}</td>
                                         </tr>
                                     @empty
                                         <tr>
@@ -417,7 +417,7 @@
                             <a href="{{ route('kasir.laporan.index') }}">Detail</a>
                         </div>
                         <div class="table-scroll">
-                            <div class="overflow-x-auto"><table class="data-table">
+                            <div class="overflow-x-auto"><table class="data-table table-card-mobile">
                                 <thead>
                                     <tr>
                                         <th>Metode</th>
@@ -429,12 +429,12 @@
                                 <tbody>
                                     @forelse($rekapPembayaran as $r)
                                         <tr>
-                                            <td>
+                                            <td data-label="Metode">
                                                 <div class="td-flex">{{ $r->metode_byr }}</div>
                                             </td>
-                                            <td>{{ $r->jumlah }}</td>
-                                            <td>{{ $fmt($r->total) }}</td>
-                                            <td><span class="badge badge-success">Aktif</span></td>
+                                            <td data-label="Jumlah">{{ $r->jumlah }}</td>
+                                            <td data-label="Total">{{ $fmt($r->total) }}</td>
+                                            <td data-label="Status"><span class="badge badge-success">Aktif</span></td>
                                         </tr>
                                     @empty
                                         <tr>

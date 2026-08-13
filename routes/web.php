@@ -46,6 +46,7 @@ use App\Http\Controllers\KonsultasiPelangganController;
 use App\Http\Controllers\KasirKonsultasiController;
 use App\Http\Controllers\BeautycianKonsultasiController;
 use App\Http\Controllers\AdminKonsultasiController;
+use App\Http\Controllers\AdminLeaderboardController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -58,6 +59,13 @@ Route::get('/', function () {
 })->name('home');
 
 Route::post('/kontak', [App\Http\Controllers\ContactController::class, 'store'])->name('landing.contact');
+
+//Halaman Legal
+Route::get('/syarat-ketentuan', [App\Http\Controllers\LegalController::class, 'terms'])->name('legal.terms');
+Route::get('/kebijakan-privasi', [App\Http\Controllers\LegalController::class, 'privacy'])->name('legal.privacy');
+
+//Pusat Bantuan
+Route::get('/bantuan', [App\Http\Controllers\HelpCenterController::class, 'index'])->name('help.index');
 
 
 Route::middleware('auth')->group(function () {
@@ -212,6 +220,9 @@ Route::middleware('auth')->group(function () {
 
         //Route Konsultasi Admin
         Route::get('/admin/konsultasi', [AdminKonsultasiController::class, 'index'])->name('admin.konsultasi.index');
+
+        //Route Papan Peringkat
+        Route::get('/admin/leaderboard', [AdminLeaderboardController::class, 'index'])->name('admin.leaderboard.index');
     });
 
 

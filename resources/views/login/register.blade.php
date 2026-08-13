@@ -161,6 +161,111 @@
         .login-card .terms a {
             color: var(--primary);
             font-weight: var(--fw-medium);
+            cursor: pointer;
+        }
+
+        .legal-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: rgba(31, 41, 55, 0.6);
+            backdrop-filter: blur(4px);
+        }
+
+        .legal-modal.active {
+            display: flex;
+        }
+
+        .legal-modal .modal-card {
+            width: 100%;
+            max-width: 620px;
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            background: var(--white);
+            border-radius: 20px;
+            box-shadow: 0 24px 64px rgba(0, 0, 0, 0.25);
+            animation: modalIn 0.3s ease-out;
+            overflow: hidden;
+        }
+
+        .legal-modal .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 20px 24px;
+            background: linear-gradient(135deg, #FF4F87 0%, #FF7BA6 100%);
+            color: #fff;
+            flex-shrink: 0;
+        }
+
+        .legal-modal .modal-header h3 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: var(--fw-bold);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .legal-modal .modal-close {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: #fff;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            font-size: 18px;
+            line-height: 1;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+            flex-shrink: 0;
+        }
+
+        .legal-modal .modal-close:hover {
+            background: rgba(255, 255, 255, 0.35);
+        }
+
+        .legal-modal .modal-body {
+            padding: 24px;
+            overflow-y: auto;
+            font-size: 13.5px;
+            line-height: 1.8;
+            color: #374151;
+            white-space: pre-line;
+        }
+
+        .legal-modal .modal-footer {
+            padding: 16px 24px;
+            border-top: 1px solid #F3F4F6;
+            display: flex;
+            justify-content: flex-end;
+            flex-shrink: 0;
+        }
+
+        .legal-modal .modal-footer .btn {
+            padding: 10px 24px;
+            font-size: 14px;
+        }
+
+        @keyframes modalIn {
+            from {
+                opacity: 0;
+                transform: translateY(24px) scale(0.97);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
         }
 
         .login-card .btn {
@@ -235,12 +340,7 @@
         <div class="login-left">
             <div class="login-left-content">
                 <div class="logo">
-                    <svg width="40" height="40" viewBox="0 0 32 32" fill="none"
-                        xmlns="http://www.w3.org/2000/svg">
-                        <rect width="32" height="32" rx="8" fill="white" />
-                        <path d="M16 8C14 8 10 10 10 16C10 22 14 24 16 24C18 24 22 22 22 16C22 10 18 8 16 8Z"
-                            fill="#FF4F87" opacity="0.9" />
-                    </svg>
+                    <img src="{{ asset('assets/images/logo/logo.jpeg') }}" alt="BeautyCare Logo" width="100" height="100" style="border-radius: 23px;">
                     <span>BeautyCare</span>
                 </div>
                 <h2>Mulai Perjalanan Anda</h2>
@@ -302,8 +402,8 @@
 
                     <div class="terms">
                         <input type="checkbox" id="terms" name="terms" required>
-                        <label for="terms">Saya menyetujui <a href="#">Syarat & Ketentuan</a> dan <a
-                                href="#">Kebijakan
+                        <label for="terms">Saya menyetujui <a href="#" data-modal="modal-terms">Syarat & Ketentuan</a>
+                            dan <a href="#" data-modal="modal-privacy">Kebijakan
                                 Privasi</a></label>
                     </div>
 
@@ -316,6 +416,98 @@
             </div>
         </div>
     </div>
+
+    <div class="legal-modal" id="modal-terms">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                        <polyline points="14 2 14 8 20 8" />
+                        <line x1="16" y1="13" x2="8" y2="13" />
+                        <line x1="16" y1="17" x2="8" y2="17" />
+                    </svg>
+                    Syarat &amp; Ketentuan
+                </h3>
+                <button type="button" class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                @if ($pengaturan && $pengaturan->syarat_ketentuan)
+                    {{ $pengaturan->syarat_ketentuan }}
+                @else
+                    <p>Konten Syarat &amp; Ketentuan belum tersedia.</p>
+                @endif
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary modal-close">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="legal-modal" id="modal-privacy">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                    </svg>
+                    Kebijakan Privasi
+                </h3>
+                <button type="button" class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                @if ($pengaturan && $pengaturan->kebijakan_privasi)
+                    {{ $pengaturan->kebijakan_privasi }}
+                @else
+                    <p>Konten Kebijakan Privasi belum tersedia.</p>
+                @endif
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary modal-close">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const openers = document.querySelectorAll('[data-modal]');
+            const modals = document.querySelectorAll('.legal-modal');
+
+            const openModal = (id) => {
+                const modal = document.getElementById(id);
+                if (modal) modal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            };
+
+            const closeModals = () => {
+                modals.forEach(m => m.classList.remove('active'));
+                document.body.style.overflow = '';
+            };
+
+            openers.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    openModal(link.dataset.modal);
+                });
+            });
+
+            modals.forEach(modal => {
+                modal.querySelectorAll('.modal-close').forEach(btn => {
+                    btn.addEventListener('click', closeModals);
+                });
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) closeModals();
+                });
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') closeModals();
+            });
+        });
+    </script>
 
     <script src="{{ asset('assets/js/animation.js') }}"></script>
 </body>
