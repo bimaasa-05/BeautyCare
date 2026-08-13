@@ -459,24 +459,33 @@
         transform: translateY(-1px);
     }
 
+    @media (max-width: 768px) {
+        .period-popup {
+            left: 0;
+            right: auto;
+        }
+    }
+
     @media (max-width: 480px) {
         .period-popup {
             position: fixed;
             left: 50%;
+            top: 50%;
             right: auto;
-            transform: translateX(-50%);
-            width: calc(100vw - 40px);
-            max-width: 300px;
-            top: auto;
             bottom: auto;
+            transform: translate(-50%, -50%);
+            width: calc(100vw - 40px);
+            max-width: 320px;
+            max-height: calc(100vh - 32px);
+            overflow-y: auto;
             animation: curtainUnrollMobile 0.45s cubic-bezier(0.22, 0.61, 0.36, 1);
         }
     }
 
     @keyframes curtainUnrollMobile {
-        0%   { transform: translateX(-50%) scaleY(0); opacity: 0.2; }
-        55%  { transform: translateX(-50%) scaleY(1.03); opacity: 1; }
-        100% { transform: translateX(-50%) scaleY(1); opacity: 1; }
+        0%   { transform: translate(-50%, -50%) scaleY(0); opacity: 0.2; }
+        55%  { transform: translate(-50%, -50%) scaleY(1.03); opacity: 1; }
+        100% { transform: translate(-50%, -50%) scaleY(1); opacity: 1; }
     }
     </style>
 </head>
