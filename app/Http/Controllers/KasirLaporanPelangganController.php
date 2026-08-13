@@ -15,7 +15,6 @@ class KasirLaporanPelangganController extends Controller
 {
     public function index(Request $request)
     {
-        $userId = auth()->id();
         $periode = $request->get('periode', '30hari');
         $dateRange = $this->getDateRange($periode);
         $startDate = $dateRange['start'];
@@ -28,8 +27,8 @@ class KasirLaporanPelangganController extends Controller
 
         $pelangganMember = Pelanggan::whereNotNull('id_member')->count();
 
-        $transaksiPelanggan = Transaksi::where('id_user', $userId)
-            ->whereNotNull('id_pelanggan')
+        $transaksiPelanggan = Transaksi::whereNotNull('id_pelanggan')
+            ->where('jenis_transaksi', '!=', 'Pengeluaran')
             ->whereBetween('tanggal', [$startDate, $endDate])
             ->count();
 
@@ -47,14 +46,14 @@ class KasirLaporanPelangganController extends Controller
         $sampai = $request->sampai;
 
         $pelanggan = Pelanggan::with('membership')
-            ->withCount(['transaksi as total_transaksi' => function ($q) use ($userId) {
-                $q->where('id_user', $userId);
+            ->withCount(['transaksi as total_transaksi' => function ($q) {
+                $q->where('jenis_transaksi', '!=', 'Pengeluaran');
             }])
-            ->withSum(['transaksi as total_belanja' => function ($q) use ($userId) {
-                $q->where('id_user', $userId)->where('status', 'Lunas');
+            ->withSum(['transaksi as total_belanja' => function ($q) {
+                $q->where('jenis_transaksi', '!=', 'Pengeluaran')->where('status', 'Lunas');
             }], 'total')
-            ->withMax(['transaksi as tgl_terakhir' => function ($q) use ($userId) {
-                $q->where('id_user', $userId);
+            ->withMax(['transaksi as tgl_terakhir' => function ($q) {
+                $q->where('jenis_transaksi', '!=', 'Pengeluaran');
             }], 'tanggal')
             ->when($search, function ($q, $search) {
                 $q->where(function ($sub) use ($search) {
@@ -186,7 +185,6 @@ class KasirLaporanPelangganController extends Controller
 
     public function exportPDF(Request $request)
     {
-        $userId = auth()->id();
         $periode = $request->get('periode', '30hari');
         $dateRange = $this->getDateRange($periode);
         $startDate = $dateRange['start'];
@@ -195,20 +193,20 @@ class KasirLaporanPelangganController extends Controller
         $totalPelanggan = Pelanggan::count();
         $pelangganBaru = Pelanggan::whereBetween('created_at', [$startDate . ' 00:00:00', $endDate . ' 23:59:59'])->count();
         $pelangganMember = Pelanggan::whereNotNull('id_member')->count();
-        $transaksiPelanggan = Transaksi::where('id_user', $userId)
-            ->whereNotNull('id_pelanggan')
+        $transaksiPelanggan = Transaksi::whereNotNull('id_pelanggan')
+            ->where('jenis_transaksi', '!=', 'Pengeluaran')
             ->whereBetween('tanggal', [$startDate, $endDate])
             ->count();
 
         $pelanggan = Pelanggan::with('membership')
-            ->withCount(['transaksi as total_transaksi' => function ($q) use ($userId) {
-                $q->where('id_user', $userId);
+            ->withCount(['transaksi as total_transaksi' => function ($q) {
+                $q->where('jenis_transaksi', '!=', 'Pengeluaran');
             }])
-            ->withSum(['transaksi as total_belanja' => function ($q) use ($userId) {
-                $q->where('id_user', $userId)->where('status', 'Lunas');
+            ->withSum(['transaksi as total_belanja' => function ($q) {
+                $q->where('jenis_transaksi', '!=', 'Pengeluaran')->where('status', 'Lunas');
             }], 'total')
-            ->withMax(['transaksi as tgl_terakhir' => function ($q) use ($userId) {
-                $q->where('id_user', $userId);
+            ->withMax(['transaksi as tgl_terakhir' => function ($q) {
+                $q->where('jenis_transaksi', '!=', 'Pengeluaran');
             }], 'tanggal')
             ->orderBy('id_pelanggan', 'desc')
             ->get();
