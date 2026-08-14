@@ -23,8 +23,8 @@ class AdminLaporanController extends Controller
         $startDate = $dateRange['start'];
         $endDate = $dateRange['end'];
 
-        $totalPendapatan = Transaksi::whereBetween('tanggal', [$startDate, $endDate])
-            ->where('status', '!=', 'Dibatalkan')
+        $totalPendapatan = Transaksi::pendapatan()
+            ->whereBetween('tanggal', [$startDate, $endDate])
             ->sum('total');
 
         $totalPengeluaran = $this->getPengeluaranPembelian($startDate, $endDate);
@@ -39,9 +39,8 @@ class AdminLaporanController extends Controller
 
         $prevStart = $this->getPreviousPeriodStart($periode, $startDate);
 
-        $prevPendapatan = Transaksi::where('jenis_transaksi', 'Penjualan')
+        $prevPendapatan = Transaksi::pendapatan()
             ->whereBetween('tanggal', [$prevStart, $startDate])
-            ->where('status', '!=', 'Dibatalkan')
             ->sum('total');
         $pendapatanGrowth = $prevPendapatan > 0
             ? round((($totalPendapatan - $prevPendapatan) / $prevPendapatan) * 100)
@@ -103,13 +102,12 @@ class AdminLaporanController extends Controller
     private function getChartData($periode, $startDate, $endDate)
     {
         if ($periode === '7hari' || $periode === '30hari') {
-            $revenue = Transaksi::select(
+            $revenue = Transaksi::pendapatan()
+                ->select(
                     DB::raw('DATE(tanggal) as label'),
                     DB::raw('COALESCE(SUM(total),0) as total')
                 )
-                ->where('jenis_transaksi', 'Penjualan')
                 ->whereBetween('tanggal', [$startDate, $endDate])
-                ->where('status', '!=', 'Dibatalkan')
                 ->groupBy(DB::raw('DATE(tanggal)'))
                 ->orderBy('label')
                 ->pluck('total', 'label')
@@ -140,17 +138,16 @@ class AdminLaporanController extends Controller
             return [$labels, $revenueData, $bookingData];
         }
 
-        $revenue = Transaksi::select(
-                DB::raw("DATE_FORMAT(tanggal, '%Y-%m') as label"),
-                DB::raw('COALESCE(SUM(total),0) as total')
-            )
-            ->where('jenis_transaksi', 'Penjualan')
-            ->whereBetween('tanggal', [$startDate, $endDate])
-            ->where('status', '!=', 'Dibatalkan')
-            ->groupBy('label')
-            ->orderBy('label')
-            ->pluck('total', 'label')
-            ->toArray();
+        $revenue = Transaksi::pendapatan()
+                ->select(
+                    DB::raw("DATE_FORMAT(tanggal, '%Y-%m') as label"),
+                    DB::raw('COALESCE(SUM(total),0) as total')
+                )
+                ->whereBetween('tanggal', [$startDate, $endDate])
+                ->groupBy('label')
+                ->orderBy('label')
+                ->pluck('total', 'label')
+                ->toArray();
 
         $bookings = Booking::select(
                 DB::raw("DATE_FORMAT(tanggal, '%Y-%m') as label"),
@@ -206,9 +203,8 @@ class AdminLaporanController extends Controller
         $startDate = $dateRange['start'];
         $endDate = $dateRange['end'];
 
-        $totalPendapatan = Transaksi::where('jenis_transaksi', 'Penjualan')
+        $totalPendapatan = Transaksi::pendapatan()
             ->whereBetween('tanggal', [$startDate, $endDate])
-            ->where('status', '!=', 'Dibatalkan')
             ->sum('total');
 
         $totalPengeluaran = $this->getPengeluaranPembelian($startDate, $endDate);
@@ -223,9 +219,8 @@ class AdminLaporanController extends Controller
 
         $prevStart = $this->getPreviousPeriodStart($periode, $startDate);
 
-        $prevPendapatan = Transaksi::where('jenis_transaksi', 'Penjualan')
+        $prevPendapatan = Transaksi::pendapatan()
             ->whereBetween('tanggal', [$prevStart, $startDate])
-            ->where('status', '!=', 'Dibatalkan')
             ->sum('total');
         $pendapatanGrowth = $prevPendapatan > 0
             ? round((($totalPendapatan - $prevPendapatan) / $prevPendapatan) * 100)
