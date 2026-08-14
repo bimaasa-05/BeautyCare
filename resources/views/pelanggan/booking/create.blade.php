@@ -1249,7 +1249,7 @@
                 @endif
 
                 <!-- ═══ Form Card Premium ═══ -->
-                <form action="{{ route('pelanggan.booking.store') }}" method="POST" id="bookingForm">
+                <form action="{{ route('pelanggan.booking.store') }}" method="POST" id="bookingForm" novalidate>
                     @csrf
 
                     <div class="form-card-premium">
@@ -1515,23 +1515,65 @@
         return 'Rp ' + angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
     }
 
-    function hitungDiskon(harga, idLayanan) {
+    function hitungDiskonBasket() {
+        const dist = {};
         const promoSelect = document.getElementById('id_promo');
-        if (promoSelect && promoSelect.value) {
-            const selected = promoSelect.options[promoSelect.selectedIndex];
-            const jenis = selected.getAttribute('data-jenis');
-            const nilai = parseFloat(selected.getAttribute('data-nilai'));
-            const layananList = (selected.getAttribute('data-layanan') || '')
-                .split(',').map(Number).filter(function (n) { return n; });
-            if (layananList.length && layananList.indexOf(parseInt(idLayanan)) === -1) {
-                return 0;
+        if (!promoSelect || !promoSelect.value) return dist;
+
+        const selected = promoSelect.options[promoSelect.selectedIndex];
+        const jenis = selected.getAttribute('data-jenis');
+        const nilai = parseFloat(selected.getAttribute('data-nilai'));
+        const layananList = (selected.getAttribute('data-layanan') || '')
+            .split(',').map(Number).filter(function (n) { return n; });
+
+        let eligible = 0;
+        selectedServices.forEach(function (svc) {
+            if (!layananList.length || layananList.indexOf(svc.id_layanan) !== -1) {
+                eligible += svc.harga;
             }
+        });
+
+        let total = 0;
+        if (eligible > 0) {
             if (jenis === 'Diskon') {
-                return Math.round(harga * nilai / 100);
+                total = Math.round(eligible * nilai / 100);
+            } else if (jenis === 'Cashback') {
+                total = 0;
+            } else {
+                total = Math.round(Math.min(nilai, eligible));
             }
-            return Math.round(Math.min(nilai, harga));
         }
-        return Math.round(harga * diskonPersen / 100);
+
+        let sisa = total;
+        selectedServices.forEach(function (svc, i) {
+            let bagian = 0;
+            if (eligible > 0 && (!layananList.length || layananList.indexOf(svc.id_layanan) !== -1)) {
+                bagian = Math.round(total * svc.harga / eligible);
+                if (i === selectedServices.length - 1) bagian = sisa;
+                sisa -= bagian;
+            }
+            dist[svc.id_layanan] = bagian;
+        });
+        return dist;
+    }
+
+    function hitungDiskonLayanan(svc, dist) {
+        if (dist.hasOwnProperty(svc.id_layanan)) {
+            return dist[svc.id_layanan];
+        }
+        return Math.round(svc.harga * diskonPersen / 100);
+    }
+
+    function tandaiField(el) {
+        if (!el) return;
+        const oldBorder = el.style.borderColor;
+        const oldShadow = el.style.boxShadow;
+        el.style.borderColor = '#DC2626';
+        el.style.boxShadow = '0 0 0 3px rgba(220,38,38,0.15)';
+        setTimeout(function() {
+            el.style.borderColor = oldBorder;
+            el.style.boxShadow = oldShadow;
+        }, 3000);
     }
 
     function tambahLayanan() {
@@ -1584,8 +1626,10 @@
         const hint = document.getElementById('selectedSwipeHint');
         if (hint) hint.style.display = (window.innerWidth <= 768) ? 'block' : 'none';
 
+        const dist = hitungDiskonBasket();
+
         selectedServices.forEach(function(svc, i) {
-            const diskon = hitungDiskon(svc.harga, svc.id_layanan);
+            const diskon = hitungDiskonLayanan(svc, dist);
             const subtotal = svc.harga - diskon;
 
             var row = document.createElement('tr');
@@ -1623,9 +1667,10 @@
     function updateSummary() {
         var totalHarga = 0;
         var totalDiskon = 0;
+        const dist = hitungDiskonBasket();
 
         selectedServices.forEach(function(svc) {
-            var diskon = hitungDiskon(svc.harga, svc.id_layanan);
+            var diskon = hitungDiskonLayanan(svc, dist);
             totalHarga += svc.harga;
             totalDiskon += diskon;
         });
@@ -2123,9 +2168,46 @@
 
         // Form submit validation
         document.getElementById('bookingForm').addEventListener('submit', function(e) {
+            var pesan = [];
+            var misses = [];
+
             if (selectedServices.length === 0) {
+                pesan.push('Layanan belum dipilih — pilih minimal 1 layanan lalu klik Tambah');
+                misses.push(document.getElementById('customLayananTrigger'));
+            }
+
+            var inpTerapis = document.getElementById('id_karyawan');
+            if (!inpTerapis || !inpTerapis.value) {
+                pesan.push('Terapis belum dipilih');
+                misses.push(document.getElementById('customTerapisTrigger'));
+            }
+
+            var inpTanggal = document.getElementById('tanggalInput');
+            if (!inpTanggal || !inpTanggal.value) {
+                pesan.push('Tanggal treatment belum dipilih');
+                misses.push(inpTanggal);
+            }
+
+            var inpJam = document.getElementById('jamSlot');
+            if (!inpJam || !inpJam.value) {
+                pesan.push('Jam treatment belum dipilih');
+                misses.push(document.getElementById('jamGrid'));
+            }
+
+            if (pesan.length > 0) {
                 e.preventDefault();
-                window.__confirmPremiumShow({ title: 'Belum Ada Layanan', body: 'Silakan tambah minimal 1 layanan sebelum mengonfirmasi booking.', icon: 'fa-circle-exclamation' });
+                misses.forEach(function (el) { tandaiField(el); });
+                window.__confirmPremiumShow({
+                    title: 'Form Belum Lengkap',
+                    body: '<div style="text-align:left;margin-bottom:12px;">Lengkapi data berikut sebelum mengonfirmasi booking:</div>' +
+                        pesan.map(function (p) {
+                            return '<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:#FEF2F2;border:1px solid #FECACA;border-radius:10px;margin-bottom:6px;font-size:12.5px;color:#B91C1C;font-weight:500;text-align:left;">' +
+                                '<i class="fa-solid fa-circle-xmark" style="flex-shrink:0;"></i><span>' + p + '</span></div>';
+                        }).join(''),
+                    icon: 'fa-circle-exclamation',
+                    type: 'warning',
+                    yes: 'Oke, Saya Paham'
+                });
             }
         });
     });

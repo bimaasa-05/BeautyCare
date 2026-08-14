@@ -226,14 +226,40 @@ class PelangganBookingController extends Controller
         $hargas = $request->harga;
         $diskons = $request->diskon ?? [];
 
+        $diskonPromoById = [];
+        if ($promo) {
+            $itemsEligible = [];
+            foreach ($idLayanans as $i => $idLayanan) {
+                $harga = (float) ($hargas[$i] ?? 0);
+                if ($promo->itemEligible('Layanan', $idLayanan)) {
+                    $itemsEligible[] = ['jenis' => 'Layanan', 'id_item' => (int) $idLayanan, 'subtotal' => $harga];
+                }
+            }
+
+            $totalDiskonPromo = $promo->hitungDiskon($itemsEligible);
+            $subtotalEligible = array_sum(array_column($itemsEligible, 'subtotal'));
+
+            foreach ($itemsEligible as $item) {
+                $bagian = $subtotalEligible > 0
+                    ? (int) round($totalDiskonPromo * $item['subtotal'] / $subtotalEligible)
+                    : 0;
+                $diskonPromoById[$item['id_item']] = $bagian;
+            }
+            if ($itemsEligible) {
+                $lastId = $itemsEligible[count($itemsEligible) - 1]['id_item'];
+                $diskonPromoById[$lastId] = max(
+                    0,
+                    $totalDiskonPromo - (array_sum($diskonPromoById) - $diskonPromoById[$lastId])
+                );
+            }
+        }
+
         foreach ($idLayanans as $i => $idLayanan) {
             $harga = (float) ($hargas[$i] ?? 0);
             $diskon = (float) ($diskons[$i] ?? 0);
 
             if ($promo) {
-                $diskon = $promo->itemEligible('Layanan', $idLayanan)
-                    ? (float) $promo->hitungDiskon([['jenis' => 'Layanan', 'id_item' => $idLayanan, 'subtotal' => $harga]])
-                    : 0;
+                $diskon = (float) ($diskonPromoById[(int) $idLayanan] ?? 0);
             }
 
             $diskon = min($diskon, $harga);
