@@ -208,11 +208,15 @@
                                     <div>
                                         <label class="text-[13px] font-semibold text-gray-700 block mb-1.5">Password</label>
                                         <div class="relative">
-                                            <input type="password" name="password"
+                                            <input type="password" name="password" id="password"
                                                 class="w-full bg-gray-50 border border-gray-200 text-[13px] rounded-xl pl-4 pr-10 py-2.5 focus:outline-none focus:border-pink-300 focus:bg-white transition-all placeholder-gray-400 @error('password') border-red-300 @enderror"
-                                                placeholder="Masukkan password">
+                                                placeholder="Masukkan password" minlength="6">
                                             <i class="fa-solid fa-eye absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm cursor-pointer hover:text-pink-400 transition-colors z-[1]"
                                                 onclick="togglePassword(this)"></i>
+                                        </div>
+                                        <div class="pw-meter" id="pwMeterPelanggan">
+                                            <div class="pw-bar"><span></span><span></span><span></span><span></span></div>
+                                            <div class="pw-info"><span class="pw-label"></span><span class="pw-hint"></span></div>
                                         </div>
                                         @error('password')
                                             <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
@@ -357,7 +361,11 @@
         const dateEl = document.getElementById('currentDate');
         if (dateEl) dateEl.textContent = now.toLocaleDateString('id-ID', options);
     </script>
+    @include('partials.password-strength')
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
+    <script>
+        initPasswordStrength(document.getElementById('password'), 'pwMeterPelanggan');
+    </script>
 </body>
 
 </html>
