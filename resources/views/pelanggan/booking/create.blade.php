@@ -1515,23 +1515,53 @@
         return 'Rp ' + angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
     }
 
-    function hitungDiskon(harga, idLayanan) {
+    function hitungDiskonBasket() {
+        const dist = {};
         const promoSelect = document.getElementById('id_promo');
-        if (promoSelect && promoSelect.value) {
-            const selected = promoSelect.options[promoSelect.selectedIndex];
-            const jenis = selected.getAttribute('data-jenis');
-            const nilai = parseFloat(selected.getAttribute('data-nilai'));
-            const layananList = (selected.getAttribute('data-layanan') || '')
-                .split(',').map(Number).filter(function (n) { return n; });
-            if (layananList.length && layananList.indexOf(parseInt(idLayanan)) === -1) {
-                return 0;
+        if (!promoSelect || !promoSelect.value) return dist;
+
+        const selected = promoSelect.options[promoSelect.selectedIndex];
+        const jenis = selected.getAttribute('data-jenis');
+        const nilai = parseFloat(selected.getAttribute('data-nilai'));
+        const layananList = (selected.getAttribute('data-layanan') || '')
+            .split(',').map(Number).filter(function (n) { return n; });
+
+        let eligible = 0;
+        selectedServices.forEach(function (svc) {
+            if (!layananList.length || layananList.indexOf(svc.id_layanan) !== -1) {
+                eligible += svc.harga;
             }
+        });
+
+        let total = 0;
+        if (eligible > 0) {
             if (jenis === 'Diskon') {
-                return Math.round(harga * nilai / 100);
+                total = Math.round(eligible * nilai / 100);
+            } else if (jenis === 'Cashback') {
+                total = 0;
+            } else {
+                total = Math.round(Math.min(nilai, eligible));
             }
-            return Math.round(Math.min(nilai, harga));
         }
-        return Math.round(harga * diskonPersen / 100);
+
+        let sisa = total;
+        selectedServices.forEach(function (svc, i) {
+            let bagian = 0;
+            if (eligible > 0 && (!layananList.length || layananList.indexOf(svc.id_layanan) !== -1)) {
+                bagian = Math.round(total * svc.harga / eligible);
+                if (i === selectedServices.length - 1) bagian = sisa;
+                sisa -= bagian;
+            }
+            dist[svc.id_layanan] = bagian;
+        });
+        return dist;
+    }
+
+    function hitungDiskonLayanan(svc, dist) {
+        if (dist.hasOwnProperty(svc.id_layanan)) {
+            return dist[svc.id_layanan];
+        }
+        return Math.round(svc.harga * diskonPersen / 100);
     }
 
     function tambahLayanan() {
@@ -1584,8 +1614,10 @@
         const hint = document.getElementById('selectedSwipeHint');
         if (hint) hint.style.display = (window.innerWidth <= 768) ? 'block' : 'none';
 
+        const dist = hitungDiskonBasket();
+
         selectedServices.forEach(function(svc, i) {
-            const diskon = hitungDiskon(svc.harga, svc.id_layanan);
+            const diskon = hitungDiskonLayanan(svc, dist);
             const subtotal = svc.harga - diskon;
 
             var row = document.createElement('tr');
@@ -1623,9 +1655,10 @@
     function updateSummary() {
         var totalHarga = 0;
         var totalDiskon = 0;
+        const dist = hitungDiskonBasket();
 
         selectedServices.forEach(function(svc) {
-            var diskon = hitungDiskon(svc.harga, svc.id_layanan);
+            var diskon = hitungDiskonLayanan(svc, dist);
             totalHarga += svc.harga;
             totalDiskon += diskon;
         });
