@@ -10,6 +10,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/responsive.css') }}">
@@ -273,6 +274,41 @@
             border: 1px solid #BBF7D0;
         }
 
+        .form-group .input-icon-wrap {
+            position: relative;
+        }
+
+        .form-group .input-icon-wrap .toggle-pw {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #bbb;
+            font-size: 15px;
+            padding: 4px;
+            transition: color 0.2s ease;
+            line-height: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .form-group .input-icon-wrap .toggle-pw i {
+            display: block;
+        }
+
+        .form-group .input-icon-wrap .toggle-pw:hover {
+            color: var(--primary);
+        }
+
+        .form-group .input-icon-wrap input[type="password"],
+        .form-group .input-icon-wrap input[type="text"] {
+            padding-right: 44px;
+        }
+
         @media screen and (max-width: 768px) {
             .login-left {
                 display: none;
@@ -361,9 +397,17 @@
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label" for="password">Password</label>
-                        <input type="password" id="password" name="password" class="form-input" placeholder="Masukkan password" required>
-                    </div>
+                            <label class="form-label" for="password">Password</label>
+                            <div class="input-icon-wrap">
+                                <input type="password" id="password" name="password" class="form-input"
+                                    placeholder="Masukan Password" minlength="6" required>
+                                <button type="button" class="toggle-pw" onclick="togglePassword(this)" tabindex="-1"><i class="fa-solid fa-eye"></i></button>
+                            </div>
+                            <div class="pw-meter" id="pwMeterRegister">
+                                <div class="pw-bar"><span></span><span></span><span></span><span></span></div>
+                                <div class="pw-info"><span class="pw-label"></span><span class="pw-hint"></span></div>
+                            </div>
+                        </div>
 
                     <div class="form-options">
                         <label>
@@ -397,6 +441,19 @@
         </div>
     </div>
 
+    <script>
+        function togglePassword(btn) {
+            const input = btn.parentElement.querySelector('input');
+            const icon = btn.querySelector('i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.className = 'fa-solid fa-eye-slash';
+            } else {
+                input.type = 'password';
+                icon.className = 'fa-solid fa-eye';
+            }
+        }
+    </script>
     <script src="{{ asset('assets/js/animation.js') }}"></script>
 </body>
 </html>
