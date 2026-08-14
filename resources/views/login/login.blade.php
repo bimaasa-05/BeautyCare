@@ -274,6 +274,68 @@
             border: 1px solid #BBF7D0;
         }
 
+        .login-card .alert-waiting {
+            background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
+            color: #1E40AF;
+            border: 1px solid #93C5FD;
+            padding: 16px;
+            border-radius: var(--radius-md);
+            font-size: 13px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .login-card .alert-waiting .waiting-icon {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 8px;
+            color: #3B82F6;
+        }
+
+        .login-card .alert-waiting .waiting-message {
+            margin-bottom: 12px;
+        }
+
+        .login-card .alert-waiting .whatsapp-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            background: #25D366;
+            color: white;
+            border-radius: var(--radius-md);
+            font-size: 13px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: background 0.2s ease;
+        }
+
+        .login-card .alert-waiting .whatsapp-btn:hover {
+            background: #128C7E;
+        }
+
+        .login-card .alert-suspend .whatsapp-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            background: #25D366;
+            color: white;
+            border-radius: var(--radius-md);
+            font-size: 13px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: background 0.2s ease;
+            margin-top: 12px;
+        }
+
+        .login-card .alert-suspend .whatsapp-btn:hover {
+            background: #128C7E;
+        }
+
         .form-group .input-icon-wrap {
             position: relative;
         }
@@ -365,6 +427,8 @@
                     @php
                         $firstError = $errors->first('email');
                         $isSuspend = str_contains($firstError, 'disuspend');
+                        $isMenunggu = str_contains($firstError, 'menunggu persetujuan');
+                        $isNonAktif = str_contains($firstError, 'dinonaktifkan');
                     @endphp
                     @if ($isSuspend)
                         <div class="alert-suspend">
@@ -372,6 +436,35 @@
                                 <i class="fa-solid fa-ban"></i> Akun Disuspend
                             </div>
                             <div>{{ $firstError }}</div>
+                            @if ($pengaturan && $pengaturan->telepon)
+                                <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $pengaturan->telepon) }}" target="_blank" class="whatsapp-btn">
+                                    <i class="fa-brands fa-whatsapp"></i> Hubungi Admin via WhatsApp
+                                </a>
+                            @endif
+                        </div>
+                    @elseif ($isMenunggu)
+                        <div class="alert-waiting">
+                            <div class="waiting-icon">
+                                <i class="fa-solid fa-clock"></i> Menunggu Persetujuan
+                            </div>
+                            <div class="waiting-message">{{ $firstError }}</div>
+                            @if ($pengaturan && $pengaturan->telepon)
+                                <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $pengaturan->telepon) }}" target="_blank" class="whatsapp-btn">
+                                    <i class="fa-brands fa-whatsapp"></i> Hubungi Admin via WhatsApp
+                                </a>
+                            @endif
+                        </div>
+                    @elseif ($isNonAktif)
+                        <div class="alert-suspend">
+                            <div class="suspend-icon">
+                                <i class="fa-solid fa-user-slash"></i> Akun Nonaktif
+                            </div>
+                            <div>{!! $firstError !!}</div>
+                            @if ($pengaturan && $pengaturan->telepon)
+                                <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $pengaturan->telepon) }}" target="_blank" class="whatsapp-btn">
+                                    <i class="fa-brands fa-whatsapp"></i> Hubungi Admin via WhatsApp
+                                </a>
+                            @endif
                         </div>
                     @else
                         <div class="alert alert-danger">
