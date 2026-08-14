@@ -12,6 +12,7 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             KasirSeeder::class,
             BankSeeder::class,
+            PengaturanSeeder::class,
         ]);
     }
 }
