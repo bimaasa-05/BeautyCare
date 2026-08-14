@@ -832,11 +832,21 @@
                                 <circle cx="12" cy="10" r="3" />
                             </svg>
                         </div>
-                        <h3 style="font-size:18px;margin-bottom:8px;">Kantor Pusat BeautyCare</h3>
+                        <h3 style="font-size:18px;margin-bottom:8px;">{{ $pengaturan->nama_salon ?: 'Kantor Pusat BeautyCare' }}</h3>
                         <p style="font-size:14px;color:var(--gray);text-align:center;max-width:300px;">
-                            Jl. Sudirman No. 123, Jakarta Pusat<br>
-                            Indonesia 10220
+                            {!! nl2br(e($pengaturan->alamat ?: 'Jl. Sudirman No. 123, Jakarta Pusat<br>Indonesia 10220')) !!}
                         </p>
+                        @if(!empty($pengaturan->telepon) || !empty($pengaturan->email))
+                        <p style="font-size:14px;color:var(--gray);text-align:center;max-width:300px;margin-top:10px;">
+                            @if(!empty($pengaturan->telepon))
+                            <a href="tel:{{ $pengaturan->telepon }}" style="color:var(--primary);">{{ $pengaturan->telepon }}</a>
+                            @endif
+                            @if(!empty($pengaturan->telepon) && !empty($pengaturan->email))<br>@endif
+                            @if(!empty($pengaturan->email))
+                            <a href="mailto:{{ $pengaturan->email }}" style="color:var(--primary);">{{ $pengaturan->email }}</a>
+                            @endif
+                        </p>
+                        @endif
                     </div>
                 </div>
                 <div class="contact-form">
