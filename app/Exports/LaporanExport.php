@@ -63,13 +63,12 @@ class LaporanTrenPendapatanSheet implements FromCollection, WithHeadings, WithMa
         $days = (strtotime($this->endDate) - strtotime($this->startDate)) / 86400;
 
         if ($days <= 31) {
-            $data = Transaksi::select(
+            $data = Transaksi::pendapatan()
+                ->select(
                     DB::raw('DATE(tanggal) as label'),
                     DB::raw('COALESCE(SUM(total),0) as total')
                 )
-                ->where('jenis_transaksi', 'Penjualan')
                 ->whereBetween('tanggal', [$this->startDate, $this->endDate])
-                ->where('status', '!=', 'Dibatalkan')
                 ->groupBy(DB::raw('DATE(tanggal)'))
                 ->orderBy('label')
                 ->pluck('total', 'label')
@@ -90,17 +89,16 @@ class LaporanTrenPendapatanSheet implements FromCollection, WithHeadings, WithMa
             return collect($result);
         }
 
-        $data = Transaksi::select(
-                DB::raw("DATE_FORMAT(tanggal, '%Y-%m') as label"),
-                DB::raw('COALESCE(SUM(total),0) as total')
-            )
-            ->where('jenis_transaksi', 'Penjualan')
-            ->whereBetween('tanggal', [$this->startDate, $this->endDate])
-            ->where('status', '!=', 'Dibatalkan')
-            ->groupBy('label')
-            ->orderBy('label')
-            ->pluck('total', 'label')
-            ->toArray();
+        $data = Transaksi::pendapatan()
+                ->select(
+                    DB::raw("DATE_FORMAT(tanggal, '%Y-%m') as label"),
+                    DB::raw('COALESCE(SUM(total),0) as total')
+                )
+                ->whereBetween('tanggal', [$this->startDate, $this->endDate])
+                ->groupBy('label')
+                ->orderBy('label')
+                ->pluck('total', 'label')
+                ->toArray();
 
         $monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
         $result = [];
@@ -246,9 +244,8 @@ class LaporanRingkasanSheet implements FromCollection, WithHeadings, WithMapping
 
     public function collection()
     {
-        $totalPendapatan = Transaksi::where('jenis_transaksi', 'Penjualan')
+        $totalPendapatan = Transaksi::pendapatan()
             ->whereBetween('tanggal', [$this->startDate, $this->endDate])
-            ->where('status', '!=', 'Dibatalkan')
             ->sum('total');
 
         $masuk = Stok::where('type', 'Masuk')
