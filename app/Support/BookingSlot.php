@@ -62,6 +62,23 @@ class BookingSlot
     }
 
     /**
+     * Slot jam yang sudah lewat dari waktu sekarang (H:i).
+     * Hanya relevan untuk tanggal hari ini; tanggal lain mengembalikan [].
+     */
+    public static function jamLewat($tanggal = null)
+    {
+        if ($tanggal && $tanggal !== now()->toDateString()) {
+            return [];
+        }
+
+        $now = now();
+        return array_values(array_filter(
+            self::slotJam(),
+            fn ($slot) => \Carbon\Carbon::parse($now->toDateString() . ' ' . $slot)->lte($now)
+        ));
+    }
+
+    /**
      * Mapping id_karyawan => [H:i...] slot yang terblokir (durasi-aware).
      * Booking 13.00 durasi 90 menit => blokir slot 13.00 & 14.00, 15.00 bebas.
      */
