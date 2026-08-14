@@ -225,10 +225,10 @@
                         $bookingsPerDay = $reservasi->groupBy(fn($r) => \Carbon\Carbon::parse($r->tanggal)->format('Y-m-d'))->map->count();
                     @endphp
 
-                    <div class="grid grid-cols-1 gap-5">
+                    <div class="grid grid-cols-1 lg:grid-cols-[400px_1fr] lg:items-start gap-5">
 
                         <!-- Calendar Side -->
-                        <div class="bg-white rounded-2xl border border-pink-50 shadow-[0_2px_16px_rgba(236,72,153,0.07)] overflow-hidden lg:max-w-4xl lg:mx-auto">
+                        <div class="bg-white rounded-2xl border border-pink-50 shadow-[0_2px_16px_rgba(236,72,153,0.07)] overflow-hidden">
                             <div class="p-4 border-b border-pink-50 flex items-center justify-between flex-wrap gap-3">
                                 <h3 id="calendarMonthYear" class="font-bold text-gray-800"></h3>
                                 <div class="flex gap-1">
@@ -241,7 +241,7 @@
                                 </div>
                             </div>
                             <div class="p-5">
-                                <div class="grid grid-cols-7 gap-0.5 mb-1 lg:max-w-4xl lg:mx-auto">
+                                <div class="grid grid-cols-7 gap-0.5 mb-1">
                                 <div class="text-center text-xs sm:text-sm font-bold text-gray-400 py-1">M</div>
                                 <div class="text-center text-xs sm:text-sm font-bold text-gray-400 py-1">S</div>
                                 <div class="text-center text-xs sm:text-sm font-bold text-gray-400 py-1">S</div>
@@ -250,7 +250,7 @@
                                 <div class="text-center text-xs sm:text-sm font-bold text-gray-400 py-1">J</div>
                                 <div class="text-center text-xs sm:text-sm font-bold text-gray-400 py-1">S</div>
                                 </div>
-                                <div id="calendarDays" class="grid grid-cols-7 gap-0.5 lg:max-w-4xl lg:mx-auto"></div>
+                                <div id="calendarDays" class="grid grid-cols-7 gap-0.5"></div>
                                 <div id="calendarSummary" class="mt-4 p-3 bg-pink-50 rounded-xl hidden">
                                     <p id="summaryDate" class="text-xs font-bold text-gray-700 mb-0.5"></p>
                                     <p id="summaryTotal" class="text-2xl font-extrabold text-[#EC4899]"></p>
@@ -260,7 +260,7 @@
                         </div>
 
                         <!-- Table Side -->
-                        <div class="bg-white rounded-2xl border border-pink-50 shadow-[0_2px_16px_rgba(236,72,153,0.07)] overflow-hidden">
+                        <div class="bg-white rounded-2xl border border-pink-50 shadow-[0_2px_16px_rgba(236,72,153,0.07)] overflow-hidden min-w-0">
                             <div class="p-4 border-b border-pink-50 flex items-center justify-between flex-wrap gap-3">
                                 <h3 class="font-bold text-gray-800">Daftar Reservasi</h3>
                                 <div class="flex items-center gap-2">
@@ -280,7 +280,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div>
+                            <div class="overflow-x-auto">
 <table class="w-full min-w-full admin-table">
                                 <thead>
                                         <tr class="bg-[#FFF7FA]">
@@ -313,7 +313,22 @@
                                                 @endforeach
                                             </td>
                                             <td class="px-5 py-4 text-sm text-gray-600" data-label="Tanggal">{{ \Carbon\Carbon::parse($r->tanggal)->isoFormat('D MMM Y') }}</td>
-                                            <td class="px-5 py-4 text-sm font-semibold text-gray-700" data-label="Jam">{{ $r->jam }}</td>
+                                            <td class="px-5 py-4 text-sm font-semibold text-gray-700" data-label="Jam">
+                                                @php
+                                                    $jamMulai = \Carbon\Carbon::parse($r->jam)->format('H:i');
+                                                    $jamSelesai = null;
+                                                    if ($r->status === 'selesai') {
+                                                        $jamSelesai = $r->jam_selesai_aktual
+                                                            ? \Carbon\Carbon::parse($r->jam_selesai_aktual)->format('H:i')
+                                                            : \Carbon\Carbon::parse($r->tanggal . ' ' . substr($r->jam, 0, 5))->addMinutes(\App\Support\BookingSlot::durasiBooking($r))->format('H:i');
+                                                    }
+                                                @endphp
+                                                <span class="font-mono">{{ $jamMulai }}</span>
+                                                @if ($jamSelesai)
+                                                    <span class="text-gray-400">-</span>
+                                                    <span class="font-mono text-gray-500">{{ $jamSelesai }}</span>
+                                                @endif
+                                            </td>
                                             <td class="px-5 py-4" data-label="Status">
                                                 @php
                                                     $statusColors = [
@@ -334,6 +349,26 @@
                                                 <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border {{ $statusColors[$r->status] ?? 'bg-gray-50 text-gray-500 border-gray-200' }}">
                                                     {{ $statusLabels[$r->status] ?? ucfirst($r->status) }}
                                                 </span>
+                                                @if ($r->status === 'diproses')
+                                                    @php
+                                                        $durasiMenit = \App\Support\BookingSlot::durasiBooking($r);
+                                                        $durasiTxt = $durasiMenit >= 60
+                                                            ? (($durasiMenit % 60)
+                                                                ? floor($durasiMenit / 60) . ' jam ' . ($durasiMenit % 60) . ' menit'
+                                                                : ($durasiMenit / 60) . ' jam')
+                                                            : $durasiMenit . ' menit';
+                                                        $mulaiPengerjaan = $r->jam_mulai_aktual
+                                                            ? \Carbon\Carbon::parse($r->jam_mulai_aktual)
+                                                            : \Carbon\Carbon::parse($r->tanggal . ' ' . substr($r->jam, 0, 5));
+                                                        $estimasiSelesai = $mulaiPengerjaan->copy()->addMinutes($durasiMenit);
+                                                    @endphp
+                                                    <div class="mt-1.5 flex items-center gap-1 text-[10px] font-semibold text-violet-500">
+                                                        <i class="fa-regular fa-clock"></i> Waktu pengerjaan: {{ $durasiTxt }}
+                                                    </div>
+                                                    <div class="countdown-row mt-0.5 flex items-center gap-1 text-[10px] font-bold text-violet-600" data-akhir="{{ $estimasiSelesai->format('Y-m-d H:i:s') }}">
+                                                        <i class="fa-solid fa-hourglass-half"></i> Sisa: <span class="countdown-value font-mono">--:--:--</span>
+                                                    </div>
+                                                @endif
                                             </td>
                                             <td class="px-5 py-4" data-label="Aksi">
                                                 <a href="{{ route('admin.reservasi.show', $r->id_booking) }}"
@@ -531,6 +566,27 @@
         });
 
         renderCalendar();
+
+        function updateCountdowns() {
+            const now = new Date();
+            document.querySelectorAll('.countdown-row').forEach(function(row) {
+                const end = new Date((row.dataset.akhir || '').replace(' ', 'T'));
+                const diff = Math.max(0, end - now);
+                const h = String(Math.floor(diff / 3600000)).padStart(2, '0');
+                const m = String(Math.floor((diff % 3600000) / 60000)).padStart(2, '0');
+                const s = String(Math.floor((diff % 60000) / 1000)).padStart(2, '0');
+                const val = row.querySelector('.countdown-value');
+                if (val) {
+                    val.textContent = h + ':' + m + ':' + s;
+                    if (diff <= 0) {
+                        val.classList.add('text-red-500');
+                        row.querySelector('i')?.classList.add('text-red-500');
+                    }
+                }
+            });
+        }
+        updateCountdowns();
+        setInterval(updateCountdowns, 1000);
     </script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
 </body>
