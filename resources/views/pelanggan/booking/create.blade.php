@@ -1249,7 +1249,7 @@
                 @endif
 
                 <!-- ═══ Form Card Premium ═══ -->
-                <form action="{{ route('pelanggan.booking.store') }}" method="POST" id="bookingForm">
+                <form action="{{ route('pelanggan.booking.store') }}" method="POST" id="bookingForm" novalidate>
                     @csrf
 
                     <div class="form-card-premium">
@@ -1562,6 +1562,18 @@
             return dist[svc.id_layanan];
         }
         return Math.round(svc.harga * diskonPersen / 100);
+    }
+
+    function tandaiField(el) {
+        if (!el) return;
+        const oldBorder = el.style.borderColor;
+        const oldShadow = el.style.boxShadow;
+        el.style.borderColor = '#DC2626';
+        el.style.boxShadow = '0 0 0 3px rgba(220,38,38,0.15)';
+        setTimeout(function() {
+            el.style.borderColor = oldBorder;
+            el.style.boxShadow = oldShadow;
+        }, 3000);
     }
 
     function tambahLayanan() {
@@ -2156,9 +2168,46 @@
 
         // Form submit validation
         document.getElementById('bookingForm').addEventListener('submit', function(e) {
+            var pesan = [];
+            var misses = [];
+
             if (selectedServices.length === 0) {
+                pesan.push('Layanan belum dipilih — pilih minimal 1 layanan lalu klik Tambah');
+                misses.push(document.getElementById('customLayananTrigger'));
+            }
+
+            var inpTerapis = document.getElementById('id_karyawan');
+            if (!inpTerapis || !inpTerapis.value) {
+                pesan.push('Terapis belum dipilih');
+                misses.push(document.getElementById('customTerapisTrigger'));
+            }
+
+            var inpTanggal = document.getElementById('tanggalInput');
+            if (!inpTanggal || !inpTanggal.value) {
+                pesan.push('Tanggal treatment belum dipilih');
+                misses.push(inpTanggal);
+            }
+
+            var inpJam = document.getElementById('jamSlot');
+            if (!inpJam || !inpJam.value) {
+                pesan.push('Jam treatment belum dipilih');
+                misses.push(document.getElementById('jamGrid'));
+            }
+
+            if (pesan.length > 0) {
                 e.preventDefault();
-                window.__confirmPremiumShow({ title: 'Belum Ada Layanan', body: 'Silakan tambah minimal 1 layanan sebelum mengonfirmasi booking.', icon: 'fa-circle-exclamation' });
+                misses.forEach(function (el) { tandaiField(el); });
+                window.__confirmPremiumShow({
+                    title: 'Form Belum Lengkap',
+                    body: '<div style="text-align:left;margin-bottom:12px;">Lengkapi data berikut sebelum mengonfirmasi booking:</div>' +
+                        pesan.map(function (p) {
+                            return '<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:#FEF2F2;border:1px solid #FECACA;border-radius:10px;margin-bottom:6px;font-size:12.5px;color:#B91C1C;font-weight:500;text-align:left;">' +
+                                '<i class="fa-solid fa-circle-xmark" style="flex-shrink:0;"></i><span>' + p + '</span></div>';
+                        }).join(''),
+                    icon: 'fa-circle-exclamation',
+                    type: 'warning',
+                    yes: 'Oke, Saya Paham'
+                });
             }
         });
     });
