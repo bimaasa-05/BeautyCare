@@ -22,8 +22,7 @@ class AdminDashboardController extends Controller
         $bulanLalu = $bulan == 1 ? 12 : $bulan - 1;
         $tahunLalu = $bulan == 1 ? $tahun - 1 : $tahun;
 
-        $totalPendapatan = Transaksi::whereIn('jenis_transaksi', ['Penjualan', 'Booking', 'Pesanan Online'])
-            ->where('status', '!=', 'Dibatalkan')->sum('total');
+        $totalPendapatan = Transaksi::pendapatan()->sum('total');
 
         $totalBooking = Booking::count();
 
@@ -34,17 +33,15 @@ class AdminDashboardController extends Controller
         $produkTerjual = DetailTransaksi::where('detail_transaksi.jenis', 'produk')
             ->join('transaksi', 'transaksi.id_transaksi', '=', 'detail_transaksi.id_transaksi')
             ->whereIn('transaksi.jenis_transaksi', ['Penjualan', 'Booking', 'Pesanan Online'])
-            ->where('transaksi.status', '!=', 'Dibatalkan')
+            ->where('transaksi.status', 'Lunas')
             ->sum('detail_transaksi.qty');
 
-        $pendapatanBulanIni = Transaksi::whereIn('jenis_transaksi', ['Penjualan', 'Booking', 'Pesanan Online'])
-            ->where('status', '!=', 'Dibatalkan')
+        $pendapatanBulanIni = Transaksi::pendapatan()
             ->whereYear('tanggal', $tahun)
             ->whereMonth('tanggal', $bulan)
             ->sum('total');
 
-        $pendapatanBulanLalu = Transaksi::whereIn('jenis_transaksi', ['Penjualan', 'Booking', 'Pesanan Online'])
-            ->where('status', '!=', 'Dibatalkan')
+        $pendapatanBulanLalu = Transaksi::pendapatan()
             ->whereYear('tanggal', $tahunLalu)
             ->whereMonth('tanggal', $bulanLalu)
             ->sum('total');
@@ -80,7 +77,7 @@ class AdminDashboardController extends Controller
         $produkTerjualBulanIni = DetailTransaksi::where('detail_transaksi.jenis', 'produk')
             ->join('transaksi', 'transaksi.id_transaksi', '=', 'detail_transaksi.id_transaksi')
             ->whereIn('transaksi.jenis_transaksi', ['Penjualan', 'Booking', 'Pesanan Online'])
-            ->where('transaksi.status', '!=', 'Dibatalkan')
+            ->where('transaksi.status', 'Lunas')
             ->whereYear('transaksi.tanggal', $tahun)
             ->whereMonth('transaksi.tanggal', $bulan)
             ->sum('detail_transaksi.qty');
@@ -88,7 +85,7 @@ class AdminDashboardController extends Controller
         $produkTerjualBulanLalu = DetailTransaksi::where('detail_transaksi.jenis', 'produk')
             ->join('transaksi', 'transaksi.id_transaksi', '=', 'detail_transaksi.id_transaksi')
             ->whereIn('transaksi.jenis_transaksi', ['Penjualan', 'Booking', 'Pesanan Online'])
-            ->where('transaksi.status', '!=', 'Dibatalkan')
+            ->where('transaksi.status', 'Lunas')
             ->whereYear('transaksi.tanggal', $tahunLalu)
             ->whereMonth('transaksi.tanggal', $bulanLalu)
             ->sum('detail_transaksi.qty');
@@ -178,7 +175,7 @@ class AdminDashboardController extends Controller
             ->join('transaksi', 'transaksi.id_transaksi', '=', 'detail_transaksi.id_transaksi')
             ->where('detail_transaksi.jenis', 'like', 'layanan')
             ->whereIn('transaksi.jenis_transaksi', ['Penjualan', 'Booking', 'Pesanan Online'])
-            ->where('transaksi.status', '!=', 'Dibatalkan')
+            ->where('transaksi.status', 'Lunas')
             ->groupBy('detail_transaksi.id_item', 'detail_transaksi.nm_item')
             ->orderByDesc('total_qty')
             ->limit(5)
@@ -193,7 +190,7 @@ class AdminDashboardController extends Controller
             ->join('transaksi', 'transaksi.id_transaksi', '=', 'detail_transaksi.id_transaksi')
             ->where('detail_transaksi.jenis', 'like', 'produk')
             ->whereIn('transaksi.jenis_transaksi', ['Penjualan', 'Booking', 'Pesanan Online'])
-            ->where('transaksi.status', '!=', 'Dibatalkan')
+            ->where('transaksi.status', 'Lunas')
             ->groupBy('detail_transaksi.id_item', 'detail_transaksi.nm_item')
             ->orderByDesc('total_qty')
             ->limit(5)
@@ -284,13 +281,12 @@ class AdminDashboardController extends Controller
         $booking = [];
 
         if ($periode === '1tahun') {
-            $rev = Transaksi::select(
+            $rev = Transaksi::pendapatan()
+                ->select(
                     DB::raw('MONTH(tanggal) as bulan'),
                     DB::raw('COALESCE(SUM(total),0) as total')
                 )
                 ->whereYear('tanggal', date('Y'))
-                ->where('status', '!=', 'Dibatalkan')
-                ->whereIn('jenis_transaksi', ['Penjualan', 'Booking', 'Pesanan Online'])
                 ->groupBy(DB::raw('MONTH(tanggal)'))
                 ->orderBy('bulan')
                 ->pluck('total', 'bulan')
@@ -313,13 +309,12 @@ class AdminDashboardController extends Controller
                 $booking[] = (int)($bk[$i] ?? 0);
             }
         } else {
-            $rev = Transaksi::select(
+            $rev = Transaksi::pendapatan()
+                ->select(
                     DB::raw('DATE(tanggal) as tgl'),
                     DB::raw('COALESCE(SUM(total),0) as total')
                 )
                 ->whereBetween('tanggal', [$start, $end])
-                ->where('status', '!=', 'Dibatalkan')
-                ->whereIn('jenis_transaksi', ['Penjualan', 'Booking', 'Pesanan Online'])
                 ->groupBy(DB::raw('DATE(tanggal)'))
                 ->pluck('total', 'tgl')
                 ->toArray();
