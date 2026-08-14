@@ -100,12 +100,13 @@ TXT;
         $sosmed = [
             ['platform' => 'instagram', 'url' => 'https://instagram.com/beautycare'],
             ['platform' => 'facebook', 'url' => 'https://facebook.com/beautycare'],
-            ['platform' => 'whatsapp', 'url' => 'https://wa.me/6281234567890'],
+            ['platform' => 'whatsapp', 'url' => 'https://wa.me/625723706843'],
+            ['platform' => 'youtube', 'url' => 'https://youtube.com/@beautycare'],
         ];
 
         $data = [
             'nama_salon' => $pengaturan->nama_salon ?: 'BeautyCare Premium',
-            'telepon' => $pengaturan->telepon ?: '021-1234-5678',
+            'telepon' => $pengaturan->telepon ?: '085723706843',
             'alamat' => $pengaturan->alamat ?: 'Jl. Sudirman No. 123, Jakarta Pusat 10220',
             'email' => $pengaturan->email ?: 'cs@beautycare.id',
             'jam_buka' => $pengaturan->jam_buka ?: '08:00:00',
