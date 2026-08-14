@@ -547,6 +547,20 @@
         color: #DC2626;
     }
 
+    .jam-chip.passed {
+        opacity: 0.55;
+        background: #F3F4F6;
+        border-color: #E5E7EB;
+        color: #9CA3AF;
+        cursor: not-allowed;
+        box-shadow: none;
+        transform: none;
+    }
+
+    .jam-chip.passed .jc-status {
+        color: #9CA3AF;
+    }
+
     .jam-legend {
         display: flex;
         align-items: center;
@@ -577,6 +591,10 @@
 
     .jam-legend .jl-dot.jl-booked {
         background: #EF4444;
+    }
+
+    .jam-legend .jl-dot.jl-passed {
+        background: #9CA3AF;
     }
 
     /* ─── Summary Card Premium ─── */
@@ -1415,9 +1433,10 @@
                                     <div class="jam-legend">
                                         <span class="jl-item"><span class="jl-dot jl-free"></span> Tersedia</span>
                                         <span class="jl-item"><span class="jl-dot jl-booked"></span> Sudah Dibooking</span>
+                                        <span class="jl-item"><span class="jl-dot jl-passed"></span> Jam Sudah Lewat</span>
                                     </div>
                                     <div style="margin-top:6px;font-size:11px;color:var(--gray);">
-                                        <i class="fa-solid fa-circle-info"></i> Slot yang sudah dibooking pelanggan lain (termasuk durasi layanan) otomatis dinonaktifkan
+                                        <i class="fa-solid fa-circle-info"></i> Slot yang sudah dibooking pelanggan lain (termasuk durasi layanan) otomatis dinonaktifkan. Untuk booking hari ini, slot yang sudah lewat dari jam sekarang juga otomatis dinonaktifkan.
                                     </div>
                                 </div>
                             </div>
@@ -1812,6 +1831,8 @@
     // Set default & init custom select
     let bookedJamByKaryawan = @json($bookedJamByKaryawan);
     let bookedJamGlobal = @json($bookedJamGlobal);
+    let jamLewat = @json($jamLewat);
+    const todayIso = '{{ date('Y-m-d') }}';
     const jamSelect = document.getElementById('jamSlot');
     const jamBaseText = {};
     if (jamSelect) {
@@ -2042,7 +2063,6 @@
         if (dcpSelected) {
             tanggalInput.value = dcpSelected;
             tanggalInput.dispatchEvent(new Event('change', { bubbles: true }));
-            refreshJamSlots(dcpSelected);
         }
         closeCalendarPopup();
     });
@@ -2053,7 +2073,6 @@
         dcpSelected = todayIso;
         tanggalInput.value = todayIso;
         tanggalInput.dispatchEvent(new Event('change', { bubbles: true }));
-        refreshJamSlots(todayIso);
         closeCalendarPopup();
     });
 
@@ -2078,14 +2097,18 @@
         for (let i = 0; i < jamSelect.options.length; i++) {
             const opt = jamSelect.options[i];
             if (!opt.value) continue;
-            const booked = opt.disabled;
+            const lewat = jamLewat.indexOf(opt.value) !== -1;
+            const booked = opt.disabled && !lewat;
             const chip = document.createElement('button');
             chip.type = 'button';
-            chip.className = 'jam-chip' + (booked ? ' booked' : '');
+            chip.className = 'jam-chip' + (booked ? ' booked' : '') + (lewat ? ' passed' : '');
             chip.setAttribute('data-jam', opt.value);
             if (booked) {
                 chip.innerHTML = '<span class="jc-time">' + opt.text.replace(' — Sudah Dibooking', '') + '</span>' +
                     '<span class="jc-status"><i class="fa-solid fa-lock"></i> Sudah Dibooking</span>';
+            } else if (lewat) {
+                chip.innerHTML = '<span class="jc-time">' + opt.text.replace(' — Jam Lewat', '') + '</span>' +
+                    '<span class="jc-status"><i class="fa-regular fa-clock"></i> Jam Lewat</span>';
             } else {
                 chip.innerHTML = '<span class="jc-time">' + opt.text + '</span>';
                 chip.addEventListener('click', function() {
@@ -2103,7 +2126,7 @@
             c.classList.remove('selected');
         });
         if (val) {
-            const sel = grid.querySelector('.jam-chip:not(.booked)[data-jam="' + val + '"]');
+            const sel = grid.querySelector('.jam-chip:not(.booked):not(.passed)[data-jam="' + val + '"]');
             if (sel) sel.classList.add('selected');
         }
     }
@@ -2112,13 +2135,17 @@
         if (!jamSelect) return;
         const karyawanId = document.getElementById('id_karyawan').value;
         const booked = bookedJamByKaryawan[karyawanId] || [];
+        const isToday = tanggalInput && tanggalInput.value === todayIso;
         for (let i = 0; i < jamSelect.options.length; i++) {
             const opt = jamSelect.options[i];
             if (!opt.value) continue;
             const globalPenuh = bookedJamGlobal.indexOf(opt.value) !== -1;
             const penuh = globalPenuh || booked.indexOf(opt.value) !== -1;
-            opt.disabled = penuh;
-            opt.text = penuh ? (jamBaseText[opt.value] + ' — Sudah Dibooking') : jamBaseText[opt.value];
+            const lewat = isToday && jamLewat.indexOf(opt.value) !== -1;
+            opt.disabled = penuh || lewat;
+            opt.text = penuh ? (jamBaseText[opt.value] + ' — Sudah Dibooking')
+                : lewat ? (jamBaseText[opt.value] + ' — Jam Lewat')
+                : jamBaseText[opt.value];
         }
         if (jamSelect.value && jamSelect.options[jamSelect.selectedIndex].disabled) {
             jamSelect.value = '';
@@ -2136,6 +2163,7 @@
             const data = await res.json();
             bookedJamGlobal = data.bookedJamGlobal || [];
             bookedJamByKaryawan = data.bookedJamByKaryawan || {};
+            jamLewat = data.jamLewat || [];
             updateJamSlots();
         } catch (e) {}
     }
@@ -2146,6 +2174,17 @@
             updateJamSlots();
         }, true);
         updateJamSlots();
+
+        // Refresh slot jam saat tanggal dipilih/diubah (manual atau via kalender)
+        tanggalInput.addEventListener('change', function() {
+            refreshJamSlots(tanggalInput.value || todayIso);
+        });
+
+        // Realtime: slot jam yang sudah lewat ikut dinonaktifkan otomatis tiap menit (khusus booking hari ini)
+        setInterval(function() {
+            const tgl = tanggalInput.value || todayIso;
+            if (tgl === todayIso) refreshJamSlots(tgl);
+        }, 60000);
 
         // Tambah Layanan button
         document.getElementById('btnTambahLayanan').addEventListener('click', tambahLayanan);
