@@ -117,11 +117,13 @@ class PelangganBookingController extends Controller
             ]);
 
         $slotJam = BookingSlot::slotJam();
-        $bookedJamByKaryawan = BookingSlot::blokirJamKaryawan(request('tanggal', now()->toDateString()));
-        $bookedJamGlobal = BookingSlot::blokirJamGlobal(request('tanggal', now()->toDateString()));
+        $tanggalAwal = request('tanggal', now()->toDateString());
+        $bookedJamByKaryawan = BookingSlot::blokirJamKaryawan($tanggalAwal);
+        $bookedJamGlobal = BookingSlot::blokirJamGlobal($tanggalAwal);
+        $jamLewat = BookingSlot::jamLewat($tanggalAwal);
         $sedangMelayaniDetail = BookingSlot::sedangMelayaniDetail();
 
-        return view('pelanggan.booking.create', compact('layanans', 'karyawans', 'karyawanSibukIds', 'diskonMember', 'claimedPromos', 'bookingsPerDay', 'slotJam', 'bookedJamByKaryawan', 'bookedJamGlobal', 'sedangMelayaniDetail'));
+        return view('pelanggan.booking.create', compact('layanans', 'karyawans', 'karyawanSibukIds', 'diskonMember', 'claimedPromos', 'bookingsPerDay', 'slotJam', 'bookedJamByKaryawan', 'bookedJamGlobal', 'jamLewat', 'sedangMelayaniDetail'));
     }
 
     public function slotJamData(Request $request)
@@ -131,6 +133,7 @@ class PelangganBookingController extends Controller
         return response()->json([
             'bookedJamByKaryawan' => BookingSlot::blokirJamKaryawan($tanggal),
             'bookedJamGlobal' => BookingSlot::blokirJamGlobal($tanggal),
+            'jamLewat' => BookingSlot::jamLewat($tanggal),
         ]);
     }
 
@@ -171,6 +174,10 @@ class PelangganBookingController extends Controller
         $durasi = (int) Layanan::whereIn('id_layanan', $request->id_layanan)->sum('durasi');
         if (BookingSlot::jamBentrok($request->id_karyawan, $request->tanggal, $jam, null, $durasi)) {
             return redirect()->back()->withInput()->withErrors(['jam' => 'Jam tersebut sudah dibooking untuk terapis yang dipilih (sudah memperhitungkan durasi layanan). Silakan pilih jam lain.']);
+        }
+
+        if (\Carbon\Carbon::parse($request->tanggal . ' ' . $jam)->lte(now())) {
+            return redirect()->back()->withInput()->withErrors(['jam' => 'Jam booking sudah lewat. Silakan pilih jam yang masih tersedia.']);
         }
 
         $idPromo = $request->id_promo;
