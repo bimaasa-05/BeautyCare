@@ -467,6 +467,84 @@
                     </div>
                 </div>
 
+                <div class="mt-6 bg-white rounded-2xl p-6 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)]">
+                    <div class="flex items-center gap-3 mb-6">
+                        <span
+                            class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-400 text-white flex items-center justify-center shadow-md shadow-emerald-200 flex-shrink-0">
+                            <i class="fa-solid fa-star text-sm"></i>
+                        </span>
+                        <div>
+                            <h3 class="text-[16px] font-bold text-gray-800">Leaderboard Beautycian</h3>
+                            <p class="text-[12px] text-gray-400 mt-0.5">Peringkat berdasarkan jumlah pelanggan yang
+                                memilih beautycian untuk treatment</p>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse admin-table">
+                            <thead>
+                                <tr
+                                    class="text-[11px] font-bold text-gray-400 uppercase border-b border-gray-100 bg-gray-50/50">
+                                    <th class="py-3 px-4 w-14">No</th>
+                                    <th class="py-3 px-4">Beautycian</th>
+                                    <th class="py-3 px-4 text-right">Pelanggan</th>
+                                    <th class="py-3 px-4 text-right">Total Booking</th>
+                                    <th class="py-3 px-4 text-right">Selesai</th>
+                                    <th class="py-3 px-4 text-right">Tingkat Selesai</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-[13px] text-gray-700 divide-y divide-gray-50">
+                                @forelse ($topBeautycian as $row)
+                                    <tr class="hover:bg-gray-50/50 transition-colors">
+                                        <td class="py-3.5 px-4" data-label="No">
+                                            <span
+                                                class="rank-badge {{ $loop->iteration == 1 ? 'rank-1' : ($loop->iteration == 2 ? 'rank-2' : ($loop->iteration == 3 ? 'rank-3' : 'rank-rest')) }}">
+                                                @if ($loop->iteration == 1)
+                                                    <i class="fa-solid fa-crown text-[11px]"></i>
+                                                @else
+                                                    {{ $loop->iteration }}
+                                                @endif
+                                            </span>
+                                        </td>
+                                        <td class="py-3.5 px-4" data-label="Beautycian">
+                                            <div class="flex items-center gap-3">
+                                                <img src="{{ $row->foto_url }}" alt="{{ $row->nama }}"
+                                                    class="w-9 h-9 rounded-full object-cover border border-gray-100"
+                                                    loading="lazy">
+                                                <span class="font-semibold text-gray-800">{{ $row->nama }}</span>
+                                            </div>
+                                        </td>
+                                        <td class="py-3.5 px-4 text-right font-bold text-emerald-600 whitespace-nowrap"
+                                            data-label="Pelanggan">
+                                            {{ $row->total_pelanggan }}
+                                        </td>
+                                        <td class="py-3.5 px-4 text-right font-semibold text-gray-800 whitespace-nowrap"
+                                            data-label="Total Booking">
+                                            {{ $row->total_booking }}
+                                        </td>
+                                        <td class="py-3.5 px-4 text-right text-gray-600 whitespace-nowrap"
+                                            data-label="Selesai">
+                                            {{ $row->total_selesai }}
+                                        </td>
+                                        <td class="py-3.5 px-4 text-right whitespace-nowrap" data-label="Tingkat Selesai">
+                                            <span
+                                                class="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-600 px-2.5 py-1 rounded-full text-[11px] font-semibold">
+                                                <i class="fa-solid fa-check text-[9px]"></i>
+                                                {{ $row->win_rate }}%
+                                            </span>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="6" class="py-8 text-center text-gray-400 text-[13px]">Belum
+                                            ada data treatment beautycian</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
             </div>
         </main>
     </div>
