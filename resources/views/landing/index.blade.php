@@ -437,106 +437,43 @@
                 <p>BeautyCare melayani berbagai jenis bisnis di industri kecantikan.</p>
             </div>
             <div class="layanan-grid animate-on-scroll">
+                @forelse($kategoriLayanan as $kategori)
                 <div class="layanan-card">
-                    <img src="https://i.pinimg.com/736x/d6/2f/0a/d62f0a5b0d1be1e563e6a13fc41510f2.jpg" alt="Salon"
-                        loading="lazy">
+                    @php
+                        $layananWithFoto = $kategori->layanan->where('foto', '!=', '')->whereNotNull('foto')->values();
+                        $defaultImg = 'https://images.unsplash.com/photo-1560066984-138dad74c875?w=400&q=80';
+                    @endphp
+                    
+                    @if($layananWithFoto->count() > 0)
+                        <div class="layanan-image-slider" data-interval="3000">
+                            @foreach($layananWithFoto as $index => $layanan)
+                            <img src="{{ asset('storage/' . $layanan->foto) }}" 
+                                alt="{{ $layanan->nm_layanan }}"
+                                class="slider-img {{ $index === 0 ? 'active' : '' }}"
+                                loading="lazy">
+                            @endforeach
+                            @if($layananWithFoto->count() > 1)
+                            <div class="slider-dots">
+                                @foreach($layananWithFoto as $index => $layanan)
+                                <span class="dot {{ $index === 0 ? 'active' : '' }}" data-index="{{ $index }}"></span>
+                                @endforeach
+                            </div>
+                            @endif
+                        </div>
+                    @else
+                        <img src="{{ $defaultImg }}" alt="{{ $kategori->nm_layanan }}" loading="lazy">
+                    @endif
+                    
                     <div class="overlay">
-                        <h3>Salon</h3>
-                        <p>Manajemen salon rambut dan perawatan</p>
+                        <h3>{{ $kategori->nm_layanan }}</h3>
+                        <p>{{ $kategori->deskripsi ?? 'Manajemen ' . $kategori->nm_layanan . ' lengkap dan terintegrasi' }}</p>
                     </div>
                 </div>
-                <div class="layanan-card">
-                    <img src="https://i.pinimg.com/736x/b2/1f/3f/b21f3f8ea63da900459d87fe1774464d.jpg" alt="Spa"
-                        loading="lazy">
-                    <div class="overlay">
-                        <h3>Spa & Wellness</h3>
-                        <p>Kelola jadwal terapi dan perawatan spa</p>
-                    </div>
+                @empty
+                <div class="col-span-full text-center py-12">
+                    <p class="text-gray-500">Belum ada kategori layanan yang tersedia.</p>
                 </div>
-                <div class="layanan-card">
-                    <img src="https://i.pinimg.com/736x/a9/bc/b0/a9bcb04808b7e2a674a0e9ac0a30ba17.jpg" alt="Nail Art"
-                        loading="lazy">
-                    <div class="overlay">
-                        <h3>Nail Art</h3>
-                        <p>Manajemen jadwal dan layanan nail art</p>
-                    </div>
-                </div>
-                <div class="layanan-card">
-                    <img src="https://i.pinimg.com/736x/68/3d/f9/683df902ca9975a01d1b2b1d8b3d3a29.jpg" alt="Barbershop"
-                        loading="lazy">
-                    <div class="overlay">
-                        <h3>Barbershop</h3>
-                        <p>Sistem booking untuk pria modern</p>
-                    </div>
-                </div>
-                <div class="layanan-card">
-                    <img src="https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=400&q=80" alt="Skincare"
-                        loading="lazy">
-                    <div class="overlay">
-                        <h3>Skincare Clinic</h3>
-                        <p>Manajemen klinik perawatan kulit</p>
-                    </div>
-                </div>
-                <div class="layanan-card">
-                    <img src="https://i.pinimg.com/1200x/e2/0d/f8/e20df8c96990f03442d60af45a2ffc9a.jpg" alt="Eyelash"
-                        loading="lazy">
-                    <div class="overlay">
-                        <h3>Eyelash & Brow</h3>
-                        <p>Kelola layanan eyelash dan alis</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Statistik Section -->
-    <section class="statistik">
-        <div class="container">
-            <div class="stats-grid animate-on-scroll">
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                            <circle cx="8.5" cy="7" r="4" />
-                            <polyline points="17 11 19 13 23 9" />
-                        </svg>
-                    </div>
-                    <h3>5000+</h3>
-                    <p>Customer</p>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-                            <polyline points="9 22 9 12 15 12 15 22" />
-                        </svg>
-                    </div>
-                    <h3>250+</h3>
-                    <p>Salon</p>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                        </svg>
-                    </div>
-                    <h3>98%</h3>
-                    <p>Customer Satisfaction</p>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="12" cy="12" r="10" />
-                            <polyline points="12 6 12 12 16 14" />
-                        </svg>
-                    </div>
-                    <h3>24</h3>
-                    <p>Jam Support</p>
-                </div>
+                @endforelse
             </div>
         </div>
     </section>
@@ -898,4 +835,59 @@
             </div>
         </div>
     </section>
+
+    @push('scripts')
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const sliders = document.querySelectorAll('.layanan-image-slider');
+        
+        sliders.forEach(slider => {
+            const images = slider.querySelectorAll('.slider-img');
+            const dots = slider.querySelectorAll('.slider-dots .dot');
+            const interval = parseInt(slider.dataset.interval) || 3000;
+            
+            if (images.length <= 1) return;
+            
+            let currentIndex = 0;
+            let autoSlideInterval;
+            
+            function showImage(index) {
+                images.forEach((img, i) => {
+                    img.classList.toggle('active', i === index);
+                });
+                dots.forEach((dot, i) => {
+                    dot.classList.toggle('active', i === index);
+                });
+                currentIndex = index;
+            }
+            
+            function nextImage() {
+                const nextIndex = (currentIndex + 1) % images.length;
+                showImage(nextIndex);
+            }
+            
+            function startAutoSlide() {
+                autoSlideInterval = setInterval(nextImage, interval);
+            }
+            
+            function stopAutoSlide() {
+                clearInterval(autoSlideInterval);
+            }
+            
+            dots.forEach((dot, index) => {
+                dot.addEventListener('click', () => {
+                    stopAutoSlide();
+                    showImage(index);
+                    startAutoSlide();
+                });
+            });
+            
+            slider.addEventListener('mouseenter', stopAutoSlide);
+            slider.addEventListener('mouseleave', startAutoSlide);
+            
+            startAutoSlide();
+        });
+    });
+    </script>
+    @endpush
 @endsection
