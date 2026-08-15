@@ -18,6 +18,8 @@ class Booking extends Model
         'jam_mulai_aktual',
         'jam_selesai_aktual',
         'status',
+        'status_pembayaran',
+        'tipe_pembayaran',
         'catatan',
         'reminder_h1',
         'reminder_jam',
@@ -45,6 +47,6 @@ class Booking extends Model
 
     public function transaksi()
     {
-        return $this->hasOne(Transaksi::class, 'id_booking', 'id_booking');
+        return $this->hasOne(Transaksi::class, 'id_booking', 'id_booking')->latest('id_transaksi');
     }
 }
