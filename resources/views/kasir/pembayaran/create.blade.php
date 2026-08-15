@@ -78,6 +78,8 @@
 
                     @php
                         $totalBayar = $booking->detail->sum(fn($d) => ($d->harga ?? 0) - ($d->diskon ?? 0));
+                        $sisaBayar = $sisa ?? $totalBayar;
+                        $dpPaid = $dpPaid ?? 0;
                     @endphp
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
@@ -150,6 +152,20 @@
                         @csrf
                         <input type="hidden" name="id_booking" value="{{ $booking->id_booking }}">
                         <input type="hidden" name="total" id="total" value="{{ $totalBayar }}">
+                    @if($dpPaid > 0)
+                    <div class="mb-4 px-4 py-3 bg-blue-50 border border-blue-200 text-blue-700 text-[12px] font-medium rounded-xl flex items-start gap-2">
+                        <i class="fa-solid fa-circle-info mt-0.5"></i>
+                        <div>
+                            DP sebesar <b>Rp {{ number_format($dpPaid, 0, ',', '.') }}</b> sudah dibayar online.
+                            Sisa tagihan yang dibayar di kasir ini: <b>Rp {{ number_format($sisaBayar, 0, ',', '.') }}</b>.
+                        </div>
+                    </div>
+                    @endif
+
+                    <form action="{{ route('kasir.pembayaran.store') }}" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <input type="hidden" name="id_booking" value="{{ $booking->id_booking }}">
+                        <input type="hidden" name="total" id="total" value="{{ $sisaBayar }}">
 
                         <!-- Header eror banner (hidden dulu, muncul kalau error) -->
     @if($errors->any())
@@ -379,6 +395,7 @@
                                             <option value="Batal" {{ old('status') == 'Batal' ? 'selected' : '' }}>Batal</option>
                                         </select>
                                         <p class="text-[11px] text-gray-400 mt-1">Dibayar otomatis: <b>Rp {{ number_format($totalBayar, 0, ',', '.') }}</b> — tanpa kembalian</p>
+                                        <p class="text-[11px] text-gray-400 mt-1">Dibayar otomatis: <b>Rp {{ number_format($sisaBayar, 0, ',', '.') }}</b> — tanpa kembalian</p>
                                     </div>
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div class="form-group">
@@ -493,6 +510,7 @@
 
         function paymentBox() {
             const totalBayar = @json((float) $totalBayar);
+            const totalBayar = @json((float) $sisaBayar);
             return {
                 cat: 'bank',
                 bankId: @json((int) old('bank_id', $banks->first()?->id ?? 0)),

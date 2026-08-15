@@ -27,7 +27,7 @@ class KasirLaporanController extends Controller
 
         $queryBase = Transaksi::where('id_kasir', $userId);
 
-        $queryPendapatan = (clone $queryBase)->where('jenis_transaksi', '!=', 'Pengeluaran');
+        $queryPendapatan = (clone $queryBase)->pendapatan();
 
         $totalTransaksi = (clone $queryPendapatan)->count();
 
@@ -237,8 +237,7 @@ class KasirLaporanController extends Controller
         $startDate = $dateRange['start'];
         $endDate = $dateRange['end'];
 
-        $queryPendapatan = Transaksi::where('id_kasir', $userId)
-            ->where('jenis_transaksi', '!=', 'Pengeluaran');
+        $queryPendapatan = Transaksi::where('id_kasir', $userId)->pendapatan();
 
         $totalTransaksi = (clone $queryPendapatan)
             ->whereBetween('tanggal', [$startDate, $endDate])

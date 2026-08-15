@@ -13,7 +13,7 @@ class UserSeeder extends Seeder
             'nama' => 'Admin',
             'email' => 'a@gmail.com',
             'no_hp' => '081234567891',
-            'password' => '123',
+            'password' => '123456',
             'role' => 'admin',
             'status' => 'aktif',
         ]);
@@ -22,7 +22,7 @@ class UserSeeder extends Seeder
             'nama' => 'Kasir',
             'email' => 'k@gmail.com',
             'no_hp' => '081234567892',
-            'password' => '123',
+            'password' => '123456',
             'role' => 'kasir',
             'status' => 'aktif',
         ]);
@@ -31,7 +31,7 @@ class UserSeeder extends Seeder
             'nama' => 'Beautycian',
             'email' => 'b@gmail.com',
             'no_hp' => '081234567893',
-            'password' => '123',
+            'password' => '123456',
             'role' => 'beautycian',
             'status' => 'aktif',
         ]);
@@ -40,7 +40,7 @@ class UserSeeder extends Seeder
             'nama' => 'Pelanggan',
             'email' => 'p@gmail.com',
             'no_hp' => '081234567894',
-            'password' => '123',
+            'password' => '123456',
             'role' => 'pelanggan',
             'status' => 'aktif',
         ]);

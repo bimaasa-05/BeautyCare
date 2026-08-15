@@ -10,6 +10,14 @@ class Transaksi extends Model
     protected $primaryKey = 'id_transaksi';  
     public $timestamps = false;
 
+    public const JENIS_PENDAPATAN = ['Penjualan', 'Booking', 'Pesanan Online'];
+
+    public function scopePendapatan($query)
+    {
+        return $query->whereIn('jenis_transaksi', self::JENIS_PENDAPATAN)
+            ->where('status', 'Lunas');
+    }
+
      protected $fillable = [
         'id_booking',
         'sumber',

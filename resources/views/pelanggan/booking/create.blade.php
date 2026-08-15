@@ -547,6 +547,53 @@
         color: #DC2626;
     }
 
+    .jam-chip.passed {
+        opacity: 0.55;
+        background: #F3F4F6;
+        border-color: #E5E7EB;
+        color: #9CA3AF;
+        cursor: not-allowed;
+        box-shadow: none;
+        transform: none;
+    }
+
+    .jam-chip.passed .jc-status {
+        color: #9CA3AF;
+    }
+
+    .jam-chip.duration-blocked {
+        opacity: 0.6;
+        background: #FEF2F2;
+        border-color: #FECACA;
+        color: #DC2626;
+        cursor: not-allowed;
+        box-shadow: none;
+        transform: none;
+    }
+
+    .jam-chip.duration-blocked .jc-time {
+        color: #DC2626;
+    }
+
+    .jam-chip.duration-blocked .jc-status {
+        color: #DC2626;
+        font-weight: 600;
+    }
+
+    .jam-chip.reserved {
+        background: linear-gradient(135deg, var(--primary), #FF7BA6) !important;
+        border-color: var(--primary) !important;
+        color: #fff !important;
+        box-shadow: 0 4px 14px rgba(255, 79, 135, 0.35) !important;
+        transform: translateY(-1px);
+        pointer-events: none;
+    }
+
+    .jam-chip.reserved .jc-time,
+    .jam-chip.reserved .jc-status {
+        color: #fff !important;
+    }
+
     .jam-legend {
         display: flex;
         align-items: center;
@@ -577,6 +624,10 @@
 
     .jam-legend .jl-dot.jl-booked {
         background: #EF4444;
+    }
+
+    .jam-legend .jl-dot.jl-passed {
+        background: #9CA3AF;
     }
 
     /* ─── Summary Card Premium ─── */
@@ -1249,7 +1300,7 @@
                 @endif
 
                 <!-- ═══ Form Card Premium ═══ -->
-                <form action="{{ route('pelanggan.booking.store') }}" method="POST" id="bookingForm">
+                <form action="{{ route('pelanggan.booking.store') }}" method="POST" id="bookingForm" novalidate>
                     @csrf
 
                     <div class="form-card-premium">
@@ -1300,7 +1351,7 @@
                                             <select id="id_layanan_picker" style="display:none">
                                                 <option value="">— Pilih Layanan —</option>
                                                 @foreach($layanans as $layanan)
-                                                <option value="{{ $layanan->id_layanan }}" data-harga="{{ $layanan->harga }}">
+                                                <option value="{{ $layanan->id_layanan }}" data-harga="{{ $layanan->harga }}" data-durasi="{{ $layanan->durasi }}">
                                                     {{ $layanan->nm_layanan }} (± {{ $layanan->durasi }} menit) — Rp {{ number_format($layanan->harga, 0, ',', '.') }}
                                                 </option>
                                                 @endforeach
@@ -1415,9 +1466,11 @@
                                     <div class="jam-legend">
                                         <span class="jl-item"><span class="jl-dot jl-free"></span> Tersedia</span>
                                         <span class="jl-item"><span class="jl-dot jl-booked"></span> Sudah Dibooking</span>
+                                        <span class="jl-item"><span class="jl-dot jl-passed"></span> Jam Sudah Lewat</span>
+                                        <span class="jl-item"><span class="jl-dot" style="background:#FECACA;"></span> Durasi Tidak Muat</span>
                                     </div>
                                     <div style="margin-top:6px;font-size:11px;color:var(--gray);">
-                                        <i class="fa-solid fa-circle-info"></i> Slot yang sudah dibooking pelanggan lain (termasuk durasi layanan) otomatis dinonaktifkan
+                                        <i class="fa-solid fa-circle-info"></i> Slot diblokir otomatis jika durasi layanan melebihi sisa jam tersedia atau bertabrakan booking lain.
                                     </div>
                                 </div>
                             </div>
@@ -1485,6 +1538,13 @@
                                     </span>
                                     <span class="sc-value" id="summary_diskon">Rp 0</span>
                                 </div>
+                                <div class="sc-row">
+                                    <span class="sc-label">
+                                        <span class="sc-dot"></span>
+                                        Total Durasi
+                                    </span>
+                                    <span class="sc-value" id="summary_durasi">0 menit</span>
+                                </div>
                                 <div class="sc-row sc-total">
                                     <span class="sc-label">Total Bayar</span>
                                     <span class="sc-value" id="summary_total">Rp 0</span>
@@ -1494,7 +1554,7 @@
                             <!-- ═══ Actions ═══ -->
                             <div class="form-actions">
                                 <button type="submit" class="btn-submit">
-                                    <i class="fa-solid fa-check"></i> Konfirmasi Booking
+                                    <i class="fa-solid fa-check"></i> Konfirmasi &amp; Bayar
                                 </button>
                                 <a href="{{ route('pelanggan.booking') }}" class="btn-cancel-form">
                                     <i class="fa-solid fa-xmark"></i> Batal
@@ -1510,28 +1570,71 @@
     <script>
     var diskonPersen = {{ $diskonMember }};
     var selectedServices = [];
+    var totalDurasi = 0;
 
     function formatRupiah(angka) {
         return 'Rp ' + angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
     }
 
-    function hitungDiskon(harga, idLayanan) {
+    function hitungDiskonBasket() {
+        const dist = {};
         const promoSelect = document.getElementById('id_promo');
-        if (promoSelect && promoSelect.value) {
-            const selected = promoSelect.options[promoSelect.selectedIndex];
-            const jenis = selected.getAttribute('data-jenis');
-            const nilai = parseFloat(selected.getAttribute('data-nilai'));
-            const layananList = (selected.getAttribute('data-layanan') || '')
-                .split(',').map(Number).filter(function (n) { return n; });
-            if (layananList.length && layananList.indexOf(parseInt(idLayanan)) === -1) {
-                return 0;
+        if (!promoSelect || !promoSelect.value) return dist;
+
+        const selected = promoSelect.options[promoSelect.selectedIndex];
+        const jenis = selected.getAttribute('data-jenis');
+        const nilai = parseFloat(selected.getAttribute('data-nilai'));
+        const layananList = (selected.getAttribute('data-layanan') || '')
+            .split(',').map(Number).filter(function (n) { return n; });
+
+        let eligible = 0;
+        selectedServices.forEach(function (svc) {
+            if (!layananList.length || layananList.indexOf(svc.id_layanan) !== -1) {
+                eligible += svc.harga;
             }
+        });
+
+        let total = 0;
+        if (eligible > 0) {
             if (jenis === 'Diskon') {
-                return Math.round(harga * nilai / 100);
+                total = Math.round(eligible * nilai / 100);
+            } else if (jenis === 'Cashback') {
+                total = 0;
+            } else {
+                total = Math.round(Math.min(nilai, eligible));
             }
-            return Math.round(Math.min(nilai, harga));
         }
-        return Math.round(harga * diskonPersen / 100);
+
+        let sisa = total;
+        selectedServices.forEach(function (svc, i) {
+            let bagian = 0;
+            if (eligible > 0 && (!layananList.length || layananList.indexOf(svc.id_layanan) !== -1)) {
+                bagian = Math.round(total * svc.harga / eligible);
+                if (i === selectedServices.length - 1) bagian = sisa;
+                sisa -= bagian;
+            }
+            dist[svc.id_layanan] = bagian;
+        });
+        return dist;
+    }
+
+    function hitungDiskonLayanan(svc, dist) {
+        if (dist.hasOwnProperty(svc.id_layanan)) {
+            return dist[svc.id_layanan];
+        }
+        return Math.round(svc.harga * diskonPersen / 100);
+    }
+
+    function tandaiField(el) {
+        if (!el) return;
+        const oldBorder = el.style.borderColor;
+        const oldShadow = el.style.boxShadow;
+        el.style.borderColor = '#DC2626';
+        el.style.boxShadow = '0 0 0 3px rgba(220,38,38,0.15)';
+        setTimeout(function() {
+            el.style.borderColor = oldBorder;
+            el.style.boxShadow = oldShadow;
+        }, 3000);
     }
 
     function tambahLayanan() {
@@ -1544,13 +1647,14 @@
         const id = parseInt(select.value);
         const nama = opt.text.split(' — ')[0];
         const harga = parseInt(opt.getAttribute('data-harga'));
+        const durasi = parseInt(opt.getAttribute('data-durasi'));
 
         if (selectedServices.some(s => s.id_layanan === id)) {
             window.__confirmPremiumShow({ title: 'Layanan Sudah Ditambahkan', body: 'Layanan "' + nama + '" sudah ada di daftar layanan.', icon: 'fa-circle-exclamation' });
             return;
         }
 
-        selectedServices.push({ id_layanan: id, nama: nama, harga: harga });
+        selectedServices.push({ id_layanan: id, nama: nama, harga: harga, durasi: durasi });
         renderSelectedServices();
         updateSummary();
         resetLayananPicker();
@@ -1584,8 +1688,10 @@
         const hint = document.getElementById('selectedSwipeHint');
         if (hint) hint.style.display = (window.innerWidth <= 768) ? 'block' : 'none';
 
+        const dist = hitungDiskonBasket();
+
         selectedServices.forEach(function(svc, i) {
-            const diskon = hitungDiskon(svc.harga, svc.id_layanan);
+            const diskon = hitungDiskonLayanan(svc, dist);
             const subtotal = svc.harga - diskon;
 
             var row = document.createElement('tr');
@@ -1623,11 +1729,14 @@
     function updateSummary() {
         var totalHarga = 0;
         var totalDiskon = 0;
+        totalDurasi = 0;
+        const dist = hitungDiskonBasket();
 
         selectedServices.forEach(function(svc) {
-            var diskon = hitungDiskon(svc.harga, svc.id_layanan);
+            var diskon = hitungDiskonLayanan(svc, dist);
             totalHarga += svc.harga;
             totalDiskon += diskon;
+            totalDurasi += svc.durasi || 0;
         });
 
         var totalBayar = Math.max(0, totalHarga - totalDiskon);
@@ -1635,7 +1744,11 @@
         document.getElementById('summary_jumlah').textContent = selectedServices.length + ' layanan';
         document.getElementById('summary_harga').textContent = formatRupiah(totalHarga);
         document.getElementById('summary_diskon').textContent = formatRupiah(totalDiskon);
+        document.getElementById('summary_durasi').textContent = totalDurasi + ' menit';
         document.getElementById('summary_total').textContent = formatRupiah(totalBayar);
+
+        // Re-render jam grid saat durasi berubah
+        renderJamGrid();
     }
 
     function resetLayananPicker() {
@@ -1767,6 +1880,8 @@
     // Set default & init custom select
     let bookedJamByKaryawan = @json($bookedJamByKaryawan);
     let bookedJamGlobal = @json($bookedJamGlobal);
+    let jamLewat = @json($jamLewat);
+    const todayIso = '{{ date('Y-m-d') }}';
     const jamSelect = document.getElementById('jamSlot');
     const jamBaseText = {};
     if (jamSelect) {
@@ -1997,7 +2112,6 @@
         if (dcpSelected) {
             tanggalInput.value = dcpSelected;
             tanggalInput.dispatchEvent(new Event('change', { bubbles: true }));
-            refreshJamSlots(dcpSelected);
         }
         closeCalendarPopup();
     });
@@ -2008,7 +2122,6 @@
         dcpSelected = todayIso;
         tanggalInput.value = todayIso;
         tanggalInput.dispatchEvent(new Event('change', { bubbles: true }));
-        refreshJamSlots(todayIso);
         closeCalendarPopup();
     });
 
@@ -2030,36 +2143,116 @@
         if (!jamSelect || !grid) return;
         grid.innerHTML = '';
 
-        for (let i = 0; i < jamSelect.options.length; i++) {
+        const karyawanId = document.getElementById('id_karyawan')?.value;
+        const bookedByKaryawan = (karyawanId && bookedJamByKaryawan[karyawanId]) ? bookedJamByKaryawan[karyawanId] : [];
+        const isToday = tanggalInput && tanggalInput.value === todayIso;
+        const slotsNeeded = Math.max(1, Math.ceil(totalDurasi / 60));
+
+        // Helper: cek apakah slot index i sampai i+slotsNeeded-1 semua available
+        function isBlockAvailable(startIdx) {
+            if (startIdx + slotsNeeded > jamSelect.options.length - 1) return false; // -1 untuk skip option kosong
+            for (let k = 0; k < slotsNeeded; k++) {
+                const optIdx = startIdx + k + 1; // +1 karena option[0] adalah placeholder
+                if (optIdx >= jamSelect.options.length) return false;
+                const opt = jamSelect.options[optIdx];
+                if (!opt || !opt.value) return false;
+                const globalPenuh = bookedJamGlobal.indexOf(opt.value) !== -1;
+                const karyawanPenuh = bookedByKaryawan.indexOf(opt.value) !== -1;
+                const lewat = isToday && jamLewat.indexOf(opt.value) !== -1;
+                if (globalPenuh || karyawanPenuh || lewat || opt.disabled) return false;
+            }
+            return true;
+        }
+
+        for (let i = 1; i < jamSelect.options.length; i++) { // i=1 skip placeholder
             const opt = jamSelect.options[i];
             if (!opt.value) continue;
-            const booked = opt.disabled;
+
+            const globalPenuh = bookedJamGlobal.indexOf(opt.value) !== -1;
+            const karyawanPenuh = bookedByKaryawan.indexOf(opt.value) !== -1;
+            const lewat = isToday && jamLewat.indexOf(opt.value) !== -1;
+            const penuh = globalPenuh || karyawanPenuh;
+            const booked = penuh && !lewat;
+
+            // Cek apakah slot ini bisa jadi start slot untuk durasi yang dipilih
+            const startIdx = i - 1; // 0-based di slotJam
+            const canStart = isBlockAvailable(startIdx);
+
             const chip = document.createElement('button');
             chip.type = 'button';
-            chip.className = 'jam-chip' + (booked ? ' booked' : '');
             chip.setAttribute('data-jam', opt.value);
+            chip.setAttribute('data-start-idx', startIdx);
+
+            // Tentukan class
+            let classes = 'jam-chip';
+            if (booked) classes += ' booked';
+            if (lewat) classes += ' passed';
+            if (!booked && !lewat && !canStart) classes += ' duration-blocked';
+            if (jamSelect.value === opt.value) classes += ' selected';
+
+            chip.className = classes;
+
+            // Konten chip
+            let timeText = opt.text;
+            if (booked) timeText = timeText.replace(' — Sudah Dibooking', '');
+            else if (lewat) timeText = timeText.replace(' — Jam Lewat', '');
+
+            let statusHtml = '';
             if (booked) {
-                chip.innerHTML = '<span class="jc-time">' + opt.text.replace(' — Sudah Dibooking', '') + '</span>' +
-                    '<span class="jc-status"><i class="fa-solid fa-lock"></i> Sudah Dibooking</span>';
-            } else {
-                chip.innerHTML = '<span class="jc-time">' + opt.text + '</span>';
-                chip.addEventListener('click', function() {
-                    jamSelect.value = chip.getAttribute('data-jam');
-                    grid.querySelectorAll('.jam-chip').forEach(function(c) {
-                        c.classList.toggle('selected', c === chip);
-                    });
-                });
+                statusHtml = '<span class="jc-status"><i class="fa-solid fa-lock"></i> Sudah Dibooking</span>';
+            } else if (lewat) {
+                statusHtml = '<span class="jc-status"><i class="fa-regular fa-clock"></i> Jam Lewat</span>';
+            } else if (!canStart && slotsNeeded > 1) {
+                statusHtml = '<span class="jc-status" style="color:#DC2626;"><i class="fa-solid fa-hourglass-half"></i> Kurang ' + slotsNeeded + ' slot</span>';
             }
+
+            chip.innerHTML = '<span class="jc-time">' + timeText + '</span>' + statusHtml;
+
+            // Event click
+            if (!booked && !lewat) {
+                if (canStart) {
+                    chip.addEventListener('click', function() {
+                        // Set hidden select value ke start slot
+                        jamSelect.value = opt.value;
+                        // Re-render ulang untuk highlight duration
+                        renderJamGrid();
+                    });
+                } else {
+                    // Duration blocked - show toast
+                    chip.addEventListener('click', function() {
+                        const msg = slotsNeeded > 1
+                            ? 'Butuh ' + slotsNeeded + ' jam berturut-turut untuk durasi ' + totalDurasi + ' menit. Slot berikutnya tidak tersedia.'
+                            : 'Slot ini tidak tersedia.';
+                        window.__confirmPremiumShow({
+                            title: 'Slot Tidak Tersedia',
+                            body: msg,
+                            icon: 'fa-circle-exclamation',
+                            type: 'warning',
+                            yes: 'Mengerti'
+                        });
+                    });
+                }
+            }
+
             grid.appendChild(chip);
         }
 
-        const val = jamSelect.value;
-        grid.querySelectorAll('.jam-chip.selected').forEach(function(c) {
-            c.classList.remove('selected');
-        });
-        if (val) {
-            const sel = grid.querySelector('.jam-chip:not(.booked)[data-jam="' + val + '"]');
-            if (sel) sel.classList.add('selected');
+        // Highlight duration slots (selected + reserved)
+        const selectedVal = jamSelect.value;
+        if (selectedVal) {
+            const selIdx = Array.from(jamSelect.options).findIndex(o => o.value === selectedVal);
+            if (selIdx > 0) {
+                const startIdx = selIdx - 1;
+                // Highlight start slot + next slotsNeeded-1 slots
+                for (let k = 0; k < slotsNeeded; k++) {
+                    const chipIdx = startIdx + k;
+                    const chip = grid.querySelector('.jam-chip[data-start-idx="' + chipIdx + '"]');
+                    if (chip) {
+                        chip.classList.add('selected');
+                        if (k > 0) chip.classList.add('reserved');
+                    }
+                }
+            }
         }
     }
 
@@ -2067,13 +2260,17 @@
         if (!jamSelect) return;
         const karyawanId = document.getElementById('id_karyawan').value;
         const booked = bookedJamByKaryawan[karyawanId] || [];
+        const isToday = tanggalInput && tanggalInput.value === todayIso;
         for (let i = 0; i < jamSelect.options.length; i++) {
             const opt = jamSelect.options[i];
             if (!opt.value) continue;
             const globalPenuh = bookedJamGlobal.indexOf(opt.value) !== -1;
             const penuh = globalPenuh || booked.indexOf(opt.value) !== -1;
-            opt.disabled = penuh;
-            opt.text = penuh ? (jamBaseText[opt.value] + ' — Sudah Dibooking') : jamBaseText[opt.value];
+            const lewat = isToday && jamLewat.indexOf(opt.value) !== -1;
+            opt.disabled = penuh || lewat;
+            opt.text = penuh ? (jamBaseText[opt.value] + ' — Sudah Dibooking')
+                : lewat ? (jamBaseText[opt.value] + ' — Jam Lewat')
+                : jamBaseText[opt.value];
         }
         if (jamSelect.value && jamSelect.options[jamSelect.selectedIndex].disabled) {
             jamSelect.value = '';
@@ -2091,6 +2288,7 @@
             const data = await res.json();
             bookedJamGlobal = data.bookedJamGlobal || [];
             bookedJamByKaryawan = data.bookedJamByKaryawan || {};
+            jamLewat = data.jamLewat || [];
             updateJamSlots();
         } catch (e) {}
     }
@@ -2101,6 +2299,17 @@
             updateJamSlots();
         }, true);
         updateJamSlots();
+
+        // Refresh slot jam saat tanggal dipilih/diubah (manual atau via kalender)
+        tanggalInput.addEventListener('change', function() {
+            refreshJamSlots(tanggalInput.value || todayIso);
+        });
+
+        // Realtime: slot jam yang sudah lewat ikut dinonaktifkan otomatis tiap menit (khusus booking hari ini)
+        setInterval(function() {
+            const tgl = tanggalInput.value || todayIso;
+            if (tgl === todayIso) refreshJamSlots(tgl);
+        }, 60000);
 
         // Tambah Layanan button
         document.getElementById('btnTambahLayanan').addEventListener('click', tambahLayanan);
@@ -2123,9 +2332,46 @@
 
         // Form submit validation
         document.getElementById('bookingForm').addEventListener('submit', function(e) {
+            var pesan = [];
+            var misses = [];
+
             if (selectedServices.length === 0) {
+                pesan.push('Layanan belum dipilih — pilih minimal 1 layanan lalu klik Tambah');
+                misses.push(document.getElementById('customLayananTrigger'));
+            }
+
+            var inpTerapis = document.getElementById('id_karyawan');
+            if (!inpTerapis || !inpTerapis.value) {
+                pesan.push('Terapis belum dipilih');
+                misses.push(document.getElementById('customTerapisTrigger'));
+            }
+
+            var inpTanggal = document.getElementById('tanggalInput');
+            if (!inpTanggal || !inpTanggal.value) {
+                pesan.push('Tanggal treatment belum dipilih');
+                misses.push(inpTanggal);
+            }
+
+            var inpJam = document.getElementById('jamSlot');
+            if (!inpJam || !inpJam.value) {
+                pesan.push('Jam treatment belum dipilih');
+                misses.push(document.getElementById('jamGrid'));
+            }
+
+            if (pesan.length > 0) {
                 e.preventDefault();
-                window.__confirmPremiumShow({ title: 'Belum Ada Layanan', body: 'Silakan tambah minimal 1 layanan sebelum mengonfirmasi booking.', icon: 'fa-circle-exclamation' });
+                misses.forEach(function (el) { tandaiField(el); });
+                window.__confirmPremiumShow({
+                    title: 'Form Belum Lengkap',
+                    body: '<div style="text-align:left;margin-bottom:12px;">Lengkapi data berikut sebelum mengonfirmasi booking:</div>' +
+                        pesan.map(function (p) {
+                            return '<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:#FEF2F2;border:1px solid #FECACA;border-radius:10px;margin-bottom:6px;font-size:12.5px;color:#B91C1C;font-weight:500;text-align:left;">' +
+                                '<i class="fa-solid fa-circle-xmark" style="flex-shrink:0;"></i><span>' + p + '</span></div>';
+                        }).join(''),
+                    icon: 'fa-circle-exclamation',
+                    type: 'warning',
+                    yes: 'Oke, Saya Paham'
+                });
             }
         });
     });

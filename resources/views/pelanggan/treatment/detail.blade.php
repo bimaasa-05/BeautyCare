@@ -375,7 +375,7 @@
                 </div>
                 <div class="pay-item">
                     <div class="label">Total Bayar</div>
-                    <div class="value primary">Rp {{ number_format($booking->transaksi->total, 0, ',', '.') }}</div>
+                    <div class="value primary">Rp {{ number_format($booking->status_pembayaran === 'lunas' ? $total : $booking->transaksi->total, 0, ',', '.') }}</div>
                 </div>
             </div>
             @endif
@@ -593,7 +593,7 @@
                             <div class="pay-card total-card">
                                 <div class="pc-icon"><i class="fa-solid fa-money-bill-wave"></i></div>
                                 <div class="pc-label">Total Bayar</div>
-                                <div class="pc-value total">Rp {{ number_format($booking->transaksi->total, 0, ',', '.') }}</div>
+                                <div class="pc-value total">Rp {{ number_format($booking->status_pembayaran === 'lunas' ? $total : $booking->transaksi->total, 0, ',', '.') }}</div>
                             </div>
                         </div>
 
