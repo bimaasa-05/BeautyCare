@@ -4,12 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Models\Booking;
 use App\Models\DetailBooking;
+use App\Models\DetailTransaksi;
 use App\Models\Layanan;
 use App\Models\Karyawan;
 use App\Models\Pelanggan;
 use App\Models\Membership;
+use App\Models\Pembayaran;
 use App\Models\PromoKlaim;
+use App\Models\Transaksi;
 use App\Helpers\ActivityLogger;
+use App\Services\SaldoAkunService;
 use App\Support\BookingSlot;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
@@ -21,7 +25,7 @@ class PelangganBookingController extends Controller
     {
         $id_pelanggan = $this->resolveIdPelanggan();
 
-        $bookings = Booking::with(['detail.layanan', 'karyawan'])
+        $bookings = Booking::with(['detail.layanan', 'karyawan', 'transaksi'])
             ->where('id_pelanggan', $id_pelanggan)
             ->orderBy('id_booking', 'desc')
             ->get();
@@ -305,12 +309,222 @@ class PelangganBookingController extends Controller
             buatNotif($admin->id, 'Booking Baru', 'Booking baru oleh ' . auth()->user()->nama, 'Booking', url('/admin/dashboard'));
         }
 
-        return redirect()->route('pelanggan.booking')->with('success', 'Booking berhasil dibuat!');
+        return redirect()->route('pelanggan.booking.pembayaran', $booking->id_booking)->with('success', 'Booking berhasil dibuat! Silakan lanjutkan ke pembayaran.');
+    }
+
+    public function pembayaran($id)
+    {
+        $booking = Booking::with(['detail.layanan', 'karyawan'])
+            ->where('id_booking', $id)
+            ->where('id_pelanggan', $this->resolveIdPelanggan())
+            ->firstOrFail();
+
+        if ($booking->status_pembayaran === 'menunggu' && $booking->transaksi) {
+            return redirect()->route('pelanggan.pembayaran.show', $booking->transaksi->id_transaksi);
+        }
+
+        if (!in_array($booking->status_pembayaran, ['belum', 'menunggu'])) {
+            return redirect()->route('pelanggan.booking.detail', $booking->id_booking);
+        }
+
+        $total = (int) $booking->detail->sum('subtotal');
+        $dpAmount = (int) round($total / 2);
+        $sisa = max(0, $total - $dpAmount);
+
+        $banks = CheckoutController::getBanksForTransfer();
+        $bankTujuan = CheckoutController::bankTujuan();
+
+        $pelanggan = Pelanggan::find($this->resolveIdPelanggan());
+        $saldo = $pelanggan ? (float) $pelanggan->saldo : 0;
+
+        return view('pelanggan.booking.pembayaran', compact('booking', 'total', 'dpAmount', 'sisa', 'banks', 'bankTujuan', 'saldo'));
+    }
+
+    public function bayar(Request $request, $id)
+    {
+        $booking = Booking::with(['detail.layanan', 'karyawan'])
+            ->where('id_booking', $id)
+            ->where('id_pelanggan', $this->resolveIdPelanggan())
+            ->firstOrFail();
+
+        if ($booking->status_pembayaran !== 'belum') {
+            if ($booking->status_pembayaran === 'menunggu' && $booking->transaksi) {
+                return redirect()->route('pelanggan.pembayaran.show', $booking->transaksi->id_transaksi);
+            }
+            return redirect()->route('pelanggan.booking.detail', $booking->id_booking);
+        }
+
+        $request->validate([
+            'tipe' => 'required|in:dp,full',
+            'metode' => 'required|in:QRIS,Transfer,Saldo',
+            'provider' => 'required|string|max:50',
+            'bank_id' => 'nullable|required_if:metode,Transfer|integer|exists:banks,id',
+            'pakai_saldo' => 'nullable|numeric|min:0',
+        ]);
+
+        $providers = [
+            'QRIS' => ['QRIS'],
+            'Transfer' => \App\Models\Bank::active()->transfer()->pluck('nama_bank')->toArray(),
+            'Saldo' => ['Saldo Akun'],
+        ];
+        abort_unless(in_array($request->provider, $providers[$request->metode]), 422);
+
+        $bank = null;
+        if ($request->metode === 'Transfer' && $request->bank_id) {
+            $bank = \App\Models\Bank::find($request->bank_id);
+        }
+
+        $user = auth()->user();
+        $pelanggan = Pelanggan::find($this->resolveIdPelanggan());
+        if (!$pelanggan) {
+            return back()->with('error', 'Data pelanggan tidak ditemukan.');
+        }
+
+        $total = (int) $booking->detail->sum('subtotal');
+        $dpAmount = (int) round($total / 2);
+        $amount = $request->tipe === 'dp' ? $dpAmount : $total;
+        if ($amount <= 0) {
+            return back()->with('error', 'Nominal pembayaran tidak valid.');
+        }
+
+        $subtotalLayanan = (int) $booking->detail->sum('harga');
+        $diskonLayanan = (int) $booking->detail->sum('diskon');
+
+        return DB::transaction(function () use ($request, $user, $pelanggan, $booking, $amount, $subtotalLayanan, $diskonLayanan, $bank) {
+            $pakaiSaldo = (float) $request->input('pakai_saldo', 0);
+            $bayarSaldoPenuh = $request->metode === 'Saldo';
+
+            if ($bayarSaldoPenuh) {
+                $saldoTersedia = (float) $pelanggan->saldo;
+                if ($saldoTersedia < (float) $amount) {
+                    return back()->with('error', 'Saldo akun Anda Rp ' . number_format($saldoTersedia, 0, ',', '.') . ' tidak cukup untuk total Rp ' . number_format((float) $amount, 0, ',', '.') . '. Silakan pilih metode kedua untuk sisa pembayaran.');
+                }
+                $pakaiSaldo = (float) $amount;
+            }
+
+            $lastId = Transaksi::max('id_transaksi') + 1;
+            $noInvoice = 'INV-' . date('Ymd') . '-' . str_pad($lastId, 4, '0', STR_PAD_LEFT);
+
+            $transaksi = Transaksi::create([
+                'id_booking' => $booking->id_booking,
+                'id_pelanggan' => $pelanggan->id_pelanggan,
+                'id_user' => $user->id,
+                'sumber' => 'online',
+                'jenis_transaksi' => 'Booking',
+                'no_invoice' => $noInvoice,
+                'tanggal' => now()->toDateString(),
+                'subtotal' => $subtotalLayanan,
+                'diskon' => $diskonLayanan,
+                'pajak' => 0,
+                'total' => $amount,
+                'metode_byr' => $request->provider,
+                'dibayar' => 0,
+                'kembali' => 0,
+                'catatan' => 'Bayar ' . ($request->tipe === 'dp' ? 'DP 50%' : 'Lunas') . ' booking #BK' . str_pad($booking->id_booking, 3, '0', STR_PAD_LEFT),
+                'status' => 'Menunggu Pembayaran',
+            ]);
+
+            if ($pakaiSaldo > 0) {
+                $saldoService = new SaldoAkunService();
+                $saldoResult = $saldoService->prosesCheckout(
+                    $pelanggan->id_pelanggan,
+                    $amount,
+                    $pakaiSaldo,
+                    $transaksi->id_transaksi,
+                    null,
+                    false
+                );
+                $transaksi->update(['saldo_terpakai' => $saldoResult['pakai_saldo']]);
+                $amount = $saldoResult['sisa_bayar'];
+            }
+
+            foreach ($booking->detail as $d) {
+                DetailTransaksi::create([
+                    'id_transaksi' => $transaksi->id_transaksi,
+                    'jenis' => 'Layanan',
+                    'id_item' => $d->id_layanan,
+                    'nm_item' => $d->layanan->nm_layanan ?? 'Layanan',
+                    'qty' => 1,
+                    'harga' => $d->harga,
+                    'diskon' => $d->diskon ?? 0,
+                    'subtotal' => $d->subtotal ?? 0,
+                ]);
+            }
+
+            $transaksiStatus = 'Menunggu Pembayaran';
+
+            if ($bayarSaldoPenuh) {
+                $now = now();
+                Pembayaran::create([
+                    'id_transaksi' => $transaksi->id_transaksi,
+                    'metode' => 'Saldo',
+                    'provider' => 'Saldo Akun',
+                    'kode_pembayaran' => 'SLD-' . str_pad((string) $transaksi->id_transaksi, 8, '0', STR_PAD_LEFT),
+                    'nominal' => 0,
+                    'status' => 'Dibayar',
+                    'expires_at' => $now,
+                    'paid_at' => $now,
+                    'no_referensi' => 'SALDO-' . $transaksi->id_transaksi,
+                ]);
+                $transaksiStatus = 'Sedang Diproses';
+            } else {
+                $expiresAt = $request->metode === 'QRIS'
+                    ? now()->addMinutes(3)
+                    : now()->addMinutes(15);
+
+                $pembayaranData = [
+                    'id_transaksi' => $transaksi->id_transaksi,
+                    'metode' => $request->metode,
+                    'provider' => $request->provider,
+                    'kode_pembayaran' => CheckoutController::generateKodePembayaran($request->metode, $transaksi->id_transaksi, $bank),
+                    'nominal' => $amount,
+                    'status' => 'Menunggu',
+                    'expires_at' => $expiresAt,
+                ];
+
+                if ($bank) {
+                    $pembayaranData['bank_id'] = $bank->id;
+                    $pembayaranData['no_rekening_tujuan'] = $bank->no_rekening;
+                    $pembayaranData['atas_nama_tujuan'] = $bank->atas_nama;
+                }
+
+                Pembayaran::create($pembayaranData);
+            }
+
+            $transaksi->update(['status' => $transaksiStatus]);
+
+            $booking->update([
+                'status_pembayaran' => 'menunggu',
+                'tipe_pembayaran' => $request->tipe,
+            ]);
+
+            $tipeLabel = $request->tipe === 'dp' ? 'DP 50%' : 'lunas';
+            ActivityLogger::log('Menambahkan', $user->nama . ' membayar ' . $tipeLabel . ' booking ' . $noInvoice . ' via ' . $request->provider, 'Transaksi', $transaksi->id_transaksi);
+
+            $targetPesanan = route('pelanggan.pembayaran.show', $transaksi->id_transaksi);
+
+            if ($bayarSaldoPenuh) {
+                buatNotif($user->id, 'Booking Dibayar', 'Pembayaran ' . $noInvoice . ' dibayar penuh dengan saldo akun. Menunggu verifikasi kasir.', 'Transaksi', $targetPesanan);
+            } else {
+                buatNotif($user->id, 'Booking Dibuat', 'Booking ' . $noInvoice . ' berhasil dibuat. Silakan selesaikan pembayaran.', 'Transaksi', $targetPesanan);
+            }
+
+            $petugas = \App\Models\User::whereIn('role', ['kasir', 'admin'])->get();
+            foreach ($petugas as $petugasUser) {
+                $judulPetugas = $bayarSaldoPenuh ? 'Pembayaran Booking (Saldo Akun)' : 'Pembayaran Booking Baru';
+                $isiPetugas = $bayarSaldoPenuh
+                    ? $user->nama . ' membayar booking ' . $noInvoice . ' penuh dengan saldo akun. Segera verifikasi.'
+                    : $user->nama . ' membayar booking ' . $noInvoice . ' menunggu pembayaran (' . $request->provider . ').';
+                buatNotif($petugasUser->id, $judulPetugas, $isiPetugas, 'Transaksi', route('kasir.pembayaran.pesanan-online'));
+            }
+
+            return redirect($targetPesanan);
+        });
     }
 
     public function show($id)
     {
-        $booking = Booking::with(['detail.layanan', 'karyawan'])
+        $booking = Booking::with(['detail.layanan', 'karyawan', 'transaksi.pembayaran'])
             ->where('id_booking', $id)
             ->where('id_pelanggan', $this->resolveIdPelanggan())
             ->firstOrFail();
