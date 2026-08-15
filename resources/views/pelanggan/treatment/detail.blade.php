@@ -279,9 +279,13 @@
                             <td class="label">Tanggal</td>
                             <td class="value">{{ \Carbon\Carbon::parse($booking->tanggal)->isoFormat('D MMMM YYYY') }}</td>
                         </tr>
+                        @php
+                            $durasiMenit = \App\Support\BookingSlot::durasiBooking($booking);
+                            $jamSelesaiEstimasi = \Carbon\Carbon::parse($booking->tanggal . ' ' . substr($booking->jam, 0, 5))->addMinutes($durasiMenit)->format('H:i');
+                        @endphp
                         <tr>
                             <td class="label">Jam</td>
-                            <td class="value">{{ \Carbon\Carbon::parse($booking->jam)->format('H:i') }}</td>
+                            <td class="value font-mono">{{ \Carbon\Carbon::parse($booking->jam)->format('H:i') }} - {{ $jamSelesaiEstimasi }}</td>
                         </tr>
                         <tr>
                             <td class="label">Terapis</td>
@@ -331,7 +335,7 @@
                         $subtotal = $detail->subtotal;
                         $total += $subtotal;
                         $durasi = $detail->layanan ? (int) $detail->layanan->durasi : 0;
-                        $durasiText = $durasi ? ($durasi >= 60 ? intdiv($durasi, 60) . ' jam' . ($durasi % 60 ? ' ' . ($durasi % 60) . ' menit' : '') : $durasi . ' menit') : '-';
+                        $durasiText = $durasi ? $durasi . ' menit' : '-';
                     @endphp
                     <tr>
                         <td style="text-align:center;">{{ $loop->iteration }}</td>
@@ -497,9 +501,13 @@
                                     <span class="info-label">Tanggal</span>
                                     <span class="info-value">{{ \Carbon\Carbon::parse($booking->tanggal)->isoFormat('D MMMM YYYY') }}</span>
                                 </div>
+                                @php
+                                    $durasiMenit = \App\Support\BookingSlot::durasiBooking($booking);
+                                    $jamSelesaiEstimasi = \Carbon\Carbon::parse($booking->tanggal . ' ' . substr($booking->jam, 0, 5))->addMinutes($durasiMenit)->format('H:i');
+                                @endphp
                                 <div class="info-row">
                                     <span class="info-label">Jam</span>
-                                    <span class="info-value">{{ \Carbon\Carbon::parse($booking->jam)->format('H:i') }}</span>
+                                    <span class="info-value font-mono">{{ \Carbon\Carbon::parse($booking->jam)->format('H:i') }} - {{ $jamSelesaiEstimasi }}</span>
                                 </div>
                                 <div class="info-row">
                                     <span class="info-label">Terapis</span>
@@ -539,7 +547,7 @@
                                         $subtotal = $detail->subtotal;
                                         $total += $subtotal;
                                         $durasi = $detail->layanan ? (int) $detail->layanan->durasi : 0;
-                                        $durasiText = $durasi ? ($durasi >= 60 ? intdiv($durasi, 60) . ' jam' . ($durasi % 60 ? ' ' . ($durasi % 60) . ' menit' : '') : $durasi . ' menit') : '-';
+                                        $durasiText = $durasi ? $durasi . ' menit' : '-';
                                     @endphp
                                     <tr>
                                         <td>{{ $detail->layanan ? $detail->layanan->nm_layanan : 'Layanan #'.$detail->id_layanan }}</td>

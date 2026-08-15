@@ -141,7 +141,7 @@
                             }
                         @endphp
                         <div class="info-row">
-                            <span class="info-label">Dijadwalkan</span>
+                            <span class="info-label">Jam</span>
                             <span class="info-value font-mono">{{ \Carbon\Carbon::parse($booking->jam)->format('H:i') }} - {{ $jamSelesaiEstimasi }}</span>
                         </div>
                         @if ($adaAktual)
@@ -168,7 +168,7 @@
                             <span class="info-value">
                                 @if($booking->detail && $booking->detail->isNotEmpty())
                                     @foreach($booking->detail as $dt)
-                                        {{ $dt->layanan ? $dt->layanan->nm_layanan : '-' }}
+                                        {{ $dt->layanan ? $dt->layanan->nm_layanan : '-' }} ({{ ($dt->layanan->durasi ?? 0) }} menit)
                                         @if($dt->layanan) (Rp {{ number_format($dt->layanan->harga, 0, ',', '.') }})@endif
                                         @if(!$loop->last)<br>@endif
                                     @endforeach

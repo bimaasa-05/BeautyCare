@@ -548,6 +548,10 @@
                         </div>
                         <div class="dc-section-sub">Tanggal dan jam booking treatment</div>
 
+                        @php
+                            $durasiMenit = \App\Support\BookingSlot::durasiBooking($booking);
+                            $jamSelesaiEstimasi = \Carbon\Carbon::parse($booking->tanggal . ' ' . substr($booking->jam, 0, 5))->addMinutes($durasiMenit)->format('H:i');
+                        @endphp
                         <div class="detail-grid">
                             <div class="detail-item">
                                 <span class="di-label"><i class="fa-regular fa-calendar-check"></i> Tanggal</span>
@@ -555,7 +559,7 @@
                             </div>
                             <div class="detail-item">
                                 <span class="di-label"><i class="fa-regular fa-clock"></i> Jam</span>
-                                <span class="di-value">{{ \Carbon\Carbon::parse($booking->jam)->format('H:i') }}</span>
+                                <span class="di-value font-mono">{{ \Carbon\Carbon::parse($booking->jam)->format('H:i') }} - {{ $jamSelesaiEstimasi }}</span>
                             </div>
                         </div>
 
@@ -587,6 +591,7 @@
                                 <tr>
                                     <th style="width:40px;">No</th>
                                     <th>Layanan</th>
+                                    <th style="text-align:right;width:100px;">Durasi</th>
                                     <th style="text-align:right;">Harga</th>
                                     <th style="text-align:right;">Diskon</th>
                                     <th style="text-align:right;">Subtotal</th>
@@ -605,6 +610,7 @@
                                     <td data-label="Layanan">
                                         <span style="font-weight:600;">{{ $d->layanan ? $d->layanan->nm_layanan : '-' }}</span>
                                     </td>
+                                    <td data-label="Durasi" style="text-align:right;">{{ ($d->layanan->durasi ?? 0) }} menit</td>
                                     <td data-label="Harga" style="text-align:right;">Rp {{ number_format($d->harga, 0, ',', '.') }}</td>
                                     <td data-label="Diskon" style="text-align:right;color:#DC2626;">- Rp {{ number_format($d->diskon, 0, ',', '.') }}</td>
                                     <td data-label="Subtotal" style="text-align:right;font-weight:600;">Rp {{ number_format($d->subtotal, 0, ',', '.') }}</td>
