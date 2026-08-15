@@ -171,11 +171,7 @@ class AdminPelangganController extends Controller
 
         if ($isWalkin) {
             if ($request->boolean('konversi_online')) {
-<<<<<<< HEAD
-                $rules['password'] = 'required|string|confirmed';
-=======
                 $rules['password'] = 'required|string|min:6|confirmed';
->>>>>>> 95cd829c54ea57ff9f5542d1e44de2e90e928235
                 $rules['email'] = 'required|email|max:100|unique:users,email';
             }
         } else {
