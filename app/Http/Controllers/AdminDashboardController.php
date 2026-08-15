@@ -230,6 +230,8 @@ class AdminDashboardController extends Controller
         $leaderboardService = new LeaderboardService();
         $topGlobalLayanan = $leaderboardService->topPelanggan('Layanan', null, null, 5);
         $topGlobalProduk = $leaderboardService->topPelanggan('Produk', null, null, 5);
+        $topKasir = $leaderboardService->kasirLeaderboard(null, null, 5);
+        $topBeautycian = $leaderboardService->beautycianLeaderboard(null, null, 5);
 
         $fmt = function ($amount) {
             if ($amount >= 1000000000) {
@@ -257,7 +259,7 @@ class AdminDashboardController extends Controller
             'notifStok',
             'stokTerisi', 'stokMenipisPct', 'stokHabisPct',
             'bookingTerbaru',
-            'topGlobalLayanan', 'topGlobalProduk',
+            'topGlobalLayanan', 'topGlobalProduk', 'topKasir', 'topBeautycian',
             'fmt'
         );
     }
@@ -408,6 +410,12 @@ class AdminDashboardController extends Controller
             ],
             'topGlobalProduk' => [
                 'html' => view('partials.dashboard.top-global-produk', ['items' => $topGlobalProduk, 'fmt' => $fmt])->render(),
+            ],
+            'topKasir' => [
+                'html' => view('partials.dashboard.top-kasir', ['items' => $topKasir, 'fmt' => $fmt])->render(),
+            ],
+            'topBeautycian' => [
+                'html' => view('partials.dashboard.top-beautycian', ['items' => $topBeautycian])->render(),
             ],
             'karyawanAktif' => [
                 'html' => view('partials.dashboard.karyawan-aktif', compact('karyawanAktif'))->render(),

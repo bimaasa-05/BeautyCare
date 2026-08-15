@@ -83,6 +83,37 @@ class LeaderboardService
         });
     }
 
+    public function kasirLeaderboard($startDate = null, $endDate = null, $limit = 10)
+    {
+        $rows = DB::table('transaksi as t')
+            ->join('users as u', 'u.id', '=', 't.id_kasir')
+            ->where('t.status', 'Lunas')
+            ->where('t.jenis_transaksi', 'Penjualan')
+            ->when($startDate, function ($q) use ($startDate, $endDate) {
+                $q->whereBetween('t.tanggal', [$startDate, $endDate]);
+            })
+            ->select(
+                'u.id',
+                'u.nama',
+                'u.foto',
+                DB::raw('SUM(t.total) as total_nominal'),
+                DB::raw('COUNT(t.id_transaksi) as total_transaksi'),
+                DB::raw('COUNT(DISTINCT t.id_pelanggan) as total_pelanggan')
+            )
+            ->groupBy('u.id', 'u.nama', 'u.foto')
+            ->orderByDesc('total_nominal')
+            ->orderByDesc('total_transaksi')
+            ->limit($limit)
+            ->get();
+
+        return $rows->map(function ($row, $index) {
+            $row->rank = $index + 1;
+            $row->foto_url = $row->foto ? asset('storage/' . $row->foto) : 'https://ui-avatars.com/api/?name=' . urlencode($row->nama) . '&background=FF4F87&color=fff&size=140';
+            $row->rata_rata = $row->total_transaksi > 0 ? round($row->total_nominal / $row->total_transaksi) : 0;
+            return $row;
+        });
+    }
+
     public function beautycianDetail($beautycianId, $startDate = null, $endDate = null)
     {
         $query = DB::table('booking as b')
