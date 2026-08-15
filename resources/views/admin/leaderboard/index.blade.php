@@ -346,7 +346,7 @@
                                 <i class="fa-solid fa-wand-magic-sparkles text-sm"></i>
                             </span>
                             <div>
-                                <h3 class="text-[16px] font-bold text-gray-800">Top Global Pelanggan Layanan</h3>
+                                <h3 class="text-[16px] font-bold text-gray-800">Top Global Pelanggan (Layanan)</h3>
                                 <p class="text-[12px] text-gray-400 mt-0.5">Peringkat berdasarkan total pembelian
                                     layanan (status Lunas)</p>
                             </div>
@@ -410,7 +410,7 @@
                                 <i class="fa-solid fa-bag-shopping text-sm"></i>
                             </span>
                             <div>
-                                <h3 class="text-[16px] font-bold text-gray-800">Top Global Pelanggan Produk</h3>
+                                <h3 class="text-[16px] font-bold text-gray-800">Top Global Pelanggan (Produk)</h3>
                                 <p class="text-[12px] text-gray-400 mt-0.5">Peringkat berdasarkan total pembelian
                                     produk (status Lunas)</p>
                             </div>
@@ -538,6 +538,87 @@
                                     <tr>
                                         <td colspan="6" class="py-8 text-center text-gray-400 text-[13px]">Belum
                                             ada data treatment beautycian</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            <div class="mt-6 bg-white rounded-2xl p-6 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)]">
+                    <div class="flex items-center gap-3 mb-6">
+                        <span
+                            class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-400 text-white flex items-center justify-center shadow-md shadow-amber-200 flex-shrink-0">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
+                                <line x1="1" y1="10" x2="23" y2="10" />
+                            </svg>
+                        </span>
+                        <div>
+                            <h3 class="text-[16px] font-bold text-gray-800">Leaderboard Kasir</h3>
+                            <p class="text-[12px] text-gray-400 mt-0.5">Peringkat berdasarkan total nominal transaksi
+                                kasir (status Lunas)</p>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse admin-table">
+                            <thead>
+                                <tr
+                                    class="text-[11px] font-bold text-gray-400 uppercase border-b border-gray-100 bg-gray-50/50">
+                                    <th class="py-3 px-4 w-14">No</th>
+                                    <th class="py-3 px-4">Kasir</th>
+                                    <th class="py-3 px-4 text-right">Total Nominal</th>
+                                    <th class="py-3 px-4 text-right">Transaksi</th>
+                                    <th class="py-3 px-4 text-right">Pelanggan</th>
+                                    <th class="py-3 px-4 text-right">Rata-rata</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-[13px] text-gray-700 divide-y divide-gray-50">
+                                @forelse ($topKasir as $row)
+                                    <tr class="hover:bg-gray-50/50 transition-colors">
+                                        <td class="py-3.5 px-4" data-label="No">
+                                            <span
+                                                class="rank-badge {{ $loop->iteration == 1 ? 'rank-1' : ($loop->iteration == 2 ? 'rank-2' : ($loop->iteration == 3 ? 'rank-3' : 'rank-rest')) }}">
+                                                @if ($loop->iteration == 1)
+                                                    <i class="fa-solid fa-crown text-[11px]"></i>
+                                                @else
+                                                    {{ $loop->iteration }}
+                                                @endif
+                                            </span>
+                                        </td>
+                                        <td class="py-3.5 px-4" data-label="Kasir">
+                                            <div class="flex items-center gap-3">
+                                                <img src="{{ $row->foto_url }}" alt="{{ $row->nama }}"
+                                                    class="w-9 h-9 rounded-full object-cover border border-gray-100"
+                                                    loading="lazy">
+                                                <span class="font-semibold text-gray-800">{{ $row->nama }}</span>
+                                            </div>
+                                        </td>
+                                        <td class="py-3.5 px-4 text-right font-bold text-amber-600 whitespace-nowrap"
+                                            data-label="Total Nominal">
+                                            {{ $fmt($row->total_nominal) }}
+                                        </td>
+                                        <td class="py-3.5 px-4 text-right font-semibold text-gray-800 whitespace-nowrap"
+                                            data-label="Transaksi">
+                                            {{ $row->total_transaksi }}
+                                        </td>
+                                        <td class="py-3.5 px-4 text-right text-gray-600 whitespace-nowrap"
+                                            data-label="Pelanggan">
+                                            {{ $row->total_pelanggan }}
+                                        </td>
+                                        <td class="py-3.5 px-4 text-right whitespace-nowrap" data-label="Rata-rata">
+                                            <span
+                                                class="inline-flex items-center gap-1.5 bg-amber-50 text-amber-600 px-2.5 py-1 rounded-full text-[11px] font-semibold">
+                                                <i class="fa-solid fa-coins text-[9px]"></i>
+                                                {{ $fmt($row->rata_rata) }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="6" class="py-8 text-center text-gray-400 text-[13px]">Belum
+                                            ada data transaksi kasir</td>
                                     </tr>
                                 @endforelse
                             </tbody>
