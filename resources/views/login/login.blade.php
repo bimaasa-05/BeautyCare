@@ -424,7 +424,7 @@
 
                 <div class="divider">Atau</div>
 
-                <button class="social-login">
+                <button class="social-login" onclick="window.location.href='{{ route('google.redirect') }}'">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/>
                         <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
@@ -433,6 +433,18 @@
                     </svg>
                     Masuk dengan Google
                 </button>
+
+                @php
+                    $emailErr = $errors->first('email');
+                    $needsOtp = str_contains($emailErr, 'belum diverifikasi');
+                @endphp
+                @if ($needsOtp && old('email'))
+                    <div class="register-link" style="margin-top: 12px;">
+                        <a href="{{ route('verification.otp.show', ['email' => old('email')]) }}">
+                            <i class="fa-solid fa-envelope-circle-check"></i> Belum verifikasi email? Dapatkan kode verifikasi
+                        </a>
+                    </div>
+                @endif
 
                 <div class="register-link">
                     Belum punya akun? <a href="{{ route('register') }}">Daftar Sekarang</a>

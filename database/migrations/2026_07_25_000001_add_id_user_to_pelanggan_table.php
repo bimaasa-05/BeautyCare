@@ -9,23 +9,33 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('pelanggan', function (Blueprint $table) {
-            $table->unsignedBigInteger('id_user')->nullable()->after('id_pelanggan');
-            $table->foreign('id_user')->references('id')->on('users')->onDelete('set null');
-        });
+        if (!Schema::hasColumn('pelanggan', 'id_user')) {
+            Schema::table('pelanggan', function (Blueprint $table) {
+                $table->unsignedBigInteger('id_user')->nullable()->after('id_pelanggan');
+                $table->foreign('id_user')->references('id')->on('users')->onDelete('set null');
+            });
+        }
 
+        // SQLite doesn't support JOIN in UPDATE, use subquery instead
         DB::statement('
-            UPDATE pelanggan p
-            JOIN users u ON u.email = p.email AND u.role = "pelanggan"
-            SET p.id_user = u.id
+            UPDATE pelanggan
+            SET id_user = (
+                SELECT id FROM users 
+                WHERE users.email = pelanggan.email 
+                AND users.role = "pelanggan"
+                LIMIT 1
+            )
+            WHERE id_user IS NULL
         ');
     }
 
     public function down(): void
     {
-        Schema::table('pelanggan', function (Blueprint $table) {
-            $table->dropForeign(['id_user']);
-            $table->dropColumn('id_user');
-        });
+        if (Schema::hasColumn('pelanggan', 'id_user')) {
+            Schema::table('pelanggan', function (Blueprint $table) {
+                $table->dropForeign(['id_user']);
+                $table->dropColumn('id_user');
+            });
+        }
     }
 };

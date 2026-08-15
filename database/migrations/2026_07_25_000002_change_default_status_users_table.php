@@ -9,11 +9,17 @@ return new class extends Migration
 {
     public function up(): void
     {
-        DB::statement("ALTER TABLE users MODIFY COLUMN status ENUM('aktif', 'non_aktif', 'suspend') DEFAULT 'suspend' NOT NULL");
+        // SQLite doesn't support ALTER TABLE MODIFY COLUMN or ENUM types
+        // Skip this migration for SQLite
+        if (config('database.default') !== 'sqlite') {
+            DB::statement("ALTER TABLE users MODIFY COLUMN status ENUM('aktif', 'non_aktif', 'suspend') DEFAULT 'suspend' NOT NULL");
+        }
     }
 
     public function down(): void
     {
-        DB::statement("ALTER TABLE users MODIFY COLUMN status ENUM('aktif', 'non_aktif', 'suspend') DEFAULT 'non_aktif' NOT NULL");
+        if (config('database.default') !== 'sqlite') {
+            DB::statement("ALTER TABLE users MODIFY COLUMN status ENUM('aktif', 'non_aktif', 'suspend') DEFAULT 'non_aktif' NOT NULL");
+        }
     }
 };

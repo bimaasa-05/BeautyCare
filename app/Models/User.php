@@ -18,7 +18,7 @@ class User extends Authenticatable
      *
      * @var list<string>
      */
-    protected $fillable = [
+protected $fillable = [
         'nama',
         'email',
         'no_hp',
@@ -30,6 +30,10 @@ class User extends Authenticatable
         'suspend_until',
         'perubahan_last_seen',
         'stok_last_seen',
+        'provider',
+        'provider_id',
+        'avatar',
+        'email_verified_at',
     ];
 
     /**

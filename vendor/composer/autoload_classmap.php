@@ -8767,4 +8767,5 @@ return array(
     'staabm\\SideEffectsDetector\\SideEffect' => $vendorDir . '/staabm/side-effects-detector/lib/SideEffect.php',
     'staabm\\SideEffectsDetector\\SideEffectsDetector' => $vendorDir . '/staabm/side-effects-detector/lib/SideEffectsDetector.php',
     'voku\\helper\\ASCII' => $vendorDir . '/voku/portable-ascii/src/voku/helper/ASCII.php',
+    'Laravel\\Socialite\\SocialiteServiceProvider' => $vendorDir . '/laravel/socialite/src/SocialiteServiceProvider.php',
 );

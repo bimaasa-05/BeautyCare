@@ -9,37 +9,52 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('supplier_produk', function (Blueprint $table) {
-            $table->unsignedBigInteger('harga_beli')->default(0)->after('id_produk');
-        });
+        if (!Schema::hasColumn("supplier_produk", "harga_beli")) {
+            Schema::table("supplier_produk", function (Blueprint $table) {
+                $table->unsignedBigInteger("harga_beli")->default(0)->after("id_produk");
+            });
+        }
 
-        DB::statement('
-            UPDATE supplier_produk sp
-            JOIN produk p ON p.id_produk = sp.id_produk
-            SET sp.harga_beli = p.harga_beli
-            WHERE sp.harga_beli = 0
-        ');
+        // SQLite doesn"t support JOIN in UPDATE, use subquery instead
+        DB::statement("
+            UPDATE supplier_produk
+            SET harga_beli = (
+                SELECT harga_beli FROM produk 
+                WHERE produk.id_produk = supplier_produk.id_produk
+                LIMIT 1
+            )
+            WHERE harga_beli = 0
+        ");
 
-        Schema::table('stok', function (Blueprint $table) {
-            $table->unsignedBigInteger('harga_satuan')->nullable()->after('id_supplier');
-        });
+        if (!Schema::hasColumn("stok", "harga_satuan")) {
+            Schema::table("stok", function (Blueprint $table) {
+                $table->unsignedBigInteger("harga_satuan")->nullable()->after("id_supplier");
+            });
+        }
 
-        DB::statement('
-            UPDATE stok s
-            JOIN produk p ON p.id_produk = s.id_produk
-            SET s.harga_satuan = p.harga_beli
-            WHERE s.type IN (\'Masuk\', \'Refund\') AND s.harga_satuan IS NULL
-        ');
+        DB::statement("
+            UPDATE stok
+            SET harga_satuan = (
+                SELECT harga_beli FROM produk 
+                WHERE produk.id_produk = stok.id_produk
+                LIMIT 1
+            )
+            WHERE type IN (\"Masuk\", \"Refund\") AND harga_satuan IS NULL
+        ");
     }
 
     public function down(): void
     {
-        Schema::table('stok', function (Blueprint $table) {
-            $table->dropColumn('harga_satuan');
-        });
+        if (Schema::hasColumn("stok", "harga_satuan")) {
+            Schema::table("stok", function (Blueprint $table) {
+                $table->dropColumn("harga_satuan");
+            });
+        }
 
-        Schema::table('supplier_produk', function (Blueprint $table) {
-            $table->dropColumn('harga_beli');
-        });
+        if (Schema::hasColumn("supplier_produk", "harga_beli")) {
+            Schema::table("supplier_produk", function (Blueprint $table) {
+                $table->dropColumn("harga_beli");
+            });
+        }
     }
 };

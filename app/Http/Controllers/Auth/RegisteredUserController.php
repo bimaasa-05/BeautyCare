@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\Pelanggan;
 use App\Models\User;
+use App\Support\LoginSupport;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -14,9 +15,6 @@ use Illuminate\View\View;
 
 class RegisteredUserController extends Controller
 {
-    /**
-     * Display the registration view.
-     */
     public function create(): View
     {
         $pengaturan = \App\Models\Pengaturan::first();
@@ -24,19 +22,13 @@ class RegisteredUserController extends Controller
         return view('login.register', compact('pengaturan'));
     }
 
-    /**
-     * Handle an incoming registration request.
-     *
-     * @throws ValidationException
-     */
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'no_hp' => ['nullable', 'string', 'max:20'],
-            'password' => ['required', 'string', 'min:6', 'confirmed'],
-
+            'password' => ['required', 'confirmed'],
         ]);
 
         $user = User::create([
@@ -44,27 +36,13 @@ class RegisteredUserController extends Controller
             'email' => $request->email,
             'no_hp' => $request->no_hp,
             'password' => Hash::make($request->password),
-            'status' => 'menunggu_persetujuan',
+            'status' => 'menunggu_verifikasi',
         ]);
 
-        $existingPelanggan = Pelanggan::where('email', $request->email)->whereNull('id_user')->first();
-        if ($existingPelanggan) {
-            $existingPelanggan->update(['id_user' => $user->id]);
-        } else {
-            Pelanggan::create([
-                'nm_pelanggan' => $request->name,
-                'email' => $request->email,
-                'no_hp' => $request->no_hp,
-                'alamat' => '',
-                'catatan_alergi' => '',
-                'id_user' => $user->id,
-            ]);
-        }
-
-        buatNotifRole('admin', 'Pelanggan Baru Menunggu Persetujuan', $request->name.' ('.$request->email.') baru saja mendaftar dan menunggu aktivasi Anda.', 'Registrasi', route('admin.pelanggan.index'));
+        \App\Http\Controllers\Auth\VerificationController::kirimOtp($user->email);
 
         event(new Registered($user));
 
-        return \redirect()->route('login')->with('status', 'Register Telah berhasil silahkan login');
+        return redirect()->route('verification.otp.show')->with('otp_email', $user->email);
     }
 }
