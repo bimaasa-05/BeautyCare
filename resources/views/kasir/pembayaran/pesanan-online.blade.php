@@ -193,6 +193,7 @@
                                             <a href="{{ route('kasir.pembayaran.show', $p->id_transaksi) }}" class="btn-aksi btn-detail">
                                                 <i class="fa-solid fa-eye text-[11px]"></i> Detail
                                             </a>
+                                            @php $isBooking = (bool) $p->id_booking; @endphp
                                             <form action="{{ route('kasir.pembayaran.verifikasi', $p->id_transaksi) }}" method="POST">
                                                 @csrf
                                                 <input type="hidden" name="aksi" value="konfirmasi">
@@ -201,15 +202,15 @@
                                                     <i class="fa-solid fa-circle-check text-[11px]"></i> Konfirmasi
                                                 </button>
                                                 @else
-                                                <button type="submit" class="btn-aksi btn-konfirmasi" data-confirm-title="Konfirmasi Lunas" data-confirm-body="Konfirmasi pesanan {{ $p->no_invoice }} sudah lunas? Stok akan dikurangi." data-confirm-icon="fa-circle-check" data-confirm-type="success" data-confirm-yes="Ya, Konfirmasi">
-                                                    <i class="fa-solid fa-check text-[11px]"></i> Konfirmasi Lunas
+                                                <button type="submit" class="btn-aksi btn-konfirmasi" data-confirm-title="{{ $isBooking ? 'Konfirmasi Pembayaran' : 'Konfirmasi Lunas' }}" data-confirm-body="{{ $isBooking ? 'Konfirmasi pembayaran booking '.$p->no_invoice.' sudah diterima?' : 'Konfirmasi pesanan '.$p->no_invoice.' sudah lunas? Stok akan dikurangi.' }}" data-confirm-icon="fa-circle-check" data-confirm-type="success" data-confirm-yes="Ya, Konfirmasi">
+                                                    <i class="fa-solid fa-check text-[11px]"></i> {{ $isBooking ? 'Konfirmasi Pembayaran' : 'Konfirmasi Lunas' }}
                                                 </button>
                                                 @endif
                                             </form>
                                             <form action="{{ route('kasir.pembayaran.verifikasi', $p->id_transaksi) }}" method="POST">
                                                 @csrf
                                                 <input type="hidden" name="aksi" value="tolak">
-                                                <button type="submit" class="btn-aksi btn-tolak" data-confirm-title="Tolak Pembayaran" data-confirm-body="Tolak pembayaran pesanan {{ $p->no_invoice }}? Saldo akun (jika dipakai) akan dikembalikan." data-confirm-icon="fa-circle-xmark" data-confirm-type="danger" data-confirm-yes="Ya, Tolak">
+                                                <button type="submit" class="btn-aksi btn-tolak" data-confirm-title="Tolak Pembayaran" data-confirm-body="Tolak pembayaran {{ $isBooking ? 'booking ' : 'pesanan ' }}{{ $p->no_invoice }}? Saldo akun (jika dipakai) akan dikembalikan." data-confirm-icon="fa-circle-xmark" data-confirm-type="danger" data-confirm-yes="Ya, Tolak">
                                                     <i class="fa-solid fa-xmark text-[11px]"></i> Tolak
                                                 </button>
                                             </form>

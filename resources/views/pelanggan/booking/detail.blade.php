@@ -442,6 +442,76 @@
         color: var(--gray);
         margin: 2px 0 0;
     }
+
+    .status-payment-box {
+        margin-top: 16px;
+        padding: 16px;
+        border-radius: 14px;
+        background: #F9FAFB;
+        border: 1px solid var(--border);
+    }
+
+    .status-payment-box .spb-title {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--dark);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 10px;
+    }
+
+    .status-payment-box .spb-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 12px;
+        color: var(--gray);
+        padding: 4px 0;
+    }
+
+    .status-payment-box .spb-row .spb-val {
+        font-weight: 600;
+        color: var(--dark);
+    }
+
+    .status-payment-badge-detail {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 4px 12px;
+        border-radius: 100px;
+        font-size: 11px;
+        font-weight: 600;
+    }
+
+    .status-payment-badge-detail.belum { background: #F3F4F6; color: #6B7280; }
+    .status-payment-badge-detail.menunggu { background: #FEF3C7; color: #B45309; }
+    .status-payment-badge-detail.dp { background: #DBEAFE; color: #2563EB; }
+    .status-payment-badge-detail.lunas { background: #D1FAE5; color: #059669; }
+
+    .btn-bayar-detail {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 18px;
+        border: none;
+        border-radius: 100px;
+        background: linear-gradient(135deg, var(--primary), #FF7BA6);
+        color: #fff;
+        font-size: 12px;
+        font-weight: 600;
+        font-family: 'Poppins', sans-serif;
+        cursor: pointer;
+        text-decoration: none;
+        box-shadow: 0 4px 12px rgba(255, 79, 135, 0.25);
+        transition: all 0.2s ease;
+    }
+
+    .btn-bayar-detail:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 16px rgba(255, 79, 135, 0.35);
+    }
     </style>
 </head>
 
@@ -560,6 +630,64 @@
                             </div>
                         </div>
 
+                        @php
+                            $totalPembayaran = (int) $totalSubtotal;
+                            $dpNominal = (int) round($totalPembayaran / 2);
+                            $sisaTagihan = max(0, $totalPembayaran - $dpNominal);
+                            $dpPaid = 0;
+                            if ($booking->transaksi) {
+                                $dpPaid = (int) (($booking->transaksi->pembayaran->nominal ?? 0) + ($booking->transaksi->saldo_terpakai ?? 0));
+                            }
+                        @endphp
+
+                        <div class="status-payment-box">
+                            <div class="spb-title">
+                                <i class="fa-solid fa-credit-card"></i> Status Pembayaran
+                                <span class="status-payment-badge-detail {{ $booking->status_pembayaran }}">
+                                    <span class="spb-dot"></span>
+                                    @if($booking->status_pembayaran === 'belum')
+                                    Belum Bayar
+                                    @elseif($booking->status_pembayaran === 'menunggu')
+                                    Menunggu Verifikasi
+                                    @elseif($booking->status_pembayaran === 'dp')
+                                    DP Dibayar
+                                    @elseif($booking->status_pembayaran === 'lunas')
+                                    Lunas
+                                    @endif
+                                </span>
+                            </div>
+
+                            @if($booking->status_pembayaran === 'dp')
+                            <div class="spb-row">
+                                <span>DP Dibayar ({{ $booking->tipe_pembayaran === 'dp' ? '50%' : 'Lunas' }})</span>
+                                <span class="spb-val">Rp {{ number_format($dpPaid, 0, ',', '.') }}</span>
+                            </div>
+                            <div class="spb-row">
+                                <span>Sisa Dibayar di Salon</span>
+                                <span class="spb-val">Rp {{ number_format(max(0, $totalPembayaran - $dpPaid), 0, ',', '.') }}</span>
+                            </div>
+                            @elseif($booking->status_pembayaran === 'lunas')
+                            <div class="spb-row">
+                                <span>Total Dibayar</span>
+                                <span class="spb-val">Rp {{ number_format($totalPembayaran, 0, ',', '.') }}</span>
+                            </div>
+                            @endif
+
+                            @if($booking->status === 'menunggu' && in_array($booking->status_pembayaran, ['belum', 'menunggu']))
+                            <div style="margin-top:12px;">
+                                @if($booking->status_pembayaran === 'belum')
+                                <a href="{{ route('pelanggan.booking.pembayaran', $booking->id_booking) }}" class="btn-bayar-detail">
+                                    <i class="fa-solid fa-credit-card"></i> Bayar Sekarang
+                                </a>
+                                @elseif($booking->status_pembayaran === 'menunggu' && $booking->transaksi)
+                                <a href="{{ route('pelanggan.pembayaran.show', $booking->transaksi->id_transaksi) }}" class="btn-bayar-detail">
+                                    <i class="fa-regular fa-clock"></i> Lanjutkan Pembayaran
+                                </a>
+                                @endif
+                            </div>
+                            @endif
+                        </div>
+
                         @if($booking->catatan)
                         <div class="dc-divider"></div>
                         <div class="dc-section-title">
@@ -577,6 +705,11 @@
                             <a href="{{ route('pelanggan.booking.pdf', $booking->id_booking) }}" class="btn-print-detail">
                                 <i class="fa-solid fa-file-pdf"></i> Unduh PDF
                             </a>
+                            @if(in_array($booking->status_pembayaran, ['dp', 'lunas']))
+                            <a href="{{ route('pelanggan.booking.create') }}" class="btn-bayar-detail">
+                                <i class="fa-solid fa-calendar-plus"></i> Buat Booking Lagi
+                            </a>
+                            @endif
                         </div>
                     </div>
                 </div>

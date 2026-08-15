@@ -22,9 +22,12 @@ class PembayaranController extends Controller
     {
         $transaksi = $this->getTransaksi($id);
 
-        if (in_array($transaksi->status, ['Lunas', 'Gagal', 'Kadaluarsa', 'Dibatalkan'])) {
+        if (in_array($transaksi->status, ['Lunas', 'DP Dibayar', 'Gagal', 'Kadaluarsa', 'Dibatalkan'])) {
             if ($transaksi->jenis_transaksi === 'TopUp Saldo') {
                 return redirect()->route('pelanggan.saldo.index');
+            }
+            if ($transaksi->id_booking) {
+                return redirect()->route('pelanggan.booking.detail', $transaksi->id_booking);
             }
             return redirect()->route('pelanggan.pesanan.show', $id);
         }
@@ -46,7 +49,10 @@ class PembayaranController extends Controller
     {
         $transaksi = $this->getTransaksi($id);
 
-        if ($transaksi->status !== 'Lunas') {
+        if (!in_array($transaksi->status, ['Lunas', 'DP Dibayar'])) {
+            if ($transaksi->id_booking) {
+                return redirect()->route('pelanggan.booking.detail', $transaksi->id_booking);
+            }
             return redirect()->route('pelanggan.pesanan.show', $id);
         }
 
@@ -189,6 +195,10 @@ class PembayaranController extends Controller
 
         $transaksi->update(['status' => 'Dibatalkan']);
         $transaksi->pembayaran?->update(['status' => 'Dibatalkan']);
+
+        if ($transaksi->id_booking) {
+            \App\Models\Booking::where('id_booking', $transaksi->id_booking)->update(['status_pembayaran' => 'belum']);
+        }
 
         $nama = $transaksi->user->nama ?? 'Pelanggan';
         buatNotifRole('kasir', 'Pesanan Dibatalkan', $nama . ' membatalkan pesanan ' . $transaksi->no_invoice . '.', 'Transaksi', route('kasir.pembayaran.pesanan-online'));

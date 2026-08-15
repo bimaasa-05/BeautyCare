@@ -224,11 +224,19 @@
                             <i class="fa-solid fa-check"></i>
                         </div>
                         <h3>Pembayaran Berhasil!</h3>
-                        <p>Terima kasih! Pembayaran pesanan Anda telah diterima dan diverifikasi.<br>Pesanan Anda sedang diproses.</p>
+                        <p>Terima kasih! {{ $transaksi->id_booking ? 'Pembayaran DP/booking Anda telah diterima dan diverifikasi.' : 'Pembayaran pesanan Anda telah diterima dan diverifikasi.' }}<br>{{ $transaksi->id_booking ? 'Booking Anda telah dikonfirmasi.' : 'Pesanan Anda sedang diproses.' }}</p>
                         <div class="sk-invoice">
                             <i class="fa-solid fa-receipt"></i> {{ $transaksi->no_invoice }}
                         </div>
                         <div class="sukses-actions">
+                            @if($transaksi->id_booking)
+                            <a href="{{ route('pelanggan.booking.detail', $transaksi->id_booking) }}" class="btn-lanjut">
+                                <i class="fa-regular fa-calendar-check"></i> Detail Booking
+                            </a>
+                            <a href="{{ route('pelanggan.booking.create') }}" class="btn-kembali-belanja">
+                                <i class="fa-solid fa-calendar-plus"></i> Buat Booking Lagi
+                            </a>
+                            @else
                             <a href="{{ route('pelanggan.pesanan.index') }}" class="btn-lanjut">
                                 <i class="fa-solid fa-receipt"></i> Riwayat Pesanan
                             </a>
@@ -237,9 +245,10 @@
                                 <i class="fa-solid fa-store"></i> Belanja Lagi
                             </a>
                             @endif
+                            @endif
                         </div>
                         <div class="redirect-info">
-                            Mengalihkan ke riwayat pesanan dalam <b id="hitungan">5</b> detik...
+                            Mengalihkan ke {{ $transaksi->id_booking ? 'detail booking' : 'riwayat pesanan' }} dalam <b id="hitungan">5</b> detik...
                         </div>
                     </div>
                 </div>
@@ -255,7 +264,7 @@
         if (el) el.textContent = detik;
         if (detik <= 0) {
             clearInterval(timer);
-            window.location.href = '{{ route("pelanggan.pesanan.index") }}';
+            window.location.href = '{{ $transaksi->id_booking ? route("pelanggan.booking.detail", $transaksi->id_booking) : route("pelanggan.pesanan.index") }}';
         }
     }, 1000);
 
