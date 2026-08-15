@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\Pembayaran;
+use App\Models\Booking;
 use Illuminate\Console\Command;
 
 class ExpirePesanan extends Command
@@ -39,6 +40,10 @@ class ExpirePesanan extends Command
 
             $transaksi->update(['status' => 'Kadaluarsa']);
             $bayar->update(['status' => 'Kadaluarsa']);
+
+            if ($transaksi->id_booking) {
+                Booking::where('id_booking', $transaksi->id_booking)->update(['status_pembayaran' => 'belum']);
+            }
 
             buatNotif($transaksi->id_user, 'Pesanan Kadaluarsa', 'Pesanan ' . $transaksi->no_invoice . ' kadaluarsa karena melewati batas waktu pembayaran.', 'Transaksi', route('pelanggan.pesanan.show', $transaksi->id_transaksi));
 
