@@ -148,6 +148,7 @@
                                     <select name="filter_status" onchange="this.form.submit()">
                                         <option value="">Semua Status</option>
                                         <option value="dikonfirmasi" {{ request('filter_status') == 'dikonfirmasi' ? 'selected' : '' }}>Terjadwal</option>
+                                        <option value="diproses" {{ request('filter_status') == 'diproses' ? 'selected' : '' }}>Diproses</option>
                                     </select>
                                     <div class="search-input-wrap" style="display:inline-block;">
                                         <svg class="si-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
@@ -192,9 +193,45 @@
                                         </div>
                                     </td>
                                     <td data-label="Jam">
-                                        <div style="display:flex;align-items:center;gap:6px;justify-content:center;">
+                                        <div style="display:flex;flex-direction:column;align-items:center;gap:2px;justify-content:center;">
                                             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                                            <span>{{ \Carbon\Carbon::parse($item->jam)->format('H:i') }}</span>
+                                            @if($item->status === 'diproses')
+                                                @php
+                                                    $jamMulai = \Carbon\Carbon::parse($item->jam)->format('H:i');
+                                                    $durasiMenit = $item->durasi_menit;
+                                                    $jamSelesaiEstimasi = \Carbon\Carbon::parse($item->tanggal . ' ' . substr($item->jam, 0, 5))->addMinutes($durasiMenit)->format('H:i');
+                                                    
+                                                    $adaAktual = $item->jam_mulai_aktual;
+                                                    $mulaiAktual = $adaAktual ? \Carbon\Carbon::parse($item->jam_mulai_aktual)->format('H:i') : null;
+                                                    $bedaWaktu = $adaAktual && $mulaiAktual !== $jamMulai;
+                                                    
+                                                    $selesaiAktual = null;
+                                                    if ($adaAktual) {
+                                                        $mulaiCarbon = \Carbon\Carbon::parse($item->jam_mulai_aktual);
+                                                        $selesaiEstCarbon = $mulaiCarbon->copy()->addMinutes($durasiMenit);
+                                                        $selesaiAktual = $selesaiEstCarbon->format('H:i');
+                                                    }
+                                                @endphp
+                                                <span class="font-mono text-xs">{{ $jamMulai }}</span>
+                                                <span class="text-gray-400 text-xs">-</span>
+                                                <span class="font-mono text-xs text-gray-500">{{ $jamSelesaiEstimasi }}</span>
+                                                
+                                                @if ($bedaWaktu)
+                                                    <div class="countdown-row" data-akhir="{{ $item->estimasi_selesai }}" style="display:flex;align-items:center;gap:4px;margin-top:2px;">
+                                                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                                        <span class="countdown-value font-mono text-xs font-bold text-amber-600">--:--:--</span>
+                                                    </div>
+                                                    <div style="font-size:10px;color:#f59e0b;font-weight:600;">Mulai: {{ $mulaiAktual }} · Est. Selesai: {{ $selesaiAktual }}</div>
+                                                @else
+                                                    <div class="countdown-row" data-akhir="{{ $item->estimasi_selesai }}" style="display:flex;align-items:center;gap:4px;">
+                                                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                                        <span class="countdown-value font-mono text-xs font-bold text-violet-600">--:--:--</span>
+                                                    </div>
+                                                    <div style="font-size:10px;color:#8b5cf6;font-weight:600;">Waktu: {{ $durasiMenit >= 60 ? (($durasiMenit % 60) ? floor($durasiMenit / 60) . ' jam ' . ($durasiMenit % 60) . ' menit' : ($durasiMenit / 60) . ' jam') : $durasiMenit . ' menit' }}</div>
+                                                @endif
+                                            @else
+                                                <span>{{ \Carbon\Carbon::parse($item->jam)->format('H:i') }}</span>
+                                            @endif
                                         </div>
                                     </td>
                                     <td data-label="Layanan">
@@ -275,6 +312,33 @@
 
     <script src="{{ asset('assets/js/beautycian.js') }}"></script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
+    <script>
+        function updateCountdowns() {
+            const now = new Date();
+            document.querySelectorAll('.countdown-row').forEach(function(row) {
+                const end = new Date((row.dataset.akhir || '').replace(' ', 'T'));
+                const diff = Math.max(0, end - now);
+                const h = String(Math.floor(diff / 3600000)).padStart(2, '0');
+                const m = String(Math.floor((diff % 3600000) / 60000)).padStart(2, '0');
+                const s = String(Math.floor((diff % 60000) / 1000)).padStart(2, '0');
+                const val = row.querySelector('.countdown-value');
+                if (val) {
+                    val.textContent = h + ':' + m + ':' + s;
+                    if (diff <= 0) {
+                        val.style.color = '#ef4444';
+                    } else if (diff < 300000) {
+                        val.style.color = '#ef4444';
+                    } else if (diff < 600000) {
+                        val.style.color = '#f59e0b';
+                    } else {
+                        val.style.color = '#8b5cf6';
+                    }
+                }
+            });
+        }
+        updateCountdowns();
+        setInterval(updateCountdowns, 1000);
+    </script>
 </body>
 
 </html>
