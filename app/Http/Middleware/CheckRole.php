@@ -29,11 +29,14 @@ class CheckRole
             Auth::guard('web')->logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();
-            $pesan = match ($user->status) {
-                'menunggu_persetujuan' => 'Akun Anda sedang menunggu persetujuan admin. Silakan hubungi admin.',
-                'menunggu_verifikasi' => 'Akun Anda belum diverifikasi. Silakan cek email Anda untuk kode verifikasi dan selesaikan verifikasi.',
-                default => 'Akun Anda belum diaktifkan oleh admin. Silakan hubungi admin.',
-            };
+            if ($user->status === 'menunggu_persetujuan') {
+                $pesan = 'Akun Anda sedang menunggu persetujuan admin. atau silahkan hubungi admin dengan klik icon WhatsApp yang ada di halaman ini';
+            } elseif ($user->status === 'suspend') {
+                $until = $user->suspend_until ? $user->suspend_until->locale('id')->isoFormat('D MMMM YYYY, HH:mm') . ' WIB' : 'tidak ditentukan';
+                $pesan = "Akun Anda dengan Nama \"{$user->nama}\" dan Email \"{$user->email}\" sedang disuspend sampai {$until}. atau silahkan hubungi admin dengan klik icon WhatsApp yang ada di bawah ini";
+            } else {
+                $pesan = 'Akun Anda belum diaktifkan oleh admin. Silakan hubungi admin.';
+            }
             return redirect()->route('login')->withErrors([
                 'email' => $pesan,
             ]);

@@ -28,7 +28,8 @@ class RegisteredUserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'no_hp' => ['nullable', 'string', 'max:20'],
-            'password' => ['required', 'confirmed'],
+            'password' => ['required', 'string', 'min:6', 'confirmed'],
+
         ]);
 
         $user = User::create([
@@ -36,13 +37,31 @@ class RegisteredUserController extends Controller
             'email' => $request->email,
             'no_hp' => $request->no_hp,
             'password' => Hash::make($request->password),
+            'role' => 'pelanggan',
             'status' => 'menunggu_verifikasi',
         ]);
 
-        \App\Http\Controllers\Auth\VerificationController::kirimOtp($user->email);
+        VerificationController::kirimOtp($user->email);
 
-        event(new Registered($user));
+        $existingPelanggan = Pelanggan::where('email', $request->email)->whereNull('id_user')->first();
+        if ($existingPelanggan) {
+            $existingPelanggan->update(['id_user' => $user->id]);
+        } else {
+            Pelanggan::create([
+                'nm_pelanggan' => $request->name,
+                'email' => $request->email,
+                'no_hp' => $request->no_hp ?? '',
+                'alamat' => '',
+                'catatan_alergi' => '',
+                'id_user' => $user->id,
+            ]);
+        }
 
-        return redirect()->route('verification.otp.show')->with('otp_email', $user->email);
+        buatNotifRole('admin', 'Pelanggan Baru Mendaftar', $request->name.' ('.$request->email.') baru saja mendaftar dan menunggu verifikasi OTP.', 'Registrasi', route('admin.pelanggan.index'));
+
+        return redirect()->route('verification.otp.show')->with([
+            'otp_email' => $user->email,
+            'status' => 'Kode verifikasi telah dikirim ke email Anda. Silakan cek kotak masuk (atau folder Spam).',
+        ]);
     }
 }

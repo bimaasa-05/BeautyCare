@@ -18,7 +18,7 @@ class User extends Authenticatable
      *
      * @var list<string>
      */
-protected $fillable = [
+    protected $fillable = [
         'nama',
         'email',
         'no_hp',
@@ -34,6 +34,9 @@ protected $fillable = [
         'provider_id',
         'avatar',
         'email_verified_at',
+        'last_login_at',
+        'perubahan_last_seen',
+        'stok_last_seen',
     ];
 
     /**
@@ -57,6 +60,7 @@ protected $fillable = [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'suspend_until' => 'datetime',
+            'last_login_at' => 'datetime',
         ];
     }
 
