@@ -1137,7 +1137,7 @@
         fetch(statusRoute, { headers: { 'X-CSRF-TOKEN': csrfToken } })
         .then(function(r) { return r.json(); })
         .then(function(data) {
-            if (data.status === 'Lunas') {
+            if (data.status === 'Lunas' || data.status === 'DP Dibayar') {
                 window.location.href = berhasilRoute;
             } else if (data.status === 'Kadaluarsa') {
                 showExpiredModal();
