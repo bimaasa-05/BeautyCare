@@ -3,10 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\Pembayaran;
-<<<<<<< HEAD
-=======
 use App\Models\Booking;
->>>>>>> 95cd829c54ea57ff9f5542d1e44de2e90e928235
 use Illuminate\Console\Command;
 
 class ExpirePesanan extends Command

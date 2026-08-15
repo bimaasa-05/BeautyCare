@@ -28,7 +28,7 @@
         .info-row .info-value { flex: 1; font-size: 13px; color: var(--dark); font-weight: 500; }
 
         .photo-card { border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }
-        .photo-card img { width: 100%; height: 220px; object-fit: cover; display: block; }
+        .photo-card img { width: 100%; height: auto; display: block; }
         .photo-card .photo-label { padding: 8px 12px; font-size: 11px; font-weight: 600; color: var(--gray); background: #FAFAFA; text-align: center; }
         .photo-card.empty-photo { display: flex; align-items: center; justify-content: center; height: 220px; background: #FAFAFA; color: #ccc; flex-direction: column; gap: 8px; }
         .photo-card.empty-photo svg { width: 40px; height: 40px; }

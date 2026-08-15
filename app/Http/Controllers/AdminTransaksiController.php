@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Transaksi;
 use App\Models\Pengeluaran;
 use App\Models\Supplier;
+use App\Exports\AdminTransaksiExport;
 use App\Helpers\ActivityLogger;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;
 use App\Services\PengeluaranService;
 
@@ -298,72 +300,12 @@ class AdminTransaksiController extends Controller
     public function export(Request $request)
     {
         $keyword = $request->keyword;
-        $dari    = $request->dari;
-        $sampai  = $request->sampai;
+        $dari = $request->dari ? \Carbon\Carbon::parse($request->dari)->format('Y-m-d') : null;
+        $sampai = $request->sampai ? \Carbon\Carbon::parse($request->sampai)->format('Y-m-d') : null;
 
-        $transaksi = Transaksi::with('pelanggan', 'supplier', 'pengeluaran', 'user')
-            ->when($keyword, function ($q) use ($keyword) {
-                return $q->where(function ($q) use ($keyword) {
-                    $q->where('no_invoice', 'like', "%{$keyword}%")
-                        ->orWhere('catatan', 'like', "%{$keyword}%")
-                        ->orWhereHas('pelanggan', function ($q) use ($keyword) {
-                            $q->where('nm_pelanggan', 'like', "%{$keyword}%")
-                                ->orWhere('no_hp', 'like', "%{$keyword}%");
-                        })
-                        ->orWhereHas('supplier', function ($q) use ($keyword) {
-                            $q->where('nm_supplier', 'like', "%{$keyword}%");
-                        })
-                        ->orWhereHas('pengeluaran', function ($q) use ($keyword) {
-                            $q->where('kategori', 'like', "%{$keyword}%")
-                                ->orWhere('keterangan', 'like', "%{$keyword}%");
-                        });
-                });
-            })
-            ->when($dari, fn($q, $d) => $q->whereDate('tanggal', '>=', $d))
-            ->when($sampai, fn($q, $s) => $q->whereDate('tanggal', '<=', $s))
-            ->orderBy('id_transaksi', 'desc')
-            ->get();
-
-        $filename = 'transaksi-' . now()->format('Y-m-d-His') . '.csv';
-
-        $headers = [
-            'Content-Type'        => 'text/csv; charset=UTF-8',
-            'Content-Disposition' => "attachment; filename=\"$filename\"",
-        ];
-
-        $columns = ['Jenis', 'No. Invoice', 'Pelanggan/Supplier', 'Tanggal', 'Subtotal', 'Diskon', 'Pajak', 'Total', 'Metode', 'Dibayar', 'Kembali', 'Status', 'Admin', 'Catatan'];
-
-        $callback = function () use ($transaksi, $columns) {
-            $file = fopen('php://output', 'w');
-            fprintf($file, chr(0xEF) . chr(0xBB) . chr(0xBF));
-            fputcsv($file, $columns);
-
-            foreach ($transaksi as $t) {
-                $pihak = $t->jenis_transaksi !== 'Penjualan'
-                    ? ($t->supplier->nm_supplier ?? ($t->pengeluaran->kategori ?? '-'))
-                    : ($t->pelanggan->nm_pelanggan ?? 'Umum');
-
-                fputcsv($file, [
-                    $t->jenis_transaksi,
-                    $t->no_invoice,
-                    $pihak,
-                    $t->tanggal,
-                    $t->subtotal,
-                    $t->diskon,
-                    $t->pajak,
-                    $t->total,
-                    $t->metode_byr,
-                    $t->dibayar,
-                    $t->kembali,
-                    $t->status,
-                    $t->user->nama ?? '-',
-                    $t->catatan,
-                ]);
-            }
-
-            fclose($file);
-        };
-
-        return response()->stream($callback, 200, $headers);
+        return Excel::download(
+            new AdminTransaksiExport($keyword, $dari, $sampai),
+            'transaksi-' . now()->format('Y-m-d-His') . '.xlsx'
+        );
     }
 }

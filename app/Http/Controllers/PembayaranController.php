@@ -85,6 +85,10 @@ class PembayaranController extends Controller
             return back()->with('error', 'Status pesanan tidak valid untuk konfirmasi.');
         }
 
+        if (!$transaksi->bukti_bayar) {
+            return back()->with('error', 'Anda harus mengunggah bukti pembayaran terlebih dahulu.');
+        }
+
         $transaksi->update(['status' => 'Sedang Diproses']);
 
         $petugas = \App\Models\User::whereIn('role', ['kasir', 'admin'])->get();

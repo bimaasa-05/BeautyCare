@@ -65,7 +65,7 @@
     .photo-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 
     .photo-card { position: relative; border-radius: 16px; overflow: hidden; border: 1px solid var(--border); box-shadow: 0 2px 10px -4px rgba(0,0,0,0.08); }
-    .photo-card img { width: 100%; height: 240px; object-fit: cover; display: block; transition: transform 0.3s ease; }
+    .photo-card img { width: 100%; height: auto; display: block; transition: transform 0.3s ease; }
     .photo-card:hover img { transform: scale(1.04); }
     .photo-card .photo-label { position: absolute; left: 12px; bottom: 12px; padding: 6px 14px; font-size: 11px; font-weight: 700; color: #fff; background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(4px); border-radius: 100px; text-align: center; display: inline-flex; align-items: center; gap: 6px; }
     .photo-card .photo-label i { font-size: 8px; }
@@ -138,7 +138,6 @@
         .detail-card .dc-body { padding: 16px; }
         .detail-section { padding: 16px; }
         .photo-pair { grid-template-columns: 1fr; }
-        .photo-card img { height: 180px; }
         .photo-card.empty-photo { height: 180px; }
         .action-bar { flex-wrap: wrap; }
     }

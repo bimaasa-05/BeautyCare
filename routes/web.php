@@ -383,11 +383,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/pelanggan/booking/slot', [PelangganBookingController::class, 'slotJamData'])->name('pelanggan.booking.slot');
         Route::post('/pelanggan/booking', [PelangganBookingController::class, 'store'])->name('pelanggan.booking.store');
         Route::get('/pelanggan/booking/{id}/detail', [PelangganBookingController::class, 'show'])->name('pelanggan.booking.detail');
-<<<<<<< HEAD
-=======
         Route::get('/pelanggan/booking/{id}/pembayaran', [PelangganBookingController::class, 'pembayaran'])->name('pelanggan.booking.pembayaran');
         Route::post('/pelanggan/booking/{id}/pembayaran', [PelangganBookingController::class, 'bayar'])->name('pelanggan.booking.bayar');
->>>>>>> 95cd829c54ea57ff9f5542d1e44de2e90e928235
         Route::get('/pelanggan/booking/{id}/pdf', [PelangganBookingController::class, 'pdf'])->name('pelanggan.booking.pdf');
         Route::get('/pelanggan/booking/{id}/edit', [PelangganBookingController::class, 'edit'])->name('pelanggan.booking.edit');
         Route::put('/pelanggan/booking/{id}', [PelangganBookingController::class, 'update'])->name('pelanggan.booking.update');
