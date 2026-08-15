@@ -193,6 +193,59 @@
                             <p class="detail-label"><i class="fa-regular fa-clock text-pink-400 mr-1"></i>Jam</p>
                             <p class="detail-value">{{ $reservasi->jam }}</p>
                         </div>
+                        @php
+                            $durasiMenit = \App\Support\BookingSlot::durasiBooking($reservasi);
+                            $jamSelesaiEstimasi = \Carbon\Carbon::parse($reservasi->tanggal . ' ' . substr($reservasi->jam, 0, 5))->addMinutes($durasiMenit)->format('H:i');
+                            $adaAktual = in_array($reservasi->status, ['diproses', 'selesai']) && $reservasi->jam_mulai_aktual;
+                            $mulaiAktual = $adaAktual ? \Carbon\Carbon::parse($reservasi->jam_mulai_aktual)->format('H:i') : null;
+                            $bedaWaktu = $adaAktual && $mulaiAktual !== \Carbon\Carbon::parse($reservasi->jam)->format('H:i');
+                            
+                            $selesaiAktual = null;
+                            $durasiAktual = null;
+                            $statusWaktu = null;
+                            if ($adaAktual) {
+                                $mulaiCarbon = \Carbon\Carbon::parse($reservasi->jam_mulai_aktual);
+                                if ($reservasi->status === 'selesai' && $reservasi->jam_selesai_aktual) {
+                                    $selesaiCarbon = \Carbon\Carbon::parse($reservasi->jam_selesai_aktual);
+                                    $selesaiAktual = $selesaiCarbon->format('H:i');
+                                    $durasiDetik = $mulaiCarbon->diffInSeconds($selesaiCarbon);
+                                    $durasiAktual = gmdate('H:i:s', $durasiDetik);
+                                    $statusWaktu = 'Selesai';
+                                } else {
+                                    $selesaiEstCarbon = $mulaiCarbon->copy()->addMinutes($durasiMenit);
+                                    $selesaiAktual = $selesaiEstCarbon->format('H:i');
+                                    $statusWaktu = 'Sedang berlangsung';
+                                }
+                            }
+                        @endphp
+                        @if ($adaAktual)
+                        <div>
+                            <p class="detail-label"><i class="fa-regular fa-clock text-pink-400 mr-1"></i>Dijadwalkan</p>
+                            <p class="detail-value">{{ \Carbon\Carbon::parse($reservasi->jam)->format('H:i') }} - {{ $jamSelesaiEstimasi }}</p>
+                        </div>
+                        <div>
+                            <p class="detail-label"><i class="fa-solid fa-clock-rotate-left text-amber-500 mr-1"></i>Aktual</p>
+                            <p class="detail-value text-amber-600 font-bold">
+                                {{ $mulaiAktual }} 
+                                @if($reservasi->status === 'selesai')
+                                    - {{ $selesaiAktual }}
+                                @else
+                                    <span class="text-amber-500 font-normal"> · {{ $statusWaktu }}</span>
+                                @endif
+                            </p>
+                        </div>
+                        @else
+                        <div>
+                            <p class="detail-label"><i class="fa-regular fa-clock text-pink-400 mr-1"></i>Waktu</p>
+                            <p class="detail-value">{{ \Carbon\Carbon::parse($reservasi->jam)->format('H:i') }} - {{ $jamSelesaiEstimasi }}</p>
+                        </div>
+                        @endif
+                        @if ($durasiAktual)
+                        <div>
+                            <p class="detail-label"><i class="fa-regular fa-stopwatch text-emerald-500 mr-1"></i>Durasi</p>
+                            <p class="detail-value text-emerald-600 font-bold font-mono">{{ $durasiAktual }}</p>
+                        </div>
+                        @endif
                         <div>
                             <p class="detail-label"><i class="fa-solid fa-flag text-pink-400 mr-1"></i>Status</p>
                             <span class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-semibold {{ $statusClass }}">
@@ -213,6 +266,7 @@
                                     <tr class="bg-pink-50/50">
                                         <th class="text-left px-4 py-2.5 text-[11px] font-bold text-gray-400 uppercase">#</th>
                                         <th class="text-left px-4 py-2.5 text-[11px] font-bold text-gray-400 uppercase">Layanan</th>
+                                        <th class="text-center px-4 py-2.5 text-[11px] font-bold text-gray-400 uppercase">Durasi</th>
                                         <th class="text-right px-4 py-2.5 text-[11px] font-bold text-gray-400 uppercase">Harga</th>
                                         <th class="text-right px-4 py-2.5 text-[11px] font-bold text-gray-400 uppercase">Diskon</th>
                                         <th class="text-right px-4 py-2.5 text-[11px] font-bold text-gray-400 uppercase">Subtotal</th>
@@ -223,17 +277,31 @@
                                     <tr class="border-t border-gray-100">
                                         <td class="px-4 py-3 text-[13px] text-gray-500 font-mono">{{ $i + 1 }}</td>
                                         <td class="px-4 py-3 text-[13px] font-semibold text-gray-700">{{ $d->layanan->nm_layanan ?? '-' }}</td>
+                                        <td class="px-4 py-3 text-[13px] text-gray-600 text-center font-mono">
+                                            {{ ($d->layanan->durasi ?? 0) }} menit
+                                        </td>
                                         <td class="px-4 py-3 text-[13px] text-gray-600 text-right">Rp {{ number_format((int)($d->layanan->harga ?? 0), 0, ',', '.') }}</td>
                                         <td class="px-4 py-3 text-[13px] text-gray-600 text-right">{{ $d->diskon ? 'Rp ' . number_format($d->diskon, 0, ',', '.') : '-' }}</td>
                                         <td class="px-4 py-3 text-[13px] font-bold text-gray-800 text-right">Rp {{ number_format((int)($d->layanan->harga ?? 0) - (int)($d->diskon ?? 0), 0, ',', '.') }}</td>
                                     </tr>
                                     @empty
                                     <tr>
-                                        <td colspan="5" class="px-4 py-6 text-center text-gray-400 text-[13px]">Tidak ada layanan</td>
+                                        <td colspan="6" class="px-4 py-6 text-center text-gray-400 text-[13px]">Tidak ada layanan</td>
                                     </tr>
                                     @endforelse
                                 </tbody>
                             </table>
+                        </div>
+                        
+                        <div class="mt-2 text-right text-[11px] text-gray-500">
+                            Total Durasi: 
+                            @php
+                                $totalDurasi = 0;
+                                foreach ($reservasi->detail as $d) {
+                                    $totalDurasi += (int)($d->layanan->durasi ?? 0);
+                                }
+                                echo $totalDurasi . ' menit';
+                            @endphp
                         </div>
 
                         <div class="mt-4 p-4 bg-gray-50 rounded-xl">

@@ -653,11 +653,15 @@
                                             <div class="bi-value">{{ \Carbon\Carbon::parse($booking->tanggal)->isoFormat('D MMM YYYY') }}</div>
                                         </div>
                                     </div>
+                                    @php
+                                        $durasiMenit = \App\Support\BookingSlot::durasiBooking($booking);
+                                        $jamSelesaiEstimasi = \Carbon\Carbon::parse($booking->tanggal . ' ' . substr($booking->jam, 0, 5))->addMinutes($durasiMenit)->format('H:i');
+                                    @endphp
                                     <div class="bi-item">
                                         <div class="bi-icon"><i class="fa-regular fa-clock"></i></div>
                                         <div>
                                             <div class="bi-label">Jam</div>
-                                            <div class="bi-value">{{ \Carbon\Carbon::parse($booking->jam)->format('H:i') }}</div>
+                                            <div class="bi-value font-mono">{{ \Carbon\Carbon::parse($booking->jam)->format('H:i') }} - {{ $jamSelesaiEstimasi }}</div>
                                         </div>
                                     </div>
                                     <div class="bi-item" style="grid-column: 1 / -1;">

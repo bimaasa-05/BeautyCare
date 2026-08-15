@@ -57,7 +57,17 @@ Route::get('/', function () {
 
     $pengaturan = \App\Models\Pengaturan::first();
 
-    return view('landing.index', compact('tingkatMembership', 'pengaturan'));
+    $kategoriLayanan = \App\Models\KategoriLayanan::where('status', 'tersedia')
+        ->with(['layanan' => function($query) {
+            $query->where('status', 'tersedia')
+                  ->whereNotNull('foto')
+                  ->where('foto', '!=', '')
+                  ->orderBy('id_layanan');
+        }])
+        ->orderBy('nm_layanan')
+        ->get();
+
+    return view('landing.index', compact('tingkatMembership', 'pengaturan', 'kategoriLayanan'));
 })->name('home');
 
 Route::post('/kontak', [App\Http\Controllers\ContactController::class, 'store'])->name('landing.contact');

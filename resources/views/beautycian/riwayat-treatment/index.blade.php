@@ -180,7 +180,11 @@
                                     <td data-label="Jam">
                                         <div style="display:flex;align-items:center;gap:6px;justify-content:center;">
                                             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                                            <span>{{ \Carbon\Carbon::parse($item->jam)->format('H:i') }}</span>
+                                            @php
+                                                $durasiMenit = \App\Support\BookingSlot::durasiBooking($item);
+                                                $jamSelesai = \Carbon\Carbon::parse($item->tanggal . ' ' . substr($item->jam, 0, 5))->addMinutes($durasiMenit)->format('H:i');
+                                            @endphp
+                                            <span class="font-mono">{{ \Carbon\Carbon::parse($item->jam)->format('H:i') }} - {{ $jamSelesai }}</span>
                                         </div>
                                     </td>
                                     <td data-label="Layanan">

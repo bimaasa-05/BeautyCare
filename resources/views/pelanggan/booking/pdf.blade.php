@@ -52,6 +52,10 @@
     <div class="section-sub">Tanggal dan jam booking treatment</div>
     <table class="detail-grid" cellpadding="0" cellspacing="0">
         <tr>
+            @php
+                $durasiMenit = \App\Support\BookingSlot::durasiBooking($booking);
+                $jamSelesaiEstimasi = \Carbon\Carbon::parse($booking->tanggal . ' ' . substr($booking->jam, 0, 5))->addMinutes($durasiMenit)->format('H:i');
+            @endphp
             <td style="width:50%;">
                 <div class="detail-item">
                     <div class="di-label">Tanggal</div>
@@ -61,7 +65,7 @@
             <td style="width:50%;">
                 <div class="detail-item">
                     <div class="di-label">Jam</div>
-                    <div class="di-value">{{ \Carbon\Carbon::parse($booking->jam)->format('H:i') }}</div>
+                    <div class="di-value font-mono">{{ \Carbon\Carbon::parse($booking->jam)->format('H:i') }} - {{ $jamSelesaiEstimasi }}</div>
                 </div>
             </td>
         </tr>
