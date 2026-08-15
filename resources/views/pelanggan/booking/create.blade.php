@@ -1513,7 +1513,7 @@
                             <!-- ═══ Actions ═══ -->
                             <div class="form-actions">
                                 <button type="submit" class="btn-submit">
-                                    <i class="fa-solid fa-check"></i> Konfirmasi Booking
+                                    <i class="fa-solid fa-check"></i> Konfirmasi &amp; Bayar
                                 </button>
                                 <a href="{{ route('pelanggan.booking') }}" class="btn-cancel-form">
                                     <i class="fa-solid fa-xmark"></i> Batal
