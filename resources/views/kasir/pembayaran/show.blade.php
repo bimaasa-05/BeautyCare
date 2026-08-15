@@ -193,6 +193,7 @@
                                         'Proses' => ['label' => 'Proses', 'class' => 'status-proses', 'icon' => 'fa-regular fa-clock'],
                                         'Pending' => ['label' => 'Pending', 'class' => 'status-proses', 'icon' => 'fa-regular fa-clock'],
                                         'Lunas' => ['label' => 'Lunas', 'class' => 'status-selesai', 'icon' => 'fa-regular fa-circle-check'],
+                                        'DP Dibayar' => ['label' => 'DP Dibayar', 'class' => 'status-selesai', 'icon' => 'fa-regular fa-circle-check'],
                                         'Selesai' => ['label' => 'Selesai', 'class' => 'status-selesai', 'icon' => 'fa-regular fa-circle-check'],
                                         'Batal' => ['label' => 'Batal', 'class' => 'status-batal', 'icon' => 'fa-regular fa-circle-xmark'],
                                         'Gagal' => ['label' => 'Gagal', 'class' => 'status-batal', 'icon' => 'fa-regular fa-circle-xmark'],
