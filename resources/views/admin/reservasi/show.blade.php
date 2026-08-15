@@ -193,6 +193,59 @@
                             <p class="detail-label"><i class="fa-regular fa-clock text-pink-400 mr-1"></i>Jam</p>
                             <p class="detail-value">{{ $reservasi->jam }}</p>
                         </div>
+                        @php
+                            $durasiMenit = \App\Support\BookingSlot::durasiBooking($reservasi);
+                            $jamSelesaiEstimasi = \Carbon\Carbon::parse($reservasi->tanggal . ' ' . substr($reservasi->jam, 0, 5))->addMinutes($durasiMenit)->format('H:i');
+                            $adaAktual = in_array($reservasi->status, ['diproses', 'selesai']) && $reservasi->jam_mulai_aktual;
+                            $mulaiAktual = $adaAktual ? \Carbon\Carbon::parse($reservasi->jam_mulai_aktual)->format('H:i') : null;
+                            $bedaWaktu = $adaAktual && $mulaiAktual !== \Carbon\Carbon::parse($reservasi->jam)->format('H:i');
+                            
+                            $selesaiAktual = null;
+                            $durasiAktual = null;
+                            $statusWaktu = null;
+                            if ($adaAktual) {
+                                $mulaiCarbon = \Carbon\Carbon::parse($reservasi->jam_mulai_aktual);
+                                if ($reservasi->status === 'selesai' && $reservasi->jam_selesai_aktual) {
+                                    $selesaiCarbon = \Carbon\Carbon::parse($reservasi->jam_selesai_aktual);
+                                    $selesaiAktual = $selesaiCarbon->format('H:i');
+                                    $durasiDetik = $mulaiCarbon->diffInSeconds($selesaiCarbon);
+                                    $durasiAktual = gmdate('H:i:s', $durasiDetik);
+                                    $statusWaktu = 'Selesai';
+                                } else {
+                                    $selesaiEstCarbon = $mulaiCarbon->copy()->addMinutes($durasiMenit);
+                                    $selesaiAktual = $selesaiEstCarbon->format('H:i');
+                                    $statusWaktu = 'Sedang berlangsung';
+                                }
+                            }
+                        @endphp
+                        @if ($adaAktual)
+                        <div>
+                            <p class="detail-label"><i class="fa-regular fa-clock text-pink-400 mr-1"></i>Dijadwalkan</p>
+                            <p class="detail-value">{{ \Carbon\Carbon::parse($reservasi->jam)->format('H:i') }} - {{ $jamSelesaiEstimasi }}</p>
+                        </div>
+                        <div>
+                            <p class="detail-label"><i class="fa-solid fa-clock-rotate-left text-amber-500 mr-1"></i>Aktual</p>
+                            <p class="detail-value text-amber-600 font-bold">
+                                {{ $mulaiAktual }} 
+                                @if($reservasi->status === 'selesai')
+                                    - {{ $selesaiAktual }}
+                                @else
+                                    <span class="text-amber-500 font-normal"> · {{ $statusWaktu }}</span>
+                                @endif
+                            </p>
+                        </div>
+                        @else
+                        <div>
+                            <p class="detail-label"><i class="fa-regular fa-clock text-pink-400 mr-1"></i>Waktu</p>
+                            <p class="detail-value">{{ \Carbon\Carbon::parse($reservasi->jam)->format('H:i') }} - {{ $jamSelesaiEstimasi }}</p>
+                        </div>
+                        @endif
+                        @if ($durasiAktual)
+                        <div>
+                            <p class="detail-label"><i class="fa-regular fa-stopwatch text-emerald-500 mr-1"></i>Durasi</p>
+                            <p class="detail-value text-emerald-600 font-bold font-mono">{{ $durasiAktual }}</p>
+                        </div>
+                        @endif
                         <div>
                             <p class="detail-label"><i class="fa-solid fa-flag text-pink-400 mr-1"></i>Status</p>
                             <span class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-semibold {{ $statusClass }}">

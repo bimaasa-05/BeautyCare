@@ -316,18 +316,12 @@
                                             <td class="px-5 py-4 text-sm font-semibold text-gray-700" data-label="Jam">
                                                 @php
                                                     $jamMulai = \Carbon\Carbon::parse($r->jam)->format('H:i');
-                                                    $jamSelesai = null;
-                                                    if ($r->status === 'selesai') {
-                                                        $jamSelesai = $r->jam_selesai_aktual
-                                                            ? \Carbon\Carbon::parse($r->jam_selesai_aktual)->format('H:i')
-                                                            : \Carbon\Carbon::parse($r->tanggal . ' ' . substr($r->jam, 0, 5))->addMinutes(\App\Support\BookingSlot::durasiBooking($r))->format('H:i');
-                                                    }
+                                                    $durasiMenit = \App\Support\BookingSlot::durasiBooking($r);
+                                                    $jamSelesaiEstimasi = \Carbon\Carbon::parse($r->tanggal . ' ' . substr($r->jam, 0, 5))->addMinutes($durasiMenit)->format('H:i');
                                                 @endphp
                                                 <span class="font-mono">{{ $jamMulai }}</span>
-                                                @if ($jamSelesai)
-                                                    <span class="text-gray-400">-</span>
-                                                    <span class="font-mono text-gray-500">{{ $jamSelesai }}</span>
-                                                @endif
+                                                <span class="text-gray-400">-</span>
+                                                <span class="font-mono text-gray-500">{{ $jamSelesaiEstimasi }}</span>
                                             </td>
                                             <td class="px-5 py-4" data-label="Status">
                                                 @php
