@@ -15,4 +15,9 @@ class KategoriLayanan extends Model
         'deskripsi',
         'status',
     ];
+
+    public function layanan()
+    {
+        return $this->hasMany(Layanan::class, 'id_kategori', 'id_kategori_layanan');
+    }
 }
