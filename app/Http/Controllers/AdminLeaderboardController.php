@@ -18,13 +18,15 @@ class AdminLeaderboardController extends Controller
         $service = new LeaderboardService();
         $topLayanan = $service->topPelanggan('Layanan', $startDate, $endDate);
         $topProduk = $service->topPelanggan('Produk', $startDate, $endDate);
+        $topBeautycian = $service->beautycianLeaderboard($startDate, $endDate, 10);
+        $topKasir = $service->kasirLeaderboard($startDate, $endDate, 10);
 
         $fmt = function ($amount) {
             return 'Rp ' . number_format((float) $amount, 0, ',', '.');
         };
 
         return view('admin.leaderboard.index', compact(
-            'topLayanan', 'topProduk', 'fmt',
+            'topLayanan', 'topProduk', 'topBeautycian', 'topKasir', 'fmt',
             'periode', 'dari', 'sampai', 'startDate', 'endDate'
         ));
     }

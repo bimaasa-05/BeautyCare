@@ -19,94 +19,94 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
-    .chart-card:hover {
-        box-shadow: 0 4px 24px rgba(236, 72, 153, 0.14);
-    }
-    .sidebar-toggle {
-        display: none;
-        background: none;
-        border: none;
-        cursor: pointer;
-        padding: 8px;
-    }
-
-    .sidebar-toggle svg {
-        width: 24px;
-        height: 24px;
-        color: var(--dark);
-    }
-
-    .sidebar-overlay {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0, 0, 0, 0.3);
-        z-index: 90;
-    }
-
-    .sidebar-overlay.active {
-        display: block;
-    }
-
-    .card-scroll {
-        max-height: 320px;
-        overflow-y: auto;
-        padding-right: 4px;
-    }
-
-    .card-scroll::-webkit-scrollbar {
-        width: 4px;
-    }
-
-    .card-scroll::-webkit-scrollbar-track {
-        background: transparent;
-    }
-
-    .card-scroll::-webkit-scrollbar-thumb {
-        background: #FBCFE8;
-        border-radius: 10px;
-    }
-
-    .card-scroll::-webkit-scrollbar-thumb:hover {
-        background: #F9A8D4;
-    }
-
-    @media (max-width: 768px) {
+        .chart-card:hover {
+            box-shadow: 0 4px 24px rgba(236, 72, 153, 0.14);
+        }
         .sidebar-toggle {
-            display: flex;
-            align-items: center;
-        }
-    }
-
-    @media (max-width: 768px) {
-        .data-table thead { display: none; }
-        .data-table tbody tr {
-            display: block;
-            padding: 16px;
-            border-bottom: 1px solid var(--border);
-        }
-        .data-table tbody td {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 8px 0;
+            display: none;
+            background: none;
             border: none;
-            font-size: 13px;
-            text-align: right;
+            cursor: pointer;
+            padding: 8px;
         }
-        .data-table tbody td::before {
-            content: attr(data-label);
-            font-weight: 600;
-            color: var(--gray);
-            font-size: 11px;
-            text-transform: uppercase;
+
+        .sidebar-toggle svg {
+            width: 24px;
+            height: 24px;
+            color: var(--dark);
         }
-        .data-table tbody td:first-child { padding-left: 0; }
-        .data-table tbody td:last-child { padding-right: 0; }
-    }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: 90;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+        }
+
+        .card-scroll {
+            max-height: 320px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .card-scroll::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .card-scroll::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .card-scroll::-webkit-scrollbar-thumb {
+            background: #FBCFE8;
+            border-radius: 10px;
+        }
+
+        .card-scroll::-webkit-scrollbar-thumb:hover {
+            background: #F9A8D4;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar-toggle {
+                display: flex;
+                align-items: center;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .data-table thead { display: none; }
+            .data-table tbody tr {
+                display: block;
+                padding: 16px;
+                border-bottom: 1px solid var(--border);
+            }
+            .data-table tbody td {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 8px 0;
+                border: none;
+                font-size: 13px;
+                text-align: right;
+            }
+            .data-table tbody td::before {
+                content: attr(data-label);
+                font-weight: 600;
+                color: var(--gray);
+                font-size: 11px;
+                text-transform: uppercase;
+            }
+            .data-table tbody td:first-child { padding-left: 0; }
+            .data-table tbody td:last-child { padding-right: 0; }
+        }
 
         .page-header-premium {
             background: linear-gradient(135deg, #FFF5F8 0%, #FFE5EF 50%, #FFD6E6 100%);
@@ -183,6 +183,86 @@
             margin: 2px 0 0;
         }
 
+        /* Dropdown Period Filter */
+        .chart-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #FEE2EC;
+        }
+        .chart-header h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1F2937;
+            margin: 0;
+        }
+        .chart-actions {
+            margin-left: 12px;
+        }
+        .dropdown-pink {
+            appearance: none;
+            -webkit-appearance: none;
+            background: #fff;
+            border: 1.5px solid #FCE7F3;
+            border-radius: 8px;
+            padding: 6px 32px 6px 12px;
+            font-size: 12px;
+            font-weight: 500;
+            color: #EC4899;
+            font-family: 'Poppins', sans-serif;
+            cursor: pointer;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23EC4899' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+            background-size: 12px;
+            transition: all 0.2s ease;
+            min-width: 120px;
+        }
+        .dropdown-pink:hover {
+            border-color: #F9A8D4;
+            box-shadow: 0 2px 8px rgba(236, 72, 153, 0.10);
+        }
+        .dropdown-pink:focus {
+            outline: none;
+            border-color: #EC4899;
+            box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.15);
+        }
+        .dropdown-pink option {
+            background: #fff;
+            color: #374151;
+            padding: 8px;
+        }
+        .chart-empty-msg {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #9CA3AF;
+            font-size: 13px;
+        }
+        .mc-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .mc-header h3 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1F2937;
+            margin: 0;
+        }
+        .mc-total {
+            font-size: 18px;
+            font-weight: 700;
+            color: #EC4899;
+        }
+        .mc-header .chart-actions {
+            margin-left: auto;
+        }
     </style>
 </head>
 
@@ -305,26 +385,40 @@
                     <!-- Pendapatan Chart -->
                     <div class="chart-card">
                         <div class="chart-header">
-                            <h3>Grafik Pendapatan {{ date('Y') }}</h3>
+                            <h3>Grafik Pendapatan <span id="labelPendapatanPeriode"></span></h3>
+                            <div class="chart-actions">
+                                <select id="pendapatanPeriode" class="dropdown-pink" onchange="changePendapatanPeriod(this.value)">
+                                    <option value="7hari">7 Hari</option>
+                                    <option value="1bulan">1 Bulan</option>
+                                    <option value="1tahun">1 Tahun</option>
+                                </select>
+                            </div>
                         </div>
                         <div class="chart-body">
                             <canvas id="chartPendapatan" height="280"></canvas>
+                            <span id="pendapatanEmptyMsg" class="chart-empty-msg" style="display:none;">Belum ada data</span>
                         </div>
                     </div>
 
                     <!-- Mini Charts Right -->
                     <div class="mini-charts">
-                        <div class="mini-chart-card">
-                            <div class="mc-header">
-                                <h3>Grafik Booking (Minggu Ini)</h3>
-                                <span class="mc-total">{{ $totalBookingMinggu }}</span>
-                            </div>
-                            <div class="mc-body" id="miniChartBooking">
-                                <canvas id="chartBookingDonut" width="200" height="200"
-                                    data-values='@json(array_values($layananBookingMinggu))'
-                                    data-labels='@json(array_keys($layananBookingMinggu))'></canvas>
-                            </div>
-                        </div>
+<div class="mini-chart-card">
+    <div class="mc-header">
+        <h3>Grafik Booking <span id="labelBookingPeriode"></span></h3>
+        <span class="mc-total" id="totalBookingPeriode">{{ $totalBookingPeriode }}</span>
+        <div class="chart-actions">
+            <select id="bookingPeriode" class="dropdown-pink" onchange="changeBookingPeriod(this.value)">
+                <option value="7hari">7 Hari</option>
+                <option value="1bulan">1 Bulan</option>
+                <option value="1tahun">1 Tahun</option>
+            </select>
+        </div>
+    </div>
+    <div class="mc-body" id="miniChartBooking" style="position: relative; height: 180px; min-height: 180px;">
+        <canvas id="chartBookingDonut" style="max-width: 100%; height: 100%;"></canvas>
+        <span id="bookingEmptyMsg" style="display:none;font-size:12px;color:#999;">Belum ada data</span>
+    </div>
+</div>
 
                         <div class="mini-chart-card">
                             <div class="mc-header">
@@ -428,6 +522,51 @@
                     </div>
                 </div>
 
+                <!-- Dashboard Leaderboard Karyawan Grid -->
+                <div class="dashboard-bottom-grid grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+                    <!-- Top Kasir -->
+                    <div class="table-widget overflow-x-auto">
+                        <div class="tw-header">
+                            <h3>Top Kasir</h3>
+                            <a href="{{ route('admin.leaderboard.index') }}">Lihat Semua</a>
+                        </div>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>Kasir</th>
+                                    <th>Transaksi</th>
+                                    <th>Nominal</th>
+                                </tr>
+                            </thead>
+                            <tbody id="top-kasir-body">
+                                @include('partials.dashboard.top-kasir', ['items' => $topKasir, 'fmt' => $fmt])
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Top Beautycian -->
+                    <div class="table-widget overflow-x-auto">
+                        <div class="tw-header">
+                            <h3>Top Beautycian</h3>
+                            <a href="{{ route('admin.leaderboard.index') }}">Lihat Semua</a>
+                        </div>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>Beautycian</th>
+                                    <th>Pelanggan</th>
+                                    <th>Selesai</th>
+                                </tr>
+                            </thead>
+                            <tbody id="top-beautycian-body">
+                                @include('partials.dashboard.top-beautycian', ['items' => $topBeautycian])
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
                 <!-- Dashboard Bottom Row -->
                 <div class="dashboard-bottom-row grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
                     <!-- Karyawan Aktif -->
@@ -478,6 +617,87 @@
         </main>
     </div>
 
+<style>
+        .chart-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #FEE2EC;
+        }
+        .chart-header h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1F2937;
+            margin: 0;
+        }
+        .chart-actions {
+            margin-left: 12px;
+        }
+        .dropdown-pink {
+            appearance: none;
+            background: #fff;
+            border: 1.5px solid #FCE7F3;
+            border-radius: 8px;
+            padding: 6px 32px 6px 12px;
+            font-size: 12px;
+            font-weight: 500;
+            color: #EC4899;
+            font-family: 'Poppins', sans-serif;
+            cursor: pointer;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23EC4899' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+            background-size: 12px;
+            transition: all 0.2s ease;
+            min-width: 110px;
+        }
+        .dropdown-pink:hover {
+            border-color: #F9A8D4;
+            box-shadow: 0 2px 8px rgba(236, 72, 153, 0.1);
+        }
+        .dropdown-pink:focus {
+            outline: none;
+            border-color: #EC4899;
+            box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.15);
+        }
+        .dropdown-pink option {
+            background: #fff;
+            color: #374151;
+            padding: 8px;
+        }
+        .chart-empty-msg {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #9CA3AF;
+            font-size: 13px;
+        }
+        .mc-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .mc-header h3 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1F2937;
+            margin: 0;
+        }
+        .mc-total {
+            font-size: 18px;
+            font-weight: 700;
+            color: #EC4899;
+        }
+        .mc-header .chart-actions {
+            margin-left: auto;
+        }
+    </style>
+
     <script>
     const now = new Date();
     const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
@@ -487,80 +707,148 @@
     Chart.defaults.color = '#9CA3AF';
     Chart.defaults.font.size = 11;
 
-    const chartLabels = @json($chartLabels);
-    const chartRevenue = @json($chartRevenueData);
-    const maxRev = chartRevenue.length > 0 ? Math.max(...chartRevenue) : 0;
+    const chartDataByPeriod = @json($chartDataPeriode);
+    const donutDataByPeriod = @json($donutDataPeriode);
+    let currentPeriodPendapatan = '{{ $periode }}';
+    let currentPeriodBooking = '{{ $periodeBooking ?? $periode }}';
 
-    const ctx = document.getElementById('chartPendapatan').getContext('2d');
-    const pendapatanChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: chartLabels,
-            datasets: [{
-                label: 'Pendapatan',
-                data: chartRevenue,
-                borderColor: '#EC4899',
-                backgroundColor: 'rgba(236, 72, 153, 0.08)',
-                borderWidth: 2,
-                tension: 0.4,
-                fill: true,
-                pointBackgroundColor: '#fff',
-                pointBorderColor: '#EC4899',
-                pointBorderWidth: 2,
-                pointRadius: 3,
-                pointHoverRadius: 5
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false },
-                tooltip: {
-                    backgroundColor: '#fff',
-                    titleColor: '#1F2937',
-                    bodyColor: '#4B5563',
-                    borderColor: '#FCE7F3',
-                    borderWidth: 1,
-                    padding: 10,
-                    cornerRadius: 8,
-                    callbacks: {
-                        label: function(context) {
-                            var val = context.parsed.y;
-                            if (val >= 1000000) return 'Rp ' + (val / 1000000).toFixed(1) + ' jt';
-                            return 'Rp ' + val.toLocaleString('id-ID');
-                        }
-                    }
-                }
+    const donutColors = ['#EC4899','#8B5CF6','#F59E0B','#10B981','#3B82F6','#EF4444','#14B8A6','#F97316','#6366F1','#84CC16'];
+
+    let pendapatanChart = null;
+    let bookingDonutChart = null;
+
+    function getPeriodLabel(periode) {
+        return periode === '7hari' ? '7 Hari' : (periode === '1bulan' ? '1 Bulan' : '1 Tahun');
+    }
+
+    function updatePendapatanLabel(periode) {
+        const label = getPeriodLabel(periode);
+        const pendLabel = document.getElementById('labelPendapatanPeriode');
+        if (pendLabel) pendLabel.textContent = ' · ' + label;
+    }
+
+    function updateBookingLabel(periode) {
+        const label = getPeriodLabel(periode);
+        const bookLabel = document.getElementById('labelBookingPeriode');
+        if (bookLabel) bookLabel.textContent = ' · ' + label;
+    }
+
+    function initPendapatanChart(labels, revenue) {
+        const ctx = document.getElementById('chartPendapatan').getContext('2d');
+        const maxRev = revenue.length > 0 ? Math.max(...revenue) : 0;
+        const emptyMsg = document.getElementById('pendapatanEmptyMsg');
+        const canvas = document.getElementById('chartPendapatan');
+        const isEmpty = labels.length === 0 || revenue.every(v => Number(v) === 0);
+
+        if (pendapatanChart) pendapatanChart.destroy();
+
+        if (isEmpty) {
+            if (canvas) canvas.style.display = 'none';
+            if (emptyMsg) emptyMsg.style.display = 'flex';
+            pendapatanChart = null;
+            return;
+        }
+
+        if (canvas) canvas.style.display = 'block';
+        if (emptyMsg) emptyMsg.style.display = 'none';
+
+        pendapatanChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Pendapatan',
+                    data: revenue,
+                    borderColor: '#EC4899',
+                    backgroundColor: 'rgba(236, 72, 153, 0.08)',
+                    borderWidth: 2,
+                    tension: 0.4,
+                    fill: true,
+                    pointBackgroundColor: '#fff',
+                    pointBorderColor: '#EC4899',
+                    pointBorderWidth: 2,
+                    pointRadius: 3,
+                    pointHoverRadius: 5
+                }]
             },
-            scales: {
-                x: {
-                    grid: { display: false, drawBorder: false },
-                    ticks: { maxTicksLimit: Math.min(chartLabels.length, 10) }
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#fff',
+                        titleColor: '#1F2937',
+                        bodyColor: '#4B5563',
+                        borderColor: '#FCE7F3',
+                        borderWidth: 1,
+                        padding: 10,
+                        cornerRadius: 8,
+                        callbacks: {
+                            label: function(context) {
+                                var val = context.parsed.y;
+                                if (val >= 1000000) return 'Rp ' + (val / 1000000).toFixed(1) + ' jt';
+                                return 'Rp ' + val.toLocaleString('id-ID');
+                            }
+                        }
+                    }
                 },
-                y: {
-                    border: { display: false },
-                    grid: { color: '#F3E8F5', borderDash: [3, 3] },
-                    ticks: {
-                        maxTicksLimit: 6,
-                        callback: function(value) {
-                            if (maxRev > 1000000) return 'Rp' + (value / 1000000).toFixed(1) + 'jt';
-                            return 'Rp' + value.toLocaleString('id-ID');
+                scales: {
+                    x: {
+                        grid: { display: false, drawBorder: false },
+                        ticks: { maxTicksLimit: Math.min(labels.length, 10) }
+                    },
+                    y: {
+                        border: { display: false },
+                        grid: { color: '#F3E8F5', borderDash: [3, 3] },
+                        ticks: {
+                            maxTicksLimit: 6,
+                            callback: function(value) {
+                                if (maxRev > 1000000) return 'Rp' + (value / 1000000).toFixed(1) + 'jt';
+                                return 'Rp' + value.toLocaleString('id-ID');
+                            }
                         }
                     }
                 }
-            }
             }
         });
+    }
 
-    const donutCanvas = document.getElementById('chartBookingDonut');
-    const donutColors = ['#EC4899','#8B5CF6','#F59E0B','#10B981','#3B82F6','#EF4444','#14B8A6','#F97316','#6366F1','#84CC16'];
-    let bookingDonutChart = null;
     function initDonut(values, labels) {
-        if (donutCanvas && donutCanvas.parentNode.querySelector('span')) {
-            donutCanvas.parentNode.innerHTML = '';
-            donutCanvas.parentNode.appendChild(donutCanvas);
+        const donutCanvas = document.getElementById('chartBookingDonut');
+        const emptyMsg = document.getElementById('bookingEmptyMsg');
+        const isEmpty = labels.length === 0 || values.every(v => Number(v) === 0);
+
+        if (isEmpty) {
+            if (donutCanvas) {
+                donutCanvas.style.display = 'none';
+                if (donutCanvas.parentNode && donutCanvas.parentNode.querySelector('span')) {
+                    donutCanvas.parentNode.innerHTML = '';
+                    donutCanvas.parentNode.appendChild(donutCanvas);
+                }
+            }
+            if (emptyMsg) emptyMsg.style.display = 'flex';
+            if (bookingDonutChart) {
+                bookingDonutChart.destroy();
+                bookingDonutChart = null;
+            }
+            return;
         }
+
+        if (donutCanvas) donutCanvas.style.display = 'block';
+        if (emptyMsg) emptyMsg.style.display = 'none';
+
+        if (donutCanvas) {
+            const container = donutCanvas.parentNode;
+            while (container.firstChild) {
+                if (container.firstChild !== donutCanvas && container.firstChild !== emptyMsg) {
+                    container.removeChild(container.firstChild);
+                } else {
+                    break;
+                }
+            }
+        }
+
         if (!bookingDonutChart) {
             bookingDonutChart = new Chart(donutCanvas.getContext('2d'), {
                 type: 'doughnut',
@@ -575,7 +863,7 @@
                 },
                 options: {
                     responsive: true,
-                    maintainAspectRatio: true,
+                    maintainAspectRatio: false,
                     cutout: '60%',
                     plugins: {
                         legend: {
@@ -614,14 +902,52 @@
             bookingDonutChart.update();
         }
     }
-    if (donutCanvas) {
-        const values = JSON.parse(donutCanvas.getAttribute('data-values') || '[]');
-        const labels = JSON.parse(donutCanvas.getAttribute('data-labels') || '[]');
-        if (values.length > 0) {
-            initDonut(values, labels);
-        } else {
-            donutCanvas.parentNode.innerHTML = '<span style="font-size:12px;color:#999;">Tidak ada data</span>';
+
+    function updatePendapatanChart() {
+        const chartData = chartDataByPeriod[currentPeriodPendapatan];
+        updatePendapatanLabel(currentPeriodPendapatan);
+        if (chartData) {
+            initPendapatanChart(chartData.labels, chartData.revenue);
         }
+    }
+
+    function updateBookingChart() {
+        const donutData = donutDataByPeriod[currentPeriodBooking];
+        updateBookingLabel(currentPeriodBooking);
+        if (donutData) {
+            initDonut(donutData.values, donutData.labels);
+            const total = donutData.values.reduce((a, b) => a + b, 0);
+            const totalEl = document.getElementById('totalBookingPeriode');
+            if (totalEl) totalEl.textContent = total;
+        }
+    }
+
+    function changePendapatanPeriod(value) {
+        currentPeriodPendapatan = value;
+        document.getElementById('pendapatanPeriode').value = value;
+        updatePendapatanChart();
+    }
+
+    function changeBookingPeriod(value) {
+        currentPeriodBooking = value;
+        document.getElementById('bookingPeriode').value = value;
+        updateBookingChart();
+    }
+
+    document.getElementById('pendapatanPeriode').value = currentPeriodPendapatan;
+    document.getElementById('bookingPeriode').value = currentPeriodBooking;
+    updatePendapatanLabel(currentPeriodPendapatan);
+    updateBookingLabel(currentPeriodBooking);
+
+    const initPendData = chartDataByPeriod[currentPeriodPendapatan] || { labels: [], revenue: [] };
+    initPendapatanChart(initPendData.labels, initPendData.revenue);
+
+    const initDonutData = donutDataByPeriod[currentPeriodBooking] || { labels: [], values: [] };
+    initDonut(initDonutData.values, initDonutData.labels);
+    if (initDonutData.values.length > 0) {
+        const total = initDonutData.values.reduce((a, b) => a + b, 0);
+        const totalEl = document.getElementById('totalBookingPeriode');
+        if (totalEl) totalEl.textContent = total;
     }
     </script>
     <script>
@@ -642,7 +968,7 @@
     }
 
     function refreshDashboard() {
-        fetch(DASHBOARD_URL, {
+        fetch(DASHBOARD_URL + '?periode=' + currentPeriodPendapatan + '&periode_booking=' + currentPeriodBooking, {
             headers: {
                 'Accept': 'application/json',
                 'X-Requested-With': 'XMLHttpRequest'
@@ -666,18 +992,27 @@
             updateGrowth('stat-karyawan-growth', s.karyawanGrowth);
             updateGrowth('stat-produk-growth', s.produkTerjualGrowth);
 
-            if (pendapatanChart) {
+            if (pendapatanChart && data.charts) {
                 pendapatanChart.data.labels = data.charts.labels;
                 pendapatanChart.data.datasets[0].data = data.charts.revenue;
                 pendapatanChart.update('none');
             }
 
-            if (donutCanvas) {
+            if (data.donut) {
                 const v = data.donut.values;
                 if (v.length > 0) {
                     initDonut(v, data.donut.labels);
+                    const totalEl = document.getElementById('totalBookingPeriode');
+                    if (totalEl) totalEl.textContent = data.donut.total;
                 } else {
-                    donutCanvas.parentNode.innerHTML = '<span style="font-size:12px;color:#999;">Tidak ada data</span>';
+                    const emptyMsg = document.getElementById('bookingEmptyMsg');
+                    if (emptyMsg) emptyMsg.style.display = 'flex';
+                    const donutCanvas = document.getElementById('chartBookingDonut');
+                    if (donutCanvas) donutCanvas.style.display = 'none';
+                    if (bookingDonutChart) {
+                        bookingDonutChart.destroy();
+                        bookingDonutChart = null;
+                    }
                 }
             }
 
@@ -687,6 +1022,8 @@
             setHTML('produk-terlaris-body', data.produkTerlaris.html);
             setHTML('top-global-layanan-body', data.topGlobalLayanan.html);
             setHTML('top-global-produk-body', data.topGlobalProduk.html);
+            setHTML('top-kasir-body', data.topKasir.html);
+            setHTML('top-beautycian-body', data.topBeautycian.html);
             setHTML('karyawan-aktif-grid', data.karyawanAktif.html);
             setHTML('ringkasan-stok-grid', data.ringkasanStok.html);
             setHTML('booking-terbaru-list', data.bookingTerbaru.html);
@@ -705,5 +1042,4 @@
     </script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
 </body>
-
 </html>
