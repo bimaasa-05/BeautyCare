@@ -311,6 +311,8 @@
     .status-diproses .sb-dot { background: #3B82F6; }
     .status-lunas { background: #D1FAE5; color: #059669; }
     .status-lunas .sb-dot { background: #059669; }
+    .status-dp { background: #EDE9FE; color: #6D28D9; }
+    .status-dp .sb-dot { background: #7C3AED; }
     .status-gagal { background: #FEE2E2; color: #B91C1C; }
     .status-gagal .sb-dot { background: #DC2626; }
     .status-kadaluarsa, .status-dibatalkan { background: #F3F4F6; color: #6B7280; }
@@ -448,7 +450,7 @@
                     <a href="{{ route('pelanggan.pesanan.show', $p->id_transaksi) }}" class="pesanan-item">
                         <div class="pi-main">
                             <div class="pi-icon">
-                                @if($p->status === 'Lunas')
+                                @if($p->status === 'Lunas' || $p->status === 'DP Dibayar')
                                 <i class="fa-solid fa-check-circle"></i>
                                 @elseif($p->status === 'Menunggu Pembayaran')
                                 <i class="fa-regular fa-clock"></i>
@@ -464,6 +466,7 @@
                                         'Menunggu Pembayaran' => 'status-menunggu',
                                         'Sedang Diproses' => 'status-diproses',
                                         'Lunas' => 'status-lunas',
+                                        'DP Dibayar' => 'status-dp',
                                         'Gagal' => 'status-gagal',
                                         'Kadaluarsa' => 'status-kadaluarsa',
                                         'Dibatalkan' => 'status-dibatalkan',
