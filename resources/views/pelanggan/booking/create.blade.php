@@ -1318,7 +1318,7 @@
                                             <select id="id_layanan_picker" style="display:none">
                                                 <option value="">— Pilih Layanan —</option>
                                                 @foreach($layanans as $layanan)
-                                                <option value="{{ $layanan->id_layanan }}" data-harga="{{ $layanan->harga }}">
+                                                <option value="{{ $layanan->id_layanan }}" data-harga="{{ $layanan->harga }}" data-durasi="{{ $layanan->durasi }}">
                                                     {{ $layanan->nm_layanan }} (± {{ $layanan->durasi }} menit) — Rp {{ number_format($layanan->harga, 0, ',', '.') }}
                                                 </option>
                                                 @endforeach
@@ -1504,6 +1504,13 @@
                                     </span>
                                     <span class="sc-value" id="summary_diskon">Rp 0</span>
                                 </div>
+                                <div class="sc-row">
+                                    <span class="sc-label">
+                                        <span class="sc-dot"></span>
+                                        Total Durasi
+                                    </span>
+                                    <span class="sc-value" id="summary_durasi">0 menit</span>
+                                </div>
                                 <div class="sc-row sc-total">
                                     <span class="sc-label">Total Bayar</span>
                                     <span class="sc-value" id="summary_total">Rp 0</span>
@@ -1605,13 +1612,14 @@
         const id = parseInt(select.value);
         const nama = opt.text.split(' — ')[0];
         const harga = parseInt(opt.getAttribute('data-harga'));
+        const durasi = parseInt(opt.getAttribute('data-durasi'));
 
         if (selectedServices.some(s => s.id_layanan === id)) {
             window.__confirmPremiumShow({ title: 'Layanan Sudah Ditambahkan', body: 'Layanan "' + nama + '" sudah ada di daftar layanan.', icon: 'fa-circle-exclamation' });
             return;
         }
 
-        selectedServices.push({ id_layanan: id, nama: nama, harga: harga });
+        selectedServices.push({ id_layanan: id, nama: nama, harga: harga, durasi: durasi });
         renderSelectedServices();
         updateSummary();
         resetLayananPicker();
@@ -1686,12 +1694,14 @@
     function updateSummary() {
         var totalHarga = 0;
         var totalDiskon = 0;
+        var totalDurasi = 0;
         const dist = hitungDiskonBasket();
 
         selectedServices.forEach(function(svc) {
             var diskon = hitungDiskonLayanan(svc, dist);
             totalHarga += svc.harga;
             totalDiskon += diskon;
+            totalDurasi += svc.durasi || 0;
         });
 
         var totalBayar = Math.max(0, totalHarga - totalDiskon);
@@ -1699,6 +1709,7 @@
         document.getElementById('summary_jumlah').textContent = selectedServices.length + ' layanan';
         document.getElementById('summary_harga').textContent = formatRupiah(totalHarga);
         document.getElementById('summary_diskon').textContent = formatRupiah(totalDiskon);
+        document.getElementById('summary_durasi').textContent = totalDurasi + ' menit';
         document.getElementById('summary_total').textContent = formatRupiah(totalBayar);
     }
 
