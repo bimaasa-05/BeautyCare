@@ -16,7 +16,9 @@ class AuthenticatedSessionController extends Controller
      */
     public function create(): View
     {
-        return view('login.login');
+        $pengaturan = \App\Models\Pengaturan::first();
+
+        return view('login.login', compact('pengaturan'));
     }
 
     /**
@@ -38,9 +40,11 @@ class AuthenticatedSessionController extends Controller
 
             if ($user->status === 'suspend') {
                 $until = $user->suspend_until ? $user->suspend_until->locale('id')->isoFormat('D MMMM YYYY, HH:mm') . ' WIB' : 'tidak ditentukan';
-                $pesan = "Akun Anda dengan Nama \"{$user->nama}\" dan Email \"{$user->email}\" sedang disuspend sampai {$until}. Silakan hubungi admin.";
+                $pesan = "Akun Anda dengan Nama \"{$user->nama}\" dan Email \"{$user->email}\" sedang disuspend sampai {$until}.";
             } elseif ($user->status === 'menunggu_persetujuan') {
-                $pesan = 'Akun Anda sedang menunggu persetujuan admin. Silakan hubungi admin.';
+                $pesan = 'Akun Anda sedang menunggu persetujuan admin.';
+            } elseif ($user->status === 'non_aktif') {
+                $pesan = 'Akun Anda dinonaktifkan karena tidak login selama 1 tahun. Silahkan hubungi admin dengan klik icon WhatsApp yang ada di bawah ini';
             } else {
                 $pesan = 'Akun Anda belum diaktifkan oleh admin. Silakan hubungi admin.';
             }
@@ -49,6 +53,8 @@ class AuthenticatedSessionController extends Controller
                 'email' => $pesan,
             ]);
         }
+
+        $user->update(['last_login_at' => now()]);
 
         $request->session()->regenerate();
 

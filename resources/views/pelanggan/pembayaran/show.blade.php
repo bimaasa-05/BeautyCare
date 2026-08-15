@@ -1037,8 +1037,8 @@
 
                     @if($demoMode)
                     <div class="pay-demo-note">
-                        <i class="fa-solid fa-flask"></i>
-                        <span>Mode demo aktif: gunakan tombol <b>Simulasi Bayar Berhasil</b> di halaman kasir untuk menguji alur verifikasi.</span>
+                        <i class="fa-regular fa-circle-check"></i>
+                        <span>Mode demo aktif: gunakan tombol <b>Konfirmasi</b> di halaman kasir untuk menerima pembayaran.</span>
                     </div>
                     @endif
                 </div>

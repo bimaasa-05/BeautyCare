@@ -51,8 +51,8 @@ class KasirPelangganRingkasanSheet implements FromCollection, WithHeadings, With
         $totalPelanggan = Pelanggan::count();
         $pelangganBaru = Pelanggan::whereBetween('created_at', [$this->startDate . ' 00:00:00', $this->endDate . ' 23:59:59'])->count();
         $pelangganMember = Pelanggan::whereNotNull('id_member')->count();
-        $transaksiPelanggan = Transaksi::where('id_user', $this->userId)
-            ->whereNotNull('id_pelanggan')
+        $transaksiPelanggan = Transaksi::whereNotNull('id_pelanggan')
+            ->where('jenis_transaksi', '!=', 'Pengeluaran')
             ->whereBetween('tanggal', [$this->startDate, $this->endDate])
             ->count();
 
@@ -98,13 +98,13 @@ class KasirPelangganDataSheet implements FromCollection, WithHeadings, WithMappi
     {
         return Pelanggan::with('membership')
             ->withCount(['transaksi as total_transaksi' => function ($q) {
-                $q->where('id_user', $this->userId);
+                $q->where('jenis_transaksi', '!=', 'Pengeluaran');
             }])
             ->withSum(['transaksi as total_belanja' => function ($q) {
-                $q->where('id_user', $this->userId)->where('status', 'Lunas');
+                $q->where('jenis_transaksi', '!=', 'Pengeluaran')->where('status', 'Lunas');
             }], 'total')
             ->withMax(['transaksi as tgl_terakhir' => function ($q) {
-                $q->where('id_user', $this->userId);
+                $q->where('jenis_transaksi', '!=', 'Pengeluaran');
             }], 'tanggal')
             ->orderBy('id_pelanggan', 'desc')
             ->get();

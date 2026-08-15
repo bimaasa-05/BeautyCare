@@ -32,6 +32,13 @@
         .growth-positive { color: #059669; background: #ECFDF5; }
         .growth-negative { color: #DC2626; background: #FEF2F2; }
         .badge-status { display: inline-flex; align-items: center; gap: 4px; padding: 4px 12px; border-radius: 100px; font-size: 11px; font-weight: 600; }
+
+        .reveal { opacity: 0; transform: translateY(26px); transition: opacity .65s cubic-bezier(.22,.61,.36,1), transform .65s cubic-bezier(.22,.61,.36,1); }
+        .reveal.chart-reveal { transform: translateY(26px) scale(0.96); }
+        .reveal.visible { opacity: 1; transform: translateY(0) scale(1); }
+        @media (prefers-reduced-motion: reduce) {
+            .reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
+        }
         .pagination-custom nav svg { display: none; }
         .pagination-custom nav .flex a, .pagination-custom nav .flex span {
             font-size: 12px; padding: 6px 14px; border-radius: 100px !important; margin: 0 2px;
@@ -142,7 +149,7 @@
                         </div>
 
                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
-                            <div class="bg-white rounded-2xl p-5 border border-pink-50 shadow-[0_2px_16px_rgba(236,72,153,0.07)]">
+                            <div class="bg-white rounded-2xl p-5 border border-pink-50 shadow-[0_2px_16px_rgba(236,72,153,0.07)]" data-reveal-chart="chartBar">
                                 <h3 class="font-bold text-gray-800 mb-1">Pelanggan Baru {{ in_array($periode, ['7hari', '30hari']) ? 'Harian' : 'Bulanan' }}</h3>
                                 <p class="text-xs text-gray-400 mb-4">{{ date('d M', strtotime($startDate)) }} – {{ date('d M Y', strtotime($endDate)) }}</p>
                                 <div style="width: 100%; height: 200px;">
@@ -150,7 +157,7 @@
                                 </div>
                             </div>
 
-                            <div class="bg-white rounded-2xl p-5 border border-pink-50 shadow-[0_2px_16px_rgba(236,72,153,0.07)]">
+                            <div class="bg-white rounded-2xl p-5 border border-pink-50 shadow-[0_2px_16px_rgba(236,72,153,0.07)]" data-reveal-chart="chartDoughnut">
                                 <h3 class="font-bold text-gray-800 mb-1">Distribusi Membership</h3>
                                 <p class="text-xs text-gray-400 mb-4">{{ $totalPelanggan }} pelanggan terdaftar</p>
                                 <div style="width: 100%; height: 200px;">
@@ -283,6 +290,10 @@
         const commonOptions = {
             responsive: true,
             maintainAspectRatio: false,
+            animation: {
+                duration: 1200,
+                easing: 'easeOutQuart'
+            },
             plugins: {
                 legend: { display: false },
                 tooltip: {
@@ -313,68 +324,108 @@
         const memberLabels = @json($memberLabels);
         const memberValues = @json($memberValues);
 
-        const ctxBar = document.getElementById('barChart').getContext('2d');
-        new Chart(ctxBar, {
-            type: 'bar',
-            data: {
-                labels: chartLabels,
-                datasets: [{
-                    label: 'Pelanggan Baru',
-                    data: chartData,
-                    backgroundColor: '#8B5CF6',
-                    borderRadius: { topLeft: 6, topRight: 6 },
-                    barPercentage: 0.5
-                }]
-            },
-            options: commonOptions
-        });
+        const chartInitFlags = {};
 
-        const doughnutColors = ['#EC4899', '#8B5CF6', '#F59E0B', '#10B981', '#3B82F6', '#EF4444'];
-        const ctxDoughnut = document.getElementById('doughnutChart').getContext('2d');
-        new Chart(ctxDoughnut, {
-            type: 'doughnut',
-            data: {
-                labels: memberLabels,
-                datasets: [{
-                    data: memberValues,
-                    backgroundColor: doughnutColors.slice(0, memberLabels.length),
-                    borderWidth: 2,
-                    borderColor: '#fff'
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                cutout: '65%',
-                plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: {
-                            font: { family: 'Poppins', size: 10 },
-                            color: '#6B7280',
-                            padding: 12,
-                            usePointStyle: true,
-                            pointStyleWidth: 8
-                        }
+        const chartBuilders = {
+            chartBar: function () {
+                const ctxBar = document.getElementById('barChart').getContext('2d');
+                new Chart(ctxBar, {
+                    type: 'bar',
+                    data: {
+                        labels: chartLabels,
+                        datasets: [{
+                            label: 'Pelanggan Baru',
+                            data: chartData,
+                            backgroundColor: '#8B5CF6',
+                            borderRadius: { topLeft: 6, topRight: 6 },
+                            barPercentage: 0.5
+                        }]
                     },
-                    tooltip: {
-                        backgroundColor: '#fff',
-                        titleColor: '#1F2937',
-                        bodyColor: '#4B5563',
-                        borderColor: '#FCE7F3',
-                        borderWidth: 1,
-                        padding: 10,
-                        cornerRadius: 8,
-                        callbacks: {
-                            label: function(context) {
-                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                const pct = total > 0 ? ((context.parsed / total) * 100).toFixed(1) : 0;
-                                return ' ' + context.label + ': ' + context.parsed + ' (' + pct + '%)';
+                    options: commonOptions
+                });
+            },
+            chartDoughnut: function () {
+                const doughnutColors = ['#EC4899', '#8B5CF6', '#F59E0B', '#10B981', '#3B82F6', '#EF4444'];
+                const ctxDoughnut = document.getElementById('doughnutChart').getContext('2d');
+                new Chart(ctxDoughnut, {
+                    type: 'doughnut',
+                    data: {
+                        labels: memberLabels,
+                        datasets: [{
+                            data: memberValues,
+                            backgroundColor: doughnutColors.slice(0, memberLabels.length),
+                            borderWidth: 2,
+                            borderColor: '#fff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '65%',
+                        animation: {
+                            duration: 1400,
+                            easing: 'easeOutQuart'
+                        },
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    font: { family: 'Poppins', size: 10 },
+                                    color: '#6B7280',
+                                    padding: 12,
+                                    usePointStyle: true,
+                                    pointStyleWidth: 8
+                                }
+                            },
+                            tooltip: {
+                                backgroundColor: '#fff',
+                                titleColor: '#1F2937',
+                                bodyColor: '#4B5563',
+                                borderColor: '#FCE7F3',
+                                borderWidth: 1,
+                                padding: 10,
+                                cornerRadius: 8,
+                                callbacks: {
+                                    label: function(context) {
+                                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                        const pct = total > 0 ? ((context.parsed / total) * 100).toFixed(1) : 0;
+                                        return ' ' + context.label + ': ' + context.parsed + ' (' + pct + '%)';
+                                    }
+                                }
                             }
                         }
                     }
-                }
+                });
             }
+        };
+
+        const revealObserver = ('IntersectionObserver' in window) ? new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) {
+                if (!entry.isIntersecting) return;
+                const el = entry.target;
+                const key = el.dataset.revealChart;
+                if (key && !chartInitFlags[key] && chartBuilders[key]) {
+                    chartInitFlags[key] = true;
+                    chartBuilders[key]();
+                }
+                el.classList.add('visible');
+                revealObserver.unobserve(el);
+            });
+        }, { threshold: 0.15 }) : null;
+
+        function observeReveal(el) {
+            if (revealObserver) {
+                revealObserver.observe(el);
+            } else {
+                const key = el.dataset.revealChart;
+                if (key && chartBuilders[key]) chartBuilders[key]();
+                el.classList.add('visible');
+            }
+        }
+
+        document.querySelectorAll('[data-reveal-chart]').forEach(function (el) {
+            el.classList.add('reveal', 'chart-reveal');
+            observeReveal(el);
         });
 
         const now = new Date();

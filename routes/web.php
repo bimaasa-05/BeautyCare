@@ -55,7 +55,9 @@ Route::get('/', function () {
         ->orderBy('min_pembelian')
         ->get();
 
-    return view('landing.index', compact('tingkatMembership'));
+    $pengaturan = \App\Models\Pengaturan::first();
+
+    return view('landing.index', compact('tingkatMembership', 'pengaturan'));
 })->name('home');
 
 Route::post('/kontak', [App\Http\Controllers\ContactController::class, 'store'])->name('landing.contact');

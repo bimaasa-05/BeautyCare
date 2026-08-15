@@ -35,7 +35,7 @@ class RegisteredUserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'no_hp' => ['nullable', 'string', 'max:20'],
-            'password' => ['required', 'confirmed'],
+            'password' => ['required', 'string', 'min:6', 'confirmed'],
 
         ]);
 
@@ -65,6 +65,8 @@ class RegisteredUserController extends Controller
 
         event(new Registered($user));
 
-        return \redirect()->route('login')->with('status', 'Register Telah berhasil silahkan login');
+        $pesan = 'Akun Anda sedang menunggu persetujuan admin. atau silahkan hubungi admin dengan klik icon WhatsApp yang ada di bawah ini';
+
+        return \redirect()->route('login')->withErrors(['email' => $pesan]);
     }
 }

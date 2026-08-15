@@ -832,11 +832,21 @@
                                 <circle cx="12" cy="10" r="3" />
                             </svg>
                         </div>
-                        <h3 style="font-size:18px;margin-bottom:8px;">Kantor Pusat BeautyCare</h3>
+                        <h3 style="font-size:18px;margin-bottom:8px;">{{ optional($pengaturan)->nama_salon ?: 'Kantor Pusat BeautyCare' }}</h3>
                         <p style="font-size:14px;color:var(--gray);text-align:center;max-width:300px;">
-                            Jl. Sudirman No. 123, Jakarta Pusat<br>
-                            Indonesia 10220
+                            {!! nl2br(e(optional($pengaturan)->alamat ?: 'Jl. Sudirman No. 123, Jakarta Pusat<br>Indonesia 10220')) !!}
                         </p>
+                        @if(!empty(optional($pengaturan)->telepon) || !empty(optional($pengaturan)->email))
+                        <p style="font-size:14px;color:var(--gray);text-align:center;max-width:300px;margin-top:10px;">
+                            @if(!empty(optional($pengaturan)->telepon))
+                            <a href="tel:{{ optional($pengaturan)->telepon }}" style="color:var(--primary);">{{ optional($pengaturan)->telepon }}</a>
+                            @endif
+                            @if(!empty(optional($pengaturan)->telepon) && !empty(optional($pengaturan)->email))<br>@endif
+                            @if(!empty(optional($pengaturan)->email))
+                            <a href="mailto:{{ optional($pengaturan)->email }}" style="color:var(--primary);">{{ optional($pengaturan)->email }}</a>
+                            @endif
+                        </p>
+                        @endif
                     </div>
                 </div>
                 <div class="contact-form">

@@ -28,6 +28,7 @@ class User extends Authenticatable
         'foto',
         'status',
         'suspend_until',
+        'last_login_at',
         'perubahan_last_seen',
         'stok_last_seen',
     ];
@@ -53,6 +54,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'suspend_until' => 'datetime',
+            'last_login_at' => 'datetime',
         ];
     }
 

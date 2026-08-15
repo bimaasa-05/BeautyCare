@@ -931,7 +931,7 @@
             document.getElementById('alertSaldoSisa').textContent = 'Rp ' + fmtAngka(sisaBayar);
             alertEl.style.display = 'flex';
             nonSaldoOpts.forEach(function(o) {
-                o.classList.add('highlight-kombinasi');
+                o.classList.toggle('highlight-kombinasi', o.classList.contains('selected'));
             });
         } else {
             alertEl.style.display = 'none';

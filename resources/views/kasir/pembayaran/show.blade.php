@@ -277,14 +277,20 @@
 
                             <div class="mt-4">
                                 <h4 class="text-[13px] font-bold text-gray-600 mb-3 flex items-center gap-2">
-                                    <i class="fa-solid fa-list text-pink-400"></i> Detail Layanan
+                                    <i class="fa-solid fa-list text-pink-400"></i> Detail Item
                                 </h4>
                                 <div class="overflow-x-auto"><table class="w-full text-[13px] table-card-mobile">
                                         <thead>
                                             <tr class="border-b border-gray-100">
                                                 <th
                                                     class="text-left py-2 text-[11px] font-semibold text-gray-400 uppercase">
-                                                    Layanan</th>
+                                                    Jenis</th>
+                                                <th
+                                                    class="text-left py-2 text-[11px] font-semibold text-gray-400 uppercase">
+                                                    Item</th>
+                                                <th
+                                                    class="text-center py-2 text-[11px] font-semibold text-gray-400 uppercase">
+                                                    Qty</th>
                                                 <th
                                                     class="text-right py-2 text-[11px] font-semibold text-gray-400 uppercase">
                                                     Harga</th>
@@ -297,10 +303,27 @@
                                             </tr>
                                         </thead>
                                         <tbody>
+                                            @php
+                                                $jenisBadge = [
+                                                    'Layanan' => ['class' => 'bg-violet-50 text-violet-600 border border-violet-100', 'icon' => 'fa-solid fa-scissors'],
+                                                    'Produk' => ['class' => 'bg-sky-50 text-sky-600 border border-sky-100', 'icon' => 'fa-solid fa-box'],
+                                                    'Membership' => ['class' => 'bg-amber-50 text-amber-600 border border-amber-100', 'icon' => 'fa-solid fa-crown'],
+                                                    'TopUp' => ['class' => 'bg-emerald-50 text-emerald-600 border border-emerald-100', 'icon' => 'fa-solid fa-wallet'],
+                                                ];
+                                            @endphp
                                             @foreach ($transaksi->detail as $d)
+                                                @php
+                                                    $jb = $jenisBadge[$d->jenis] ?? ['class' => 'bg-gray-50 text-gray-600 border border-gray-200', 'icon' => 'fa-solid fa-tag'];
+                                                @endphp
                                                 <tr class="border-b border-gray-50">
-                                                    <td data-label="Layanan" class="py-2 font-medium text-gray-700">{{ $d->nm_item }}
+                                                    <td data-label="Jenis" class="py-2">
+                                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold {{ $jb['class'] }}">
+                                                            <i class="{{ $jb['icon'] }}"></i> {{ $d->jenis }}
+                                                        </span>
                                                     </td>
+                                                    <td data-label="Item" class="py-2 font-medium text-gray-700">{{ $d->nm_item }}
+                                                    </td>
+                                                    <td data-label="Qty" class="py-2 text-center text-gray-700">{{ $d->qty }}</td>
                                                     <td data-label="Harga" class="py-2 text-right text-gray-700">Rp
                                                         {{ number_format($d->harga, 0, ',', '.') }}</td>
                                                     <td data-label="Diskon" class="py-2 text-right text-red-500">Rp
@@ -312,7 +335,7 @@
                                         </tbody>
                                         <tfoot>
                                             <tr>
-                                                <td colspan="3"
+                                                <td colspan="5"
                                                     class="py-3 text-right text-[13px] font-bold text-gray-600">Grand
                                                     Total</td>
                                                 <td class="py-3 text-right text-[16px] font-bold text-pink-500">Rp

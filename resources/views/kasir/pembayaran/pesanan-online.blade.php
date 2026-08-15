@@ -46,7 +46,6 @@
         .btn-konfirmasi { background: #10B981; color: #fff; box-shadow: 0 4px 12px rgba(16,185,129,0.25); }
         .btn-tolak { background: #fff; color: #DC2626; border: 1.5px solid #FECACA; }
         .btn-detail { background: #F0F4FF; color: #3B5BDB; }
-        .btn-simulasi { background: linear-gradient(135deg, #8B5CF6, #A78BFA); color: #fff; box-shadow: 0 4px 12px rgba(139,92,246,0.3); }
     </style>
 </head>
 
@@ -85,8 +84,8 @@
 
                     @if($demoMode)
                     <div class="mb-4 p-4 bg-purple-50 border border-purple-200 text-purple-700 text-[13px] rounded-xl flex items-center gap-2">
-                        <i class="fa-solid fa-flask"></i>
-                        <span><b>Mode demo aktif.</b> Gunakan tombol <b>Simulasi Bayar Berhasil</b> untuk mensimulasikan pembayaran masuk dari pelanggan.</span>
+                        <i class="fa-regular fa-circle-check"></i>
+                        <span><b>Mode demo aktif.</b> Gunakan tombol <b>Konfirmasi</b> untuk memverifikasi pembayaran masuk dari pelanggan.</span>
                     </div>
                     @endif
 
@@ -199,8 +198,8 @@
                                                 @csrf
                                                 <input type="hidden" name="aksi" value="konfirmasi">
                                                 @if($demoMode)
-                                                <button type="submit" class="btn-aksi btn-simulasi" data-confirm-title="Simulasi Pembayaran" data-confirm-body="Simulasikan pembayaran berhasil untuk {{ $isBooking ? 'booking ' : 'pesanan ' }}{{ $p->no_invoice }}?" data-confirm-icon="fa-flask" data-confirm-type="purple" data-confirm-yes="Ya, Simulasikan">
-                                                    <i class="fa-solid fa-flask text-[11px]"></i> Simulasi Bayar Berhasil
+                                                <button type="submit" class="btn-aksi btn-konfirmasi" data-confirm-title="Konfirmasi Lunas" data-confirm-body="Konfirmasi pembayaran pesanan {{ $p->no_invoice }} sudah diterima dan lunas? Stok akan dikurangi." data-confirm-icon="fa-circle-check" data-confirm-type="success" data-confirm-yes="Ya, Konfirmasi">
+                                                    <i class="fa-solid fa-circle-check text-[11px]"></i> Konfirmasi
                                                 </button>
                                                 @else
                                                 <button type="submit" class="btn-aksi btn-konfirmasi" data-confirm-title="{{ $isBooking ? 'Konfirmasi Pembayaran' : 'Konfirmasi Lunas' }}" data-confirm-body="{{ $isBooking ? 'Konfirmasi pembayaran booking '.$p->no_invoice.' sudah diterima?' : 'Konfirmasi pesanan '.$p->no_invoice.' sudah lunas? Stok akan dikurangi.' }}" data-confirm-icon="fa-circle-check" data-confirm-type="success" data-confirm-yes="Ya, Konfirmasi">
