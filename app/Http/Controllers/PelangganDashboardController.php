@@ -11,6 +11,7 @@ use App\Models\DetailBooking;
 use App\Models\Pelanggan;
 use App\Models\Membership;
 use App\Models\Transaksi;
+use App\Models\Rating;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 
@@ -190,6 +191,13 @@ class PelangganDashboardController extends Controller
             $chartYearCounts[] = $count;
         }
 
+        $ratingSaya = Rating::with('user')
+            ->where('id_user', auth()->id())
+            ->latest()
+            ->get();
+
+        $belumDirating = Rating::belumDirating(auth()->id(), $idPelanggan);
+
         return view('pelanggan.dashboard', compact(
             'promos', 'layanans', 'kategoriLayanan', 'produks',
             'totalBooking', 'bookingAktif', 'riwayatTreatment', 'kunjunganBulanIni',
@@ -199,7 +207,8 @@ class PelangganDashboardController extends Controller
             'layananFavorit', 'produkTerlaris',
             'totalBelanja', 'totalTransaksi', 'memberSaatIni',
             'nextTier', 'isMaxTier', 'progressBelanja', 'progressTransaksi',
-            'targetBelanja', 'targetTransaksi'
+            'targetBelanja', 'targetTransaksi',
+            'ratingSaya', 'belumDirating'
         ));
     }
 }
