@@ -184,7 +184,7 @@
                                 </div>
                                 <h4 class="text-[15px] font-bold text-gray-800">{{ $transaksi->no_invoice }}</h4>
                                 <p class="text-[12px] text-gray-400">
-                                    {{ \Carbon\Carbon::parse($transaksi->tanggal)->format('d F Y') }}</p>
+                                    {{ \Carbon\Carbon::parse($transaksi->tanggal)->isoFormat('dddd, D MMMM YYYY') }}</p>
 
                                 @php
                                     $statusMap = [
@@ -274,6 +274,77 @@
                                     <p class="info-value" style="white-space:pre-wrap;word-break:break-word;overflow-wrap:anywhere;">{{ $transaksi->catatan ?: '-' }}</p>
                                 </div>
                             </div>
+
+                            @if ($transaksi->booking)
+                                @php
+                                    $bk = $transaksi->booking;
+                                    $durasiMenit = \App\Support\BookingSlot::durasiBooking($bk);
+                                    $jamMulai = \Carbon\Carbon::parse($bk->jam)->format('H:i');
+                                    $jamSelesaiEstimasi = \Carbon\Carbon::parse($bk->tanggal . ' ' . substr($bk->jam, 0, 5))->addMinutes($durasiMenit)->format('H:i');
+                                    $adaAktual = in_array($bk->status, ['diproses', 'selesai']) && $bk->jam_mulai_aktual;
+                                    $mulaiAktual = $adaAktual ? \Carbon\Carbon::parse($bk->jam_mulai_aktual)->format('H:i') : null;
+                                    $selesaiAktual = null;
+                                    $durasiAktual = null;
+                                    $statusWaktu = null;
+                                    if ($adaAktual) {
+                                        $mulaiCarbon = \Carbon\Carbon::parse($bk->jam_mulai_aktual);
+                                        if ($bk->status === 'selesai' && $bk->jam_selesai_aktual) {
+                                            $selesaiCarbon = \Carbon\Carbon::parse($bk->jam_selesai_aktual);
+                                            $selesaiAktual = $selesaiCarbon->format('H:i');
+                                            $durasiDetik = $mulaiCarbon->diffInSeconds($selesaiCarbon);
+                                            $durasiAktual = gmdate('H:i:s', $durasiDetik);
+                                            $statusWaktu = 'Selesai';
+                                        } else {
+                                            $selesaiEstCarbon = $mulaiCarbon->copy()->addMinutes($durasiMenit);
+                                            $selesaiAktual = $selesaiEstCarbon->format('H:i');
+                                            $statusWaktu = 'Sedang berlangsung';
+                                        }
+                                    }
+                                @endphp
+                                <div class="mt-4 p-4 bg-violet-50/50 border border-violet-100/50 rounded-2xl">
+                                    <h4 class="text-[13px] font-bold text-violet-600 mb-3 flex items-center gap-2">
+                                        <i class="fa-solid fa-clock"></i> Waktu Treatment
+                                    </h4>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                        <div class="info-box bg-white/60">
+                                            <p class="info-label"><i class="fa-solid fa-calendar mr-1 text-violet-300"></i> Tanggal Treatment</p>
+                                            <p class="info-value">{{ \Carbon\Carbon::parse($bk->tanggal)->isoFormat('dddd, D MMMM YYYY') }}</p>
+                                        </div>
+                                        <div class="info-box bg-white/60">
+                                            <p class="info-label"><i class="fa-solid fa-user mr-1 text-violet-300"></i> Beautician</p>
+                                            <p class="info-value">{{ $bk->karyawan->nama ?? '-' }}</p>
+                                        </div>
+                                        @if ($adaAktual)
+                                        <div class="info-box bg-white/60">
+                                            <p class="info-label"><i class="fa-regular fa-clock mr-1 text-violet-300"></i> Dijadwalkan</p>
+                                            <p class="info-value font-mono">{{ $jamMulai }} - {{ $jamSelesaiEstimasi }}</p>
+                                        </div>
+                                        <div class="info-box bg-white/60">
+                                            <p class="info-label"><i class="fa-solid fa-clock-rotate-left mr-1 text-amber-400"></i> Aktual</p>
+                                            <p class="info-value font-mono text-amber-600 font-bold">
+                                                {{ $mulaiAktual }}
+                                                @if ($bk->status === 'selesai')
+                                                    - {{ $selesaiAktual }}
+                                                @else
+                                                    <span class="text-amber-500 font-normal">· {{ $statusWaktu }}</span>
+                                                @endif
+                                            </p>
+                                        </div>
+                                        @else
+                                        <div class="info-box bg-white/60">
+                                            <p class="info-label"><i class="fa-regular fa-clock mr-1 text-violet-300"></i> Jadwal Treatment</p>
+                                            <p class="info-value font-mono">{{ $jamMulai }} - {{ $jamSelesaiEstimasi }} WIB</p>
+                                        </div>
+                                        @endif
+                                        @if ($durasiAktual)
+                                        <div class="info-box bg-white/60">
+                                            <p class="info-label"><i class="fa-solid fa-stopwatch mr-1 text-emerald-400"></i> Durasi Pengerjaan</p>
+                                            <p class="info-value font-mono text-emerald-600 font-bold">{{ $durasiAktual }}</p>
+                                        </div>
+                                        @endif
+                                    </div>
+                                </div>
+                            @endif
 
                             <div class="mt-4">
                                 <h4 class="text-[13px] font-bold text-gray-600 mb-3 flex items-center gap-2">
