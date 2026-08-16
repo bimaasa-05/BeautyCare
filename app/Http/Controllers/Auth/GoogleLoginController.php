@@ -19,9 +19,7 @@ class GoogleLoginController extends Controller
 {
     public function redirect(): RedirectResponse
     {
-        return Socialite::driver('google')
-            ->with(['prompt' => 'consent'])
-            ->redirect();
+        return Socialite::driver('google')->redirect();
     }
 
     public function callback(Request $request): RedirectResponse
@@ -62,6 +60,17 @@ class GoogleLoginController extends Controller
                 'email_verified_at' => $user->email_verified_at ?? now(),
             ]);
 
+            if ($user->status === 'menunggu_verifikasi') {
+                $result = VerificationController::kirimOtp($user->email);
+
+                $status = $result === 'reuse'
+                    ? 'Akun Anda belum diverifikasi. Gunakan kode verifikasi yang telah dikirim sebelumnya.'
+                    : 'Akun Anda belum diverifikasi. Kode verifikasi baru telah dikirim ke email Anda.';
+
+                return redirect()->route('verification.otp.show', ['email' => $user->email])
+                    ->with('status', $status);
+            }
+
             Auth::login($user, true);
 
             $rejected = LoginSupport::rejectNonActive($user, $request);
@@ -88,6 +97,6 @@ class GoogleLoginController extends Controller
 
         VerificationController::kirimOtp($user->email);
 
-        return redirect()->route('verification.otp.show')->with('otp_email', $user->email);
+        return redirect()->route('verification.otp.show', ['email' => $user->email]);
     }
 }
