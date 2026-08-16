@@ -191,13 +191,13 @@ class KasirPembayaranController extends Controller
 
     public function show($id)
     {
-        $transaksi = Transaksi::with(['pelanggan', 'user', 'kasir', 'detail'])->findOrFail($id);
+        $transaksi = Transaksi::with(['pelanggan', 'user', 'kasir', 'detail', 'booking.detail.layanan'])->findOrFail($id);
         return view('kasir.pembayaran.show', compact('transaksi'));
     }
 
     public function pesananOnline()
     {
-        $pesanan = Transaksi::with(['pelanggan', 'user', 'detail', 'pembayaran'])
+        $pesanan = Transaksi::with(['pelanggan', 'user', 'detail', 'pembayaran', 'booking.detail.layanan'])
             ->where('sumber', 'online')
             ->whereIn('status', ['Menunggu Pembayaran', 'Sedang Diproses'])
             ->orderBy('id_transaksi', 'desc')

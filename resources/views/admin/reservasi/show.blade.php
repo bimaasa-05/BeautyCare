@@ -242,7 +242,7 @@
                         @endif
                         @if ($durasiAktual)
                         <div>
-                            <p class="detail-label"><i class="fa-regular fa-stopwatch text-emerald-500 mr-1"></i>Durasi</p>
+                            <p class="detail-label"><i class="fa-solid fa-stopwatch text-emerald-500 mr-1"></i>Durasi</p>
                             <p class="detail-value text-emerald-600 font-bold font-mono">{{ $durasiAktual }}</p>
                         </div>
                         @endif

@@ -159,8 +159,17 @@
                                             </div>
                                         </td>
                                         <td class="text-gray-500" data-label="Karyawan">{{ $r->karyawan->nama ?? '-' }}</td>
-                                        <td class="text-gray-500" data-label="Tanggal">{{ \Carbon\Carbon::parse($r->tanggal)->format('d/m/Y') }}</td>
-                                        <td class="text-gray-500 font-mono" data-label="Jam">{{ $r->jam }}</td>
+                                        <td class="text-gray-500" data-label="Tanggal">{{ \Carbon\Carbon::parse($r->tanggal)->isoFormat('D MMM Y') }}</td>
+                                        <td class="text-gray-500" data-label="Jam">
+                                            @php
+                                                $jamMulai = \Carbon\Carbon::parse($r->jam)->format('H:i');
+                                                $durasiMenit = \App\Support\BookingSlot::durasiBooking($r);
+                                                $jamSelesaiEstimasi = \Carbon\Carbon::parse($r->tanggal . ' ' . substr($r->jam, 0, 5))->addMinutes($durasiMenit)->format('H:i');
+                                            @endphp
+                                            <span class="font-mono font-semibold text-gray-700">{{ $jamMulai }}</span>
+                                            <span class="text-gray-400">-</span>
+                                            <span class="font-mono text-gray-500">{{ $jamSelesaiEstimasi }}</span>
+                                        </td>
                                         <td data-label="Status">
                                             @php
                                                 $statusClass = match($r->status) {
@@ -183,6 +192,26 @@
                                             <span class="badge-status {{ $statusClass }}">
                                                 <i class="{{ $statusIcon }}"></i> {{ ucfirst($r->status) }}
                                             </span>
+                                            @if ($r->status === 'diproses')
+                                                @php
+                                                    $durasiMenit = \App\Support\BookingSlot::durasiBooking($r);
+                                                    $durasiTxt = $durasiMenit >= 60
+                                                        ? (($durasiMenit % 60)
+                                                            ? floor($durasiMenit / 60) . ' jam ' . ($durasiMenit % 60) . ' menit'
+                                                            : ($durasiMenit / 60) . ' jam')
+                                                        : $durasiMenit . ' menit';
+                                                    $mulaiPengerjaan = $r->jam_mulai_aktual
+                                                        ? \Carbon\Carbon::parse($r->jam_mulai_aktual)
+                                                        : \Carbon\Carbon::parse($r->tanggal . ' ' . substr($r->jam, 0, 5));
+                                                    $estimasiSelesai = $mulaiPengerjaan->copy()->addMinutes($durasiMenit);
+                                                @endphp
+                                                <div class="mt-1.5 flex items-center gap-1 text-[10px] font-semibold text-violet-500">
+                                                    <i class="fa-regular fa-clock"></i> Waktu pengerjaan: {{ $durasiTxt }}
+                                                </div>
+                                                <div class="countdown-row mt-0.5 flex items-center gap-1 text-[10px] font-bold text-violet-600" data-akhir="{{ $estimasiSelesai->format('Y-m-d H:i:s') }}">
+                                                    <i class="fa-solid fa-hourglass-half"></i> Sisa: <span class="countdown-value font-mono">--:--:--</span>
+                                                </div>
+                                            @endif
                                         </td>
                                         <td class="text-center" data-label="">
                                             <div class="flex items-center justify-center gap-1.5">
@@ -242,6 +271,27 @@
         const now = new Date();
         const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
         document.getElementById('currentDate').textContent = now.toLocaleDateString('id-ID', options);
+
+        function updateCountdowns() {
+            const now = new Date();
+            document.querySelectorAll('.countdown-row').forEach(function(row) {
+                const end = new Date((row.dataset.akhir || '').replace(' ', 'T'));
+                const diff = Math.max(0, end - now);
+                const h = String(Math.floor(diff / 3600000)).padStart(2, '0');
+                const m = String(Math.floor((diff % 3600000) / 60000)).padStart(2, '0');
+                const s = String(Math.floor((diff % 60000) / 1000)).padStart(2, '0');
+                const val = row.querySelector('.countdown-value');
+                if (val) {
+                    val.textContent = h + ':' + m + ':' + s;
+                    if (diff <= 0) {
+                        val.classList.add('text-red-500');
+                        row.querySelector('i')?.classList.add('text-red-500');
+                    }
+                }
+            });
+        }
+        updateCountdowns();
+        setInterval(updateCountdowns, 1000);
     </script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
     @include('partials.confirm-modal')
