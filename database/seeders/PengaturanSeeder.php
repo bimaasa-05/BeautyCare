@@ -100,7 +100,7 @@ TXT;
         $sosmed = [
             ['platform' => 'instagram', 'url' => 'https://instagram.com/beautycare'],
             ['platform' => 'facebook', 'url' => 'https://facebook.com/beautycare'],
-            ['platform' => 'whatsapp', 'url' => 'https://wa.me/625723706843'],
+            ['platform' => 'whatsapp', 'url' => 'https://wa.me/6285723706843'],
             ['platform' => 'youtube', 'url' => 'https://youtube.com/@beautycare'],
         ];
 
