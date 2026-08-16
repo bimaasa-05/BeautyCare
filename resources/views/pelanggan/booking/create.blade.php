@@ -2132,12 +2132,6 @@
         }
     });
 
-    window.addEventListener('scroll', function() {
-        if (dcpPopup.classList.contains('open')) {
-            closeCalendarPopup();
-        }
-    }, { passive: true });
-
     function renderJamGrid() {
         const grid = document.getElementById('jamGrid');
         if (!jamSelect || !grid) return;
