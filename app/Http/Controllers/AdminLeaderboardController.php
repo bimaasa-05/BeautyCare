@@ -18,11 +18,7 @@ class AdminLeaderboardController extends Controller
         $service = new LeaderboardService();
         $topLayanan = $service->topPelanggan('Layanan', $startDate, $endDate);
         $topProduk = $service->topPelanggan('Produk', $startDate, $endDate);
-<<<<<<< HEAD
-        $topBeautycian = $service->beauticianLeaderboard($startDate, $endDate, 10);
-=======
         $topBeautycian = $service->beautycianLeaderboard($startDate, $endDate, 10);
->>>>>>> 5d8cc777856d624b89dda3bdbe551fbbaaa316a4
         $topKasir = $service->kasirLeaderboard($startDate, $endDate, 10);
 
         $fmt = function ($amount) {
@@ -30,11 +26,7 @@ class AdminLeaderboardController extends Controller
         };
 
         return view('admin.leaderboard.index', compact(
-<<<<<<< HEAD
-            'topLayanan', 'topProduk', 'topBeautician', 'topKasir', 'fmt',
-=======
             'topLayanan', 'topProduk', 'topBeautycian', 'topKasir', 'fmt',
->>>>>>> 5d8cc777856d624b89dda3bdbe551fbbaaa316a4
             'periode', 'dari', 'sampai', 'startDate', 'endDate'
         ));
     }
