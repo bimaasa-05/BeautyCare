@@ -59,8 +59,7 @@ class RegisteredUserController extends Controller
 
         buatNotifRole('admin', 'Pelanggan Baru Mendaftar', $request->name.' ('.$request->email.') baru saja mendaftar dan menunggu verifikasi OTP.', 'Registrasi', route('admin.pelanggan.index'));
 
-        return redirect()->route('verification.otp.show')->with([
-            'otp_email' => $user->email,
+        return redirect()->route('verification.otp.show', ['email' => $user->email])->with([
             'status' => 'Kode verifikasi telah dikirim ke email Anda. Silakan cek kotak masuk (atau folder Spam).',
         ]);
     }
