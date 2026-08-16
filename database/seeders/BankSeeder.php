@@ -10,10 +10,10 @@ class BankSeeder extends Seeder
     public function run(): void
     {
         $banks = [
-            // ========== TRANSFER BANKS (kode_bank = kode baku Indonesia) ==========
+            // ========== TRANSFER BANK ==========
             [
                 'nama_bank' => 'BCA',
-                'kode_bank' => '01433333333333',
+                'kode_bank' => '014',
                 'no_rekening' => '0140123456789',
                 'atas_nama' => 'BeautyCare Overpower',
                 'tipe' => 'transfer',
@@ -22,7 +22,7 @@ class BankSeeder extends Seeder
             ],
             [
                 'nama_bank' => 'BRI',
-                'kode_bank' => '00233',
+                'kode_bank' => '002',
                 'no_rekening' => '0020123456789',
                 'atas_nama' => 'BeautyCare Overpower',
                 'tipe' => 'transfer',
@@ -31,7 +31,7 @@ class BankSeeder extends Seeder
             ],
             [
                 'nama_bank' => 'Mandiri',
-                'kode_bank' => '008213131',
+                'kode_bank' => '008',
                 'no_rekening' => '0080123456789',
                 'atas_nama' => 'BeautyCare Overpower',
                 'tipe' => 'transfer',
@@ -40,7 +40,7 @@ class BankSeeder extends Seeder
             ],
             [
                 'nama_bank' => 'BNI',
-                'kode_bank' => '00123131319',
+                'kode_bank' => '009',
                 'no_rekening' => '0090123456789',
                 'atas_nama' => 'BeautyCare Overpower',
                 'tipe' => 'transfer',
@@ -49,7 +49,7 @@ class BankSeeder extends Seeder
             ],
             [
                 'nama_bank' => 'BSI',
-                'kode_bank' => '451231311',
+                'kode_bank' => '451',
                 'no_rekening' => '4510123456789',
                 'atas_nama' => 'BeautyCare Overpower',
                 'tipe' => 'transfer',
@@ -57,11 +57,11 @@ class BankSeeder extends Seeder
                 'is_active' => true,
             ],
 
-            // ========== E-WALLET (tanpa kode_bank / no_rekening) ==========
+            // ========== E-WALLET ==========
             [
                 'nama_bank' => 'Dana',
-                'kode_bank' => 001,
-                'no_rekening' => 11000542,
+                'kode_bank' => null,
+                'no_rekening' => null,
                 'atas_nama' => 'BeautyCare Overpower',
                 'tipe' => 'ewallet',
                 'nomor_telepon' => '081234567890',
@@ -69,8 +69,8 @@ class BankSeeder extends Seeder
             ],
             [
                 'nama_bank' => 'GoPay',
-                'kode_bank' => 1231313,
-                'no_rekening' => 11000542,
+                'kode_bank' => null,
+                'no_rekening' => null,
                 'atas_nama' => 'BeautyCare Overpower',
                 'tipe' => 'ewallet',
                 'nomor_telepon' => '081234567890',
@@ -78,8 +78,8 @@ class BankSeeder extends Seeder
             ],
             [
                 'nama_bank' => 'ShopeePay',
-                'kode_bank' => 00023,
-                'no_rekening' => 0010002020,
+                'kode_bank' => null,
+                'no_rekening' => null,
                 'atas_nama' => 'BeautyCare Overpower',
                 'tipe' => 'ewallet',
                 'nomor_telepon' => '081234567890',
@@ -87,8 +87,8 @@ class BankSeeder extends Seeder
             ],
             [
                 'nama_bank' => 'OVO',
-                'kode_bank' => 1231313,
-                'no_rekening' => 2020101010,
+                'kode_bank' => null,
+                'no_rekening' => null,
                 'atas_nama' => 'BeautyCare Overpower',
                 'tipe' => 'ewallet',
                 'nomor_telepon' => '081234567890',
@@ -112,7 +112,10 @@ class BankSeeder extends Seeder
 
         foreach ($banks as $data) {
             $bank = Bank::firstOrCreate(
-                ['nama_bank' => $data['nama_bank'], 'tipe' => $data['tipe']],
+                [
+                    'nama_bank' => $data['nama_bank'],
+                    'tipe' => $data['tipe'],
+                ],
                 $data
             );
 
@@ -124,6 +127,9 @@ class BankSeeder extends Seeder
             }
         }
 
-        $this->command->info("Bank seeder: {$inserted} inserted, {$updated} updated. Total records: " . Bank::count());
+        $this->command->info(
+            "Bank seeder: {$inserted} inserted, {$updated} updated. Total records: "
+                . Bank::count()
+        );
     }
 }
