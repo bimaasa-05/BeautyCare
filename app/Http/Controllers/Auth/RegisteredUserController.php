@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\Pelanggan;
 use App\Models\User;
+use App\Support\LoginSupport;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -14,9 +15,6 @@ use Illuminate\View\View;
 
 class RegisteredUserController extends Controller
 {
-    /**
-     * Display the registration view.
-     */
     public function create(): View
     {
         $pengaturan = \App\Models\Pengaturan::first();
@@ -24,11 +22,6 @@ class RegisteredUserController extends Controller
         return view('login.register', compact('pengaturan'));
     }
 
-    /**
-     * Handle an incoming registration request.
-     *
-     * @throws ValidationException
-     */
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
@@ -44,8 +37,11 @@ class RegisteredUserController extends Controller
             'email' => $request->email,
             'no_hp' => $request->no_hp,
             'password' => Hash::make($request->password),
-            'status' => 'menunggu_persetujuan',
+            'role' => 'pelanggan',
+            'status' => 'menunggu_verifikasi',
         ]);
+
+        VerificationController::kirimOtp($user->email);
 
         $existingPelanggan = Pelanggan::where('email', $request->email)->whereNull('id_user')->first();
         if ($existingPelanggan) {
@@ -54,14 +50,14 @@ class RegisteredUserController extends Controller
             Pelanggan::create([
                 'nm_pelanggan' => $request->name,
                 'email' => $request->email,
-                'no_hp' => $request->no_hp,
+                'no_hp' => $request->no_hp ?? '',
                 'alamat' => '',
                 'catatan_alergi' => '',
                 'id_user' => $user->id,
             ]);
         }
 
-        buatNotifRole('admin', 'Pelanggan Baru Menunggu Persetujuan', $request->name.' ('.$request->email.') baru saja mendaftar dan menunggu aktivasi Anda.', 'Registrasi', route('admin.pelanggan.index'));
+        buatNotifRole('admin', 'Pelanggan Baru Mendaftar', $request->name.' ('.$request->email.') baru saja mendaftar dan menunggu verifikasi OTP.', 'Registrasi', route('admin.pelanggan.index'));
 
         event(new Registered($user));
 

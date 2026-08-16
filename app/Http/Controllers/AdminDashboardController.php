@@ -122,9 +122,9 @@ class AdminDashboardController extends Controller
         $minggu = date('Y-m-d', strtotime('sunday this week'));
 
         $chartBookingMinggu = Booking::select(
-            DB::raw('DAYOFWEEK(tanggal) as hari'),
-            DB::raw('COUNT(*) as total')
-        )
+                DB::raw('DAYOFWEEK(tanggal) as hari'),
+                DB::raw('COUNT(*) as total')
+            )
             ->whereBetween('tanggal', [$senin, $minggu])
             ->groupBy(DB::raw('DAYOFWEEK(tanggal)'))
             ->orderBy('hari')
