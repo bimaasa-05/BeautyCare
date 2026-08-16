@@ -151,7 +151,20 @@
                                         <div class="font-semibold text-gray-800">{{ $p->user->nama ?? '-' }}</div>
                                         <div class="text-[11px] text-gray-400">{{ $p->user->no_hp ?? '-' }}</div>
                                     </td>
-                                    <td class="py-3 px-4 text-[12px]" data-label="Tanggal">{{ \Carbon\Carbon::parse($p->tanggal)->isoFormat('D MMM YYYY') }}</td>
+                                    <td class="py-3 px-4 text-[12px]" data-label="Tanggal">
+                                        {{ \Carbon\Carbon::parse($p->tanggal)->isoFormat('D MMM YYYY') }}
+                                        @if ($p->id_booking && $p->booking)
+                                            @php
+                                                $bkJamMulai = \Carbon\Carbon::parse($p->booking->jam)->format('H:i');
+                                                $bkDurasi = \App\Support\BookingSlot::durasiBooking($p->booking);
+                                                $bkJamSelesai = \Carbon\Carbon::parse($p->booking->tanggal . ' ' . substr($p->booking->jam, 0, 5))->addMinutes($bkDurasi)->format('H:i');
+                                            @endphp
+                                            <div class="text-[11px] text-violet-500 font-semibold flex items-center gap-1 mt-1">
+                                                <i class="fa-regular fa-clock"></i>
+                                                Treatment: <span class="font-mono">{{ $bkJamMulai }} - {{ $bkJamSelesai }}</span>
+                                            </div>
+                                        @endif
+                                    </td>
                                     <td class="py-3 px-4" data-label="Metode">
                                         @if(($p->pembayaran->metode ?? null) === 'Saldo')
                                         <div class="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-600 text-[11.5px] font-semibold rounded-lg px-2.5 py-1">
