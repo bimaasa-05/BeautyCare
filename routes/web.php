@@ -67,10 +67,17 @@ Route::get('/', function () {
         ->orderBy('nm_layanan')
         ->get();
 
-    return view('landing.index', compact('tingkatMembership', 'pengaturan', 'kategoriLayanan'));
+    $ringkasanRating = \App\Models\Rating::ringkasanGlobal();
+    $ulasanTerbaru = \App\Models\Rating::semuaTerbaru(3);
+
+    return view('landing.index', compact('tingkatMembership', 'pengaturan', 'kategoriLayanan', 'ringkasanRating', 'ulasanTerbaru'));
 })->name('home');
 
 Route::post('/kontak', [App\Http\Controllers\ContactController::class, 'store'])->name('landing.contact');
+
+//Halaman Layanan & Ulasan Publik
+Route::get('/layanan/{layanan}', [App\Http\Controllers\LayananPublikController::class, 'show'])->name('layanan.detail')->whereNumber('layanan');
+Route::get('/ulasan', [App\Http\Controllers\RatingController::class, 'index'])->name('rating.index');
 
 //Halaman Legal
 Route::get('/syarat-ketentuan', [App\Http\Controllers\LegalController::class, 'terms'])->name('legal.terms');
@@ -426,6 +433,10 @@ Route::middleware('auth')->group(function () {
         Route::get('/pelanggan/produk', [PelangganProdukController::class, 'index'])->name('pelanggan.produk');
         Route::get('/pelanggan/produk/{produk}', [PelangganProdukController::class, 'show'])->name('pelanggan.produk.detail')->whereNumber('produk');
         Route::post('/pelanggan/produk/favorit/toggle', [App\Http\Controllers\PelangganFavoritController::class, 'toggle'])->name('pelanggan.favorit.toggle');
+
+        //Route Rating
+        Route::post('/pelanggan/rating', [App\Http\Controllers\RatingController::class, 'store'])->name('rating.store');
+        Route::delete('/pelanggan/rating/{rating}', [App\Http\Controllers\RatingController::class, 'destroy'])->name('rating.destroy')->whereNumber('rating');
 
         //Route Keranjang
         Route::get('/pelanggan/keranjang', [App\Http\Controllers\KeranjangController::class, 'index'])->name('pelanggan.keranjang');
