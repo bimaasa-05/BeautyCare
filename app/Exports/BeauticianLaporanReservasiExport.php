@@ -4,13 +4,15 @@ namespace App\Exports;
 
 use App\Models\Booking;
 use App\Models\DetailBooking;
-use App\Models\Pelanggan;
+use App\Exports\Traits\SheetPengaya;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Concerns\WithCustomStartCell;
+use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
-use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Concerns\WithMultipleSheets;
+use Maatwebsite\Excel\Concerns\WithTitle;
 
 class BeauticianLaporanReservasiExport implements WithMultipleSheets
 {
@@ -28,14 +30,16 @@ class BeauticianLaporanReservasiExport implements WithMultipleSheets
     public function sheets(): array
     {
         return [
-            new BeauticianRingkasanSheet($this->karyawanId, $this->startDate, $this->endDate),
-            new BeauticianReservasiSheet($this->karyawanId, $this->startDate, $this->endDate),
+            new BeauticianLaporanReservasiRingkasanSheet($this->karyawanId, $this->startDate, $this->endDate),
+            new BeauticianLaporanReservasiSheet($this->karyawanId, $this->startDate, $this->endDate),
         ];
     }
 }
 
-class BeauticianRingkasanSheet implements FromCollection, WithHeadings, WithMapping, WithTitle
+class BeauticianLaporanReservasiRingkasanSheet implements FromCollection, WithHeadings, WithMapping, WithTitle, WithEvents, WithCustomStartCell
 {
+    use SheetPengaya;
+
     protected int $karyawanId;
     protected string $startDate;
     protected string $endDate;
@@ -45,6 +49,12 @@ class BeauticianRingkasanSheet implements FromCollection, WithHeadings, WithMapp
         $this->karyawanId = $karyawanId;
         $this->startDate = $startDate;
         $this->endDate = $endDate;
+
+        $this->judulSheet = 'LAPORAN RESERVASI BEAUTICIAN';
+        $this->subtitleSheet = 'Periode ' . date('d M Y', strtotime($this->startDate)) . ' – ' . date('d M Y', strtotime($this->endDate));
+        $this->barisHeaderSheet = 3;
+        $this->lebarKolomSheet = [6, 32, 26];
+        $this->kolomUangSheet = [3];
     }
 
     public function collection()
@@ -90,26 +100,26 @@ class BeauticianRingkasanSheet implements FromCollection, WithHeadings, WithMapp
             ->first();
 
         return collect([
-            ['Total Reservasi', (string) $totalReservasi],
-            ['Selesai', (string) $selesai],
-            ['Dikonfirmasi', (string) $dikonfirmasi],
-            ['Diproses', (string) $diproses],
-            ['Dibatalkan', (string) $dibatalkan],
-            ['Total Pendapatan', 'Rp ' . number_format($totalPendapatan, 0, ',', '.')],
-            ['Rata-rata / Transaksi', 'Rp ' . number_format($selesai > 0 ? $totalPendapatan / $selesai : 0, 0, ',', '.')],
-            ['Layanan Terpopuler', $layananTerpopuler->layanan->nm_layanan ?? '-'],
-            ['Periode', date('d M Y', strtotime($this->startDate)) . ' - ' . date('d M Y', strtotime($this->endDate))],
+            ['no' => 1, 'label' => 'Total Reservasi', 'value' => (float) $totalReservasi],
+            ['no' => 2, 'label' => 'Selesai', 'value' => (float) $selesai],
+            ['no' => 3, 'label' => 'Dikonfirmasi', 'value' => (float) $dikonfirmasi],
+            ['no' => 4, 'label' => 'Diproses', 'value' => (float) $diproses],
+            ['no' => 5, 'label' => 'Dibatalkan', 'value' => (float) $dibatalkan],
+            ['no' => 6, 'label' => 'Total Pendapatan', 'value' => (float) $totalPendapatan],
+            ['no' => 7, 'label' => 'Rata-rata / Transaksi', 'value' => $selesai > 0 ? round($totalPendapatan / $selesai) : 0],
+            ['no' => 8, 'label' => 'Layanan Terpopuler', 'value' => $layananTerpopuler->layanan->nm_layanan ?? '-'],
+            ['no' => 9, 'label' => 'Periode', 'value' => date('d M Y', strtotime($this->startDate)) . ' – ' . date('d M Y', strtotime($this->endDate))],
         ]);
     }
 
     public function headings(): array
     {
-        return ['Metrik', 'Nilai'];
+        return ['No.', 'Metrik', 'Nilai'];
     }
 
     public function map($row): array
     {
-        return [$row[0], $row[1]];
+        return [$row['no'], $row['label'], $row['value']];
     }
 
     public function title(): string
@@ -118,8 +128,10 @@ class BeauticianRingkasanSheet implements FromCollection, WithHeadings, WithMapp
     }
 }
 
-class BeauticianReservasiSheet implements FromCollection, WithHeadings, WithMapping, WithTitle
+class BeauticianLaporanReservasiSheet implements FromCollection, WithHeadings, WithMapping, WithTitle, WithEvents, WithCustomStartCell
 {
+    use SheetPengaya;
+
     protected int $karyawanId;
     protected string $startDate;
     protected string $endDate;
@@ -129,20 +141,33 @@ class BeauticianReservasiSheet implements FromCollection, WithHeadings, WithMapp
         $this->karyawanId = $karyawanId;
         $this->startDate = $startDate;
         $this->endDate = $endDate;
+
+        $this->judulSheet = 'RINCIAN RESERVASI';
+        $this->subtitleSheet = 'Periode ' . date('d M Y', strtotime($this->startDate)) . ' – ' . date('d M Y', strtotime($this->endDate));
+        $this->barisHeaderSheet = 3;
+        $this->lebarKolomSheet = [6, 22, 28, 14, 18, 16, 14, 16];
+        $this->kolomUangSheet = [8];
     }
 
     public function collection()
     {
-        return Booking::with(['detail.layanan', 'pelanggan'])
+        $rows = Booking::with(['detail.layanan', 'pelanggan'])
             ->where('id_karyawan', $this->karyawanId)
             ->whereBetween('tanggal', [$this->startDate, $this->endDate])
             ->orderBy('tanggal', 'desc')
             ->get();
+
+        $no = 0;
+        foreach ($rows as $row) {
+            $row->no_urut = ++$no;
+        }
+
+        return $rows;
     }
 
     public function headings(): array
     {
-        return ['ID Booking', 'Pelanggan', 'Tanggal', 'Jam', 'Layanan', 'Status', 'Total Bayar'];
+        return ['No.', 'ID Booking', 'Pelanggan', 'Tanggal', 'Jam', 'Layanan', 'Status', 'Total Bayar'];
     }
 
     public function map($booking): array
@@ -157,13 +182,14 @@ class BeauticianReservasiSheet implements FromCollection, WithHeadings, WithMapp
         ];
 
         return [
+            $booking->no_urut,
             $booking->id_booking,
             $booking->pelanggan->nm_pelanggan ?? '-',
             $booking->tanggal,
             $booking->jam,
-            $layananNames,
+            $layananNames ?: '-',
             $statusLabels[$booking->status] ?? $booking->status,
-            'Rp ' . number_format($totalBayar, 0, ',', '.'),
+            (float) $totalBayar,
         ];
     }
 

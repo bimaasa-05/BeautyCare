@@ -151,7 +151,20 @@
                                         <div class="font-semibold text-gray-800">{{ $p->user->nama ?? '-' }}</div>
                                         <div class="text-[11px] text-gray-400">{{ $p->user->no_hp ?? '-' }}</div>
                                     </td>
-                                    <td class="py-3 px-4 text-[12px]" data-label="Tanggal">{{ \Carbon\Carbon::parse($p->tanggal)->isoFormat('D MMM YYYY') }}</td>
+                                    <td class="py-3 px-4 text-[12px]" data-label="Tanggal">
+                                        {{ \Carbon\Carbon::parse($p->tanggal)->isoFormat('D MMM YYYY') }}
+                                        @if ($p->id_booking && $p->booking)
+                                            @php
+                                                $bkJamMulai = \Carbon\Carbon::parse($p->booking->jam)->format('H:i');
+                                                $bkDurasi = \App\Support\BookingSlot::durasiBooking($p->booking);
+                                                $bkJamSelesai = \Carbon\Carbon::parse($p->booking->tanggal . ' ' . substr($p->booking->jam, 0, 5))->addMinutes($bkDurasi)->format('H:i');
+                                            @endphp
+                                            <div class="text-[11px] text-violet-500 font-semibold flex items-center gap-1 mt-1">
+                                                <i class="fa-regular fa-clock"></i>
+                                                Treatment: <span class="font-mono">{{ $bkJamMulai }} - {{ $bkJamSelesai }}</span>
+                                            </div>
+                                        @endif
+                                    </td>
                                     <td class="py-3 px-4" data-label="Metode">
                                         @if(($p->pembayaran->metode ?? null) === 'Saldo')
                                         <div class="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-600 text-[11.5px] font-semibold rounded-lg px-2.5 py-1">
@@ -193,6 +206,7 @@
                                             <a href="{{ route('kasir.pembayaran.show', $p->id_transaksi) }}" class="btn-aksi btn-detail">
                                                 <i class="fa-solid fa-eye text-[11px]"></i> Detail
                                             </a>
+                                            @php $isBooking = (bool) $p->id_booking; @endphp
                                             <form action="{{ route('kasir.pembayaran.verifikasi', $p->id_transaksi) }}" method="POST">
                                                 @csrf
                                                 <input type="hidden" name="aksi" value="konfirmasi">
@@ -201,15 +215,15 @@
                                                     <i class="fa-solid fa-circle-check text-[11px]"></i> Konfirmasi
                                                 </button>
                                                 @else
-                                                <button type="submit" class="btn-aksi btn-konfirmasi" data-confirm-title="Konfirmasi Lunas" data-confirm-body="Konfirmasi pesanan {{ $p->no_invoice }} sudah lunas? Stok akan dikurangi." data-confirm-icon="fa-circle-check" data-confirm-type="success" data-confirm-yes="Ya, Konfirmasi">
-                                                    <i class="fa-solid fa-check text-[11px]"></i> Konfirmasi Lunas
+                                                <button type="submit" class="btn-aksi btn-konfirmasi" data-confirm-title="{{ $isBooking ? 'Konfirmasi Pembayaran' : 'Konfirmasi Lunas' }}" data-confirm-body="{{ $isBooking ? 'Konfirmasi pembayaran booking '.$p->no_invoice.' sudah diterima?' : 'Konfirmasi pesanan '.$p->no_invoice.' sudah lunas? Stok akan dikurangi.' }}" data-confirm-icon="fa-circle-check" data-confirm-type="success" data-confirm-yes="Ya, Konfirmasi">
+                                                    <i class="fa-solid fa-check text-[11px]"></i> {{ $isBooking ? 'Konfirmasi Pembayaran' : 'Konfirmasi Lunas' }}
                                                 </button>
                                                 @endif
                                             </form>
                                             <form action="{{ route('kasir.pembayaran.verifikasi', $p->id_transaksi) }}" method="POST">
                                                 @csrf
                                                 <input type="hidden" name="aksi" value="tolak">
-                                                <button type="submit" class="btn-aksi btn-tolak" data-confirm-title="Tolak Pembayaran" data-confirm-body="Tolak pembayaran pesanan {{ $p->no_invoice }}? Saldo akun (jika dipakai) akan dikembalikan." data-confirm-icon="fa-circle-xmark" data-confirm-type="danger" data-confirm-yes="Ya, Tolak">
+                                                <button type="submit" class="btn-aksi btn-tolak" data-confirm-title="Tolak Pembayaran" data-confirm-body="Tolak pembayaran {{ $isBooking ? 'booking ' : 'pesanan ' }}{{ $p->no_invoice }}? Saldo akun (jika dipakai) akan dikembalikan." data-confirm-icon="fa-circle-xmark" data-confirm-type="danger" data-confirm-yes="Ya, Tolak">
                                                     <i class="fa-solid fa-xmark text-[11px]"></i> Tolak
                                                 </button>
                                             </form>

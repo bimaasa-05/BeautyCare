@@ -21,22 +21,27 @@ class KasirPembayaranController extends Controller
 
         $reservasiSelesai = Booking::with(['pelanggan', 'detail.layanan'])
             ->whereIn('status', ['diproses', 'selesai'])
-            ->whereDoesntHave('transaksi')
+            ->where(function ($query) {
+                $query->whereDoesntHave('transaksi')->orWhere('status_pembayaran', 'dp');
+            })
             ->when($search, function ($query, $search) {
                 return $query->whereHas('pelanggan', function ($q) use ($search) {
                     $q->where('nm_pelanggan', 'like', "%{$search}%")
-                      ->orWhere('no_hp', 'like', "%{$search}%");
+                        ->orWhere('no_hp', 'like', "%{$search}%");
                 });
             })
             ->orderBy('tanggal', 'desc')
             ->orderBy('id_booking', 'desc')
             ->get();
 
-        $totalTagihan = Booking::whereIn('status', ['diproses', 'selesai'])->whereDoesntHave('transaksi')
+        $totalTagihan = Booking::whereIn('status', ['diproses', 'selesai'])
+            ->where(function ($query) {
+                $query->whereDoesntHave('transaksi')->orWhere('status_pembayaran', 'dp');
+            })
             ->when($search, function ($query, $search) {
                 return $query->whereHas('pelanggan', function ($q) use ($search) {
                     $q->where('nm_pelanggan', 'like', "%{$search}%")
-                      ->orWhere('no_hp', 'like', "%{$search}%");
+                        ->orWhere('no_hp', 'like', "%{$search}%");
                 });
             })
             ->count();
@@ -52,20 +57,27 @@ class KasirPembayaranController extends Controller
 
     public function create($id)
     {
-        $booking = Booking::with(['pelanggan', 'karyawan', 'detail.layanan'])->findOrFail($id);
+        $booking = Booking::with(['pelanggan', 'karyawan', 'detail.layanan', 'transaksi.pembayaran'])->findOrFail($id);
 
         if (!in_array($booking->status, ['diproses', 'selesai'])) {
             return redirect()->route('kasir.pembayaran.index')->with('error', 'Booking belum check-in, tidak bisa diproses');
         }
 
-        if ($booking->transaksi()->exists()) {
+        if ($booking->transaksi()->exists() && $booking->status_pembayaran !== 'dp') {
             return redirect()->route('kasir.pembayaran.index')->with('error', 'Booking ini sudah memiliki pembayaran');
         }
 
         $banks = \App\Models\Bank::active()->transfer()->get(['id', 'nama_bank', 'no_rekening', 'kode_bank', 'logo', 'atas_nama']);
         $ewallets = \App\Models\Bank::active()->ewallet()->get(['id', 'nama_bank', 'nomor_telepon', 'atas_nama']);
 
-        return view('kasir.pembayaran.create', compact('booking', 'banks', 'ewallets'));
+        $totalBayar = (int) $booking->detail->sum('subtotal');
+        $dpPaid = 0;
+        if ($booking->status_pembayaran === 'dp' && $booking->transaksi) {
+            $dpPaid = (int) (($booking->transaksi->pembayaran->nominal ?? 0) + ($booking->transaksi->saldo_terpakai ?? 0));
+        }
+        $sisa = max(0, $totalBayar - $dpPaid);
+
+        return view('kasir.pembayaran.create', compact('booking', 'banks', 'ewallets', 'totalBayar', 'dpPaid', 'sisa'));
     }
 
     public function store(Request $request)
@@ -89,9 +101,11 @@ class KasirPembayaranController extends Controller
 
         $booking = Booking::with(['pelanggan', 'detail.layanan'])->findOrFail($request->id_booking);
 
-        if ($booking->transaksi()->exists()) {
+        if ($booking->transaksi()->exists() && $booking->status_pembayaran !== 'dp') {
             return redirect()->route('kasir.pembayaran.index')->with('error', 'Booking ini sudah memiliki pembayaran');
         }
+
+        $isDpSisa = $booking->status_pembayaran === 'dp';
 
         $total = $request->total;
         $dibayar = $request->dibayar;
@@ -108,7 +122,7 @@ class KasirPembayaranController extends Controller
         }
 
         $transaksi = Transaksi::create([
-            'id_booking' => $request->id_booking,
+            'id_booking' => $isDpSisa ? null : $request->id_booking,
             'id_pelanggan' => $booking->id_pelanggan,
             'id_user' => auth()->id(),
             'id_kasir' => auth()->id(),
@@ -122,7 +136,7 @@ class KasirPembayaranController extends Controller
             'metode_byr' => $request->metode_byr,
             'dibayar' => $dibayar,
             'kembali' => $kembali,
-            'catatan' => $request->catatan ?? '',
+            'catatan' => ($isDpSisa ? 'Sisa DP booking #BK' . str_pad($booking->id_booking, 3, '0', STR_PAD_LEFT) . '. ' : '') . ($request->catatan ?? ''),
             'status' => $statusPembayaran,
             'bukti_bayar' => $request->bukti_bayar ? $buktiBayar : null,
             'no_referensi' => $request->no_referensi,
@@ -144,7 +158,14 @@ class KasirPembayaranController extends Controller
             ]);
         }
 
-        Booking::where('id_booking', $request->id_booking)->update(['status' => 'selesai', 'jam_selesai_aktual' => now()]);
+        $bookingUpdate = ['status' => 'selesai', 'jam_selesai_aktual' => now()];
+        if ($isDpSisa) {
+            $bookingUpdate['status_pembayaran'] = 'lunas';
+            Transaksi::where('id_booking', $request->id_booking)
+                ->where('status', 'DP Dibayar')
+                ->update(['status' => 'Lunas']);
+        }
+        Booking::where('id_booking', $request->id_booking)->update($bookingUpdate);
 
         // Proses saldo & cashback jika Lunas
         if ($statusPembayaran === 'Lunas') {
@@ -170,13 +191,13 @@ class KasirPembayaranController extends Controller
 
     public function show($id)
     {
-        $transaksi = Transaksi::with(['pelanggan', 'user', 'kasir', 'detail'])->findOrFail($id);
+        $transaksi = Transaksi::with(['pelanggan', 'user', 'kasir', 'detail', 'booking.detail.layanan'])->findOrFail($id);
         return view('kasir.pembayaran.show', compact('transaksi'));
     }
 
     public function pesananOnline()
     {
-        $pesanan = Transaksi::with(['pelanggan', 'user', 'detail', 'pembayaran'])
+        $pesanan = Transaksi::with(['pelanggan', 'user', 'detail', 'pembayaran', 'booking.detail.layanan'])
             ->where('sumber', 'online')
             ->whereIn('status', ['Menunggu Pembayaran', 'Sedang Diproses'])
             ->orderBy('id_transaksi', 'desc')
@@ -223,7 +244,22 @@ class KasirPembayaranController extends Controller
                     }
                 }
 
-                $transaksi->update(['status' => 'Lunas', 'id_kasir' => auth()->id()]);
+                $statusBaru = 'Lunas';
+                if ($transaksi->id_booking) {
+                    $bookingVerifikasi = Booking::find($transaksi->id_booking);
+                    if ($bookingVerifikasi && $bookingVerifikasi->tipe_pembayaran === 'dp') {
+                        $statusBaru = 'DP Dibayar';
+                    }
+                }
+
+                $transaksi->update(['status' => $statusBaru, 'id_kasir' => auth()->id()]);
+
+                if ($transaksi->id_booking && isset($bookingVerifikasi) && $bookingVerifikasi) {
+                    $bookingVerifikasi->update([
+                        'status' => 'dikonfirmasi',
+                        'status_pembayaran' => $statusBaru === 'DP Dibayar' ? 'dp' : 'lunas',
+                    ]);
+                }
 
                 if ($transaksi->pembayaran) {
                     $transaksi->pembayaran->update([
@@ -274,21 +310,42 @@ class KasirPembayaranController extends Controller
                 }
             });
 
-            ActivityLogger::log('Menambahkan', auth()->user()->nama . ' mengkonfirmasi pesanan ' . $transaksi->no_invoice . ' lunas', 'Transaksi', $transaksi->id_transaksi);
+            $konfirmasiLabel = $transaksi->status === 'DP Dibayar'
+                ? 'DP booking ' . $transaksi->no_invoice
+                : 'pesanan ' . $transaksi->no_invoice . ' lunas';
+            ActivityLogger::log('Menambahkan', auth()->user()->nama . ' mengkonfirmasi ' . $konfirmasiLabel, 'Transaksi', $transaksi->id_transaksi);
 
             if ($transaksi->jenis_transaksi === 'TopUp Saldo') {
                 $nominalTopUp = number_format((float) $transaksi->total, 0, ',', '.');
                 buatNotif($transaksi->id_user, 'Top Up Berhasil', 'Top up saldo ' . $transaksi->no_invoice . ' telah terverifikasi. Saldo Anda bertambah Rp ' . $nominalTopUp . '.', 'Saldo', route('pelanggan.saldo.index'));
             } else {
-                buatNotif($transaksi->id_user, 'Pembayaran Diterima', 'Pesanan ' . $transaksi->no_invoice . ' telah diverifikasi dan berhasil.', 'Transaksi', route('pelanggan.pesanan.show', $transaksi->id_transaksi));
+                $targetNotif = $transaksi->id_booking
+                    ? route('pelanggan.pembayaran.berhasil', $transaksi->id_transaksi)
+                    : route('pelanggan.pesanan.show', $transaksi->id_transaksi);
+                if ($transaksi->status === 'DP Dibayar') {
+                    $judulNotif = 'DP Booking Dikonfirmasi';
+                    $isiNotif = 'DP booking ' . $transaksi->no_invoice . ' telah diverifikasi. Sisa tagihan dibayar di salon saat treatment selesai.';
+                } else {
+                    $judulNotif = 'Pembayaran Diterima';
+                    $isiNotif = 'Pesanan ' . $transaksi->no_invoice . ' telah diverifikasi dan berhasil.';
+                }
+                buatNotif($transaksi->id_user, $judulNotif, $isiNotif, 'Transaksi', $targetNotif);
             }
 
             $admins = \App\Models\User::where('role', 'admin')->get();
             foreach ($admins as $admin) {
-                buatNotif($admin->id, 'Pesanan Lunas', 'Pesanan ' . $transaksi->no_invoice . ' oleh ' . ($transaksi->user->nama ?? '') . ' dikonfirmasi lunas.', 'Transaksi', url('/admin/dashboard'));
+                $judulAdmin = $transaksi->status === 'DP Dibayar' ? 'Booking DP Dikonfirmasi' : 'Pesanan Lunas';
+                $isiAdmin = $transaksi->status === 'DP Dibayar'
+                    ? 'DP booking ' . $transaksi->no_invoice . ' oleh ' . ($transaksi->user->nama ?? '') . ' dikonfirmasi.'
+                    : 'Pesanan ' . $transaksi->no_invoice . ' oleh ' . ($transaksi->user->nama ?? '') . ' dikonfirmasi lunas.';
+                buatNotif($admin->id, $judulAdmin, $isiAdmin, 'Transaksi', url('/admin/dashboard'));
             }
 
-            return back()->with('message', 'Pesanan ' . $transaksi->no_invoice . ' dikonfirmasi lunas.');
+            $pesanKonfirmasi = $transaksi->status === 'DP Dibayar'
+                ? 'DP booking ' . $transaksi->no_invoice . ' dikonfirmasi.'
+                : 'Pesanan ' . $transaksi->no_invoice . ' dikonfirmasi lunas.';
+
+            return back()->with('message', $pesanKonfirmasi);
         }
 
         $saldoTerpakai = (float) ($transaksi->saldo_terpakai ?? 0);
@@ -303,6 +360,10 @@ class KasirPembayaranController extends Controller
 
         $transaksi->update(['status' => 'Gagal']);
         $transaksi->pembayaran?->update(['status' => 'Gagal']);
+
+        if ($transaksi->id_booking) {
+            Booking::where('id_booking', $transaksi->id_booking)->update(['status_pembayaran' => 'belum']);
+        }
 
         $pesanTolak = 'Pembayaran pesanan ' . $transaksi->no_invoice . ' ditolak oleh kasir.';
         if ($saldoTerpakai > 0) {

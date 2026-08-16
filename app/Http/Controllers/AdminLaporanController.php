@@ -73,12 +73,24 @@ class AdminLaporanController extends Controller
         $rataPendapatan = $jumlahHari > 0 ? $totalPendapatan / $jumlahHari : 0;
 
         return view('admin.laporan.index', compact(
-            'totalPendapatan', 'totalPengeluaran', 'saldoBersih',
-            'totalReservasi', 'pelangganBaru',
-            'pendapatanGrowth', 'reservasiGrowth', 'pelangganGrowth',
-            'chartLabels', 'chartRevenue', 'chartBookings',
-            'periode', 'startDate', 'endDate', 'fmt', 'maxRevenue',
-            'rataPendapatan', 'jumlahHari'
+            'totalPendapatan',
+            'totalPengeluaran',
+            'saldoBersih',
+            'totalReservasi',
+            'pelangganBaru',
+            'pendapatanGrowth',
+            'reservasiGrowth',
+            'pelangganGrowth',
+            'chartLabels',
+            'chartRevenue',
+            'chartBookings',
+            'periode',
+            'startDate',
+            'endDate',
+            'fmt',
+            'maxRevenue',
+            'rataPendapatan',
+            'jumlahHari'
         ));
     }
     private function getPengeluaranPembelian($startDate, $endDate)
@@ -114,9 +126,9 @@ class AdminLaporanController extends Controller
                 ->toArray();
 
             $bookings = Booking::select(
-                    DB::raw('DATE(tanggal) as label'),
-                    DB::raw('COUNT(*) as total')
-                )
+                DB::raw('DATE(tanggal) as label'),
+                DB::raw('COUNT(*) as total')
+            )
                 ->whereBetween('tanggal', [$startDate, $endDate])
                 ->groupBy(DB::raw('DATE(tanggal)'))
                 ->orderBy('label')
@@ -139,20 +151,20 @@ class AdminLaporanController extends Controller
         }
 
         $revenue = Transaksi::pendapatan()
-                ->select(
-                    DB::raw("DATE_FORMAT(tanggal, '%Y-%m') as label"),
-                    DB::raw('COALESCE(SUM(total),0) as total')
-                )
-                ->whereBetween('tanggal', [$startDate, $endDate])
-                ->groupBy('label')
-                ->orderBy('label')
-                ->pluck('total', 'label')
-                ->toArray();
+            ->select(
+                DB::raw("DATE_FORMAT(tanggal, '%Y-%m') as label"),
+                DB::raw('COALESCE(SUM(total),0) as total')
+            )
+            ->whereBetween('tanggal', [$startDate, $endDate])
+            ->groupBy('label')
+            ->orderBy('label')
+            ->pluck('total', 'label')
+            ->toArray();
 
         $bookings = Booking::select(
-                DB::raw("DATE_FORMAT(tanggal, '%Y-%m') as label"),
-                DB::raw('COUNT(*) as total')
-            )
+            DB::raw("DATE_FORMAT(tanggal, '%Y-%m') as label"),
+            DB::raw('COUNT(*) as total')
+        )
             ->whereBetween('tanggal', [$startDate, $endDate])
             ->groupBy('label')
             ->orderBy('label')
@@ -248,11 +260,20 @@ class AdminLaporanController extends Controller
         };
 
         $pdf = Pdf::loadView('admin.laporan.pdf', compact(
-            'totalPendapatan', 'totalPengeluaran', 'saldoBersih',
-            'totalReservasi', 'pelangganBaru',
-            'pendapatanGrowth', 'reservasiGrowth', 'pelangganGrowth',
-            'chartLabels', 'chartRevenue', 'chartBookings',
-            'startDate', 'endDate', 'fmt'
+            'totalPendapatan',
+            'totalPengeluaran',
+            'saldoBersih',
+            'totalReservasi',
+            'pelangganBaru',
+            'pendapatanGrowth',
+            'reservasiGrowth',
+            'pelangganGrowth',
+            'chartLabels',
+            'chartRevenue',
+            'chartBookings',
+            'startDate',
+            'endDate',
+            'fmt'
         ));
 
         return $pdf->download('laporan-beautycare-' . date('Y-m-d') . '.pdf');

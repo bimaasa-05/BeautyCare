@@ -737,9 +737,16 @@
                                         </div>
                                     </td>
                                     <td data-label="Jam">
+                                        @php
+                                            $trDurasi = \App\Support\BookingSlot::durasiBooking($booking);
+                                            $trSelesai = \Carbon\Carbon::parse($booking->tanggal . ' ' . substr($booking->jam, 0, 5))->addMinutes($trDurasi)->format('H:i');
+                                        @endphp
                                         <div class="flex items-center gap-1.5">
                                             <i class="fa-regular fa-clock text-gray-300 text-[11px]"></i>
-                                            <span>{{ \Carbon\Carbon::parse($booking->jam)->format('H:i') }}</span>
+                                            <div>
+                                                <span style="font-variant-numeric:tabular-nums;">{{ \Carbon\Carbon::parse($booking->jam)->format('H:i') }} - {{ $trSelesai }}</span>
+                                                <div style="font-size:10px;color:var(--gray);">{{ $trDurasi }} menit</div>
+                                            </div>
                                         </div>
                                     </td>
                                     <td data-label="Terapis">
@@ -758,7 +765,7 @@
                                     </td>
                                     <td data-label="Harga" class="harga-cell">Rp {{ number_format($booking->detail->first()?->subtotal ?? 0, 0, ',', '.') }}</td>
                                     <td data-label="Status">
-                                        <span class="status-badge {{ $booking->status }}">
+                                        <span class="status-badge {{ $booking->status }}" data-rt-booking="{{ $booking->id_booking }}" data-rt-status="{{ $booking->status }}">
                                             <span class="sb-dot"></span>
                                             {{ ucfirst($booking->status) }}
                                         </span>
@@ -827,6 +834,7 @@
     if (dateEl) dateEl.textContent = now.toLocaleDateString('id-ID', options);
     </script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
+    @include('partials.realtime-booking', ['rtScope' => 'pelanggan'])
 </body>
 
 </html>

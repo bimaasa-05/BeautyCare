@@ -39,7 +39,9 @@ class KasirRiwayatTransaksiController extends Controller
             ->paginate(15);
 
         return view('kasir.riwayat-transaksi.index', compact(
-            'transaksi', 'totalTransaksi', 'totalPendapatan'
+            'transaksi',
+            'totalTransaksi',
+            'totalPendapatan'
         ));
     }
 

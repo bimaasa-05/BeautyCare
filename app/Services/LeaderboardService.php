@@ -88,7 +88,7 @@ class LeaderboardService
         $rows = DB::table('transaksi as t')
             ->join('users as u', 'u.id', '=', 't.id_kasir')
             ->where('t.status', 'Lunas')
-            ->where('t.jenis_transaksi', 'Penjualan')
+            ->whereIn('t.jenis_transaksi', ['Penjualan', 'Booking', 'Pesanan Online'])
             ->when($startDate, function ($q) use ($startDate, $endDate) {
                 $q->whereBetween('t.tanggal', [$startDate, $endDate]);
             })

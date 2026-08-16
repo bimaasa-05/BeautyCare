@@ -277,6 +277,8 @@
     .status-diproses .sb-dot { background: #3B82F6; }
     .status-lunas { background: #D1FAE5; color: #059669; }
     .status-lunas .sb-dot { background: #059669; }
+    .status-dp { background: #EDE9FE; color: #6D28D9; }
+    .status-dp .sb-dot { background: #7C3AED; }
     .status-gagal { background: #FEE2E2; color: #B91C1C; }
     .status-gagal .sb-dot { background: #DC2626; }
     .status-kadaluarsa, .status-dibatalkan { background: #F3F4F6; color: #6B7280; }
@@ -565,14 +567,15 @@
                 @endif
 
                 @php
-                $badgeClass = [
-                    'Menunggu Pembayaran' => 'status-menunggu',
-                    'Sedang Diproses' => 'status-diproses',
-                    'Lunas' => 'status-lunas',
-                    'Gagal' => 'status-gagal',
-                    'Kadaluarsa' => 'status-kadaluarsa',
-                    'Dibatalkan' => 'status-dibatalkan',
-                ][$transaksi->status] ?? 'status-kadaluarsa';
+$badgeClass = [
+                        'Menunggu Pembayaran' => 'status-menunggu',
+                        'Sedang Diproses' => 'status-diproses',
+                        'Lunas' => 'status-lunas',
+                        'DP Dibayar' => 'status-dp',
+                        'Gagal' => 'status-gagal',
+                        'Kadaluarsa' => 'status-kadaluarsa',
+                        'Dibatalkan' => 'status-dibatalkan',
+                    ][$transaksi->status] ?? 'status-kadaluarsa';
                 $payClass = [
                     'Menunggu' => 'pay-menunggu',
                     'Dibayar' => 'pay-dibayar',
@@ -608,6 +611,9 @@
                                     $tahap['Menunggu Pembayaran'][2] = 'done';
                                     $tahap['Menunggu Verifikasi'][2] = 'done';
                                     $tahap['Selesai'][2] = 'done';
+                                } elseif ($tlStatus === 'DP Dibayar') {
+                                    $tahap['Menunggu Pembayaran'][2] = 'done';
+                                    $tahap['Menunggu Verifikasi'][2] = 'done';
                                 } elseif ($tlStatus === 'Sedang Diproses') {
                                     $tahap['Menunggu Pembayaran'][2] = 'done';
                                     $tahap['Menunggu Verifikasi'][2] = 'active';

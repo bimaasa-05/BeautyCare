@@ -455,6 +455,70 @@
     .status-badge.dibatalkan { background: #FEE2E2; color: #DC2626; }
     .status-badge.dibatalkan .sb-dot { background: #DC2626; }
 
+    /* ─── Badge Status Pembayaran ─── */
+    .status-payment-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 4px 10px;
+        border-radius: 100px;
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 0.2px;
+        margin-top: 5px;
+    }
+
+    .status-payment-badge .spb-dot {
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+    }
+
+    .status-payment-badge.belum { background: #F3F4F6; color: #6B7280; }
+    .status-payment-badge.belum .spb-dot { background: #9CA3AF; }
+    .status-payment-badge.menunggu { background: #FEF3C7; color: #B45309; }
+    .status-payment-badge.menunggu .spb-dot { background: #D97706; }
+    .status-payment-badge.dp { background: #DBEAFE; color: #2563EB; }
+    .status-payment-badge.dp .spb-dot { background: #3B82F6; }
+    .status-payment-badge.lunas { background: #D1FAE5; color: #059669; }
+    .status-payment-badge.lunas .spb-dot { background: #10B981; }
+
+    /* ─── Tombol Bayar Booking ─── */
+    .btn-bayar {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 7px 14px;
+        border: none;
+        border-radius: 100px;
+        background: linear-gradient(135deg, var(--primary), #FF7BA6);
+        color: #fff;
+        font-size: 11px;
+        font-weight: 600;
+        font-family: 'Poppins', sans-serif;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 12px rgba(255, 79, 135, 0.25);
+    }
+
+    .btn-bayar:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 16px rgba(255, 79, 135, 0.35);
+    }
+
+    .btn-bayar.btn-bayar-outline {
+        background: #fff;
+        border: 1.5px solid var(--primary);
+        color: var(--primary);
+        box-shadow: none;
+    }
+
+    .btn-bayar.btn-bayar-outline:hover {
+        background: linear-gradient(135deg, var(--primary), #FF7BA6);
+        color: #fff;
+    }
+
     /* ─── Action Buttons ─── */
     .action-btn {
         width: 32px;
@@ -1166,9 +1230,16 @@
                                         </div>
                                     </td>
                                     <td data-label="Jam">
+                                        @php
+                                            $bkDurasi = \App\Support\BookingSlot::durasiBooking($booking);
+                                            $bkSelesai = \Carbon\Carbon::parse($booking->tanggal . ' ' . substr($booking->jam, 0, 5))->addMinutes($bkDurasi)->format('H:i');
+                                        @endphp
                                         <div class="flex items-center gap-1.5">
                                             <i class="fa-regular fa-clock text-gray-300 text-[11px]"></i>
-                                            <span>{{ \Carbon\Carbon::parse($booking->jam)->format('H:i') }}</span>
+                                            <div>
+                                                <span style="font-variant-numeric:tabular-nums;">{{ \Carbon\Carbon::parse($booking->jam)->format('H:i') }} - {{ $bkSelesai }}</span>
+                                                <div style="font-size:10px;color:var(--gray);">{{ $bkDurasi }} menit</div>
+                                            </div>
                                         </div>
                                     </td>
                                     <td data-label="Terapis">
@@ -1193,6 +1264,19 @@
                                             <span class="sb-dot"></span>
                                             {{ ucfirst($booking->status) }}
                                         </span>
+                                        @if($booking->status_pembayaran && $booking->status_pembayaran !== 'lunas')
+                                        <br>
+                                        <span class="status-payment-badge {{ $booking->status_pembayaran }}">
+                                            <span class="spb-dot"></span>
+                                            @if($booking->status_pembayaran === 'belum')
+                                            Belum Bayar
+                                            @elseif($booking->status_pembayaran === 'menunggu')
+                                            Menunggu Verifikasi
+                                            @elseif($booking->status_pembayaran === 'dp')
+                                            DP Dibayar
+                                            @endif
+                                        </span>
+                                        @endif
                                     </td>
                                     <td data-label="Catatan">
                                         <span class="catatan-text {{ !$booking->catatan ? 'no-catatan' : '' }}" title="{{ $booking->catatan }}">
@@ -1202,6 +1286,15 @@
                                     <td data-label="Aksi" style="text-align:center;">
                                         <div class="flex items-center justify-center gap-1.5">
                                             @if($booking->status === 'menunggu')
+                                                @if($booking->status_pembayaran === 'belum')
+                                                <a href="{{ route('pelanggan.booking.pembayaran', $booking->id_booking) }}" class="btn-bayar" title="Bayar booking">
+                                                    <i class="fa-solid fa-credit-card"></i> Bayar
+                                                </a>
+                                                @elseif($booking->status_pembayaran === 'menunggu' && $booking->transaksi)
+                                                <a href="{{ route('pelanggan.pembayaran.show', $booking->transaksi->id_transaksi) }}" class="btn-bayar btn-bayar-outline" title="Lanjutkan pembayaran">
+                                                    <i class="fa-regular fa-clock"></i> Lanjut Bayar
+                                                </a>
+                                                @endif
                                             <button onclick="confirmCancel({{ $booking->id_booking }})" class="btn-batal" title="Batalkan booking">
                                                 <i class="fa-solid fa-xmark"></i> Batalkan
                                             </button>

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Booking;
 use App\Models\RiwayatTreatment;
 use App\Helpers\ActivityLogger;
+use App\Support\BookingSlot;
 use Carbon\Carbon;
 
 class BeatycianJadwalTreatmentController extends Controller
@@ -20,7 +21,7 @@ class BeatycianJadwalTreatmentController extends Controller
 
         $query = Booking::with(['detail.layanan', 'karyawan', 'pelanggan'])
             ->where('id_karyawan', $id_karyawan)
-            ->where('status', 'dikonfirmasi')
+            ->whereIn('status', ['dikonfirmasi', 'diproses'])
             ->whereDate('tanggal', '>=', now()->toDateString());
 
         if ($filter_status) {
@@ -40,8 +41,20 @@ class BeatycianJadwalTreatmentController extends Controller
             ->orderBy('jam', 'desc')
             ->paginate(10)->withQueryString();
 
-        $total_jadwal = Booking::where('id_karyawan', $id_karyawan)->where('status', 'dikonfirmasi')->whereDate('tanggal', '>=', now()->toDateString())->count();
-        $dikonfirmasi = $total_jadwal;
+        $jadwal->getCollection()->transform(function ($item) {
+            if ($item->status === 'diproses') {
+                $durasiMenit = BookingSlot::durasiBooking($item);
+                $mulaiPengerjaan = $item->jam_mulai_aktual
+                    ? Carbon::parse($item->jam_mulai_aktual)
+                    : Carbon::parse($item->tanggal . ' ' . substr($item->jam, 0, 5));
+                $item->estimasi_selesai = $mulaiPengerjaan->copy()->addMinutes($durasiMenit)->format('Y-m-d H:i:s');
+                $item->durasi_menit = $durasiMenit;
+            }
+            return $item;
+        });
+
+        $total_jadwal = Booking::where('id_karyawan', $id_karyawan)->whereIn('status', ['dikonfirmasi', 'diproses'])->whereDate('tanggal', '>=', now()->toDateString())->count();
+        $dikonfirmasi = Booking::where('id_karyawan', $id_karyawan)->where('status', 'dikonfirmasi')->whereDate('tanggal', '>=', now()->toDateString())->count();
         $diproses = Booking::where('id_karyawan', $id_karyawan)->where('status', 'diproses')->whereDate('tanggal', now()->toDateString())->count();
         $selesai = Booking::where('id_karyawan', $id_karyawan)->where('status', 'selesai')->whereDate('tanggal', now()->toDateString())->count();
         $dibatalkan = Booking::where('id_karyawan', $id_karyawan)->where('status', 'dibatalkan')->whereDate('tanggal', now()->toDateString())->count();
@@ -112,9 +125,48 @@ class BeatycianJadwalTreatmentController extends Controller
         });
 
         $sedangBerjalan = $sedangBerjalan->map(function ($b) use ($now) {
-            $mulaiAktual = $b->jam_mulai_aktual ? Carbon::parse($b->jam_mulai_aktual) : Carbon::parse($b->jam);
+            $durasiMenit = \App\Support\BookingSlot::durasiBooking($b);
+            $jamTerjadwal = Carbon::parse($b->jam);
+            $jamSelesaiEstimasi = $jamTerjadwal->copy()->addMinutes($durasiMenit)->format('H:i');
+            
+            $mulaiAktual = $b->jam_mulai_aktual ? Carbon::parse($b->jam_mulai_aktual) : $jamTerjadwal;
             $b->mulaiAktualTxt = $mulaiAktual->format('H:i');
             $b->berjalanDetik = (int) $mulaiAktual->diffInSeconds($now);
+            $b->bedaWaktu = $mulaiAktual->format('H:i') !== $jamTerjadwal->format('H:i');
+            $b->estimasiSelesaiTxt = $mulaiAktual->copy()->addMinutes($durasiMenit)->format('H:i');
+            
+            // Additional fields for clear display
+            $b->jamTerjadwalTxt = $jamTerjadwal->format('H:i');
+            $b->jamSelesaiEstimasiTxt = $jamSelesaiEstimasi;
+            $b->durasiMenit = $durasiMenit;
+            
+            return $b;
+        });
+
+        $selesaiHariIni = $selesaiHariIni->map(function ($b) {
+            $durasiMenit = \App\Support\BookingSlot::durasiBooking($b);
+            $jamTerjadwal = Carbon::parse($b->jam);
+            $jamSelesaiEstimasi = $jamTerjadwal->copy()->addMinutes($durasiMenit)->format('H:i');
+            
+            $b->jamTerjadwalTxt = $jamTerjadwal->format('H:i');
+            $b->jamSelesaiEstimasiTxt = $jamSelesaiEstimasi;
+            $b->durasiMenit = $durasiMenit;
+            
+            if ($b->jam_mulai_aktual) {
+                $mulaiCarbon = Carbon::parse($b->jam_mulai_aktual);
+                $b->mulaiAktualTxt = $mulaiCarbon->format('H:i');
+                $b->bedaWaktu = $mulaiCarbon->format('H:i') !== $jamTerjadwal->format('H:i');
+                
+                if ($b->jam_selesai_aktual) {
+                    $selesaiCarbon = Carbon::parse($b->jam_selesai_aktual);
+                    $b->selesaiAktualTxt = $selesaiCarbon->format('H:i');
+                    $durasiDetik = $mulaiCarbon->diffInSeconds($selesaiCarbon);
+                    $b->durasiAktualTxt = gmdate('H:i:s', $durasiDetik);
+                } else {
+                    $b->selesaiAktualTxt = $mulaiCarbon->copy()->addMinutes($durasiMenit)->format('H:i');
+                }
+            }
+            
             return $b;
         });
 

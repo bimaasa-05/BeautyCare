@@ -164,7 +164,7 @@
             </td>
             <td class="pay-item" style="width:34%; text-align:right;">
                 <div class="pay-label">Total Bayar</div>
-                <div class="pay-total">Rp {{ number_format($booking->transaksi->total, 0, ',', '.') }}</div>
+                <div class="pay-total">Rp {{ number_format($booking->status_pembayaran === 'lunas' ? $total : $booking->transaksi->total, 0, ',', '.') }}</div>
             </td>
         </tr>
     </table>

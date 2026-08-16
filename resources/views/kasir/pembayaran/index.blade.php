@@ -143,8 +143,17 @@
                                                 </div>
                                             </div>
                                         </td>
-                                        <td class="py-3 px-4 text-gray-500" data-label="Tanggal">{{ \Carbon\Carbon::parse($r->tanggal)->format('d/m/Y') }}</td>
-                                        <td class="py-3 px-4 text-gray-500 font-mono" data-label="Jam">{{ $r->jam }}</td>
+                                        <td class="py-3 px-4 text-gray-500" data-label="Tanggal">{{ \Carbon\Carbon::parse($r->tanggal)->isoFormat('D MMM Y') }}</td>
+                                        <td class="py-3 px-4 text-gray-500" data-label="Jam">
+                                            @php
+                                                $jamMulai = \Carbon\Carbon::parse($r->jam)->format('H:i');
+                                                $durasiMenit = \App\Support\BookingSlot::durasiBooking($r);
+                                                $jamSelesaiEstimasi = \Carbon\Carbon::parse($r->tanggal . ' ' . substr($r->jam, 0, 5))->addMinutes($durasiMenit)->format('H:i');
+                                            @endphp
+                                            <span class="font-mono font-semibold text-gray-700">{{ $jamMulai }}</span>
+                                            <span class="text-gray-400">-</span>
+                                            <span class="font-mono text-gray-500">{{ $jamSelesaiEstimasi }}</span>
+                                        </td>
                                         <td class="py-3 px-4 text-right font-semibold text-gray-700" data-label="Total Layanan">
                                             Rp {{ number_format($r->detail->sum(fn($d) => ($d->harga ?? 0) - ($d->diskon ?? 0)), 0, ',', '.') }}
                                         </td>

@@ -47,6 +47,7 @@ use App\Http\Controllers\KasirKonsultasiController;
 use App\Http\Controllers\BeautycianKonsultasiController;
 use App\Http\Controllers\AdminKonsultasiController;
 use App\Http\Controllers\AdminLeaderboardController;
+use App\Http\Controllers\RealtimeController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -57,7 +58,17 @@ Route::get('/', function () {
 
     $pengaturan = \App\Models\Pengaturan::first();
 
-    return view('landing.index', compact('tingkatMembership', 'pengaturan'));
+    $kategoriLayanan = \App\Models\KategoriLayanan::where('status', 'tersedia')
+        ->with(['layanan' => function($query) {
+            $query->where('status', 'tersedia')
+                  ->whereNotNull('foto')
+                  ->where('foto', '!=', '')
+                  ->orderBy('id_layanan');
+        }])
+        ->orderBy('nm_layanan')
+        ->get();
+
+    return view('landing.index', compact('tingkatMembership', 'pengaturan', 'kategoriLayanan'));
 })->name('home');
 
 Route::post('/kontak', [App\Http\Controllers\ContactController::class, 'store'])->name('landing.contact');
@@ -74,6 +85,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    //Realtime Status Booking
+    Route::get('/realtime/booking-status', [RealtimeController::class, 'bookingStatus'])->name('realtime.booking-status');
 
     //Notifikasi
     Route::get('/notif/get', [NotifikasiController::class, 'getNotif'])->name('notif.get');
@@ -383,6 +397,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/pelanggan/booking/slot', [PelangganBookingController::class, 'slotJamData'])->name('pelanggan.booking.slot');
         Route::post('/pelanggan/booking', [PelangganBookingController::class, 'store'])->name('pelanggan.booking.store');
         Route::get('/pelanggan/booking/{id}/detail', [PelangganBookingController::class, 'show'])->name('pelanggan.booking.detail');
+        Route::get('/pelanggan/booking/{id}/pembayaran', [PelangganBookingController::class, 'pembayaran'])->name('pelanggan.booking.pembayaran');
+        Route::post('/pelanggan/booking/{id}/pembayaran', [PelangganBookingController::class, 'bayar'])->name('pelanggan.booking.bayar');
         Route::get('/pelanggan/booking/{id}/pdf', [PelangganBookingController::class, 'pdf'])->name('pelanggan.booking.pdf');
         Route::get('/pelanggan/booking/{id}/edit', [PelangganBookingController::class, 'edit'])->name('pelanggan.booking.edit');
         Route::put('/pelanggan/booking/{id}', [PelangganBookingController::class, 'update'])->name('pelanggan.booking.update');

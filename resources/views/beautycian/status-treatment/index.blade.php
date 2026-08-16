@@ -114,7 +114,7 @@
 
 
                 <div class="kanban-grid">
-                    <div class="kanban-column column-waiting">
+                    <div class="kanban-column column-waiting" data-rt-column="dikonfirmasi">
                         <div class="kc-header">
                             <div class="kc-title">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
@@ -124,7 +124,7 @@
                         </div>
 
                         @forelse($akanDimulai as $item)
-                        <div class="kanban-card">
+                        <div class="kanban-card" data-rt-booking="{{ $item->id_booking }}" data-rt-status="{{ $item->status }}">
                             <div class="kc-card-header">
                                 <div class="kc-avatar"><img src="{{ $item->pelanggan?->foto_url ?? 'https://ui-avatars.com/api/?name=%3F&background=FFE5EF&color=FF4F87&size=40' }}" alt="{{ $item->pelanggan->nm_pelanggan ?? '?' }}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;display:block;"></div>
                                 <div>
@@ -172,7 +172,7 @@
                         @endforelse
                     </div>
 
-                    <div class="kanban-column column-progress">
+                    <div class="kanban-column column-progress" data-rt-column="diproses">
                         <div class="kc-header">
                             <div class="kc-title">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
@@ -182,7 +182,7 @@
                         </div>
 
                         @forelse($sedangBerjalan as $item)
-                        <div class="kanban-card">
+                        <div class="kanban-card" data-rt-booking="{{ $item->id_booking }}" data-rt-status="{{ $item->status }}">
                             <div class="kc-card-header">
                                 <div class="kc-avatar"><img src="{{ $item->pelanggan?->foto_url ?? 'https://ui-avatars.com/api/?name=%3F&background=FFE5EF&color=FF4F87&size=40' }}" alt="{{ $item->pelanggan->nm_pelanggan ?? '?' }}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;display:block;"></div>
                                 <div>
@@ -192,6 +192,9 @@
                                     <span class="timer-badge" data-mulai="{{ $item->jam_mulai_aktual ? \Carbon\Carbon::parse($item->jam_mulai_aktual)->format('Y-m-d H:i:s') : \Carbon\Carbon::parse($item->tanggal . ' ' . $item->jam)->format('Y-m-d H:i:s') }}">
                                         <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                                         Mulai {{ $item->mulaiAktualTxt }} · Berjalan <span class="tick">00:00:00</span>
+                                        @if($item->bedaWaktu)
+                                            <span style="margin-left:6px;color:#f59e0b;">· Est. Selesai: {{ $item->estimasiSelesaiTxt }}</span>
+                                        @endif
                                     </span>
                                 </div>
                             </div>
@@ -203,10 +206,30 @@
                                         @endforeach
                                     @else - @endif
                                 </div>
-                                <div class="kc-time">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                                    {{ \Carbon\Carbon::parse($item->jam)->format('H:i') }}
+                                
+                                <!-- Waktu Detail seperti Admin -->
+                                <div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border);">
+                                    <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px;">
+                                        <span class="text-gray-400">Dijadwalkan</span>
+                                        <span class="font-semibold text-gray-700">{{ $item->jamTerjadwalTxt }} - {{ $item->jamSelesaiEstimasiTxt }}</span>
+                                    </div>
+                                    @if($item->bedaWaktu)
+                                    <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px;">
+                                        <span class="text-amber-500">Aktual</span>
+                                        <span class="font-bold text-amber-600">{{ $item->mulaiAktualTxt }} · Sedang berlangsung</span>
+                                    </div>
+                                    <div style="display:flex;justify-content:space-between;font-size:11px;color:#f59e0b;">
+                                        <span>Est. Selesai</span>
+                                        <span class="font-bold">{{ $item->estimasiSelesaiTxt }}</span>
+                                    </div>
+                                    @else
+                                    <div style="display:flex;justify-content:space-between;font-size:11px;color:#8b5cf6;">
+                                        <span>Est. Selesai</span>
+                                        <span class="font-bold">{{ $item->estimasiSelesaiTxt }}</span>
+                                    </div>
+                                    @endif
                                 </div>
+                                
                                 @if($item->riwayatTreatment)
                                     <div style="margin-top:6px;">
                                         <span class="doc-badge has-doc">
@@ -250,7 +273,7 @@
                         @endforelse
                     </div>
 
-                    <div class="kanban-column column-done">
+                    <div class="kanban-column column-done" data-rt-column="selesai">
                         <div class="kc-header">
                             <div class="kc-title">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
@@ -260,24 +283,27 @@
                         </div>
 
                         @forelse($selesaiHariIni as $item)
-                        <div class="kanban-card">
+                        <div class="kanban-card" data-rt-booking="{{ $item->id_booking }}" data-rt-status="{{ $item->status }}">
                             <div class="kc-card-header">
                                 <div class="kc-avatar"><img src="{{ $item->pelanggan?->foto_url ?? 'https://ui-avatars.com/api/?name=%3F&background=FFE5EF&color=FF4F87&size=40' }}" alt="{{ $item->pelanggan->nm_pelanggan ?? '?' }}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;display:block;"></div>
                                 <div>
                                     <div class="kc-name">{{ $item->pelanggan ? $item->pelanggan->nm_pelanggan : '#' . $item->id_pelanggan }}</div>
                                 </div>
-                                @if($item->jam_selesai_aktual)
+                                @if($item->jam_selesai_aktual && $item->jam_mulai_aktual)
+                                <div class="kc-header-right">
+                                    <span class="done-badge">
+                                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                                        Selesai {{ $item->selesaiAktualTxt }}
+                                        @if(isset($item->durasiAktualTxt))
+                                        · {{ $item->durasiAktualTxt }}
+                                        @endif
+                                    </span>
+                                </div>
+                                @elseif($item->jam_selesai_aktual)
                                 <div class="kc-header-right">
                                     <span class="done-badge">
                                         <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
                                         Selesai pukul {{ \Carbon\Carbon::parse($item->jam_selesai_aktual)->format('H:i') }}
-                                        @php
-                                            $jamMulaiAktual = $item->jam_mulai_aktual ?? $item->jam;
-                                            $durasiDetik = max(0, \Carbon\Carbon::parse($item->jam_selesai_aktual)->getTimestamp() - \Carbon\Carbon::parse($jamMulaiAktual)->getTimestamp());
-                                        @endphp
-                                        @if($jamMulaiAktual)
-                                        · Durasi {{ gmdate('H:i:s', $durasiDetik) }}
-                                        @endif
                                     </span>
                                 </div>
                                 @endif
@@ -290,10 +316,32 @@
                                         @endforeach
                                     @else - @endif
                                 </div>
-                                <div class="kc-time">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                                    {{ \Carbon\Carbon::parse($item->jam)->format('H:i') }}
+                                
+                                <!-- Waktu Detail seperti Admin -->
+                                <div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border);">
+                                    <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px;">
+                                        <span class="text-gray-400">Dijadwalkan</span>
+                                        <span class="font-semibold text-gray-700">{{ $item->jamTerjadwalTxt }} - {{ $item->jamSelesaiEstimasiTxt }}</span>
+                                    </div>
+                                    @if(isset($item->mulaiAktualTxt) && isset($item->bedaWaktu) && $item->bedaWaktu)
+                                    <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px;">
+                                        <span class="text-amber-500">Aktual</span>
+                                        <span class="font-bold text-amber-600">{{ $item->mulaiAktualTxt }} - {{ $item->selesaiAktualTxt }}</span>
+                                    </div>
+                                    @elseif(isset($item->mulaiAktualTxt))
+                                    <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px;">
+                                        <span class="text-gray-400">Aktual</span>
+                                        <span class="font-semibold text-gray-700">{{ $item->mulaiAktualTxt }} - {{ $item->selesaiAktualTxt }}</span>
+                                    </div>
+                                    @endif
+                                    @if(isset($item->durasiAktualTxt))
+                                    <div style="display:flex;justify-content:space-between;font-size:11px;color:#10b981;">
+                                        <span>Durasi</span>
+                                        <span class="font-bold font-mono">{{ $item->durasiAktualTxt }}</span>
+                                    </div>
+                                    @endif
                                 </div>
+                                
                                 @if($item->riwayatTreatment)
                                     <div style="margin-top:6px;">
                                         <span class="doc-badge has-doc">
@@ -424,6 +472,7 @@
 
     <script src="{{ asset('assets/js/beautycian.js') }}"></script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
+    @include('partials.realtime-booking', ['rtScope' => 'beautycian'])
     @include('partials.confirm-modal')
 </body>
 

@@ -89,7 +89,7 @@
     grid-template-columns: repeat(2, 1fr);
   }
   .footer-grid {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 2fr 1fr 1fr;
   }
   .testimoni-card {
     min-width: calc(50% - 12px);

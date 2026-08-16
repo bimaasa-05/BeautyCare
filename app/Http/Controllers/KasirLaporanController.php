@@ -32,6 +32,7 @@ class KasirLaporanController extends Controller
         $totalTransaksi = (clone $queryPendapatan)->count();
 
         $totalPendapatan = (clone $queryPendapatan)
+            ->where('status', 'Lunas')
             ->sum('total');
 
         $totalPengeluaran = Pengeluaran::where('id_user', $userId)
@@ -243,6 +244,7 @@ class KasirLaporanController extends Controller
             ->count();
 
         $totalPendapatan = (clone $queryPendapatan)
+            ->where('status', 'Lunas')
             ->whereBetween('tanggal', [$startDate, $endDate])
             ->sum('total');
 

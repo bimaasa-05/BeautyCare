@@ -48,18 +48,6 @@
             </div>
 
             <div>
-                <h4>Layanan</h4>
-                <ul class="footer-links">
-                    <li><a href="#">Salon</a></li>
-                    <li><a href="#">Spa</a></li>
-                    <li><a href="#">Nail Art</a></li>
-                    <li><a href="#">Barbershop</a></li>
-                    <li><a href="#">Skincare</a></li>
-                    <li><a href="#">Eyelash</a></li>
-                </ul>
-            </div>
-
-            <div>
                 <h4>Kontak</h4>
                 <ul class="footer-contact">
                     <li>

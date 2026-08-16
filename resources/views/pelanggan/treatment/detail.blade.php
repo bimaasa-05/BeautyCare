@@ -65,7 +65,7 @@
     .photo-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 
     .photo-card { position: relative; border-radius: 16px; overflow: hidden; border: 1px solid var(--border); box-shadow: 0 2px 10px -4px rgba(0,0,0,0.08); }
-    .photo-card img { width: 100%; height: 240px; object-fit: cover; display: block; transition: transform 0.3s ease; }
+    .photo-card img { width: 100%; height: auto; display: block; transition: transform 0.3s ease; }
     .photo-card:hover img { transform: scale(1.04); }
     .photo-card .photo-label { position: absolute; left: 12px; bottom: 12px; padding: 6px 14px; font-size: 11px; font-weight: 700; color: #fff; background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(4px); border-radius: 100px; text-align: center; display: inline-flex; align-items: center; gap: 6px; }
     .photo-card .photo-label i { font-size: 8px; }
@@ -138,7 +138,6 @@
         .detail-card .dc-body { padding: 16px; }
         .detail-section { padding: 16px; }
         .photo-pair { grid-template-columns: 1fr; }
-        .photo-card img { height: 180px; }
         .photo-card.empty-photo { height: 180px; }
         .action-bar { flex-wrap: wrap; }
     }
@@ -279,10 +278,28 @@
                             <td class="label">Tanggal</td>
                             <td class="value">{{ \Carbon\Carbon::parse($booking->tanggal)->isoFormat('D MMMM YYYY') }}</td>
                         </tr>
+                        @php
+                            $durasiMenit = \App\Support\BookingSlot::durasiBooking($booking);
+                            $jamSelesaiEstimasi = \Carbon\Carbon::parse($booking->tanggal . ' ' . substr($booking->jam, 0, 5))->addMinutes($durasiMenit)->format('H:i');
+                        @endphp
                         <tr>
                             <td class="label">Jam</td>
-                            <td class="value">{{ \Carbon\Carbon::parse($booking->jam)->format('H:i') }}</td>
+                            <td class="value font-mono">{{ \Carbon\Carbon::parse($booking->jam)->format('H:i') }} - {{ $jamSelesaiEstimasi }}</td>
                         </tr>
+                        @if($booking->status === 'selesai' && $booking->jam_mulai_aktual && $booking->jam_selesai_aktual)
+                        <tr>
+                            <td class="label">Mulai Aktual</td>
+                            <td class="value font-mono">{{ \Carbon\Carbon::parse($booking->jam_mulai_aktual)->format('H:i') }}</td>
+                        </tr>
+                        <tr>
+                            <td class="label">Selesai Aktual</td>
+                            <td class="value font-mono">{{ \Carbon\Carbon::parse($booking->jam_selesai_aktual)->format('H:i') }}</td>
+                        </tr>
+                        <tr>
+                            <td class="label">Durasi</td>
+                            <td class="value font-mono">{{ gmdate('H:i:s', \Carbon\Carbon::parse($booking->jam_mulai_aktual)->diffInSeconds(\Carbon\Carbon::parse($booking->jam_selesai_aktual))) }}</td>
+                        </tr>
+                        @endif
                         <tr>
                             <td class="label">Terapis</td>
                             <td class="value">{{ $booking->karyawan ? $booking->karyawan->nama : 'Terapis #'.$booking->id_karyawan }}</td>
@@ -331,7 +348,7 @@
                         $subtotal = $detail->subtotal;
                         $total += $subtotal;
                         $durasi = $detail->layanan ? (int) $detail->layanan->durasi : 0;
-                        $durasiText = $durasi ? ($durasi >= 60 ? intdiv($durasi, 60) . ' jam' . ($durasi % 60 ? ' ' . ($durasi % 60) . ' menit' : '') : $durasi . ' menit') : '-';
+                        $durasiText = $durasi ? $durasi . ' menit' : '-';
                     @endphp
                     <tr>
                         <td style="text-align:center;">{{ $loop->iteration }}</td>
@@ -375,7 +392,7 @@
                 </div>
                 <div class="pay-item">
                     <div class="label">Total Bayar</div>
-                    <div class="value primary">Rp {{ number_format($booking->transaksi->total, 0, ',', '.') }}</div>
+                    <div class="value primary">Rp {{ number_format($booking->status_pembayaran === 'lunas' ? $total : $booking->transaksi->total, 0, ',', '.') }}</div>
                 </div>
             </div>
             @endif
@@ -497,10 +514,28 @@
                                     <span class="info-label">Tanggal</span>
                                     <span class="info-value">{{ \Carbon\Carbon::parse($booking->tanggal)->isoFormat('D MMMM YYYY') }}</span>
                                 </div>
+                                @php
+                                    $durasiMenit = \App\Support\BookingSlot::durasiBooking($booking);
+                                    $jamSelesaiEstimasi = \Carbon\Carbon::parse($booking->tanggal . ' ' . substr($booking->jam, 0, 5))->addMinutes($durasiMenit)->format('H:i');
+                                @endphp
                                 <div class="info-row">
                                     <span class="info-label">Jam</span>
-                                    <span class="info-value">{{ \Carbon\Carbon::parse($booking->jam)->format('H:i') }}</span>
+                                    <span class="info-value font-mono">{{ \Carbon\Carbon::parse($booking->jam)->format('H:i') }} - {{ $jamSelesaiEstimasi }}</span>
                                 </div>
+                                @if($booking->status === 'selesai' && $booking->jam_mulai_aktual && $booking->jam_selesai_aktual)
+                                <div class="info-row">
+                                    <span class="info-label">Mulai Aktual</span>
+                                    <span class="info-value font-mono">{{ \Carbon\Carbon::parse($booking->jam_mulai_aktual)->format('H:i') }}</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">Selesai Aktual</span>
+                                    <span class="info-value font-mono">{{ \Carbon\Carbon::parse($booking->jam_selesai_aktual)->format('H:i') }}</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">Durasi</span>
+                                    <span class="info-value font-mono">{{ gmdate('H:i:s', \Carbon\Carbon::parse($booking->jam_mulai_aktual)->diffInSeconds(\Carbon\Carbon::parse($booking->jam_selesai_aktual))) }}</span>
+                                </div>
+                                @endif
                                 <div class="info-row">
                                     <span class="info-label">Terapis</span>
                                     <span class="info-value">{{ $booking->karyawan ? $booking->karyawan->nama : 'Terapis #'.$booking->id_karyawan }}</span>
@@ -539,7 +574,7 @@
                                         $subtotal = $detail->subtotal;
                                         $total += $subtotal;
                                         $durasi = $detail->layanan ? (int) $detail->layanan->durasi : 0;
-                                        $durasiText = $durasi ? ($durasi >= 60 ? intdiv($durasi, 60) . ' jam' . ($durasi % 60 ? ' ' . ($durasi % 60) . ' menit' : '') : $durasi . ' menit') : '-';
+                                        $durasiText = $durasi ? $durasi . ' menit' : '-';
                                     @endphp
                                     <tr>
                                         <td>{{ $detail->layanan ? $detail->layanan->nm_layanan : 'Layanan #'.$detail->id_layanan }}</td>
@@ -593,7 +628,7 @@
                             <div class="pay-card total-card">
                                 <div class="pc-icon"><i class="fa-solid fa-money-bill-wave"></i></div>
                                 <div class="pc-label">Total Bayar</div>
-                                <div class="pc-value total">Rp {{ number_format($booking->transaksi->total, 0, ',', '.') }}</div>
+                                <div class="pc-value total">Rp {{ number_format($booking->status_pembayaran === 'lunas' ? $total : $booking->transaksi->total, 0, ',', '.') }}</div>
                             </div>
                         </div>
 

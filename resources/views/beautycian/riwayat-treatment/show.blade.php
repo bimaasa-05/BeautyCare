@@ -28,7 +28,7 @@
         .info-row .info-value { flex: 1; font-size: 13px; color: var(--dark); font-weight: 500; }
 
         .photo-card { border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }
-        .photo-card img { width: 100%; height: 220px; object-fit: cover; display: block; }
+        .photo-card img { width: 100%; height: auto; display: block; }
         .photo-card .photo-label { padding: 8px 12px; font-size: 11px; font-weight: 600; color: var(--gray); background: #FAFAFA; text-align: center; }
         .photo-card.empty-photo { display: flex; align-items: center; justify-content: center; height: 220px; background: #FAFAFA; color: #ccc; flex-direction: column; gap: 8px; }
         .photo-card.empty-photo svg { width: 40px; height: 40px; }
@@ -115,16 +115,60 @@
                             <span class="info-label">Tanggal</span>
                             <span class="info-value">{{ \Carbon\Carbon::parse($booking->tanggal)->isoFormat('D MMM YYYY') }}</span>
                         </div>
+                        @php
+                            $durasiMenit = \App\Support\BookingSlot::durasiBooking($booking);
+                            $jamSelesaiEstimasi = \Carbon\Carbon::parse($booking->tanggal . ' ' . substr($booking->jam, 0, 5))->addMinutes($durasiMenit)->format('H:i');
+                            $adaAktual = in_array($booking->status, ['diproses', 'selesai']) && $booking->jam_mulai_aktual;
+                            $mulaiAktual = $adaAktual ? \Carbon\Carbon::parse($booking->jam_mulai_aktual)->format('H:i') : null;
+                            $bedaWaktu = $adaAktual && $mulaiAktual !== \Carbon\Carbon::parse($booking->jam)->format('H:i');
+                            
+                            $selesaiAktual = null;
+                            $durasiAktual = null;
+                            $statusWaktu = null;
+                            if ($adaAktual) {
+                                $mulaiCarbon = \Carbon\Carbon::parse($booking->jam_mulai_aktual);
+                                if ($booking->status === 'selesai' && $booking->jam_selesai_aktual) {
+                                    $selesaiCarbon = \Carbon\Carbon::parse($booking->jam_selesai_aktual);
+                                    $selesaiAktual = $selesaiCarbon->format('H:i');
+                                    $durasiDetik = $mulaiCarbon->diffInSeconds($selesaiCarbon);
+                                    $durasiAktual = gmdate('H:i:s', $durasiDetik);
+                                    $statusWaktu = 'Selesai';
+                                } else {
+                                    $selesaiEstCarbon = $mulaiCarbon->copy()->addMinutes($durasiMenit);
+                                    $selesaiAktual = $selesaiEstCarbon->format('H:i');
+                                    $statusWaktu = 'Sedang berlangsung';
+                                }
+                            }
+                        @endphp
                         <div class="info-row">
                             <span class="info-label">Jam</span>
-                            <span class="info-value">{{ \Carbon\Carbon::parse($booking->jam)->format('H:i') }}</span>
+                            <span class="info-value font-mono">{{ \Carbon\Carbon::parse($booking->jam)->format('H:i') }} - {{ $jamSelesaiEstimasi }}</span>
                         </div>
+                        @if ($adaAktual)
+                        <div class="info-row">
+                            <span class="info-label text-amber-600">Aktual</span>
+                            <span class="info-value text-amber-600 font-bold">
+                                {{ $mulaiAktual }} 
+                                @if($booking->status === 'selesai')
+                                    - {{ $selesaiAktual }}
+                                @else
+                                    <span class="font-normal text-amber-500"> · {{ $statusWaktu }}</span>
+                                @endif
+                            </span>
+                        </div>
+                        @endif
+                        @if ($durasiAktual)
+                        <div class="info-row">
+                            <span class="info-label text-emerald-600">Durasi</span>
+                            <span class="info-value text-emerald-600 font-bold font-mono">{{ $durasiAktual }}</span>
+                        </div>
+                        @endif
                         <div class="info-row">
                             <span class="info-label">Layanan</span>
                             <span class="info-value">
                                 @if($booking->detail && $booking->detail->isNotEmpty())
                                     @foreach($booking->detail as $dt)
-                                        {{ $dt->layanan ? $dt->layanan->nm_layanan : '-' }}
+                                        {{ $dt->layanan ? $dt->layanan->nm_layanan : '-' }} ({{ ($dt->layanan->durasi ?? 0) }} menit)
                                         @if($dt->layanan) (Rp {{ number_format($dt->layanan->harga, 0, ',', '.') }})@endif
                                         @if(!$loop->last)<br>@endif
                                     @endforeach

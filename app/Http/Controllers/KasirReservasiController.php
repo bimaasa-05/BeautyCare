@@ -21,7 +21,7 @@ class KasirReservasiController extends Controller
         $totalMenunggu = Booking::where('status', 'menunggu')->count();
         $totalSelesai = Booking::where('status', 'selesai')->count();
         $totalDiproses = Booking::where('status', 'diproses')->count();
-        $reservasi = Booking::with('pelanggan', 'karyawan')
+        $reservasi = Booking::with('pelanggan', 'karyawan', 'detail.layanan')
             ->when($search, function ($query, $search) {
                 return $query->where('tanggal', 'like', "%{$search}%")
                     ->orWhereHas('pelanggan', function ($q) use ($search) {

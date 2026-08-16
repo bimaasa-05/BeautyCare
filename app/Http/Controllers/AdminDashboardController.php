@@ -28,7 +28,7 @@ class AdminDashboardController extends Controller
 
         $totalPelanggan = Pelanggan::count();
 
-        $totalKaryawan = Karyawan::whereHas('user', fn ($q) => $q->whereIn('role', ['kasir', 'beautycian']))->count();
+        $totalKaryawan = Karyawan::whereHas('user', fn($q) => $q->whereIn('role', ['kasir', 'beautycian']))->count();
 
         $produkTerjual = DetailTransaksi::where('detail_transaksi.jenis', 'produk')
             ->join('transaksi', 'transaksi.id_transaksi', '=', 'detail_transaksi.id_transaksi')
@@ -142,7 +142,9 @@ class AdminDashboardController extends Controller
         $bookingMingguDetail = Booking::with(['detail.layanan'])
             ->whereBetween('tanggal', [$senin, $minggu])
             ->get()
-            ->groupBy(function($b) { return \Carbon\Carbon::parse($b->tanggal)->dayOfWeek; });
+            ->groupBy(function ($b) {
+                return \Carbon\Carbon::parse($b->tanggal)->dayOfWeek;
+            });
 
         $hariDetail = [];
         foreach ($hariLabel as $i => $label) {
@@ -167,11 +169,11 @@ class AdminDashboardController extends Controller
             ->get();
 
         $layananTerlaris = DetailTransaksi::select(
-                'detail_transaksi.id_item',
-                'detail_transaksi.nm_item',
-                DB::raw('SUM(detail_transaksi.qty) as total_qty'),
-                DB::raw('SUM(detail_transaksi.subtotal) as total_subtotal')
-            )
+            'detail_transaksi.id_item',
+            'detail_transaksi.nm_item',
+            DB::raw('SUM(detail_transaksi.qty) as total_qty'),
+            DB::raw('SUM(detail_transaksi.subtotal) as total_subtotal')
+        )
             ->join('transaksi', 'transaksi.id_transaksi', '=', 'detail_transaksi.id_transaksi')
             ->where('detail_transaksi.jenis', 'like', 'layanan')
             ->whereIn('transaksi.jenis_transaksi', ['Penjualan', 'Booking', 'Pesanan Online'])
@@ -182,11 +184,11 @@ class AdminDashboardController extends Controller
             ->get();
 
         $produkTerlaris = DetailTransaksi::select(
-                'detail_transaksi.id_item',
-                'detail_transaksi.nm_item',
-                DB::raw('SUM(detail_transaksi.qty) as total_qty'),
-                DB::raw('SUM(detail_transaksi.subtotal) as total_subtotal')
-            )
+            'detail_transaksi.id_item',
+            'detail_transaksi.nm_item',
+            DB::raw('SUM(detail_transaksi.qty) as total_qty'),
+            DB::raw('SUM(detail_transaksi.subtotal) as total_subtotal')
+        )
             ->join('transaksi', 'transaksi.id_transaksi', '=', 'detail_transaksi.id_transaksi')
             ->where('detail_transaksi.jenis', 'like', 'produk')
             ->whereIn('transaksi.jenis_transaksi', ['Penjualan', 'Booking', 'Pesanan Online'])
@@ -197,7 +199,7 @@ class AdminDashboardController extends Controller
             ->get();
 
         $karyawanAktif = Karyawan::with('user')
-            ->whereHas('user', fn ($q) => $q->whereIn('role', ['kasir', 'beautycian']))
+            ->whereHas('user', fn($q) => $q->whereIn('role', ['kasir', 'beautycian']))
             ->where('status', '!=', 'Libur')
             ->get();
 
@@ -244,23 +246,47 @@ class AdminDashboardController extends Controller
         };
 
         return compact(
-            'totalPendapatan', 'totalBooking', 'totalPelanggan',
-            'totalKaryawan', 'produkTerjual',
-            'pendapatanGrowth', 'bookingGrowth', 'pelangganGrowth',
-            'produkTerjualGrowth', 'karyawanGrowth',
-            'chartLabels', 'chartRevenueData', 'chartBookingData', 'maxRevenue',
-            'chartDataPeriode', 'donutDataPeriode', 'periode', 'periodeBooking',
-            'layananBookingPeriode', 'layananBookingPeriodeLabels', 'totalBookingPeriode',
-            'hariBars', 'hariLabel', 'hariDetail', 'maxBar', 'totalBookingMinggu', 'layananBookingMinggu',
+            'totalPendapatan',
+            'totalBooking',
+            'totalPelanggan',
+            'totalKaryawan',
+            'produkTerjual',
+            'pendapatanGrowth',
+            'bookingGrowth',
+            'pelangganGrowth',
+            'produkTerjualGrowth',
+            'karyawanGrowth',
+            'chartLabels',
+            'chartRevenueData',
+            'chartBookingData',
+            'maxRevenue',
+            'chartDataPeriode',
+            'donutDataPeriode',
+            'periode',
+            'periodeBooking',
+            'layananBookingPeriode',
+            'layananBookingPeriodeLabels',
+            'totalBookingPeriode',
+            'hariBars',
+            'hariLabel',
+            'hariDetail',
+            'maxBar',
+            'totalBookingMinggu',
+            'layananBookingMinggu',
             'jadwalHariIni',
-            'layananTerlaris', 'produkTerlaris',
+            'layananTerlaris',
+            'produkTerlaris',
             'karyawanAktif',
             'ringkasanStok',
             'notifStok',
-            'stokTerisi', 'stokMenipisPct', 'stokHabisPct',
+            'stokTerisi',
+            'stokMenipisPct',
+            'stokHabisPct',
             'bookingTerbaru',
-
-            'topGlobalLayanan', 'topGlobalProduk', 'topKasir', 'topBeautycian',
+            'topGlobalLayanan',
+            'topGlobalProduk',
+            'topKasir',
+            'topBeautycian',
             'fmt'
         );
     }
@@ -296,9 +322,9 @@ class AdminDashboardController extends Controller
                 ->toArray();
 
             $bk = Booking::select(
-                    DB::raw('MONTH(tanggal) as bulan'),
-                    DB::raw('COUNT(*) as total')
-                )
+                DB::raw('MONTH(tanggal) as bulan'),
+                DB::raw('COUNT(*) as total')
+            )
                 ->whereYear('tanggal', date('Y'))
                 ->groupBy(DB::raw('MONTH(tanggal)'))
                 ->orderBy('bulan')
@@ -323,9 +349,9 @@ class AdminDashboardController extends Controller
                 ->toArray();
 
             $bk = Booking::select(
-                    DB::raw('DATE(tanggal) as tgl'),
-                    DB::raw('COUNT(*) as total')
-                )
+                DB::raw('DATE(tanggal) as tgl'),
+                DB::raw('COUNT(*) as total')
+            )
                 ->whereBetween('tanggal', [$start, $end])
                 ->groupBy(DB::raw('DATE(tanggal)'))
                 ->pluck('total', 'tgl')
@@ -361,11 +387,11 @@ class AdminDashboardController extends Controller
     }
 
     public function index(Request $request)
-{
-    $data = $this->getDashboardData($request);
-    extract($data);
+    {
+        $data = $this->getDashboardData($request);
+        extract($data);
 
-    return view('admin.dashboard', $data);
+        return view('admin.dashboard', $data);
     }
 
     public function data(Request $request)
