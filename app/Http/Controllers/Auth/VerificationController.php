@@ -17,8 +17,19 @@ use Illuminate\View\View;
 
 class VerificationController extends Controller
 {
-    public static function kirimOtp(string $email): string
+    public static function kirimOtp(string $email, bool $force = false): string
     {
+        if (! $force) {
+            $existing = VerificationCode::where('email', $email)
+                ->where('used', false)
+                ->latest('id')
+                ->first();
+
+            if ($existing && $existing->isValid()) {
+                return 'reuse';
+            }
+        }
+
         $code = (string) random_int(100000, 999999);
 
         VerificationCode::where('email', $email)->where('used', false)->delete();
@@ -63,7 +74,7 @@ class VerificationController extends Controller
             ->first();
 
         if (! $record || ! $record->isValid() || ! Hash::check($request->code, $record->code)) {
-            return back()->withErrors(['code' => 'Kode verifikasi salah atau telah kedaluwarsa. Silakan coba lagi.']);
+            return back()->withErrors(['code' => 'Kode OTP salah. Periksa kembali kode yang telah dikirim ke email Anda.']);
         }
 
         $record->update(['used' => true]);
@@ -110,7 +121,7 @@ class VerificationController extends Controller
                 ->withErrors(['email' => 'Akun tidak ditemukan atau sudah diverifikasi.']);
         }
 
-        self::kirimOtp($request->email);
+        self::kirimOtp($request->email, true);
 
         return redirect()->route('verification.otp.show', ['email' => $request->email])
             ->with('status', 'Kode verifikasi baru telah dikirim ke email Anda.');
