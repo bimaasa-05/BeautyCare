@@ -212,41 +212,233 @@
             margin-left: 12px;
         }
 
-        .dropdown-pink {
-            appearance: none;
-            -webkit-appearance: none;
+        /* ─── Period Dropdown (custom popup, mengikuti pola dashboard pelanggan) ─── */
+        .period-trigger {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
             background: #fff;
-            border: 1.5px solid #FCE7F3;
-            border-radius: 8px;
-            padding: 6px 32px 6px 12px;
-            font-size: 12px;
-            font-weight: 500;
-            color: #EC4899;
+            border: 1.5px solid #E5E7EB;
+            border-radius: 10px;
+            padding: 8px 14px;
             font-family: 'Poppins', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--dark);
             cursor: pointer;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23EC4899' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 8px center;
-            background-size: 12px;
-            transition: all 0.2s ease;
-            min-width: 120px;
+            transition: all 0.25s ease;
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
         }
 
-        .dropdown-pink:hover {
-            border-color: #F9A8D4;
-            box-shadow: 0 2px 8px rgba(236, 72, 153, 0.10);
+        .period-trigger:hover {
+            border-color: #FFB6CD;
+            background: #FFF9FB;
         }
 
-        .dropdown-pink:focus {
-            outline: none;
-            border-color: #EC4899;
-            box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.15);
+        .period-trigger > i:first-child {
+            color: var(--primary);
         }
 
-        .dropdown-pink option {
+        .period-trigger .period-arrow {
+            font-size: 11px;
+            color: var(--gray);
+            transition: transform 0.3s ease;
+        }
+
+        .period-trigger.open .period-arrow {
+            transform: rotate(180deg);
+        }
+
+        .period-popup {
+            display: none;
+            position: absolute;
+            top: calc(100% + 6px);
+            right: 0;
+            width: 280px;
             background: #fff;
-            color: #374151;
-            padding: 8px;
+            border-radius: 16px;
+            border: 1px solid #FFD6E6;
+            box-shadow: 0 12px 40px rgba(255, 79, 135, 0.15);
+            z-index: 120;
+            padding: 20px;
+            font-family: 'Poppins', sans-serif;
+            transform-origin: top center;
+            animation: curtainUnroll 0.45s cubic-bezier(0.22, 0.61, 0.36, 1);
+        }
+
+        .period-popup.open {
+            display: block;
+        }
+
+        .period-popup.open-up {
+            top: auto;
+            bottom: calc(100% + 6px);
+            transform-origin: bottom center;
+            animation-name: curtainUnrollUp;
+        }
+
+        @keyframes curtainUnroll {
+            0%   { transform: scaleY(0); opacity: 0.2; }
+            55%  { transform: scaleY(1.03); opacity: 1; }
+            100% { transform: scaleY(1); opacity: 1; }
+        }
+
+        @keyframes curtainUnrollUp {
+            0%   { transform: scaleY(0); opacity: 0.2; }
+            55%  { transform: scaleY(1.03); opacity: 1; }
+            100% { transform: scaleY(1); opacity: 1; }
+        }
+
+        .period-popup .pp-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+
+        .period-popup .pp-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            background: #FFE3EE;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .period-popup .pp-header h4 {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--dark);
+            margin: 0;
+        }
+
+        .period-options {
+            display: grid;
+            gap: 6px;
+            margin-bottom: 14px;
+        }
+
+        .pp-option {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            text-align: left;
+            width: 100%;
+            border: 1.5px solid #F1F2F6;
+            background: #fff;
+            border-radius: 12px;
+            padding: 10px 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .pp-option:hover {
+            background: #FFF9FB;
+            border-color: #FFB6CD;
+        }
+
+        .pp-option .po-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .pp-option .po-title i {
+            font-size: 11px;
+            color: #fff;
+            opacity: 0;
+            transform: scale(0.5);
+            transition: all 0.2s ease;
+        }
+
+        .pp-option .po-sub {
+            font-size: 11px;
+            color: var(--gray);
+            font-weight: 500;
+        }
+
+        .pp-option.selected {
+            border-color: var(--primary);
+            background: linear-gradient(135deg, var(--primary), #FF7BA6);
+        }
+
+        .pp-option.selected .po-title,
+        .pp-option.selected .po-sub {
+            color: #fff;
+        }
+
+        .pp-option.selected .po-title i {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .pp-footer {
+            display: flex;
+            gap: 8px;
+        }
+
+        .pp-today,
+        .pp-oke {
+            flex: 1;
+            border: none;
+            border-radius: 10px;
+            padding: 9px 0;
+            font-family: 'Poppins', sans-serif;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .pp-today {
+            background: #F1F2F6;
+            color: var(--gray);
+        }
+
+        .pp-today:hover {
+            background: #E5E7EB;
+            color: var(--dark);
+        }
+
+        .pp-oke {
+            background: linear-gradient(135deg, var(--primary), #FF7BA6);
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(255, 79, 135, 0.3);
+        }
+
+        .pp-oke:hover {
+            box-shadow: 0 6px 16px rgba(255, 79, 135, 0.4);
+            transform: translateY(-1px);
+        }
+
+        @media (max-width: 768px) {
+            .period-popup {
+                left: 0;
+                right: auto;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .period-popup {
+                position: fixed;
+                left: 50%;
+                right: auto;
+                width: calc(100vw - 32px);
+                max-width: 320px;
+                transform: translateX(-50%);
+            }
         }
 
         .chart-empty-msg {
@@ -414,12 +606,24 @@
                         <div class="chart-header">
                             <h3>Grafik Pendapatan <span id="labelPendapatanPeriode"></span></h3>
                             <div class="chart-actions">
-                                <select id="pendapatanPeriode" class="dropdown-pink"
-                                    onchange="changePendapatanPeriod(this.value)">
-                                    <option value="7hari">7 Hari</option>
-                                    <option value="1bulan">1 Bulan</option>
-                                    <option value="1tahun">1 Tahun</option>
-                                </select>
+                                <div style="position:relative;" id="pendapatanPeriodWrap">
+                                    <button type="button" class="period-trigger" id="pendapatanPeriodTrigger">
+                                        <i class="fa-solid fa-calendar-days"></i>
+                                        <span id="pendapatanPeriodLabel">7 Hari</span>
+                                        <i class="fa-solid fa-chevron-down period-arrow"></i>
+                                    </button>
+                                    <div class="period-popup" id="pendapatanPeriodPopup">
+                                        <div class="pp-header">
+                                            <span class="pp-icon"><i class="fa-solid fa-chart-line"></i></span>
+                                            <h4>Periode Grafik Pendapatan</h4>
+                                        </div>
+                                        <div class="period-options" id="pendapatanPeriodOptions"></div>
+                                        <div class="pp-footer">
+                                            <button type="button" class="pp-today" id="pendapatanPeriodReset"><i class="fa-solid fa-arrow-rotate-left"></i> Reset</button>
+                                            <button type="button" class="pp-oke" id="pendapatanPeriodOke"><i class="fa-solid fa-check"></i> Oke</button>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="chart-body" style="position: relative; height: 280px;">
@@ -436,12 +640,24 @@
                                 <h3>Grafik Booking <span id="labelBookingPeriode"></span></h3>
                                 <span class="mc-total" id="totalBookingPeriode">{{ $totalBookingPeriode }}</span>
                                 <div class="chart-actions">
-                                    <select id="bookingPeriode" class="dropdown-pink"
-                                        onchange="changeBookingPeriod(this.value)">
-                                        <option value="7hari">7 Hari</option>
-                                        <option value="1bulan">1 Bulan</option>
-                                        <option value="1tahun">1 Tahun</option>
-                                    </select>
+                                    <div style="position:relative;" id="bookingPeriodWrap">
+                                        <button type="button" class="period-trigger" id="bookingPeriodTrigger">
+                                            <i class="fa-solid fa-calendar-days"></i>
+                                            <span id="bookingPeriodLabel">7 Hari</span>
+                                            <i class="fa-solid fa-chevron-down period-arrow"></i>
+                                        </button>
+                                        <div class="period-popup" id="bookingPeriodPopup">
+                                            <div class="pp-header">
+                                                <span class="pp-icon"><i class="fa-solid fa-chart-pie"></i></span>
+                                                <h4>Periode Grafik Booking</h4>
+                                            </div>
+                                            <div class="period-options" id="bookingPeriodOptions"></div>
+                                            <div class="pp-footer">
+                                                <button type="button" class="pp-today" id="bookingPeriodReset"><i class="fa-solid fa-arrow-rotate-left"></i> Reset</button>
+                                                <button type="button" class="pp-oke" id="bookingPeriodOke"><i class="fa-solid fa-check"></i> Oke</button>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="mc-body" id="miniChartBooking"
@@ -866,18 +1082,149 @@
 
         function changePendapatanPeriod(value) {
             currentPeriodPendapatan = value;
-            document.getElementById('pendapatanPeriode').value = value;
             updatePendapatanChart();
         }
 
         function changeBookingPeriod(value) {
             currentPeriodBooking = value;
-            document.getElementById('bookingPeriode').value = value;
             updateBookingChart();
         }
 
-        document.getElementById('pendapatanPeriode').value = currentPeriodPendapatan;
-        document.getElementById('bookingPeriode').value = currentPeriodBooking;
+        function initPeriodDropdown(config) {
+            const wrap = document.getElementById(config.wrapId);
+            const trigger = document.getElementById(config.triggerId);
+            const popup = document.getElementById(config.popupId);
+            const optionsEl = document.getElementById(config.optionsId);
+            const resetBtn = document.getElementById(config.resetId);
+            const okeBtn = document.getElementById(config.okeId);
+            const labelEl = document.getElementById(config.labelId);
+            if (!wrap || !trigger || !popup || !optionsEl || !resetBtn || !okeBtn || !labelEl) return;
+
+            let current = config.defaultValue;
+
+            function periodConfigs() {
+                const now = new Date();
+                const fmt = { day: 'numeric', month: 'short', year: 'numeric' };
+                const rangeLabel = function(daysBack) {
+                    const start = new Date(now.getFullYear(), now.getMonth(), now.getDate() - daysBack);
+                    return start.toLocaleDateString('id-ID', fmt) + ' \u2014 ' + now.toLocaleDateString('id-ID', fmt);
+                };
+                return [
+                    { value: '7hari', title: '7 Hari Terakhir', range: rangeLabel(6) },
+                    { value: '1bulan', title: '1 Bulan Terakhir', range: rangeLabel(29) },
+                    { value: '1tahun', title: 'Tahun Ini', range: 'Jan ' + now.getFullYear() + ' \u2014 ' + now.toLocaleDateString('id-ID', { month: 'short', year: 'numeric' }) }
+                ];
+            }
+
+            function getPeriodLabel(value) {
+                return value === '7hari' ? '7 Hari' : (value === '1bulan' ? '1 Bulan' : '1 Tahun');
+            }
+
+            function buildOptions() {
+                optionsEl.innerHTML = '';
+                periodConfigs().forEach(function(cfg) {
+                    const opt = document.createElement('button');
+                    opt.type = 'button';
+                    opt.className = 'pp-option' + (cfg.value === current ? ' selected' : '');
+                    opt.setAttribute('data-value', cfg.value);
+                    opt.innerHTML = '<span class="po-title">' + cfg.title + ' <i class="fa-solid fa-check"></i></span><span class="po-sub">' + cfg.range + '</span>';
+                    opt.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        optionsEl.querySelectorAll('.pp-option').forEach(function(o) {
+                            o.classList.remove('selected');
+                        });
+                        opt.classList.add('selected');
+                        current = opt.getAttribute('data-value');
+                    });
+                    optionsEl.appendChild(opt);
+                });
+            }
+
+            function positionPopup() {
+                if (window.matchMedia('(max-width: 480px)').matches) {
+                    popup.classList.remove('open-up');
+                    return;
+                }
+                const rect = trigger.getBoundingClientRect();
+                const spaceBelow = window.innerHeight - rect.bottom;
+                const popupH = popup.offsetHeight;
+                if (spaceBelow < popupH + 12 && rect.top > popupH + 12) {
+                    popup.classList.add('open-up');
+                } else {
+                    popup.classList.remove('open-up');
+                }
+            }
+
+            function openPopup() {
+                buildOptions();
+                popup.classList.add('open');
+                trigger.classList.add('open');
+                positionPopup();
+            }
+
+            function closePopup() {
+                popup.classList.remove('open');
+                trigger.classList.remove('open');
+            }
+
+            function applyPeriod() {
+                labelEl.textContent = getPeriodLabel(current);
+                if (config.onChange) config.onChange(current);
+                closePopup();
+            }
+
+            labelEl.textContent = getPeriodLabel(current);
+
+            trigger.addEventListener('click', function(e) {
+                e.stopPropagation();
+                if (popup.classList.contains('open')) {
+                    closePopup();
+                } else {
+                    openPopup();
+                }
+            });
+
+            okeBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                applyPeriod();
+            });
+
+            resetBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                current = config.defaultValue;
+                buildOptions();
+                applyPeriod();
+            });
+
+            document.addEventListener('click', function(e) {
+                if (wrap && !wrap.contains(e.target)) closePopup();
+            });
+        }
+
+        initPeriodDropdown({
+            wrapId: 'pendapatanPeriodWrap',
+            triggerId: 'pendapatanPeriodTrigger',
+            popupId: 'pendapatanPeriodPopup',
+            optionsId: 'pendapatanPeriodOptions',
+            resetId: 'pendapatanPeriodReset',
+            okeId: 'pendapatanPeriodOke',
+            labelId: 'pendapatanPeriodLabel',
+            defaultValue: currentPeriodPendapatan,
+            onChange: changePendapatanPeriod
+        });
+
+        initPeriodDropdown({
+            wrapId: 'bookingPeriodWrap',
+            triggerId: 'bookingPeriodTrigger',
+            popupId: 'bookingPeriodPopup',
+            optionsId: 'bookingPeriodOptions',
+            resetId: 'bookingPeriodReset',
+            okeId: 'bookingPeriodOke',
+            labelId: 'bookingPeriodLabel',
+            defaultValue: currentPeriodBooking,
+            onChange: changeBookingPeriod
+        });
+
         updatePendapatanChart();
         updateBookingChart();
     </script>

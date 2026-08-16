@@ -26,7 +26,6 @@ class AdminLeaderboardController extends Controller
         };
 
         return view('admin.leaderboard.index', compact(
-            'topLayanan', 'topProduk', 'topBeautician', 'topKasir', 'fmt',
             'topLayanan', 'topProduk', 'topBeautycian', 'topKasir', 'fmt',
             'periode', 'dari', 'sampai', 'startDate', 'endDate'
         ));
