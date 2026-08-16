@@ -19,97 +19,10 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
-    .chart-card:hover {
-        box-shadow: 0 4px 24px rgba(236, 72, 153, 0.14);
-    }
-    .sidebar-toggle {
-        display: none;
-        background: none;
-        border: none;
-        cursor: pointer;
-        padding: 8px;
-    }
-
-    .sidebar-toggle svg {
-        width: 24px;
-        height: 24px;
-        color: var(--dark);
-    }
-
-    .sidebar-overlay {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0, 0, 0, 0.3);
-        z-index: 90;
-    }
-
-    .sidebar-overlay.active {
-        display: block;
-    }
-
-    .card-scroll {
-        max-height: 320px;
-        overflow-y: auto;
-        padding-right: 4px;
-    }
-
-    .card-scroll::-webkit-scrollbar {
-        width: 4px;
-    }
-
-    .card-scroll::-webkit-scrollbar-track {
-        background: transparent;
-    }
-
-    .card-scroll::-webkit-scrollbar-thumb {
-        background: #FBCFE8;
-        border-radius: 10px;
-    }
-
-    .card-scroll::-webkit-scrollbar-thumb:hover {
-        background: #F9A8D4;
-    }
-
-    @media (max-width: 768px) {
-        .sidebar-toggle {
-            display: flex;
-            align-items: center;
-        }
-    }
-
-    @media (max-width: 768px) {
-        .data-table thead { display: none; }
-        .data-table tbody tr {
-            display: block;
-            padding: 16px;
-            border-bottom: 1px solid var(--border);
-        }
-        .data-table tbody td {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 8px 0;
-            border: none;
-            font-size: 13px;
-            text-align: right;
-        }
-        .data-table tbody td::before {
-            content: attr(data-label);
-            font-weight: 600;
-            color: var(--gray);
-            font-size: 11px;
-            text-transform: uppercase;
-        }
-        .data-table tbody td:first-child { padding-left: 0; }
-        .data-table tbody td:last-child { padding-right: 0; }
-    }
         .chart-card:hover {
             box-shadow: 0 4px 24px rgba(236, 72, 153, 0.14);
         }
+
         .sidebar-toggle {
             display: none;
             background: none;
@@ -167,15 +80,17 @@
                 display: flex;
                 align-items: center;
             }
-        }
 
-        @media (max-width: 768px) {
-            .data-table thead { display: none; }
+            .data-table thead {
+                display: none;
+            }
+
             .data-table tbody tr {
                 display: block;
                 padding: 16px;
                 border-bottom: 1px solid var(--border);
             }
+
             .data-table tbody td {
                 display: flex;
                 justify-content: space-between;
@@ -185,6 +100,7 @@
                 font-size: 13px;
                 text-align: right;
             }
+
             .data-table tbody td::before {
                 content: attr(data-label);
                 font-weight: 600;
@@ -192,8 +108,14 @@
                 font-size: 11px;
                 text-transform: uppercase;
             }
-            .data-table tbody td:first-child { padding-left: 0; }
-            .data-table tbody td:last-child { padding-right: 0; }
+
+            .data-table tbody td:first-child {
+                padding-left: 0;
+            }
+
+            .data-table tbody td:last-child {
+                padding-right: 0;
+            }
         }
 
         .page-header-premium {
@@ -271,7 +193,6 @@
             margin: 2px 0 0;
         }
 
-        /* Dropdown Period Filter */
         .chart-header {
             display: flex;
             align-items: center;
@@ -279,15 +200,18 @@
             padding-bottom: 12px;
             border-bottom: 1px solid #FEE2EC;
         }
+
         .chart-header h3 {
             font-size: 16px;
             font-weight: 600;
             color: #1F2937;
             margin: 0;
         }
+
         .chart-actions {
             margin-left: 12px;
         }
+
         .dropdown-pink {
             appearance: none;
             -webkit-appearance: none;
@@ -307,20 +231,24 @@
             transition: all 0.2s ease;
             min-width: 120px;
         }
+
         .dropdown-pink:hover {
             border-color: #F9A8D4;
             box-shadow: 0 2px 8px rgba(236, 72, 153, 0.10);
         }
+
         .dropdown-pink:focus {
             outline: none;
             border-color: #EC4899;
             box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.15);
         }
+
         .dropdown-pink option {
             background: #fff;
             color: #374151;
             padding: 8px;
         }
+
         .chart-empty-msg {
             display: flex;
             align-items: center;
@@ -329,6 +257,7 @@
             color: #9CA3AF;
             font-size: 13px;
         }
+
         .mc-header {
             display: flex;
             align-items: center;
@@ -337,17 +266,20 @@
             gap: 8px;
             flex-wrap: wrap;
         }
+
         .mc-header h3 {
             font-size: 14px;
             font-weight: 600;
             color: #1F2937;
             margin: 0;
         }
+
         .mc-total {
             font-size: 18px;
             font-weight: 700;
             color: #EC4899;
         }
+
         .mc-header .chart-actions {
             margin-left: auto;
         }
@@ -355,7 +287,6 @@
 </head>
 
 <body>
-    <!-- Page Loader -->
     <div class="dashboard-layout">
         @include('layouts.sidebar')
 
@@ -365,26 +296,29 @@
             <!-- Dashboard Content -->
             <div class="dashboard-content p-4 sm:p-6 lg:p-8 space-y-4 sm:space-y-6">
 
-            <div class="page-header-premium">
-                <div class="ph-content">
-                    <div class="ph-left">
-                        <div class="ph-icon-wrap">
-                            <span class="nav-icon">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <rect x="3" y="3" width="7" height="7"></rect>
-                                    <rect x="14" y="3" width="7" height="7"></rect>
-                                    <rect x="14" y="14" width="7" height="7"></rect>
-                                    <rect x="3" y="14" width="7" height="7"></rect>
-                                </svg>
-                            </span>
-                        </div>
-                        <div class="ph-text">
-                            <h3>Dashboard</h3>
-                            <p>Selamat datang di panel admin BeautyCare. Pantau seluruh aktivitas bisnis Anda dalam satu tempat.</p>
+                <div class="page-header-premium">
+                    <div class="ph-content">
+                        <div class="ph-left">
+                            <div class="ph-icon-wrap">
+                                <span class="nav-icon">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="3" y="3" width="7" height="7"></rect>
+                                        <rect x="14" y="3" width="7" height="7"></rect>
+                                        <rect x="14" y="14" width="7" height="7"></rect>
+                                        <rect x="3" y="14" width="7" height="7"></rect>
+                                    </svg>
+                                </span>
+                            </div>
+                            <div class="ph-text">
+                                <h3>Dashboard</h3>
+                                <p>Selamat datang di panel admin BeautyCare. Pantau seluruh aktivitas bisnis Anda dalam
+                                    satu tempat.</p>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+
                 <!-- Stats Row -->
                 <div class="stats-row grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
                     <div class="stat-card">
@@ -396,7 +330,8 @@
                                     <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
                                 </svg>
                             </div>
-                            <span id="stat-pendapatan-growth" class="stat-change {{ $pendapatanGrowth >= 0 ? 'up' : 'down' }}">{{ $pendapatanGrowth >= 0 ? '+' : '' }}{{ $pendapatanGrowth }}%</span>
+                            <span id="stat-pendapatan-growth"
+                                class="stat-change {{ $pendapatanGrowth >= 0 ? 'up' : 'down' }}">{{ $pendapatanGrowth >= 0 ? '+' : '' }}{{ $pendapatanGrowth }}%</span>
                         </div>
                         <div id="stat-pendapatan" class="stat-value">{{ $fmt($totalPendapatan) }}</div>
                         <div class="stat-label">Total Pendapatan</div>
@@ -413,7 +348,8 @@
                                     <line x1="3" y1="10" x2="21" y2="10" />
                                 </svg>
                             </div>
-                            <span id="stat-booking-growth" class="stat-change {{ $bookingGrowth >= 0 ? 'up' : 'down' }}">{{ $bookingGrowth >= 0 ? '+' : '' }}{{ $bookingGrowth }}%</span>
+                            <span id="stat-booking-growth"
+                                class="stat-change {{ $bookingGrowth >= 0 ? 'up' : 'down' }}">{{ $bookingGrowth >= 0 ? '+' : '' }}{{ $bookingGrowth }}%</span>
                         </div>
                         <div id="stat-booking" class="stat-value">{{ number_format($totalBooking) }}</div>
                         <div class="stat-label">Total Booking</div>
@@ -429,7 +365,8 @@
                                     <polyline points="17 11 19 13 23 9" />
                                 </svg>
                             </div>
-                            <span id="stat-pelanggan-growth" class="stat-change {{ $pelangganGrowth >= 0 ? 'up' : 'down' }}">{{ $pelangganGrowth >= 0 ? '+' : '' }}{{ $pelangganGrowth }}%</span>
+                            <span id="stat-pelanggan-growth"
+                                class="stat-change {{ $pelangganGrowth >= 0 ? 'up' : 'down' }}">{{ $pelangganGrowth >= 0 ? '+' : '' }}{{ $pelangganGrowth }}%</span>
                         </div>
                         <div id="stat-pelanggan" class="stat-value">{{ number_format($totalPelanggan) }}</div>
                         <div class="stat-label">Total Pelanggan</div>
@@ -445,7 +382,8 @@
                                     <line x1="12" y1="17" x2="12" y2="21" />
                                 </svg>
                             </div>
-                            <span id="stat-karyawan-growth" class="stat-change {{ $karyawanGrowth >= 0 ? 'up' : 'down' }}">{{ $karyawanGrowth >= 0 ? '+' : '' }}{{ $karyawanGrowth }}%</span>
+                            <span id="stat-karyawan-growth"
+                                class="stat-change {{ $karyawanGrowth >= 0 ? 'up' : 'down' }}">{{ $karyawanGrowth >= 0 ? '+' : '' }}{{ $karyawanGrowth }}%</span>
                         </div>
                         <div id="stat-karyawan" class="stat-value">{{ number_format($totalKaryawan) }}</div>
                         <div class="stat-label">Total Karyawan</div>
@@ -461,7 +399,8 @@
                                     <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
                                 </svg>
                             </div>
-                            <span id="stat-produk-growth" class="stat-change {{ $produkTerjualGrowth >= 0 ? 'up' : 'down' }}">{{ $produkTerjualGrowth >= 0 ? '+' : '' }}{{ $produkTerjualGrowth }}%</span>
+                            <span id="stat-produk-growth"
+                                class="stat-change {{ $produkTerjualGrowth >= 0 ? 'up' : 'down' }}">{{ $produkTerjualGrowth >= 0 ? '+' : '' }}{{ $produkTerjualGrowth }}%</span>
                         </div>
                         <div id="stat-produk" class="stat-value">{{ number_format($produkTerjual) }}</div>
                         <div class="stat-label">Produk Terjual</div>
@@ -473,22 +412,20 @@
                     <!-- Pendapatan Chart -->
                     <div class="chart-card">
                         <div class="chart-header">
-                            <h3>Grafik Pendapatan {{ date('Y') }}</h3>
-                        </div>
-                        <div class="chart-body">
-                            <canvas id="chartPendapatan" height="280"></canvas>
                             <h3>Grafik Pendapatan <span id="labelPendapatanPeriode"></span></h3>
                             <div class="chart-actions">
-                                <select id="pendapatanPeriode" class="dropdown-pink" onchange="changePendapatanPeriod(this.value)">
+                                <select id="pendapatanPeriode" class="dropdown-pink"
+                                    onchange="changePendapatanPeriod(this.value)">
                                     <option value="7hari">7 Hari</option>
                                     <option value="1bulan">1 Bulan</option>
                                     <option value="1tahun">1 Tahun</option>
                                 </select>
                             </div>
                         </div>
-                        <div class="chart-body">
-                            <canvas id="chartPendapatan" height="280"></canvas>
-                            <span id="pendapatanEmptyMsg" class="chart-empty-msg" style="display:none;">Belum ada data</span>
+                        <div class="chart-body" style="position: relative; height: 280px;">
+                            <canvas id="chartPendapatan"></canvas>
+                            <span id="pendapatanEmptyMsg" class="chart-empty-msg" style="display:none;">Belum ada
+                                data</span>
                         </div>
                     </div>
 
@@ -496,32 +433,24 @@
                     <div class="mini-charts">
                         <div class="mini-chart-card">
                             <div class="mc-header">
-                                <h3>Grafik Booking (Minggu Ini)</h3>
-                                <span class="mc-total">{{ $totalBookingMinggu }}</span>
+                                <h3>Grafik Booking <span id="labelBookingPeriode"></span></h3>
+                                <span class="mc-total" id="totalBookingPeriode">{{ $totalBookingPeriode }}</span>
+                                <div class="chart-actions">
+                                    <select id="bookingPeriode" class="dropdown-pink"
+                                        onchange="changeBookingPeriod(this.value)">
+                                        <option value="7hari">7 Hari</option>
+                                        <option value="1bulan">1 Bulan</option>
+                                        <option value="1tahun">1 Tahun</option>
+                                    </select>
+                                </div>
                             </div>
-                            <div class="mc-body" id="miniChartBooking">
-                                <canvas id="chartBookingDonut" width="200" height="200"
-                                    data-values='@json(array_values($layananBookingMinggu))'
-                                    data-labels='@json(array_keys($layananBookingMinggu))'></canvas>
+                            <div class="mc-body" id="miniChartBooking"
+                                style="position: relative; height: 180px; min-height: 180px;">
+                                <canvas id="chartBookingDonut" style="max-width: 100%; height: 100%;"></canvas>
+                                <span id="bookingEmptyMsg" class="chart-empty-msg" style="display:none;">Belum ada
+                                    data</span>
                             </div>
                         </div>
-<div class="mini-chart-card">
-    <div class="mc-header">
-        <h3>Grafik Booking <span id="labelBookingPeriode"></span></h3>
-        <span class="mc-total" id="totalBookingPeriode">{{ $totalBookingPeriode }}</span>
-        <div class="chart-actions">
-            <select id="bookingPeriode" class="dropdown-pink" onchange="changeBookingPeriod(this.value)">
-                <option value="7hari">7 Hari</option>
-                <option value="1bulan">1 Bulan</option>
-                <option value="1tahun">1 Tahun</option>
-            </select>
-        </div>
-    </div>
-    <div class="mc-body" id="miniChartBooking" style="position: relative; height: 180px; min-height: 180px;">
-        <canvas id="chartBookingDonut" style="max-width: 100%; height: 100%;"></canvas>
-        <span id="bookingEmptyMsg" style="display:none;font-size:12px;color:#999;">Belum ada data</span>
-    </div>
-</div>
 
                         <div class="mini-chart-card">
                             <div class="mc-header">
@@ -676,7 +605,8 @@
                     <div class="list-widget">
                         <div class="lw-header">
                             <h3>Karyawan Aktif</h3>
-                            <a href="{{ route('admin.karyawan.index') }}" style="font-size:13px;color:var(--primary);font-weight:500;">Lihat Semua</a>
+                            <a href="{{ route('admin.karyawan.index') }}"
+                                style="font-size:13px;color:var(--primary);font-weight:500;">Lihat Semua</a>
                         </div>
                         <div id="karyawan-aktif-grid" class="employee-grid">
                             @include('partials.dashboard.karyawan-aktif', ['karyawanAktif' => $karyawanAktif])
@@ -687,7 +617,8 @@
                     <div class="list-widget">
                         <div class="lw-header">
                             <h3>Ringkasan Stok</h3>
-                            <a href="{{ route('admin.produk.index') }}" style="font-size:13px;color:var(--primary);font-weight:500;">Kelola</a>
+                            <a href="{{ route('admin.produk.index') }}"
+                                style="font-size:13px;color:var(--primary);font-weight:500;">Kelola</a>
                         </div>
                         <div id="ringkasan-stok-grid" class="stock-grid">
                             @include('partials.dashboard.ringkasan-stok', ['ringkasanStok' => $ringkasanStok])
@@ -698,7 +629,8 @@
                     <div class="list-widget">
                         <div class="lw-header">
                             <h3>Booking Terbaru</h3>
-                            <a href="{{ route('admin.reservasi.index') }}" style="font-size:13px;color:var(--primary);font-weight:500;">Lihat Semua</a>
+                            <a href="{{ route('admin.reservasi.index') }}"
+                                style="font-size:13px;color:var(--primary);font-weight:500;">Lihat Semua</a>
                         </div>
                         <div id="booking-terbaru-list" class="booking-list">
                             @include('partials.dashboard.booking-terbaru', ['bookingTerbaru' => $bookingTerbaru])
@@ -709,7 +641,8 @@
                     <div class="list-widget" style="max-height:440px;display:flex;flex-direction:column;">
                         <div class="lw-header">
                             <h3>Notifikasi Stok</h3>
-                            <a href="{{ route('admin.stok.index') }}" style="font-size:13px;color:var(--primary);font-weight:500;">Kelola</a>
+                            <a href="{{ route('admin.stok.index') }}"
+                                style="font-size:13px;color:var(--primary);font-weight:500;">Kelola</a>
                         </div>
                         <div id="notif-stok-grid" class="stock-grid card-scroll" style="flex:1;">
                             @include('partials.dashboard.notif-stok', ['notifStok' => $notifStok])
@@ -720,309 +653,154 @@
         </main>
     </div>
 
-<style>
-        .chart-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding-bottom: 12px;
-            border-bottom: 1px solid #FEE2EC;
+    <script>
+        const dateEl = document.getElementById('currentDate');
+        if (dateEl) {
+            const now = new Date();
+            dateEl.textContent = now.toLocaleDateString('id-ID', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
         }
-        .chart-header h3 {
-            font-size: 16px;
-            font-weight: 600;
-            color: #1F2937;
-            margin: 0;
-        }
-        .chart-actions {
-            margin-left: 12px;
-        }
-        .dropdown-pink {
-            appearance: none;
-            background: #fff;
-            border: 1.5px solid #FCE7F3;
-            border-radius: 8px;
-            padding: 6px 32px 6px 12px;
-            font-size: 12px;
-            font-weight: 500;
-            color: #EC4899;
-            font-family: 'Poppins', sans-serif;
-            cursor: pointer;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23EC4899' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 8px center;
-            background-size: 12px;
-            transition: all 0.2s ease;
-            min-width: 110px;
-        }
-        .dropdown-pink:hover {
-            border-color: #F9A8D4;
-            box-shadow: 0 2px 8px rgba(236, 72, 153, 0.1);
-        }
-        .dropdown-pink:focus {
-            outline: none;
-            border-color: #EC4899;
-            box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.15);
-        }
-        .dropdown-pink option {
-            background: #fff;
-            color: #374151;
-            padding: 8px;
-        }
-        .chart-empty-msg {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-            color: #9CA3AF;
-            font-size: 13px;
-        }
-        .mc-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 12px;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-        .mc-header h3 {
-            font-size: 14px;
-            font-weight: 600;
-            color: #1F2937;
-            margin: 0;
-        }
-        .mc-total {
-            font-size: 18px;
-            font-weight: 700;
-            color: #EC4899;
-        }
-        .mc-header .chart-actions {
-            margin-left: auto;
-        }
-    </style>
+    </script>
 
     <script>
-    const now = new Date();
-    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-    document.getElementById('currentDate').textContent = now.toLocaleDateString('id-ID', options);
+        Chart.defaults.font.family = "'Poppins', sans-serif";
+        Chart.defaults.color = '#9CA3AF';
+        Chart.defaults.font.size = 11;
 
-    Chart.defaults.font.family = "'Poppins', sans-serif";
-    Chart.defaults.color = '#9CA3AF';
-    Chart.defaults.font.size = 11;
+        const donutColors = ['#EC4899', '#8B5CF6', '#F59E0B', '#10B981', '#3B82F6', '#EF4444', '#14B8A6', '#F97316', '#6366F1', '#84CC16'];
 
-    const chartLabels = @json($chartLabels);
-    const chartRevenue = @json($chartRevenueData);
-    const maxRev = chartRevenue.length > 0 ? Math.max(...chartRevenue) : 0;
+        const chartDataByPeriod = @json($chartDataPeriode ?? []);
+        const donutDataByPeriod = @json($donutDataPeriode ?? []);
+        let currentPeriodPendapatan = '{{ $periode }}';
+        let currentPeriodBooking = '{{ $periodeBooking ?? $periode }}';
 
-    const ctx = document.getElementById('chartPendapatan').getContext('2d');
-    const pendapatanChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: chartLabels,
-            datasets: [{
-                label: 'Pendapatan',
-                data: chartRevenue,
-                borderColor: '#EC4899',
-                backgroundColor: 'rgba(236, 72, 153, 0.08)',
-                borderWidth: 2,
-                tension: 0.4,
-                fill: true,
-                pointBackgroundColor: '#fff',
-                pointBorderColor: '#EC4899',
-                pointBorderWidth: 2,
-                pointRadius: 3,
-                pointHoverRadius: 5
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false },
-                tooltip: {
-                    backgroundColor: '#fff',
-                    titleColor: '#1F2937',
-                    bodyColor: '#4B5563',
-                    borderColor: '#FCE7F3',
-                    borderWidth: 1,
-                    padding: 10,
-                    cornerRadius: 8,
-                    callbacks: {
-                        label: function(context) {
-                            var val = context.parsed.y;
-                            if (val >= 1000000) return 'Rp ' + (val / 1000000).toFixed(1) + ' jt';
-                            return 'Rp ' + val.toLocaleString('id-ID');
-                        }
-                    }
-                }
-            },
-            scales: {
-                x: {
-                    grid: { display: false, drawBorder: false },
-                    ticks: { maxTicksLimit: Math.min(chartLabels.length, 10) }
-                },
-                y: {
-                    border: { display: false },
-                    grid: { color: '#F3E8F5', borderDash: [3, 3] },
-                    ticks: {
-                        maxTicksLimit: 6,
-                        callback: function(value) {
-                            if (maxRev > 1000000) return 'Rp' + (value / 1000000).toFixed(1) + 'jt';
-                            return 'Rp' + value.toLocaleString('id-ID');
-    const chartDataByPeriod = @json($chartDataPeriode);
-    const donutDataByPeriod = @json($donutDataPeriode);
-    let currentPeriodPendapatan = '{{ $periode }}';
-    let currentPeriodBooking = '{{ $periodeBooking ?? $periode }}';
+        let pendapatanChart = null;
+        let bookingDonutChart = null;
 
-    const donutColors = ['#EC4899','#8B5CF6','#F59E0B','#10B981','#3B82F6','#EF4444','#14B8A6','#F97316','#6366F1','#84CC16'];
-
-    let pendapatanChart = null;
-    let bookingDonutChart = null;
-
-    function getPeriodLabel(periode) {
-        return periode === '7hari' ? '7 Hari' : (periode === '1bulan' ? '1 Bulan' : '1 Tahun');
-    }
-
-    function updatePendapatanLabel(periode) {
-        const label = getPeriodLabel(periode);
-        const pendLabel = document.getElementById('labelPendapatanPeriode');
-        if (pendLabel) pendLabel.textContent = ' · ' + label;
-    }
-
-    function updateBookingLabel(periode) {
-        const label = getPeriodLabel(periode);
-        const bookLabel = document.getElementById('labelBookingPeriode');
-        if (bookLabel) bookLabel.textContent = ' · ' + label;
-    }
-
-    function initPendapatanChart(labels, revenue) {
-        const ctx = document.getElementById('chartPendapatan').getContext('2d');
-        const maxRev = revenue.length > 0 ? Math.max(...revenue) : 0;
-        const emptyMsg = document.getElementById('pendapatanEmptyMsg');
-        const canvas = document.getElementById('chartPendapatan');
-        const isEmpty = labels.length === 0 || revenue.every(v => Number(v) === 0);
-
-        if (pendapatanChart) pendapatanChart.destroy();
-
-        if (isEmpty) {
-            if (canvas) canvas.style.display = 'none';
-            if (emptyMsg) emptyMsg.style.display = 'flex';
-            pendapatanChart = null;
-            return;
-        }
-
-        if (canvas) canvas.style.display = 'block';
-        if (emptyMsg) emptyMsg.style.display = 'none';
-
-        pendapatanChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Pendapatan',
-                    data: revenue,
-                    borderColor: '#EC4899',
-                    backgroundColor: 'rgba(236, 72, 153, 0.08)',
-                    borderWidth: 2,
-                    tension: 0.4,
-                    fill: true,
-                    pointBackgroundColor: '#fff',
-                    pointBorderColor: '#EC4899',
-                    pointBorderWidth: 2,
-                    pointRadius: 3,
-                    pointHoverRadius: 5
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                        backgroundColor: '#fff',
-                        titleColor: '#1F2937',
-                        bodyColor: '#4B5563',
-                        borderColor: '#FCE7F3',
-                        borderWidth: 1,
-                        padding: 10,
-                        cornerRadius: 8,
-                        callbacks: {
-                            label: function(context) {
-                                var val = context.parsed.y;
-                                if (val >= 1000000) return 'Rp ' + (val / 1000000).toFixed(1) + ' jt';
-                                return 'Rp ' + val.toLocaleString('id-ID');
-                            }
-                        }
-                    }
-                },
-                scales: {
-                    x: {
-                        grid: { display: false, drawBorder: false },
-                        ticks: { maxTicksLimit: Math.min(labels.length, 10) }
-                    },
-                    y: {
-                        border: { display: false },
-                        grid: { color: '#F3E8F5', borderDash: [3, 3] },
-                        ticks: {
-                            maxTicksLimit: 6,
-                            callback: function(value) {
-                                if (maxRev > 1000000) return 'Rp' + (value / 1000000).toFixed(1) + 'jt';
-                                return 'Rp' + value.toLocaleString('id-ID');
-                            }
-                        }
-                    }
-                }
-            }
-            }
-        });
-
-    const donutCanvas = document.getElementById('chartBookingDonut');
-    const donutColors = ['#EC4899','#8B5CF6','#F59E0B','#10B981','#3B82F6','#EF4444','#14B8A6','#F97316','#6366F1','#84CC16'];
-    let bookingDonutChart = null;
-    function initDonut(values, labels) {
-        if (donutCanvas && donutCanvas.parentNode.querySelector('span')) {
-            donutCanvas.parentNode.innerHTML = '';
-            donutCanvas.parentNode.appendChild(donutCanvas);
-        }
-        });
-    }
-
-    function initDonut(values, labels) {
+        const pendapatanCanvas = document.getElementById('chartPendapatan');
         const donutCanvas = document.getElementById('chartBookingDonut');
-        const emptyMsg = document.getElementById('bookingEmptyMsg');
-        const isEmpty = labels.length === 0 || values.every(v => Number(v) === 0);
 
-        if (isEmpty) {
-            if (donutCanvas) {
-                donutCanvas.style.display = 'none';
-                if (donutCanvas.parentNode && donutCanvas.parentNode.querySelector('span')) {
-                    donutCanvas.parentNode.innerHTML = '';
-                    donutCanvas.parentNode.appendChild(donutCanvas);
-                }
+        function getPeriodLabel(periode) {
+            return periode === '7hari' ? '7 Hari' : (periode === '1bulan' ? '1 Bulan' : '1 Tahun');
+        }
+
+        function updatePendapatanLabel(periode) {
+            const el = document.getElementById('labelPendapatanPeriode');
+            if (el) el.textContent = ' · ' + getPeriodLabel(periode);
+        }
+
+        function updateBookingLabel(periode) {
+            const el = document.getElementById('labelBookingPeriode');
+            if (el) el.textContent = ' · ' + getPeriodLabel(periode);
+        }
+
+        function initPendapatanChart(labels, revenue) {
+            const emptyMsg = document.getElementById('pendapatanEmptyMsg');
+            if (!pendapatanCanvas) return;
+
+            const isEmpty = !labels || labels.length === 0 || revenue.every(v => Number(v) === 0);
+
+            if (pendapatanChart) {
+                pendapatanChart.destroy();
+                pendapatanChart = null;
             }
-            if (emptyMsg) emptyMsg.style.display = 'flex';
+
+            if (isEmpty) {
+                pendapatanCanvas.style.display = 'none';
+                if (emptyMsg) emptyMsg.style.display = 'flex';
+                return;
+            }
+
+            pendapatanCanvas.style.display = 'block';
+            if (emptyMsg) emptyMsg.style.display = 'none';
+
+            const maxRev = Math.max(...revenue.map(Number)) || 0;
+
+            pendapatanChart = new Chart(pendapatanCanvas.getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Pendapatan',
+                        data: revenue,
+                        borderColor: '#EC4899',
+                        backgroundColor: 'rgba(236, 72, 153, 0.08)',
+                        borderWidth: 2,
+                        tension: 0.4,
+                        fill: true,
+                        pointBackgroundColor: '#fff',
+                        pointBorderColor: '#EC4899',
+                        pointBorderWidth: 2,
+                        pointRadius: 3,
+                        pointHoverRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#fff',
+                            titleColor: '#1F2937',
+                            bodyColor: '#4B5563',
+                            borderColor: '#FCE7F3',
+                            borderWidth: 1,
+                            padding: 10,
+                            cornerRadius: 8,
+                            callbacks: {
+                                label: function (context) {
+                                    const val = context.parsed.y;
+                                    if (val >= 1000000) return 'Rp ' + (val / 1000000).toFixed(1) + ' jt';
+                                    return 'Rp ' + val.toLocaleString('id-ID');
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            ticks: { maxTicksLimit: Math.min(labels.length, 10) }
+                        },
+                        y: {
+                            grid: { color: '#F3E8F5', borderDash: [3, 3] },
+                            ticks: {
+                                maxTicksLimit: 6,
+                                callback: function (value) {
+                                    if (maxRev > 1000000) return 'Rp' + (value / 1000000).toFixed(1) + 'jt';
+                                    return 'Rp' + value.toLocaleString('id-ID');
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function initDonut(values, labels) {
+            const emptyMsg = document.getElementById('bookingEmptyMsg');
+            if (!donutCanvas) return;
+
+            const isEmpty = !labels || labels.length === 0 || values.every(v => Number(v) === 0);
+
             if (bookingDonutChart) {
                 bookingDonutChart.destroy();
                 bookingDonutChart = null;
             }
-            return;
-        }
 
-        if (donutCanvas) donutCanvas.style.display = 'block';
-        if (emptyMsg) emptyMsg.style.display = 'none';
-
-        if (donutCanvas) {
-            const container = donutCanvas.parentNode;
-            while (container.firstChild) {
-                if (container.firstChild !== donutCanvas && container.firstChild !== emptyMsg) {
-                    container.removeChild(container.firstChild);
-                } else {
-                    break;
-                }
+            if (isEmpty) {
+                donutCanvas.style.display = 'none';
+                if (emptyMsg) emptyMsg.style.display = 'flex';
+                return;
             }
-        }
 
-        if (!bookingDonutChart) {
+            donutCanvas.style.display = 'block';
+            if (emptyMsg) emptyMsg.style.display = 'none';
+
             bookingDonutChart = new Chart(donutCanvas.getContext('2d'), {
                 type: 'doughnut',
                 data: {
@@ -1058,7 +836,7 @@
                             padding: 10,
                             cornerRadius: 8,
                             callbacks: {
-                                label: function(context) {
+                                label: function (context) {
                                     const total = context.dataset.data.reduce((a, b) => a + b, 0);
                                     const pct = total > 0 ? ((context.parsed / total) * 100).toFixed(1) : 0;
                                     return ' ' + context.label + ': ' + context.parsed + ' (' + pct + '%)';
@@ -1068,151 +846,126 @@
                     }
                 }
             });
-        } else {
-            bookingDonutChart.data.labels = labels;
-            bookingDonutChart.data.datasets[0].data = values;
-            bookingDonutChart.data.datasets[0].backgroundColor = donutColors.slice(0, labels.length);
-            bookingDonutChart.update();
         }
-    }
 
-    function updatePendapatanChart() {
-        const chartData = chartDataByPeriod[currentPeriodPendapatan];
-        updatePendapatanLabel(currentPeriodPendapatan);
-        if (chartData) {
-            initPendapatanChart(chartData.labels, chartData.revenue);
+        function updatePendapatanChart() {
+            updatePendapatanLabel(currentPeriodPendapatan);
+            const data = chartDataByPeriod[currentPeriodPendapatan];
+            initPendapatanChart(data ? data.labels : [], data ? data.revenue : []);
         }
-    }
 
-    function updateBookingChart() {
-        const donutData = donutDataByPeriod[currentPeriodBooking];
-        updateBookingLabel(currentPeriodBooking);
-        if (donutData) {
-            initDonut(donutData.values, donutData.labels);
-            const total = donutData.values.reduce((a, b) => a + b, 0);
+        function updateBookingChart() {
+            updateBookingLabel(currentPeriodBooking);
+            const data = donutDataByPeriod[currentPeriodBooking];
+            const values = data ? data.values : [];
+            const labels = data ? data.labels : [];
+            initDonut(values, labels);
             const totalEl = document.getElementById('totalBookingPeriode');
-            if (totalEl) totalEl.textContent = total;
+            if (totalEl) totalEl.textContent = values.reduce((a, b) => a + Number(b), 0);
         }
-    }
 
-    function changePendapatanPeriod(value) {
-        currentPeriodPendapatan = value;
-        document.getElementById('pendapatanPeriode').value = value;
+        function changePendapatanPeriod(value) {
+            currentPeriodPendapatan = value;
+            document.getElementById('pendapatanPeriode').value = value;
+            updatePendapatanChart();
+        }
+
+        function changeBookingPeriod(value) {
+            currentPeriodBooking = value;
+            document.getElementById('bookingPeriode').value = value;
+            updateBookingChart();
+        }
+
+        document.getElementById('pendapatanPeriode').value = currentPeriodPendapatan;
+        document.getElementById('bookingPeriode').value = currentPeriodBooking;
         updatePendapatanChart();
-    }
-
-    function changeBookingPeriod(value) {
-        currentPeriodBooking = value;
-        document.getElementById('bookingPeriode').value = value;
         updateBookingChart();
-    }
-
-    document.getElementById('pendapatanPeriode').value = currentPeriodPendapatan;
-    document.getElementById('bookingPeriode').value = currentPeriodBooking;
-    updatePendapatanLabel(currentPeriodPendapatan);
-    updateBookingLabel(currentPeriodBooking);
-
-    const initPendData = chartDataByPeriod[currentPeriodPendapatan] || { labels: [], revenue: [] };
-    initPendapatanChart(initPendData.labels, initPendData.revenue);
-
-    const initDonutData = donutDataByPeriod[currentPeriodBooking] || { labels: [], values: [] };
-    initDonut(initDonutData.values, initDonutData.labels);
-    if (initDonutData.values.length > 0) {
-        const total = initDonutData.values.reduce((a, b) => a + b, 0);
-        const totalEl = document.getElementById('totalBookingPeriode');
-        if (totalEl) totalEl.textContent = total;
-    }
     </script>
+
     <script>
-    function pilihPeriode(el) {
-        window.location.href = '?' + el.dataset.param + '=' + el.value;
-    }
-    </script>
-    <script>
-    const DASHBOARD_URL = "{{ route('admin.dashboard.data') }}";
-    const REFRESH_INTERVAL = 30000;
+        const DASHBOARD_URL = "{{ route('admin.dashboard.data') }}";
+        const REFRESH_INTERVAL = 30000;
 
-    function updateGrowth(id, value) {
-        const node = document.getElementById(id);
-        if (!node) return;
-        node.textContent = (value >= 0 ? '+' : '') + value + '%';
-        node.classList.remove('up', 'down');
-        node.classList.add(value >= 0 ? 'up' : 'down');
-    }
+        function updateGrowth(id, value) {
+            const node = document.getElementById(id);
+            if (!node) return;
+            node.textContent = (value >= 0 ? '+' : '') + value + '%';
+            node.classList.remove('up', 'down');
+            node.classList.add(value >= 0 ? 'up' : 'down');
+        }
 
-    function refreshDashboard() {
-        fetch(DASHBOARD_URL + '?periode=' + currentPeriodPendapatan + '&periode_booking=' + currentPeriodBooking, {
-            headers: {
-                'Accept': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        })
-        .then(res => res.json())
-        .then(data => {
-            const s = data.stats;
-            const setText = (id, val) => {
-                const el = document.getElementById(id);
-                if (el) el.textContent = val;
-            };
-            setText('stat-pendapatan', s.totalPendapatan);
-            setText('stat-booking', s.totalBooking);
-            setText('stat-pelanggan', s.totalPelanggan);
-            setText('stat-karyawan', s.totalKaryawan);
-            setText('stat-produk', s.produkTerjual);
-            updateGrowth('stat-pendapatan-growth', s.pendapatanGrowth);
-            updateGrowth('stat-booking-growth', s.bookingGrowth);
-            updateGrowth('stat-pelanggan-growth', s.pelangganGrowth);
-            updateGrowth('stat-karyawan-growth', s.karyawanGrowth);
-            updateGrowth('stat-produk-growth', s.produkTerjualGrowth);
+        function setHTML(id, html) {
+            const el = document.getElementById(id);
+            if (el) el.innerHTML = html;
+        }
 
-            if (pendapatanChart && data.charts) {
-                pendapatanChart.data.labels = data.charts.labels;
-                pendapatanChart.data.datasets[0].data = data.charts.revenue;
-                pendapatanChart.update('none');
-            }
-
-            if (data.donut) {
-                const v = data.donut.values;
-                if (v.length > 0) {
-                    initDonut(v, data.donut.labels);
-                    const totalEl = document.getElementById('totalBookingPeriode');
-                    if (totalEl) totalEl.textContent = data.donut.total;
-                } else {
-                    const emptyMsg = document.getElementById('bookingEmptyMsg');
-                    if (emptyMsg) emptyMsg.style.display = 'flex';
-                    const donutCanvas = document.getElementById('chartBookingDonut');
-                    if (donutCanvas) donutCanvas.style.display = 'none';
-                    if (bookingDonutChart) {
-                        bookingDonutChart.destroy();
-                        bookingDonutChart = null;
-                    }
+        function refreshDashboard() {
+            fetch(DASHBOARD_URL + '?periode=' + currentPeriodPendapatan + '&periode_booking=' + currentPeriodBooking, {
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
                 }
-            }
+            })
+                .then(res => res.json())
+                .then(data => {
+                    const s = data.stats;
+                    const setText = (id, val) => {
+                        const el = document.getElementById(id);
+                        if (el) el.textContent = val;
+                    };
+                    setText('stat-pendapatan', s.totalPendapatan);
+                    setText('stat-booking', s.totalBooking);
+                    setText('stat-pelanggan', s.totalPelanggan);
+                    setText('stat-karyawan', s.totalKaryawan);
+                    setText('stat-produk', s.produkTerjual);
+                    updateGrowth('stat-pendapatan-growth', s.pendapatanGrowth);
+                    updateGrowth('stat-booking-growth', s.bookingGrowth);
+                    updateGrowth('stat-pelanggan-growth', s.pelangganGrowth);
+                    updateGrowth('stat-karyawan-growth', s.karyawanGrowth);
+                    updateGrowth('stat-produk-growth', s.produkTerjualGrowth);
 
-            setText('jadwal-hari-ini-total', data.jadwalHariIni.total);
-            setHTML('jadwal-hari-ini-list', data.jadwalHariIni.html);
-            setHTML('layanan-terlaris-body', data.layananTerlaris.html);
-            setHTML('produk-terlaris-body', data.produkTerlaris.html);
-            setHTML('top-global-layanan-body', data.topGlobalLayanan.html);
-            setHTML('top-global-produk-body', data.topGlobalProduk.html);
-            setHTML('top-kasir-body', data.topKasir.html);
-            setHTML('top-beautycian-body', data.topBeautycian.html);
-            setHTML('karyawan-aktif-grid', data.karyawanAktif.html);
-            setHTML('ringkasan-stok-grid', data.ringkasanStok.html);
-            setHTML('booking-terbaru-list', data.bookingTerbaru.html);
-            setHTML('notif-stok-grid', data.notifStok.html);
-        })
-        .catch(err => console.warn('Dashboard refresh gagal:', err));
-    }
+                    if (data.charts) {
+                        updatePendapatanChart();
+                    }
 
-    function setHTML(id, html) {
-        const el = document.getElementById(id);
-        if (el) el.innerHTML = html;
-    }
+                    if (data.donut) {
+                        const v = data.donut.values;
+                        if (v.length > 0) {
+                            initDonut(v, data.donut.labels);
+                            const totalEl = document.getElementById('totalBookingPeriode');
+                            if (totalEl) totalEl.textContent = data.donut.total;
+                        } else {
+                            const emptyMsg = document.getElementById('bookingEmptyMsg');
+                            if (emptyMsg) emptyMsg.style.display = 'flex';
+                            const donutCanvasEl = document.getElementById('chartBookingDonut');
+                            if (donutCanvasEl) donutCanvasEl.style.display = 'none';
+                            if (bookingDonutChart) {
+                                bookingDonutChart.destroy();
+                                bookingDonutChart = null;
+                            }
+                        }
+                    }
 
-    refreshDashboard();
-    setInterval(refreshDashboard, REFRESH_INTERVAL);
+                    setText('jadwal-hari-ini-total', data.jadwalHariIni.total);
+                    setHTML('jadwal-hari-ini-list', data.jadwalHariIni.html);
+                    setHTML('layanan-terlaris-body', data.layananTerlaris.html);
+                    setHTML('produk-terlaris-body', data.produkTerlaris.html);
+                    setHTML('top-global-layanan-body', data.topGlobalLayanan.html);
+                    setHTML('top-global-produk-body', data.topGlobalProduk.html);
+                    setHTML('top-kasir-body', data.topKasir.html);
+                    setHTML('top-beautycian-body', data.topBeautycian.html);
+                    setHTML('karyawan-aktif-grid', data.karyawanAktif.html);
+                    setHTML('ringkasan-stok-grid', data.ringkasanStok.html);
+                    setHTML('booking-terbaru-list', data.bookingTerbaru.html);
+                    setHTML('notif-stok-grid', data.notifStok.html);
+                })
+                .catch(err => console.warn('Dashboard refresh gagal:', err));
+        }
+
+        refreshDashboard();
+        setInterval(refreshDashboard, REFRESH_INTERVAL);
     </script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
 </body>
+
 </html>
