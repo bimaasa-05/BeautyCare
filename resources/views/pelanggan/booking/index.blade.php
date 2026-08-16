@@ -1230,9 +1230,16 @@
                                         </div>
                                     </td>
                                     <td data-label="Jam">
+                                        @php
+                                            $bkDurasi = \App\Support\BookingSlot::durasiBooking($booking);
+                                            $bkSelesai = \Carbon\Carbon::parse($booking->tanggal . ' ' . substr($booking->jam, 0, 5))->addMinutes($bkDurasi)->format('H:i');
+                                        @endphp
                                         <div class="flex items-center gap-1.5">
                                             <i class="fa-regular fa-clock text-gray-300 text-[11px]"></i>
-                                            <span>{{ \Carbon\Carbon::parse($booking->jam)->format('H:i') }}</span>
+                                            <div>
+                                                <span style="font-variant-numeric:tabular-nums;">{{ \Carbon\Carbon::parse($booking->jam)->format('H:i') }} - {{ $bkSelesai }}</span>
+                                                <div style="font-size:10px;color:var(--gray);">{{ $bkDurasi }} menit</div>
+                                            </div>
                                         </div>
                                     </td>
                                     <td data-label="Terapis">

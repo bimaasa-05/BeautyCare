@@ -189,7 +189,7 @@
                                                     default => 'fa-regular fa-clock',
                                                 };
                                             @endphp
-                                            <span class="badge-status {{ $statusClass }}">
+                                            <span class="badge-status {{ $statusClass }}" data-rt-booking="{{ $r->id_booking }}" data-rt-status="{{ $r->status }}">
                                                 <i class="{{ $statusIcon }}"></i> {{ ucfirst($r->status) }}
                                             </span>
                                             @if ($r->status === 'diproses')
@@ -294,6 +294,7 @@
         setInterval(updateCountdowns, 1000);
     </script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
+    @include('partials.realtime-booking', ['rtScope' => 'umum'])
     @include('partials.confirm-modal')
 </body>
 

@@ -286,6 +286,20 @@
                             <td class="label">Jam</td>
                             <td class="value font-mono">{{ \Carbon\Carbon::parse($booking->jam)->format('H:i') }} - {{ $jamSelesaiEstimasi }}</td>
                         </tr>
+                        @if($booking->status === 'selesai' && $booking->jam_mulai_aktual && $booking->jam_selesai_aktual)
+                        <tr>
+                            <td class="label">Mulai Aktual</td>
+                            <td class="value font-mono">{{ \Carbon\Carbon::parse($booking->jam_mulai_aktual)->format('H:i') }}</td>
+                        </tr>
+                        <tr>
+                            <td class="label">Selesai Aktual</td>
+                            <td class="value font-mono">{{ \Carbon\Carbon::parse($booking->jam_selesai_aktual)->format('H:i') }}</td>
+                        </tr>
+                        <tr>
+                            <td class="label">Durasi</td>
+                            <td class="value font-mono">{{ gmdate('H:i:s', \Carbon\Carbon::parse($booking->jam_mulai_aktual)->diffInSeconds(\Carbon\Carbon::parse($booking->jam_selesai_aktual))) }}</td>
+                        </tr>
+                        @endif
                         <tr>
                             <td class="label">Terapis</td>
                             <td class="value">{{ $booking->karyawan ? $booking->karyawan->nama : 'Terapis #'.$booking->id_karyawan }}</td>
@@ -508,6 +522,20 @@
                                     <span class="info-label">Jam</span>
                                     <span class="info-value font-mono">{{ \Carbon\Carbon::parse($booking->jam)->format('H:i') }} - {{ $jamSelesaiEstimasi }}</span>
                                 </div>
+                                @if($booking->status === 'selesai' && $booking->jam_mulai_aktual && $booking->jam_selesai_aktual)
+                                <div class="info-row">
+                                    <span class="info-label">Mulai Aktual</span>
+                                    <span class="info-value font-mono">{{ \Carbon\Carbon::parse($booking->jam_mulai_aktual)->format('H:i') }}</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">Selesai Aktual</span>
+                                    <span class="info-value font-mono">{{ \Carbon\Carbon::parse($booking->jam_selesai_aktual)->format('H:i') }}</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">Durasi</span>
+                                    <span class="info-value font-mono">{{ gmdate('H:i:s', \Carbon\Carbon::parse($booking->jam_mulai_aktual)->diffInSeconds(\Carbon\Carbon::parse($booking->jam_selesai_aktual))) }}</span>
+                                </div>
+                                @endif
                                 <div class="info-row">
                                     <span class="info-label">Terapis</span>
                                     <span class="info-value">{{ $booking->karyawan ? $booking->karyawan->nama : 'Terapis #'.$booking->id_karyawan }}</span>
