@@ -47,6 +47,7 @@ use App\Http\Controllers\KasirKonsultasiController;
 use App\Http\Controllers\BeautycianKonsultasiController;
 use App\Http\Controllers\AdminKonsultasiController;
 use App\Http\Controllers\AdminLeaderboardController;
+use App\Http\Controllers\RealtimeController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -84,6 +85,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    //Realtime Status Booking
+    Route::get('/realtime/booking-status', [RealtimeController::class, 'bookingStatus'])->name('realtime.booking-status');
 
     //Notifikasi
     Route::get('/notif/get', [NotifikasiController::class, 'getNotif'])->name('notif.get');

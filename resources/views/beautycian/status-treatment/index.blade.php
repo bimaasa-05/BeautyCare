@@ -114,7 +114,7 @@
 
 
                 <div class="kanban-grid">
-                    <div class="kanban-column column-waiting">
+                    <div class="kanban-column column-waiting" data-rt-column="dikonfirmasi">
                         <div class="kc-header">
                             <div class="kc-title">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
@@ -124,7 +124,7 @@
                         </div>
 
                         @forelse($akanDimulai as $item)
-                        <div class="kanban-card">
+                        <div class="kanban-card" data-rt-booking="{{ $item->id_booking }}" data-rt-status="{{ $item->status }}">
                             <div class="kc-card-header">
                                 <div class="kc-avatar"><img src="{{ $item->pelanggan?->foto_url ?? 'https://ui-avatars.com/api/?name=%3F&background=FFE5EF&color=FF4F87&size=40' }}" alt="{{ $item->pelanggan->nm_pelanggan ?? '?' }}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;display:block;"></div>
                                 <div>
@@ -172,7 +172,7 @@
                         @endforelse
                     </div>
 
-                    <div class="kanban-column column-progress">
+                    <div class="kanban-column column-progress" data-rt-column="diproses">
                         <div class="kc-header">
                             <div class="kc-title">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
@@ -182,7 +182,7 @@
                         </div>
 
                         @forelse($sedangBerjalan as $item)
-                        <div class="kanban-card">
+                        <div class="kanban-card" data-rt-booking="{{ $item->id_booking }}" data-rt-status="{{ $item->status }}">
                             <div class="kc-card-header">
                                 <div class="kc-avatar"><img src="{{ $item->pelanggan?->foto_url ?? 'https://ui-avatars.com/api/?name=%3F&background=FFE5EF&color=FF4F87&size=40' }}" alt="{{ $item->pelanggan->nm_pelanggan ?? '?' }}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;display:block;"></div>
                                 <div>
@@ -273,7 +273,7 @@
                         @endforelse
                     </div>
 
-                    <div class="kanban-column column-done">
+                    <div class="kanban-column column-done" data-rt-column="selesai">
                         <div class="kc-header">
                             <div class="kc-title">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
@@ -283,7 +283,7 @@
                         </div>
 
                         @forelse($selesaiHariIni as $item)
-                        <div class="kanban-card">
+                        <div class="kanban-card" data-rt-booking="{{ $item->id_booking }}" data-rt-status="{{ $item->status }}">
                             <div class="kc-card-header">
                                 <div class="kc-avatar"><img src="{{ $item->pelanggan?->foto_url ?? 'https://ui-avatars.com/api/?name=%3F&background=FFE5EF&color=FF4F87&size=40' }}" alt="{{ $item->pelanggan->nm_pelanggan ?? '?' }}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;display:block;"></div>
                                 <div>
@@ -472,6 +472,7 @@
 
     <script src="{{ asset('assets/js/beautycian.js') }}"></script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
+    @include('partials.realtime-booking', ['rtScope' => 'beautycian'])
     @include('partials.confirm-modal')
 </body>
 

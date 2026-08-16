@@ -98,6 +98,13 @@
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                             Informasi Reservasi
                         </h4>
+                        @php
+                            $lrDurasi = \App\Support\BookingSlot::durasiBooking($reservasi);
+                            $lrMulai = \Carbon\Carbon::parse($reservasi->jam)->format('H:i');
+                            $lrSelesai = \Carbon\Carbon::parse($reservasi->tanggal . ' ' . substr($reservasi->jam, 0, 5))->addMinutes($lrDurasi)->format('H:i');
+                            $lrMulaiAktual = $reservasi->jam_mulai_aktual ? \Carbon\Carbon::parse($reservasi->jam_mulai_aktual) : null;
+                            $lrSelesaiAktual = $reservasi->jam_selesai_aktual ? \Carbon\Carbon::parse($reservasi->jam_selesai_aktual) : null;
+                        @endphp
                         <div class="detail-row">
                             <span class="label">ID Booking</span>
                             <span class="value">#BK{{ str_pad($reservasi->id_booking, 3, '0', STR_PAD_LEFT) }}</span>
@@ -108,8 +115,30 @@
                         </div>
                         <div class="detail-row">
                             <span class="label">Jam</span>
-                            <span class="value">{{ \Carbon\Carbon::parse($reservasi->jam)->format('H:i') }}</span>
+                            <span class="value" style="font-variant-numeric:tabular-nums;">{{ $lrMulai }} - {{ $lrSelesai }}</span>
                         </div>
+                        <div class="detail-row">
+                            <span class="label">Durasi</span>
+                            <span class="value">{{ $lrDurasi }} menit</span>
+                        </div>
+                        @if($lrMulaiAktual)
+                        <div class="detail-row">
+                            <span class="label">Mulai Aktual</span>
+                            <span class="value" style="font-variant-numeric:tabular-nums;">{{ $lrMulaiAktual->format('H:i') }}</span>
+                        </div>
+                        @endif
+                        @if($lrSelesaiAktual)
+                        <div class="detail-row">
+                            <span class="label">Selesai Aktual</span>
+                            <span class="value" style="font-variant-numeric:tabular-nums;">{{ $lrSelesaiAktual->format('H:i') }}</span>
+                        </div>
+                        @endif
+                        @if($lrMulaiAktual && $lrSelesaiAktual)
+                        <div class="detail-row">
+                            <span class="label">Durasi Aktual</span>
+                            <span class="value" style="font-variant-numeric:tabular-nums;">{{ gmdate('H:i:s', $lrMulaiAktual->diffInSeconds($lrSelesaiAktual)) }}</span>
+                        </div>
+                        @endif
                         <div class="detail-row">
                             <span class="label">Status</span>
                             <span class="value">

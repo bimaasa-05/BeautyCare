@@ -340,7 +340,7 @@
                                                         'dibatalkan' => 'Dibatalkan',
                                                     ];
                                                 @endphp
-                                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border {{ $statusColors[$r->status] ?? 'bg-gray-50 text-gray-500 border-gray-200' }}">
+                                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border {{ $statusColors[$r->status] ?? 'bg-gray-50 text-gray-500 border-gray-200' }}" data-rt-booking="{{ $r->id_booking }}" data-rt-status="{{ $r->status }}">
                                                     {{ $statusLabels[$r->status] ?? ucfirst($r->status) }}
                                                 </span>
                                                 @if ($r->status === 'diproses')
@@ -583,6 +583,7 @@
         setInterval(updateCountdowns, 1000);
     </script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
+    @include('partials.realtime-booking', ['rtScope' => 'umum'])
 </body>
 
 </html>

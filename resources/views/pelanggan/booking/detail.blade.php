@@ -563,6 +563,59 @@
                             </div>
                         </div>
 
+                        @php
+                            $bkMulaiAktual = $booking->jam_mulai_aktual ? \Carbon\Carbon::parse($booking->jam_mulai_aktual) : null;
+                            $bkSelesaiAktual = $booking->jam_selesai_aktual ? \Carbon\Carbon::parse($booking->jam_selesai_aktual) : null;
+                            $bkEstimasi = ($bkMulaiAktual ?? \Carbon\Carbon::parse($booking->tanggal . ' ' . substr($booking->jam, 0, 5)))->copy()->addMinutes($durasiMenit);
+                        @endphp
+                        @if($booking->status === 'diproses')
+                        <div class="dc-divider"></div>
+                        <div class="dc-section-title">
+                            <span class="dc-st-icon"><i class="fa-solid fa-stopwatch"></i></span>
+                            Waktu Pengerjaan
+                        </div>
+                        <div class="dc-section-sub">Treatment sedang berlangsung saat ini</div>
+                        <div class="detail-grid">
+                            <div class="detail-item">
+                                <span class="di-label"><i class="fa-solid fa-play"></i> Mulai Aktual</span>
+                                <span class="di-value" style="font-variant-numeric:tabular-nums;">{{ $bkMulaiAktual ? $bkMulaiAktual->format('H:i') : \Carbon\Carbon::parse($booking->jam)->format('H:i') }}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="di-label"><i class="fa-solid fa-hourglass-half"></i> Sisa Waktu</span>
+                                <span class="di-value" style="font-variant-numeric:tabular-nums;">
+                                    <span class="countdown-row" data-akhir="{{ $bkEstimasi->format('Y-m-d H:i:s') }}" style="color:#7C3AED;font-weight:700;">
+                                        <span class="countdown-value">--:--:--</span>
+                                    </span>
+                                </span>
+                            </div>
+                        </div>
+                        @elseif($booking->status === 'selesai' && $bkMulaiAktual && $bkSelesaiAktual)
+                        <div class="dc-divider"></div>
+                        <div class="dc-section-title">
+                            <span class="dc-st-icon"><i class="fa-solid fa-circle-check"></i></span>
+                            Waktu Pengerjaan
+                        </div>
+                        <div class="dc-section-sub">Periode pengerjaan treatment Anda</div>
+                        <div class="detail-grid">
+                            <div class="detail-item">
+                                <span class="di-label"><i class="fa-regular fa-calendar-check"></i> Dijadwalkan</span>
+                                <span class="di-value" style="font-variant-numeric:tabular-nums;">{{ \Carbon\Carbon::parse($booking->jam)->format('H:i') }} - {{ $jamSelesaiEstimasi }}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="di-label"><i class="fa-solid fa-circle-play"></i> Mulai Aktual</span>
+                                <span class="di-value" style="font-variant-numeric:tabular-nums;">{{ $bkMulaiAktual->format('H:i') }}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="di-label"><i class="fa-solid fa-circle-check"></i> Selesai Aktual</span>
+                                <span class="di-value" style="font-variant-numeric:tabular-nums;">{{ $bkSelesaiAktual->format('H:i') }}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="di-label"><i class="fa-solid fa-stopwatch"></i> Durasi</span>
+                                <span class="di-value" style="font-variant-numeric:tabular-nums;">{{ gmdate('H:i:s', $bkMulaiAktual->diffInSeconds($bkSelesaiAktual)) }}</span>
+                            </div>
+                        </div>
+                        @endif
+
                         <div class="dc-divider"></div>
 
                         <!-- Terapis -->
@@ -738,6 +791,21 @@
     if (params.get('print') === '1') {
         window.print();
     }
+
+    function updateCountdowns() {
+        const now = new Date();
+        document.querySelectorAll('.countdown-row').forEach(function(row) {
+            const end = new Date((row.dataset.akhir || '').replace(' ', 'T'));
+            const diff = Math.max(0, end - now);
+            const h = String(Math.floor(diff / 3600000)).padStart(2, '0');
+            const m = String(Math.floor((diff % 3600000) / 60000)).padStart(2, '0');
+            const s = String(Math.floor((diff % 60000) / 1000)).padStart(2, '0');
+            const val = row.querySelector('.countdown-value');
+            if (val) val.textContent = h + ':' + m + ':' + s;
+        });
+    }
+    updateCountdowns();
+    setInterval(updateCountdowns, 1000);
     </script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
 </body>

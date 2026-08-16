@@ -293,9 +293,17 @@
                                         </div>
                                     </td>
                                     <td data-label="Jam">
+                                        @php
+                                            $lpDurasi = \App\Support\BookingSlot::durasiBooking($item);
+                                            $lpMulai = \Carbon\Carbon::parse($item->jam)->format('H:i');
+                                            $lpSelesai = \Carbon\Carbon::parse($item->tanggal . ' ' . substr($item->jam, 0, 5))->addMinutes($lpDurasi)->format('H:i');
+                                        @endphp
                                         <div style="display:flex;align-items:center;gap:6px;justify-content:center;">
                                             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                                            <span>{{ \Carbon\Carbon::parse($item->jam)->format('H:i') }}</span>
+                                            <div style="text-align:left;">
+                                                <span style="font-weight:600;font-variant-numeric:tabular-nums;">{{ $lpMulai }} - {{ $lpSelesai }}</span>
+                                                <div style="font-size:11px;color:var(--gray);">{{ $lpDurasi }} menit</div>
+                                            </div>
                                         </div>
                                     </td>
                                     <td data-label="Layanan">
