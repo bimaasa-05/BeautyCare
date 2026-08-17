@@ -141,10 +141,38 @@ class Rating extends Model
             ->selectRaw('COALESCE(AVG(bintang), 0) as rata, COUNT(*) as jumlah')
             ->first();
 
+        $distribusi = static::where('status', 'aktif')
+            ->selectRaw('bintang, COUNT(*) as total')
+            ->groupBy('bintang')
+            ->pluck('total', 'bintang');
+
+        $dist = [];
+        for ($b = 5; $b >= 1; $b--) {
+            $dist[$b] = (int) ($distribusi[$b] ?? 0);
+        }
+
         return [
             'rata' => round((float) ($data->rata ?? 0), 1),
             'jumlah' => (int) ($data->jumlah ?? 0),
+            'distribusi' => $dist,
         ];
+    }
+
+    /**
+     * Booking selesai terbaru milik pelanggan yang berisi layanan tsb
+     * (dipakai untuk tombol rating pada dashboard pelanggan).
+     */
+    public static function bookingLayananTerbaru($idPelanggan, $idLayanan): ?Booking
+    {
+        return DetailBooking::where('id_layanan', (int) $idLayanan)
+            ->whereHas('booking', function ($q) use ($idPelanggan) {
+                $q->where('id_pelanggan', (int) $idPelanggan)
+                    ->where('status', 'selesai');
+            })
+            ->with('booking')
+            ->get()
+            ->sortByDesc(fn($d) => $d->booking?->id_booking ?? 0)
+            ->first()?->booking;
     }
 
     public static function sudahRating($userId, string $tipe, $idTarget): bool
@@ -216,6 +244,20 @@ class Rating extends Model
             $idsBelum = array_values(array_diff($layananIds, $sudahRatingLayanan));
             if ($idsBelum) {
                 $layananBelum = Layanan::whereIn('id_layanan', $idsBelum)->get();
+
+                $bookingTerbaru = DetailBooking::whereIn('id_layanan', $idsBelum)
+                    ->whereHas('booking', function ($q) use ($idPelanggan) {
+                        $q->where('id_pelanggan', (int) $idPelanggan)->where('status', 'selesai');
+                    })
+                    ->with('booking')
+                    ->get()
+                    ->sortByDesc(fn($d) => $d->booking?->id_booking ?? 0)
+                    ->groupBy('id_layanan');
+
+                $layananBelum->each(function ($layanan) use ($bookingTerbaru) {
+                    $detail = $bookingTerbaru->get($layanan->id_layanan)?->first();
+                    $layanan->booking_id = $detail?->booking?->id_booking;
+                });
             }
         }
 
