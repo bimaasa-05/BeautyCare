@@ -538,14 +538,14 @@
     .dash-rate-btn {
         display: inline-flex;
         align-items: center;
-        gap: 5px;
+        gap: 6px;
         font-size: 12px;
         font-weight: 600;
-        color: var(--dark);
+        color: var(--primary);
         background: #FFF5F8;
-        border: 1px solid #F3D9E4;
-        border-radius: 8px;
-        padding: 5px 10px;
+        border: 1.5px solid var(--primary);
+        border-radius: 12px;
+        padding: 7px 14px;
         text-decoration: none;
         transition: all .2s ease;
         cursor: pointer;
@@ -553,18 +553,23 @@
     }
 
     .dash-rate-btn:hover {
+        background: linear-gradient(135deg, var(--primary), #FF7BA6);
         border-color: var(--primary);
-        color: var(--primary);
+        color: #FFF;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(255, 79, 135, 0.25);
     }
 
     .dash-rate-btn.primary {
-        background: var(--primary);
+        background: linear-gradient(135deg, var(--primary), #FF7BA6);
         border-color: var(--primary);
         color: #FFF;
+        box-shadow: 0 4px 10px rgba(255, 79, 135, 0.2);
     }
 
     .dash-rate-btn.primary:hover {
         background: var(--secondary);
+        box-shadow: 0 4px 12px rgba(255, 79, 135, 0.3);
     }
 
     .dash-rate-btn.danger {
@@ -575,7 +580,10 @@
 
     .dash-rate-btn.danger:hover {
         border-color: #DC2626;
-        background: #FEE2E2;
+        background: #DC2626;
+        color: #FFF;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
     }
     </style>
 </head>
@@ -1003,7 +1011,7 @@
                                     <td>{{ \Carbon\Carbon::parse($rating->created_at)->isoFormat('D MMM YYYY') }}</td>
                                     <td>
                                         <div style="display:flex;gap:6px;align-items:center;">
-                                            <a href="{{ $rating->tipe === 'layanan' ? route('layanan.detail', $rating->id_target) . '#beri-rating' : route('pelanggan.produk.detail', $rating->id_target) . '#ulasan' }}"
+                                            <a href="{{ $rating->tipe === 'layanan' ? ($rating->booking_id ? route('pelanggan.rating.layanan', $rating->booking_id) : route('layanan.detail', $rating->id_target)) : route('pelanggan.produk.detail', $rating->id_target) . '#ulasan' }}"
                                                 class="dash-rate-btn" title="Edit ulasan">
                                                 <i class="fa-solid fa-pen"></i> Edit
                                             </a>
@@ -1050,7 +1058,7 @@
                                     <td>{{ $layanan->nm_layanan }}</td>
                                     <td><span class="badge badge-primary">Layanan</span></td>
                                     <td>
-                                        <a href="{{ route('layanan.detail', $layanan->id_layanan) }}#beri-rating" class="dash-rate-btn primary">
+                                        <a href="{{ $layanan->booking_id ? route('pelanggan.rating.layanan', $layanan->booking_id) : route('layanan.detail', $layanan->id_layanan) }}" class="dash-rate-btn primary">
                                             <i class="fa-solid fa-star"></i> Beri Rating
                                         </a>
                                     </td>

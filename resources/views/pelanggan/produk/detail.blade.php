@@ -154,7 +154,7 @@
         align-items: center;
         gap: 8px;
         padding: 10px 20px;
-        border-radius: 100px;
+        border-radius: 10px;
         border: 1.5px solid var(--primary);
         background: var(--white);
         color: var(--primary);
@@ -1196,49 +1196,20 @@
 
                     @if ($ringkasan['jumlah'] > 0)
                     <div class="pd-ulasan-grid">
-                        <div class="pd-score-box">
-                            <div class="pdsb-score">{{ number_format($ringkasan['rata'], 1, ',', '.') }}</div>
-                            <div class="pdsb-stars">{{ str_repeat('★', (int) round($ringkasan['rata'])) }}{{ str_repeat('☆', 5 - (int) round($ringkasan['rata'])) }}</div>
-                            <div class="pdsb-count">{{ $ringkasan['jumlah'] }} ulasan</div>
-                            <div style="margin-top:16px;text-align:left;">
-                                @foreach ($ringkasan['distribusi'] as $bintang => $total)
-                                @php $persen = $ringkasan['jumlah'] > 0 ? round($total / $ringkasan['jumlah'] * 100) : 0; @endphp
-                                <div class="pdsb-dist">
-                                    <span>{{ $bintang }} <i class="fa-solid fa-star" style="color:#F59E0B;font-size:10px;"></i></span>
-                                    <div class="pdsb-bar"><div class="pdsb-fill" style="width:{{ $persen }}%"></div></div>
-                                    <span>{{ $total }}</span>
-                                </div>
-                                @endforeach
-                            </div>
-                        </div>
-
+                        @include('partials.rating-summary', ['ringkasan' => $ringkasan])
                         <div class="pd-ulasan-list">
-                            @forelse($ulasans as $ulasan)
-                            <div class="pdu-card">
-                                <div class="pdu-head">
-                                    <img class="pdu-avatar" src="{{ $ulasan->foto_pemberi }}" alt="{{ $ulasan->nama_pemberi }}" loading="lazy">
-                                    <div>
-                                        <div>
-                                            <span class="pdu-name">{{ $ulasan->nama_pemberi }}</span>
-                                            <span class="pdu-verified"><i class="fa-solid fa-circle-check"></i> Pelanggan Terverifikasi</span>
-                                        </div>
-                                        <div class="pdu-date">{{ \Carbon\Carbon::parse($ulasan->created_at)->isoFormat('D MMM YYYY') }}</div>
-                                    </div>
-                                </div>
-                                <div class="pdu-stars">{{ str_repeat('★', $ulasan->bintang) }}{{ str_repeat('☆', 5 - $ulasan->bintang) }}</div>
-                                @if ($ulasan->komentar)
-                                <p class="pdu-text">"{{ $ulasan->komentar }}"</p>
-                                @endif
-                            </div>
-                            @empty
-                            <div class="pdu-empty">Belum ada ulasan.</div>
-                            @endforelse
+                            @include('partials.rating-reviews', ['ulasans' => $ulasans, 'empty' => 'Belum ada ulasan untuk produk ini.'])
                         </div>
                     </div>
                     @else
-                    <div class="pdu-empty" style="padding:32px;text-align:center;">
-                        <p style="margin-bottom:6px;"><i class="fa-solid fa-star" style="font-size:26px;color:#F59E0B;"></i></p>
-                        Belum ada ulasan untuk produk ini. Jadilah yang pertama memberi rating!
+                    <div class="pd-ulasan-grid">
+                        @include('partials.rating-summary', ['ringkasan' => $ringkasan])
+                        <div class="pd-ulasan-list">
+                            <div class="pdu-empty" style="padding:32px;text-align:center;">
+                                <p style="margin-bottom:6px;"><i class="fa-solid fa-star" style="font-size:26px;color:#F59E0B;"></i></p>
+                                Belum ada ulasan untuk produk ini. Jadilah yang pertama memberi rating!
+                            </div>
+                        </div>
                     </div>
                     @endif
 
@@ -1249,11 +1220,33 @@
                                 <i class="fa-solid fa-pen"></i> Rating Anda
                             </div>
                             <div class="pdu-stars" style="font-size:18px;margin-bottom:10px;">{{ str_repeat('★', $ratingSaya->bintang) }}{{ str_repeat('☆', 5 - $ratingSaya->bintang) }}</div>
-                            <p class="pdu-text" style="margin-bottom:12px;">{{ $ratingSaya->komentar ? '"' . $ratingSaya->komentar . '"' : 'Tanpa komentar.' }}</p>
-                            <p style="font-size:13px;color:var(--gray);margin-bottom:12px;">
-                                Anda sudah memberi rating untuk produk ini. Perbarui melalui formulir di bawah, atau
-                                <a href="#" onclick="event.preventDefault(); if(confirm('Hapus rating Anda?')) document.getElementById('hapus-rating-form-produk').submit();" style="color:#DC2626;font-weight:600;">hapus rating</a>.
-                            </p>
+                            <p class="pdu-text" style="margin-bottom:14px;">{{ $ratingSaya->komentar ? '"' . $ratingSaya->komentar . '"' : 'Tanpa komentar.' }}</p>
+                            <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+                                <button type="button" class="rate-edit-btn" onclick="tampilFormEditProduk()">
+                                    <i class="fa-solid fa-pen-to-square"></i> Edit Rating
+                                </button>
+                                <button type="button" class="rate-del-btn" onclick="if(confirm('Hapus rating Anda?')) document.getElementById('hapus-rating-form-produk').submit();">
+                                    <i class="fa-solid fa-trash-can"></i> Hapus
+                                </button>
+                            </div>
+                            <form id="form-edit-produk" action="{{ route('rating.store') }}" method="POST" class="rate-edit-form" style="display:none;">
+                                @csrf
+                                <input type="hidden" name="tipe" value="produk">
+                                <input type="hidden" name="id_target" value="{{ $produk->id_produk }}">
+
+                                <label class="prf-label">Pilih bintang Anda</label>
+                                <div class="prf-stars" id="prfStarEditInput">
+                                    @for ($i = 1; $i <= 5; $i++)
+                                    <button type="button" data-nilai="{{ $i }}" class="{{ $i <= $ratingSaya->bintang ? 'active' : '' }}" onclick="pilihBintangProduk(this, 'prfStarEditInput', 'prfBintangEditValue')">★</button>
+                                    @endfor
+                                </div>
+                                <input type="hidden" name="bintang" id="prfBintangEditValue" value="{{ $ratingSaya->bintang }}">
+
+                                <label class="prf-label">Komentar (opsional)</label>
+                                <textarea name="komentar" maxlength="500" placeholder="Ceritakan pengalaman Anda dengan produk ini...">{{ $ratingSaya->komentar }}</textarea>
+
+                                <button type="submit" class="prf-submit"><i class="fa-solid fa-floppy-disk"></i> Simpan Perubahan</button>
+                            </form>
                             <form id="hapus-rating-form-produk" action="{{ route('rating.destroy', $ratingSaya->id) }}" method="POST" style="display:none;">
                                 @csrf
                                 @method('DELETE')
@@ -1419,13 +1412,20 @@
     const dateEl = document.getElementById('currentDate');
     if (dateEl) dateEl.textContent = now.toLocaleDateString('id-ID', options);
 
-    function pilihBintangProduk(btn) {
+    function pilihBintangProduk(btn, starId, bintangId) {
         var nilai = parseInt(btn.dataset.nilai);
-        document.getElementById('prfBintangValue').value = nilai;
-        var buttons = document.querySelectorAll('#prfStarInput button');
+        document.getElementById(bintangId || 'prfBintangValue').value = nilai;
+        var container = document.getElementById(starId || 'prfStarInput');
+        if (!container) return;
+        var buttons = container.querySelectorAll('button');
         buttons.forEach(function(b) {
             b.classList.toggle('active', parseInt(b.dataset.nilai) <= nilai);
         });
+    }
+
+    function tampilFormEditProduk() {
+        var f = document.getElementById('form-edit-produk');
+        if (f) f.style.display = (f.style.display === 'none' || !f.style.display) ? 'block' : 'none';
     }
     </script>
 
