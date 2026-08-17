@@ -439,6 +439,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/pelanggan/produk/favorit/toggle', [App\Http\Controllers\PelangganFavoritController::class, 'toggle'])->name('pelanggan.favorit.toggle');
 
         //Route Rating
+        Route::get('/pelanggan/rating/layanan/{booking}', [App\Http\Controllers\PelangganRatingController::class, 'layanan'])->name('pelanggan.rating.layanan')->whereNumber('booking');
         Route::post('/pelanggan/rating', [App\Http\Controllers\RatingController::class, 'store'])->name('rating.store');
         Route::delete('/pelanggan/rating/{rating}', [App\Http\Controllers\RatingController::class, 'destroy'])->name('rating.destroy')->whereNumber('rating');
 
