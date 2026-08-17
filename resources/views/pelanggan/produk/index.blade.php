@@ -742,6 +742,12 @@
                                 <button type="button" class="sort-pill" data-sort="beli" onclick="setSort('beli', this)">
                                     <i class="fa-solid fa-ranking-star"></i> Terlaris
                                 </button>
+                                <button type="button" class="sort-pill" data-sort="rating-desc" onclick="setSort('rating-desc', this)">
+                                    <i class="fa-solid fa-star"></i> Rating Tertinggi
+                                </button>
+                                <button type="button" class="sort-pill" data-sort="rating-asc" onclick="setSort('rating-asc', this)">
+                                    <i class="fa-solid fa-star-half-stroke"></i> Rating Terendah
+                                </button>
                             </div>
                         </div>
                         <div class="search-input-wrap">
@@ -761,7 +767,7 @@
                         $class = $classMap[$kategoriLower] ?? 'lainnya';
                         $icon = $iconMap[$kategoriLower] ?? 'fa-cube';
                     @endphp
-                    <div class="produk-card" data-id="{{ $produk->id_produk }}" data-favorit="{{ $produk->favorit_count }}" data-beli="{{ $produk->beli_count }}">
+                    <div class="produk-card" data-id="{{ $produk->id_produk }}" data-favorit="{{ $produk->favorit_count }}" data-beli="{{ $produk->beli_count }}" data-rating="{{ $produk->rating_rata }}">
                         <a href="{{ route('pelanggan.produk.detail', $produk->id_produk) }}" class="pc-image">
                             @if ($produk->foto)
                                 <img src="{{ asset('storage/' . $produk->foto) }}" alt="{{ $produk->nm_produk }}" style="width:100%;height:100%;object-fit:cover;">
@@ -779,13 +785,11 @@
                         <div class="pc-body">
                             <a href="{{ route('pelanggan.produk.detail', $produk->id_produk) }}" class="pc-name-link">{{ $produk->nm_produk }}</a>
                             <div class="pc-category">{{ $nmKategori }}</div>
-                            @if ($produk->rating_jumlah > 0)
                             <div class="pc-rating">
                                 <i class="fa-solid fa-star"></i>
                                 <b>{{ number_format($produk->rating_rata, 1, ',', '.') }}</b>
                                 <span>({{ $produk->rating_jumlah }})</span>
                             </div>
-                            @endif
                             <div class="pc-divider"></div>
                             <div class="pc-footer">
                                 <div class="pc-price">Rp {{ number_format($produk->harga_jual, 0, ',', '.') }} <span>/{{ $produk->satuan }}</span></div>
@@ -875,6 +879,16 @@
             } else if (mode === 'beli') {
                 va = parseInt(a.getAttribute('data-beli')) || 0;
                 vb = parseInt(b.getAttribute('data-beli')) || 0;
+            } else if (mode === 'rating-desc') {
+                va = parseFloat(a.getAttribute('data-rating')) || 0;
+                vb = parseFloat(b.getAttribute('data-rating')) || 0;
+                if (va !== vb) return vb - va;
+                return (parseInt(b.getAttribute('data-id')) || 0) - (parseInt(a.getAttribute('data-id')) || 0);
+            } else if (mode === 'rating-asc') {
+                va = parseFloat(a.getAttribute('data-rating')) || 0;
+                vb = parseFloat(b.getAttribute('data-rating')) || 0;
+                if (va !== vb) return va - vb;
+                return (parseInt(b.getAttribute('data-id')) || 0) - (parseInt(a.getAttribute('data-id')) || 0);
             } else {
                 va = parseInt(a.getAttribute('data-id')) || 0;
                 vb = parseInt(b.getAttribute('data-id')) || 0;

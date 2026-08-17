@@ -154,7 +154,7 @@
         align-items: center;
         gap: 8px;
         padding: 10px 20px;
-        border-radius: 100px;
+        border-radius: 10px;
         border: 1.5px solid var(--primary);
         background: var(--white);
         color: var(--primary);
@@ -1196,49 +1196,20 @@
 
                     @if ($ringkasan['jumlah'] > 0)
                     <div class="pd-ulasan-grid">
-                        <div class="pd-score-box">
-                            <div class="pdsb-score">{{ number_format($ringkasan['rata'], 1, ',', '.') }}</div>
-                            <div class="pdsb-stars">{{ str_repeat('★', (int) round($ringkasan['rata'])) }}{{ str_repeat('☆', 5 - (int) round($ringkasan['rata'])) }}</div>
-                            <div class="pdsb-count">{{ $ringkasan['jumlah'] }} ulasan</div>
-                            <div style="margin-top:16px;text-align:left;">
-                                @foreach ($ringkasan['distribusi'] as $bintang => $total)
-                                @php $persen = $ringkasan['jumlah'] > 0 ? round($total / $ringkasan['jumlah'] * 100) : 0; @endphp
-                                <div class="pdsb-dist">
-                                    <span>{{ $bintang }} <i class="fa-solid fa-star" style="color:#F59E0B;font-size:10px;"></i></span>
-                                    <div class="pdsb-bar"><div class="pdsb-fill" style="width:{{ $persen }}%"></div></div>
-                                    <span>{{ $total }}</span>
-                                </div>
-                                @endforeach
-                            </div>
-                        </div>
-
+                        @include('partials.rating-summary', ['ringkasan' => $ringkasan])
                         <div class="pd-ulasan-list">
-                            @forelse($ulasans as $ulasan)
-                            <div class="pdu-card">
-                                <div class="pdu-head">
-                                    <img class="pdu-avatar" src="{{ $ulasan->foto_pemberi }}" alt="{{ $ulasan->nama_pemberi }}" loading="lazy">
-                                    <div>
-                                        <div>
-                                            <span class="pdu-name">{{ $ulasan->nama_pemberi }}</span>
-                                            <span class="pdu-verified"><i class="fa-solid fa-circle-check"></i> Pelanggan Terverifikasi</span>
-                                        </div>
-                                        <div class="pdu-date">{{ \Carbon\Carbon::parse($ulasan->created_at)->isoFormat('D MMM YYYY') }}</div>
-                                    </div>
-                                </div>
-                                <div class="pdu-stars">{{ str_repeat('★', $ulasan->bintang) }}{{ str_repeat('☆', 5 - $ulasan->bintang) }}</div>
-                                @if ($ulasan->komentar)
-                                <p class="pdu-text">"{{ $ulasan->komentar }}"</p>
-                                @endif
-                            </div>
-                            @empty
-                            <div class="pdu-empty">Belum ada ulasan.</div>
-                            @endforelse
+                            @include('partials.rating-reviews', ['ulasans' => $ulasans, 'empty' => 'Belum ada ulasan untuk produk ini.'])
                         </div>
                     </div>
                     @else
-                    <div class="pdu-empty" style="padding:32px;text-align:center;">
-                        <p style="margin-bottom:6px;"><i class="fa-solid fa-star" style="font-size:26px;color:#F59E0B;"></i></p>
-                        Belum ada ulasan untuk produk ini. Jadilah yang pertama memberi rating!
+                    <div class="pd-ulasan-grid">
+                        @include('partials.rating-summary', ['ringkasan' => $ringkasan])
+                        <div class="pd-ulasan-list">
+                            <div class="pdu-empty" style="padding:32px;text-align:center;">
+                                <p style="margin-bottom:6px;"><i class="fa-solid fa-star" style="font-size:26px;color:#F59E0B;"></i></p>
+                                Belum ada ulasan untuk produk ini. Jadilah yang pertama memberi rating!
+                            </div>
+                        </div>
                     </div>
                     @endif
 
