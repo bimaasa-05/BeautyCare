@@ -577,6 +577,30 @@
         box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
     }
 
+    .btn-rate {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 7px 14px;
+        border-radius: 12px;
+        border: 1.5px solid var(--primary);
+        background: #FFF5F8;
+        color: var(--primary);
+        font-size: 11px;
+        font-weight: 600;
+        font-family: 'Poppins', sans-serif;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+
+    .btn-rate:hover {
+        background: linear-gradient(135deg, var(--primary), #FF7BA6);
+        color: #fff;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(255, 79, 135, 0.25);
+    }
+
     .aksi-kosong {
         font-size: 11px;
         color: #ccc;
@@ -1298,6 +1322,10 @@
                                             <button onclick="confirmCancel({{ $booking->id_booking }})" class="btn-batal" title="Batalkan booking">
                                                 <i class="fa-solid fa-xmark"></i> Batalkan
                                             </button>
+                                            @elseif($booking->status === 'selesai')
+                                            <a href="{{ route('pelanggan.rating.layanan', $booking->id_booking) }}" class="btn-rate" title="Beri rating layanan">
+                                                <i class="fa-solid fa-star"></i> Beri Rating
+                                            </a>
                                             @else
                                             <span class="aksi-kosong">-</span>
                                             @endif
