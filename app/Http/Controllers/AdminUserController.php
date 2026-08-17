@@ -108,7 +108,13 @@ class AdminUserController extends Controller
         $user->update($data);
 
         buatNotif(auth()->id(), 'User Diperbarui', 'User ' . $user->nama . ' berhasil diperbarui', 'Lainnya', route('admin.user.index'));
-        buatNotif($user->id, 'Akun Diperbarui', 'Data akun Anda telah diperbarui oleh ' . auth()->user()->nama, 'Lainnya', route('admin.user.edit', $user->id));
+        $profilUser = match ($user->role) {
+            'admin' => 'admin.profile',
+            'kasir' => 'kasir.profile',
+            'beautycian' => 'beautycian.profile',
+            default => 'pelanggan.profile',
+        };
+        buatNotif($user->id, 'Akun Diperbarui', 'Data akun Anda telah diperbarui oleh ' . auth()->user()->nama, 'Lainnya', route($profilUser));
 
         return redirect()->route('admin.user.index')
             ->with('success', 'User berhasil diperbarui.');
@@ -141,7 +147,13 @@ class AdminUserController extends Controller
         $user->save();
 
         $label = $request->status === 'aktif' ? 'diaktifkan' : ($request->status === 'suspend' ? 'disuspend' : 'dinonaktifkan');
-        buatNotif($user->id, 'Status Akun', 'Akun Anda telah ' . $label . ' oleh ' . auth()->user()->nama, 'Lainnya', route('admin.user.index'));
+        $profil = match ($user->role) {
+            'admin' => 'admin.profile',
+            'kasir' => 'kasir.profile',
+            'beautycian' => 'beautycian.profile',
+            default => 'pelanggan.profile',
+        };
+        buatNotif($user->id, 'Status Akun', 'Akun Anda telah ' . $label . ' oleh ' . auth()->user()->nama, 'Lainnya', route($profil));
 
         return redirect()->route('admin.user.index')
             ->with('success', 'Status user berhasil diperbarui.');

@@ -79,7 +79,7 @@ class AdminProdukController extends Controller
 
         $produk->update($data);
 
-        buatNotif(auth()->id(), 'Produk Diperbarui', 'Produk ' . $produk->nm_produk . ' berhasil diperbarui', 'Lainnya', route('admin.produk.edit', $produk->id_produk));
+        buatNotif(auth()->id(), 'Produk Diperbarui', 'Produk ' . $produk->nm_produk . ' berhasil diperbarui', 'Lainnya', route('admin.produk.index'));
 
         return redirect()->route('admin.produk.index')
             ->with('success', 'Produk berhasil diperbarui.');

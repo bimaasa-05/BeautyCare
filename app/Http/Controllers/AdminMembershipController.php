@@ -111,7 +111,7 @@ class AdminMembershipController extends Controller
             'undangan_event'  => $request->boolean('undangan_event'),
         ]);
 
-        buatNotif(auth()->id(), 'Membership Diperbarui', 'Paket membership ' . $membership->nm_member . ' berhasil diperbarui', 'Lainnya', route('admin.membership.edit', $membership->id_member));
+        buatNotif(auth()->id(), 'Membership Diperbarui', 'Paket membership ' . $membership->nm_member . ' berhasil diperbarui', 'Lainnya', route('admin.membership.index'));
 
         return redirect()->route('admin.membership.index')
             ->with('success', 'Paket membership berhasil diperbarui.');

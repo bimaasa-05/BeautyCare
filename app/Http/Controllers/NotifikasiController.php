@@ -16,20 +16,20 @@ class NotifikasiController extends Controller
         $notif = Notifikasi::with(['user', 'aktor'])
             ->forUser($user->id)
             ->latest()
-            ->take(10)
             ->get();
 
         $unreadCount = Notifikasi::forUser($user->id)->unread()->count();
 
         return response()->json([
             'unread_count' => $unreadCount,
-            'notifications' => $notif->map(function ($n) {
+            'notifications' => $notif->map(function ($n) use ($user) {
                 return [
                     'id' => $n->id_notif,
                     'judul' => $n->judul,
                     'isi' => $n->isi,
                     'type' => $n->type,
                     'url' => $n->url,
+                    'target' => $this->notifTarget($user->role, $n->type) ?? $n->url,
                     'waktu' => $n->created_at ? $n->created_at->diffForHumans() : '',
                     'status' => $n->status,
                     'aktor_foto' => $n->aktor?->foto,
@@ -37,6 +37,54 @@ class NotifikasiController extends Controller
                 ];
             }),
         ]);
+    }
+
+    private function notifTarget($role, $type)
+    {
+        $map = [
+            'Transaksi' => [
+                'admin' => 'admin.transaksi.index',
+                'kasir' => 'kasir.riwayat-transaksi.index',
+                'beautycian' => 'beautycian.jadwal-treatment.index',
+                'pelanggan' => 'pelanggan.pesanan.index',
+            ],
+            'Booking' => [
+                'admin' => 'admin.reservasi.index',
+                'kasir' => 'kasir.reservasi.index',
+                'beautycian' => 'beautycian.jadwal-treatment.index',
+                'pelanggan' => 'pelanggan.booking',
+            ],
+            'Stok' => [
+                'admin' => 'admin.stok.index',
+                'kasir' => 'kasir.transaksi.index',
+                'beautycian' => 'beautycian.dashboard',
+                'pelanggan' => 'pelanggan.produk',
+            ],
+            'Promo' => [
+                'admin' => 'admin.promo.index',
+                'kasir' => 'kasir.dashboard',
+                'beautycian' => 'beautycian.dashboard',
+                'pelanggan' => 'pelanggan.promo',
+            ],
+            'Membership' => [
+                'admin' => 'admin.membership.index',
+                'kasir' => 'kasir.dashboard',
+                'beautycian' => 'beautycian.dashboard',
+                'pelanggan' => 'pelanggan.membership',
+            ],
+            'Registrasi' => [
+                'admin' => 'admin.user.index',
+                'kasir' => 'kasir.dashboard',
+                'beautycian' => 'beautycian.dashboard',
+                'pelanggan' => 'dashboard',
+            ],
+        ];
+
+        if (!isset($map[$type][$role])) {
+            return null;
+        }
+
+        return route($map[$type][$role]);
     }
 
     public function popupAktivitas(Request $request)
@@ -170,7 +218,18 @@ class NotifikasiController extends Controller
             return response()->json(['success' => true]);
         }
 
-        return redirect(route('notif.index', ['role' => $role]));
+        $dashboard = [
+            'admin' => 'admin.dashboard',
+            'kasir' => 'kasir.dashboard',
+            'beautycian' => 'beautycian.dashboard',
+            'pelanggan' => 'dashboard',
+        ];
+
+        return redirect(
+            $this->notifTarget($role, $notif->type)
+            ?? $notif->url
+            ?? route($dashboard[$role] ?? 'dashboard')
+        );
     }
 
     public function markAllRead($role)
@@ -185,12 +244,5 @@ class NotifikasiController extends Controller
         ]);
 
         return response()->json(['success' => true, 'message' => 'Semua notifikasi telah dibaca']);
-    }
-
-    public function index()
-    {
-        $notif = Notifikasi::forUser(Auth::id())->latest()->paginate(20);
-
-        return view('notifikasi.index', compact('notif'));
     }
 }
