@@ -527,6 +527,56 @@
         55%  { transform: translate(-50%, -50%) scaleY(1.03); opacity: 1; }
         100% { transform: translate(-50%, -50%) scaleY(1); opacity: 1; }
     }
+
+    .dash-rating-stars {
+        color: #F59E0B;
+        font-size: 13px;
+        letter-spacing: 1px;
+        white-space: nowrap;
+    }
+
+    .dash-rate-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--dark);
+        background: #FFF5F8;
+        border: 1px solid #F3D9E4;
+        border-radius: 8px;
+        padding: 5px 10px;
+        text-decoration: none;
+        transition: all .2s ease;
+        cursor: pointer;
+        font-family: inherit;
+    }
+
+    .dash-rate-btn:hover {
+        border-color: var(--primary);
+        color: var(--primary);
+    }
+
+    .dash-rate-btn.primary {
+        background: var(--primary);
+        border-color: var(--primary);
+        color: #FFF;
+    }
+
+    .dash-rate-btn.primary:hover {
+        background: var(--secondary);
+    }
+
+    .dash-rate-btn.danger {
+        background: #FEF2F2;
+        border-color: #FECACA;
+        color: #DC2626;
+    }
+
+    .dash-rate-btn.danger:hover {
+        border-color: #DC2626;
+        background: #FEE2E2;
+    }
     </style>
 </head>
 
@@ -915,6 +965,119 @@
                                 Belum ada produk terlaris.
                             </div>
                             @endforelse
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Rating Saya -->
+                <div class="dashboard-bottom-grid">
+                    <div class="table-widget">
+                        <div class="tw-header">
+                            <h3><i class="fa-solid fa-star" style="color:#F59E0B;font-size:14px;margin-right:4px;"></i> Rating Saya</h3>
+                            <a href="{{ route('rating.index') }}">Semua Ulasan</a>
+                        </div>
+                        <div class="table-scroll">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Objek</th>
+                                    <th>Bintang</th>
+                                    <th>Komentar</th>
+                                    <th>Tanggal</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($ratingSaya as $rating)
+                                <tr>
+                                    <td>
+                                        <div class="td-flex">
+                                            <span class="badge {{ $rating->tipe === 'layanan' ? 'badge-primary' : 'badge-success' }}" style="margin-right:6px;">{{ $rating->tipe_label }}</span>
+                                            {{ $rating->nama_objek }}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="dash-rating-stars">{{ str_repeat('★', $rating->bintang) }}{{ str_repeat('☆', 5 - $rating->bintang) }}</span>
+                                    </td>
+                                    <td>{{ $rating->komentar ? \Illuminate\Support\Str::limit($rating->komentar, 40) : '-' }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($rating->created_at)->isoFormat('D MMM YYYY') }}</td>
+                                    <td>
+                                        <div style="display:flex;gap:6px;align-items:center;">
+                                            <a href="{{ $rating->tipe === 'layanan' ? route('layanan.detail', $rating->id_target) . '#beri-rating' : route('pelanggan.produk.detail', $rating->id_target) . '#ulasan' }}"
+                                                class="dash-rate-btn" title="Edit ulasan">
+                                                <i class="fa-solid fa-pen"></i> Edit
+                                            </a>
+                                            <form action="{{ route('rating.destroy', $rating->id) }}" method="POST"
+                                                onsubmit="return confirm('Hapus rating Anda?')" style="margin:0;">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="dash-rate-btn danger" title="Hapus ulasan">
+                                                    <i class="fa-solid fa-trash"></i> Hapus
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                                @empty
+                                <tr>
+                                    <td colspan="5" style="text-align:center;padding:20px;color:var(--gray);font-size:13px;">
+                                        Anda belum memberikan rating.
+                                    </td>
+                                </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                        </div>
+                    </div>
+
+                    <div class="table-widget">
+                        <div class="tw-header">
+                            <h3><i class="fa-solid fa-pen" style="color:var(--primary);font-size:13px;margin-right:4px;"></i> Belum Diberi Rating</h3>
+                        </div>
+                        <div class="table-scroll">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Objek</th>
+                                    <th>Jenis</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @php $adaBelum = $belumDirating['layanan']->isNotEmpty() || $belumDirating['produk']->isNotEmpty(); @endphp
+                                @forelse($belumDirating['layanan'] as $layanan)
+                                <tr>
+                                    <td>{{ $layanan->nm_layanan }}</td>
+                                    <td><span class="badge badge-primary">Layanan</span></td>
+                                    <td>
+                                        <a href="{{ route('layanan.detail', $layanan->id_layanan) }}#beri-rating" class="dash-rate-btn primary">
+                                            <i class="fa-solid fa-star"></i> Beri Rating
+                                        </a>
+                                    </td>
+                                </tr>
+                                @empty
+                                @endforelse
+                                @forelse($belumDirating['produk'] as $produk)
+                                <tr>
+                                    <td>{{ $produk->nm_produk }}</td>
+                                    <td><span class="badge badge-success">Produk</span></td>
+                                    <td>
+                                        <a href="{{ route('pelanggan.produk.detail', $produk->id_produk) }}#ulasan" class="dash-rate-btn primary">
+                                            <i class="fa-solid fa-star"></i> Beri Rating
+                                        </a>
+                                    </td>
+                                </tr>
+                                @empty
+                                @endforelse
+                                @if (!$adaBelum)
+                                <tr>
+                                    <td colspan="3" style="text-align:center;padding:20px;color:var(--gray);font-size:13px;">
+                                        Tidak ada yang perlu di-rating.
+                                    </td>
+                                </tr>
+                                @endif
+                            </tbody>
+                        </table>
                         </div>
                     </div>
                 </div>

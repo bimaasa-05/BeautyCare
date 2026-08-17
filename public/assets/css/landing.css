@@ -723,6 +723,32 @@ html {
   opacity: 0.9;
 }
 
+.layanan-card .overlay .overlay-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.layanan-card .overlay .overlay-link {
+  display: inline-block;
+  background: rgba(255, 255, 255, .18);
+  border: 1px solid rgba(255, 255, 255, .35);
+  color: var(--white);
+  font-size: 12px;
+  font-weight: var(--fw-medium);
+  padding: 5px 12px;
+  border-radius: var(--radius-full);
+  text-decoration: none;
+  backdrop-filter: blur(4px);
+  transition: var(--transition-base);
+}
+
+.layanan-card .overlay .overlay-link:hover {
+  background: var(--primary);
+  border-color: var(--primary);
+}
+
 /* ---- Statistik Section ---- */
 .statistik {
   background: linear-gradient(135deg, var(--primary), var(--secondary));
@@ -825,6 +851,65 @@ html {
 .testimoni-card .author p {
   font-size: 12px;
   color: var(--gray);
+}
+
+.testimoni-score {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+}
+
+.testimoni-score .ts-stars {
+  color: #F59E0B;
+  font-size: 18px;
+  letter-spacing: 2px;
+}
+
+.testimoni-score .ts-num {
+  font-size: 28px;
+  font-weight: var(--fw-bold);
+  color: var(--dark);
+}
+
+.testimoni-score .ts-total {
+  font-size: 13px;
+  color: var(--gray);
+}
+
+.testimoni-card .author h4 .badge-verified {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(16, 185, 129, .1);
+  color: #059669;
+  font-size: 10px;
+  font-weight: var(--fw-semibold);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
+.testimoni-more {
+  text-align: center;
+  margin-top: 32px;
+}
+
+.testimoni-empty {
+  text-align: center;
+  padding: 48px 20px;
+  background: var(--white);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-lg);
+  color: var(--gray);
+  font-size: 14px;
+}
+
+.testimoni-empty p {
+  margin-bottom: 6px;
 }
 
 .slider-dots {

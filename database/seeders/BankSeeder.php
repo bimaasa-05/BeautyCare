@@ -129,7 +129,7 @@ class BankSeeder extends Seeder
 
         $this->command->info(
             "Bank seeder: {$inserted} inserted, {$updated} updated. Total records: "
-                . Bank::count()
+            . Bank::count()
         );
     }
 }

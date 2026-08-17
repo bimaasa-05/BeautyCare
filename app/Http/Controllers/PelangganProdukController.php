@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\DetailTransaksi;
 use App\Models\FavoritProduk;
+use App\Models\Pelanggan;
 use App\Models\Produk;
+use App\Models\Rating;
 use Illuminate\Http\Request;
 
 class PelangganProdukController extends Controller
@@ -31,9 +33,18 @@ class PelangganProdukController extends Controller
             ->pluck('id_produk')
             ->toArray();
 
-        $produks->each(function ($produk) use ($favoritCounts, $beliCounts) {
+        $ratingSummaries = Rating::where('tipe', Rating::TIPE_PRODUK)
+            ->where('status', 'aktif')
+            ->selectRaw('id_target, AVG(bintang) as rata, COUNT(*) as jumlah')
+            ->groupBy('id_target')
+            ->get()
+            ->keyBy('id_target');
+
+        $produks->each(function ($produk) use ($favoritCounts, $beliCounts, $ratingSummaries) {
             $produk->favorit_count = (int) ($favoritCounts[$produk->id_produk] ?? 0);
             $produk->beli_count = (int) ($beliCounts[$produk->id_produk] ?? 0);
+            $produk->rating_rata = round((float) ($ratingSummaries[$produk->id_produk]->rata ?? 0), 1);
+            $produk->rating_jumlah = (int) ($ratingSummaries[$produk->id_produk]->jumlah ?? 0);
         });
 
         return view('pelanggan.produk.index', compact('produks', 'favoritProdukIds'));
@@ -63,6 +74,27 @@ class PelangganProdukController extends Controller
             ->limit(4)
             ->get();
 
-        return view('pelanggan.produk.detail', compact('produk', 'favoritCount', 'isFavorit', 'beliCount', 'produkLainnya'));
+        $ringkasan = Rating::ringkasan(Rating::TIPE_PRODUK, $produk->id_produk);
+        $ulasans = Rating::terbaru(Rating::TIPE_PRODUK, $produk->id_produk, 20);
+
+        $bisaRating = false;
+        $ratingSaya = null;
+        $pelanggan = Pelanggan::dariUser(auth()->user());
+        if ($pelanggan) {
+            $bisaRating = Rating::bisaRatingProduk($pelanggan->id_pelanggan, $produk->id_produk);
+        }
+        $ratingSaya = Rating::ratingSaya(auth()->id(), Rating::TIPE_PRODUK, $produk->id_produk);
+
+        return view('pelanggan.produk.detail', compact(
+            'produk',
+            'favoritCount',
+            'isFavorit',
+            'beliCount',
+            'produkLainnya',
+            'ringkasan',
+            'ulasans',
+            'bisaRating',
+            'ratingSaya'
+        ));
     }
 }

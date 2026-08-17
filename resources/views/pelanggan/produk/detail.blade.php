@@ -740,6 +740,256 @@
         .page-header-premium .ph-text h3 { font-size: 17px; }
         .page-header-premium .ph-icon-wrap { width: 44px; height: 44px; border-radius: 13px; font-size: 18px; }
     }
+
+    .pd-ulasan {
+        margin-top: 32px;
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        padding: 26px;
+    }
+
+    .pd-ulasan .pd-section-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .pd-ulasan-summary {
+        margin-left: auto;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--gray);
+        background: #FFF5F8;
+        border-radius: 100px;
+        padding: 6px 14px;
+    }
+
+    .pd-ulasan-grid {
+        display: grid;
+        grid-template-columns: 260px 1fr;
+        gap: 24px;
+        margin-top: 18px;
+    }
+
+    .pd-score-box {
+        background: #FFF9FB;
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 20px;
+        text-align: center;
+        align-self: start;
+    }
+
+    .pdsb-score {
+        font-size: 42px;
+        font-weight: 700;
+        color: var(--dark);
+        line-height: 1.1;
+    }
+
+    .pdsb-stars {
+        color: #F59E0B;
+        font-size: 16px;
+        letter-spacing: 2px;
+        margin: 8px 0 4px;
+    }
+
+    .pdsb-count {
+        font-size: 12px;
+        color: var(--gray);
+    }
+
+    .pdsb-dist {
+        display: grid;
+        grid-template-columns: 34px 1fr 28px;
+        gap: 10px;
+        align-items: center;
+        font-size: 12px;
+        color: var(--gray);
+        margin-bottom: 8px;
+    }
+
+    .pdsb-bar {
+        height: 8px;
+        background: #F3D9E4;
+        border-radius: 100px;
+        overflow: hidden;
+    }
+
+    .pdsb-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #FF4F87, #FF7BA6);
+        border-radius: 100px;
+    }
+
+    .pd-ulasan-list {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        max-height: 520px;
+        overflow-y: auto;
+        padding-right: 4px;
+    }
+
+    .pd-ulasan-list::-webkit-scrollbar { width: 5px; }
+    .pd-ulasan-list::-webkit-scrollbar-thumb { background: #E5E7EB; border-radius: 10px; }
+
+    .pdu-card {
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 16px 18px;
+        background: #FFF;
+    }
+
+    .pdu-head {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 10px;
+    }
+
+    .pdu-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+        background: #f3f4f6;
+    }
+
+    .pdu-name {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--dark);
+    }
+
+    .pdu-verified {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        background: rgba(16, 185, 129, .1);
+        color: #059669;
+        font-size: 10px;
+        font-weight: 600;
+        padding: 2px 8px;
+        border-radius: 100px;
+        margin-left: 6px;
+    }
+
+    .pdu-date {
+        font-size: 11px;
+        color: var(--gray);
+        margin-top: 2px;
+    }
+
+    .pdu-stars {
+        color: #F59E0B;
+        font-size: 13px;
+        letter-spacing: 1px;
+        margin-bottom: 8px;
+    }
+
+    .pdu-text {
+        font-size: 13px;
+        color: var(--gray);
+        line-height: 1.7;
+        margin: 0;
+    }
+
+    .pdu-empty {
+        text-align: center;
+        color: var(--gray);
+        font-size: 13px;
+        padding: 24px;
+        border: 1px dashed var(--border);
+        border-radius: 14px;
+    }
+
+    .pd-rating-form {
+        margin-top: 22px;
+    }
+
+    .prf-box {
+        background: #FFF9FB;
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 20px;
+    }
+
+    .prf-label {
+        display: block;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--dark);
+        margin-bottom: 8px;
+    }
+
+    .prf-stars {
+        display: flex;
+        gap: 6px;
+        margin-bottom: 16px;
+    }
+
+    .prf-stars button {
+        background: none;
+        border: none;
+        font-size: 28px;
+        color: #E5E7EB;
+        cursor: pointer;
+        padding: 0;
+        line-height: 1;
+        transition: color .15s ease, transform .15s ease;
+    }
+
+    .prf-stars button:hover,
+    .prf-stars button.active {
+        color: #F59E0B;
+        transform: scale(1.1);
+    }
+
+    .prf-box textarea {
+        width: 100%;
+        border: 1.5px solid var(--border);
+        border-radius: 12px;
+        padding: 12px 14px;
+        font-size: 13px;
+        font-family: inherit;
+        resize: vertical;
+        min-height: 90px;
+        transition: border-color .15s ease;
+    }
+
+    .prf-box textarea:focus {
+        outline: none;
+        border-color: var(--primary);
+    }
+
+    .prf-submit {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--primary);
+        color: #FFF;
+        border: none;
+        border-radius: 12px;
+        padding: 11px 22px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 14px;
+        transition: all .2s ease;
+    }
+
+    .prf-submit:hover {
+        background: var(--secondary);
+        transform: translateY(-2px);
+    }
+
+    @media (max-width: 768px) {
+        .pd-ulasan-grid { grid-template-columns: 1fr; }
+        .pd-ulasan-summary { margin-left: 0; }
+    }
     </style>
 </head>
 
@@ -808,6 +1058,11 @@
                             <span class="pd-stat">
                                 <i class="fa-solid fa-heart"></i> {{ $favoritCount }} Favorit
                             </span>
+                            @if ($ringkasan['jumlah'] > 0)
+                            <span class="pd-stat pd-stat-rating" title="{{ $ringkasan['jumlah'] }} ulasan">
+                                <i class="fa-solid fa-star" style="color:#F59E0B;"></i> {{ number_format($ringkasan['rata'], 1, ',', '.') }} ({{ $ringkasan['jumlah'] }})
+                            </span>
+                            @endif
                         </div>
 
                         <div class="pd-price-wrap">
@@ -928,6 +1183,116 @@
                     </div>
                 </div>
                 @endif
+
+                <div class="pd-ulasan" id="ulasan">
+                    <div class="pd-section-title">
+                        <i class="fa-solid fa-star"></i> Ulasan Pelanggan
+                        @if ($ringkasan['jumlah'] > 0)
+                        <span class="pd-ulasan-summary">
+                            {{ number_format($ringkasan['rata'], 1, ',', '.') }} <i class="fa-solid fa-star" style="color:#F59E0B;"></i> · {{ $ringkasan['jumlah'] }} ulasan
+                        </span>
+                        @endif
+                    </div>
+
+                    @if ($ringkasan['jumlah'] > 0)
+                    <div class="pd-ulasan-grid">
+                        <div class="pd-score-box">
+                            <div class="pdsb-score">{{ number_format($ringkasan['rata'], 1, ',', '.') }}</div>
+                            <div class="pdsb-stars">{{ str_repeat('★', (int) round($ringkasan['rata'])) }}{{ str_repeat('☆', 5 - (int) round($ringkasan['rata'])) }}</div>
+                            <div class="pdsb-count">{{ $ringkasan['jumlah'] }} ulasan</div>
+                            <div style="margin-top:16px;text-align:left;">
+                                @foreach ($ringkasan['distribusi'] as $bintang => $total)
+                                @php $persen = $ringkasan['jumlah'] > 0 ? round($total / $ringkasan['jumlah'] * 100) : 0; @endphp
+                                <div class="pdsb-dist">
+                                    <span>{{ $bintang }} <i class="fa-solid fa-star" style="color:#F59E0B;font-size:10px;"></i></span>
+                                    <div class="pdsb-bar"><div class="pdsb-fill" style="width:{{ $persen }}%"></div></div>
+                                    <span>{{ $total }}</span>
+                                </div>
+                                @endforeach
+                            </div>
+                        </div>
+
+                        <div class="pd-ulasan-list">
+                            @forelse($ulasans as $ulasan)
+                            <div class="pdu-card">
+                                <div class="pdu-head">
+                                    <img class="pdu-avatar" src="{{ $ulasan->foto_pemberi }}" alt="{{ $ulasan->nama_pemberi }}" loading="lazy">
+                                    <div>
+                                        <div>
+                                            <span class="pdu-name">{{ $ulasan->nama_pemberi }}</span>
+                                            <span class="pdu-verified"><i class="fa-solid fa-circle-check"></i> Pelanggan Terverifikasi</span>
+                                        </div>
+                                        <div class="pdu-date">{{ \Carbon\Carbon::parse($ulasan->created_at)->isoFormat('D MMM YYYY') }}</div>
+                                    </div>
+                                </div>
+                                <div class="pdu-stars">{{ str_repeat('★', $ulasan->bintang) }}{{ str_repeat('☆', 5 - $ulasan->bintang) }}</div>
+                                @if ($ulasan->komentar)
+                                <p class="pdu-text">"{{ $ulasan->komentar }}"</p>
+                                @endif
+                            </div>
+                            @empty
+                            <div class="pdu-empty">Belum ada ulasan.</div>
+                            @endforelse
+                        </div>
+                    </div>
+                    @else
+                    <div class="pdu-empty" style="padding:32px;text-align:center;">
+                        <p style="margin-bottom:6px;"><i class="fa-solid fa-star" style="font-size:26px;color:#F59E0B;"></i></p>
+                        Belum ada ulasan untuk produk ini. Jadilah yang pertama memberi rating!
+                    </div>
+                    @endif
+
+                    <div class="pd-rating-form">
+                        @if ($ratingSaya)
+                        <div class="prf-box">
+                            <div class="pd-section-title" style="margin-bottom:12px;">
+                                <i class="fa-solid fa-pen"></i> Rating Anda
+                            </div>
+                            <div class="pdu-stars" style="font-size:18px;margin-bottom:10px;">{{ str_repeat('★', $ratingSaya->bintang) }}{{ str_repeat('☆', 5 - $ratingSaya->bintang) }}</div>
+                            <p class="pdu-text" style="margin-bottom:12px;">{{ $ratingSaya->komentar ? '"' . $ratingSaya->komentar . '"' : 'Tanpa komentar.' }}</p>
+                            <p style="font-size:13px;color:var(--gray);margin-bottom:12px;">
+                                Anda sudah memberi rating untuk produk ini. Perbarui melalui formulir di bawah, atau
+                                <a href="#" onclick="event.preventDefault(); if(confirm('Hapus rating Anda?')) document.getElementById('hapus-rating-form-produk').submit();" style="color:#DC2626;font-weight:600;">hapus rating</a>.
+                            </p>
+                            <form id="hapus-rating-form-produk" action="{{ route('rating.destroy', $ratingSaya->id) }}" method="POST" style="display:none;">
+                                @csrf
+                                @method('DELETE')
+                            </form>
+                        </div>
+                        @else
+                        <div class="prf-box">
+                            <div class="pd-section-title" style="margin-bottom:12px;">
+                                <i class="fa-solid fa-pen"></i> Beri Rating Anda
+                            </div>
+                            @if ($bisaRating)
+                            <form action="{{ route('rating.store') }}" method="POST">
+                                @csrf
+                                <input type="hidden" name="tipe" value="produk">
+                                <input type="hidden" name="id_target" value="{{ $produk->id_produk }}">
+
+                                <label class="prf-label">Pilih bintang Anda</label>
+                                <div class="prf-stars" id="prfStarInput">
+                                    @for ($i = 1; $i <= 5; $i++)
+                                    <button type="button" data-nilai="{{ $i }}" onclick="pilihBintangProduk(this)">★</button>
+                                    @endfor
+                                </div>
+                                <input type="hidden" name="bintang" id="prfBintangValue" value="5">
+
+                                <label class="prf-label">Komentar (opsional)</label>
+                                <textarea name="komentar" maxlength="500" placeholder="Ceritakan pengalaman Anda dengan produk ini..."></textarea>
+
+                                <button type="submit" class="prf-submit"><i class="fa-solid fa-paper-plane"></i> Kirim Rating</button>
+                            </form>
+                            @else
+                            <p style="font-size:13px;color:var(--gray);line-height:1.6;">
+                                <i class="fa-solid fa-circle-info" style="color:var(--primary);"></i>
+                                Anda baru dapat memberi rating setelah membeli produk ini.
+                            </p>
+                            @endif
+                        </div>
+                        @endif
+                    </div>
+                </div>
             </div>
         </main>
     </div>
@@ -1053,6 +1418,15 @@
     };
     const dateEl = document.getElementById('currentDate');
     if (dateEl) dateEl.textContent = now.toLocaleDateString('id-ID', options);
+
+    function pilihBintangProduk(btn) {
+        var nilai = parseInt(btn.dataset.nilai);
+        document.getElementById('prfBintangValue').value = nilai;
+        var buttons = document.querySelectorAll('#prfStarInput button');
+        buttons.forEach(function(b) {
+            b.classList.toggle('active', parseInt(b.dataset.nilai) <= nilai);
+        });
+    }
     </script>
 
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>

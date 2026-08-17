@@ -467,6 +467,15 @@
                     <div class="overlay">
                         <h3>{{ $kategori->nm_layanan }}</h3>
                         <p>{{ $kategori->deskripsi ?? 'Manajemen ' . $kategori->nm_layanan . ' lengkap dan terintegrasi' }}</p>
+                        @if ($kategori->layanan->isNotEmpty())
+                            <div class="overlay-links">
+                                @foreach ($kategori->layanan->take(3) as $subLayanan)
+                                    <a href="{{ route('layanan.detail', $subLayanan->id_layanan) }}" class="overlay-link">
+                                        {{ $subLayanan->nm_layanan }}
+                                    </a>
+                                @endforeach
+                            </div>
+                        @endif
                     </div>
                 </div>
                 @empty
@@ -483,84 +492,46 @@
         <div class="container">
             <div class="section-header animate-on-scroll">
                 <h2>Apa Kata <span>Mereka</span></h2>
-                <p>Dengarkan pengalaman para pelaku bisnis kecantikan yang telah menggunakan BeautyCare.</p>
+                <p>Dengarkan pengalaman nyata para pelanggan yang telah menggunakan layanan BeautyCare.</p>
             </div>
-            <div class="testimoni-slider animate-on-scroll">
-                <div class="testimoni-track">
-                    <div class="testimoni-card">
-                        <div class="stars">★★★★★</div>
-                        <p class="comment">"BeautyCare benar-benar mengubah cara saya mengelola salon. Booking online, POS,
-                            dan laporan keuangan jadi sangat mudah. Recommended!"</p>
-                        <div class="author">
-                            <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=96&q=80"
-                                alt="Sarah" loading="lazy">
-                            <div>
-                                <h4>Sarah Wijaya</h4>
-                                <p>Pemilik Sarah Beauty Salon</p>
+
+            @if ($ringkasanRating['jumlah'] > 0)
+                <div class="testimoni-score animate-on-scroll">
+                    <span class="ts-stars">{{ str_repeat('★', (int) round($ringkasanRating['rata'])) }}{{ str_repeat('☆', 5 - (int) round($ringkasanRating['rata'])) }}</span>
+                    <span class="ts-num">{{ number_format($ringkasanRating['rata'], 1, ',', '.') }}/5</span>
+                    <span class="ts-total">Berdasarkan {{ $ringkasanRating['jumlah'] }} ulasan</span>
+                </div>
+
+                <div class="testimoni-slider animate-on-scroll">
+                    <div class="testimoni-track">
+                        @foreach ($ulasanTerbaru as $ulasan)
+                        <div class="testimoni-card">
+                            <div class="stars">{{ str_repeat('★', $ulasan->bintang) }}{{ str_repeat('☆', 5 - $ulasan->bintang) }}</div>
+                            @if ($ulasan->komentar)
+                                <p class="comment">"{{ $ulasan->komentar }}"</p>
+                            @else
+                                <p class="comment" style="font-style:italic;color:#9CA3AF;">Memberi rating {{ $ulasan->bintang }} bintang tanpa komentar.</p>
+                            @endif
+                            <div class="author">
+                                <img src="{{ $ulasan->foto_pemberi }}" alt="{{ $ulasan->nama_pemberi }}" loading="lazy">
+                                <div>
+                                    <h4>{{ $ulasan->nama_pemberi }} <span class="badge-verified"><i class="fa-solid fa-circle-check"></i> Terverifikasi</span></h4>
+                                    <p>{{ $ulasan->tipe_label }} — {{ $ulasan->nama_objek }} · {{ \Carbon\Carbon::parse($ulasan->created_at)->isoFormat('D MMM YYYY') }}</p>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="testimoni-card">
-                        <div class="stars">★★★★★</div>
-                        <p class="comment">"Fitur membership dan promo sangat membantu meningkatkan loyalitas pelanggan.
-                            Pendapatan naik 40% sejak pakai BeautyCare!"</p>
-                        <div class="author">
-                            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=96&q=80"
-                                alt="Rudi" loading="lazy">
-                            <div>
-                                <h4>Rudi Hartono</h4>
-                                <p>Owner Rudi Barbershop</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="testimoni-card">
-                        <div class="stars">★★★★★</div>
-                        <p class="comment">"Dashboard analytics-nya sangat lengkap. Saya bisa memantau semua cabang dalam
-                            satu layar. Luar biasa!"</p>
-                        <div class="author">
-                            <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=96&q=80"
-                                alt="Dian" loading="lazy">
-                            <div>
-                                <h4>Dian Permata</h4>
-                                <p>CEO Dian Beauty Group</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="testimoni-card">
-                        <div class="stars">★★★★★</div>
-                        <p class="comment">"Support tim BeautyCare sangat responsif. Setiap ada kendala langsung dibantu.
-                            Pelayanan prima!"</p>
-                        <div class="author">
-                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=96&q=80"
-                                alt="Andi" loading="lazy">
-                            <div>
-                                <h4>Andi Pratama</h4>
-                                <p>Manager Andi Nail Art</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="testimoni-card">
-                        <div class="stars">★★★★★</div>
-                        <p class="comment">"Aplikasi sangat intuitif dan mudah digunakan. Tim kami tidak butuh waktu lama
-                            untuk beradaptasi. Recommended banget!"</p>
-                        <div class="author">
-                            <img src="https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=96&q=80"
-                                alt="Maya" loading="lazy">
-                            <div>
-                                <h4>Maya Anggraini</h4>
-                                <p>Owner Glowing Skincare Clinic</p>
-                            </div>
-                        </div>
+                        @endforeach
                     </div>
                 </div>
-                <div class="slider-dots">
-                    <span class="dot active"></span>
-                    <span class="dot"></span>
-                    <span class="dot"></span>
-                    <span class="dot"></span>
-                    <span class="dot"></span>
+                <div class="testimoni-more animate-on-scroll">
+                    <a href="{{ route('rating.index') }}" class="btn btn-primary">Lihat Semua Ulasan</a>
                 </div>
-            </div>
+            @else
+                <div class="testimoni-empty animate-on-scroll">
+                    <p><i class="fa-solid fa-star" style="font-size:30px;color:#F59E0B;"></i></p>
+                    <p>Belum ada ulasan. Jadilah pelanggan pertama yang memberikan rating!</p>
+                </div>
+            @endif
         </div>
     </section>
 

@@ -18,4 +18,9 @@ class Layanan extends Model
         'foto',
         'status',
     ];
+
+    public function kategori()
+    {
+        return $this->belongsTo(KategoriLayanan::class, 'id_kategori', 'id_kategori_layanan');
+    }
 }

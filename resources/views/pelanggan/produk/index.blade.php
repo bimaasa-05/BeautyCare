@@ -466,7 +466,26 @@
         font-size: 11px;
         color: var(--gray);
         font-weight: 500;
+        margin-bottom: 4px;
+    }
+
+    .produk-card .pc-body .pc-rating {
+        font-size: 12px;
+        color: var(--gray);
+        font-weight: 500;
         margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .produk-card .pc-body .pc-rating i {
+        color: #F59E0B;
+    }
+
+    .produk-card .pc-body .pc-rating b {
+        color: var(--dark);
+        font-weight: 600;
     }
 
     .produk-card .pc-body .pc-divider {
@@ -760,6 +779,13 @@
                         <div class="pc-body">
                             <a href="{{ route('pelanggan.produk.detail', $produk->id_produk) }}" class="pc-name-link">{{ $produk->nm_produk }}</a>
                             <div class="pc-category">{{ $nmKategori }}</div>
+                            @if ($produk->rating_jumlah > 0)
+                            <div class="pc-rating">
+                                <i class="fa-solid fa-star"></i>
+                                <b>{{ number_format($produk->rating_rata, 1, ',', '.') }}</b>
+                                <span>({{ $produk->rating_jumlah }})</span>
+                            </div>
+                            @endif
                             <div class="pc-divider"></div>
                             <div class="pc-footer">
                                 <div class="pc-price">Rp {{ number_format($produk->harga_jual, 0, ',', '.') }} <span>/{{ $produk->satuan }}</span></div>

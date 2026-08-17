@@ -405,14 +405,6 @@
                 </div>
                 <h2>Selamat Datang Kembali</h2>
                 <p>Kelola bisnis kecantikan Anda dengan lebih mudah menggunakan BeautyCare. Masuk untuk melanjutkan.</p>
-                <div class="illustration">
-                    <svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="100" cy="100" r="80" stroke="white" stroke-width="2" opacity="0.3"/>
-                        <circle cx="100" cy="100" r="50" stroke="white" stroke-width="2" opacity="0.3"/>
-                        <path d="M100 40V100L140 140" stroke="white" stroke-width="3" stroke-linecap="round" opacity="0.6"/>
-                        <circle cx="100" cy="100" r="8" fill="white" opacity="0.8"/>
-                    </svg>
-                </div>
             </div>
         </div>
 
