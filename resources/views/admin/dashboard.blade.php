@@ -213,7 +213,7 @@
             margin-left: 12px;
         }
 
-        /* ─── Period Dropdown (custom popup, mengikuti pola dashboard pelanggan) ─── */
+        /* â”€â”€â”€ Period Dropdown (custom popup, mengikuti pola dashboard pelanggan) â”€â”€â”€ */
         .period-trigger {
             display: inline-flex;
             align-items: center;
@@ -960,125 +960,6 @@
     Chart.defaults.color = '#9CA3AF';
     Chart.defaults.font.size = 11;
 
-    const chartDataByPeriod = @json($chartDataPeriode);
-    const donutDataByPeriod = @json($donutDataPeriode);
-    let currentPeriodPendapatan = '{{ $periode }}';
-    let currentPeriodBooking = '{{ $periodeBooking ?? $periode }}';
-
-    const donutColors = ['#EC4899','#8B5CF6','#F59E0B','#10B981','#3B82F6','#EF4444','#14B8A6','#F97316','#6366F1','#84CC16'];
-
-    let pendapatanChart = null;
-    let bookingDonutChart = null;
-
-    function getPeriodLabel(periode) {
-        return periode === '7hari' ? '7 Hari' : (periode === '1bulan' ? '1 Bulan' : '1 Tahun');
-    }
-
-    function updatePendapatanLabel(periode) {
-        const label = getPeriodLabel(periode);
-        const pendLabel = document.getElementById('labelPendapatanPeriode');
-        if (pendLabel) pendLabel.textContent = ' · ' + label;
-    }
-
-    function updateBookingLabel(periode) {
-        const label = getPeriodLabel(periode);
-        const bookLabel = document.getElementById('labelBookingPeriode');
-        if (bookLabel) bookLabel.textContent = ' · ' + label;
-    }
-
-    function initPendapatanChart(labels, revenue) {
-        const ctx = document.getElementById('chartPendapatan').getContext('2d');
-        const maxRev = revenue.length > 0 ? Math.max(...revenue) : 0;
-        const emptyMsg = document.getElementById('pendapatanEmptyMsg');
-        const canvas = document.getElementById('chartPendapatan');
-        const isEmpty = labels.length === 0 || revenue.every(v => Number(v) === 0);
-
-        if (pendapatanChart) pendapatanChart.destroy();
-
-        if (isEmpty) {
-            if (canvas) canvas.style.display = 'none';
-            if (emptyMsg) emptyMsg.style.display = 'flex';
-            pendapatanChart = null;
-            return;
-    <script>
-        const dateEl = document.getElementById('currentDate');
-        if (dateEl) {
-            const now = new Date();
-            dateEl.textContent = now.toLocaleDateString('id-ID', {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-            });
-        }
-    </script>
-
-    <script>
-        Chart.defaults.font.family = "'Poppins', sans-serif";
-        Chart.defaults.color = '#9CA3AF';
-        Chart.defaults.font.size = 11;
-
-        pendapatanChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Pendapatan',
-                    data: revenue,
-                    borderColor: '#EC4899',
-                    backgroundColor: 'rgba(236, 72, 153, 0.08)',
-                    borderWidth: 2,
-                    tension: 0.4,
-                    fill: true,
-                    pointBackgroundColor: '#fff',
-                    pointBorderColor: '#EC4899',
-                    pointBorderWidth: 2,
-                    pointRadius: 3,
-                    pointHoverRadius: 5
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                        backgroundColor: '#fff',
-                        titleColor: '#1F2937',
-                        bodyColor: '#4B5563',
-                        borderColor: '#FCE7F3',
-                        borderWidth: 1,
-                        padding: 10,
-                        cornerRadius: 8,
-                        callbacks: {
-                            label: function(context) {
-                                var val = context.parsed.y;
-                                if (val >= 1000000) return 'Rp ' + (val / 1000000).toFixed(1) + ' jt';
-                                return 'Rp ' + val.toLocaleString('id-ID');
-                            }
-                        }
-                    }
-                },
-                scales: {
-                    x: {
-                        grid: { display: false, drawBorder: false },
-                        ticks: { maxTicksLimit: Math.min(labels.length, 10) }
-                    },
-                    y: {
-                        border: { display: false },
-                        grid: { color: '#F3E8F5', borderDash: [3, 3] },
-                        ticks: {
-                            maxTicksLimit: 6,
-                            callback: function(value) {
-                                if (maxRev > 1000000) return 'Rp' + (value / 1000000).toFixed(1) + 'jt';
-                                return 'Rp' + value.toLocaleString('id-ID');
-                            }
-                        }
-                    }
-                }
-            }
-        });
-    }
         const donutColors = ['#EC4899', '#8B5CF6', '#F59E0B', '#10B981', '#3B82F6', '#EF4444', '#14B8A6', '#F97316', '#6366F1', '#84CC16'];
 
         const chartDataByPeriod = @json($chartDataPeriode ?? []);
@@ -1506,8 +1387,5 @@
     </script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
 </body>
-<<<<<<< HEAD
-=======
 
->>>>>>> dcdf78362ebd328f023e1444d304aa589d9d2db6
 </html>
