@@ -4,6 +4,8 @@
 
 @section('meta_description', 'Kumpulan rating dan ulasan pelanggan BeautyCare untuk layanan dan produk.')
 
+@section('hide_footer', '1')
+
 @push('styles')
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{{ asset('assets/css/landing.css') }}">
