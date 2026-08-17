@@ -325,13 +325,7 @@
         const dateEl = document.getElementById('currentDate');
         if (dateEl) dateEl.textContent = now.toLocaleDateString('id-ID', options);
     </script>
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-    <script src="{{ asset('assets/js/dashboard.js') }}"></script>
-=======
->>>>>>> dcdf78362ebd328f023e1444d304aa589d9d2db6
-    @include('partials.password-strength')
+@include('partials.password-strength')
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
     <script>
         function togglePassword(icon) {
@@ -344,10 +338,6 @@
 
         initPasswordStrength(document.getElementById('password'), 'pwMeterEditUser');
     </script>
-<<<<<<< HEAD
-=======
->>>>>>> 95cd829c54ea57ff9f5542d1e44de2e90e928235
->>>>>>> dcdf78362ebd328f023e1444d304aa589d9d2db6
 </body>
 
 </html>
