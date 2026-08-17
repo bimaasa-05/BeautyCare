@@ -213,6 +213,59 @@
                         </div>
                         @endif
 
+                        @if($laporan->statusLog->count() > 0)
+                        <div class="timeline-section" style="margin-top:24px; padding-top:24px; border-top:1px solid var(--border);">
+                            <h4 style="font-size:14px; font-weight:700; color:var(--dark); margin-bottom:16px; display:flex; align-items:center; gap:8px;">
+                                <i class="fa-solid fa-history text-pink-400"></i> Riwayat Status
+                            </h4>
+                            <div class="timeline" style="position:relative;">
+                                @foreach($laporan->statusLog as $log)
+                                <div class="timeline-item" style="position:relative; padding-left:32px; margin-bottom:20px;">
+                                    <div class="timeline-dot" style="position:absolute; left:0; top:4px; width:12px; height:12px; border-radius:50%; border:3px solid #fff;
+                                        @if($log->status === 'baru') background:#D97706; @elseif($log->status === 'diproses') background:#2563EB; @else background:#22C55E; @endif
+                                        box-shadow:0 0 0 2px @if($log->status === 'baru') #FEF3C7 @elseif($log->status === 'diproses') #DBEAFE @else #E8F8EE @endif;">
+                                    </div>
+                                    <div class="timeline-line" style="position:absolute; left:5px; top:16px; bottom:0; width:2px; background:var(--border);"></div>
+                                    <div class="timeline-content" style="background:#F8FAFC; border-radius:12px; padding:14px 16px;">
+                                        <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:8px;">
+                                            <span class="badge-status badge-{{ $log->status }}">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-current"></span>
+                                                {{ ucfirst($log->status) }}
+                                            </span>
+                                            <span style="font-size:11px; color:var(--gray);">
+                                                {{ $log->created_at ? $log->created_at->format('d M Y H:i') : '' }}
+                                                ({{ $log->created_at ? $log->created_at->diffForHumans() : '' }})
+                                            </span>
+                                        </div>
+                                        <div style="font-size:13px; color:#475569; line-height:1.7; white-space:pre-line; display:flex; align-items:center; gap:8px;">
+                                            <i class="fa-solid fa-user-tie text-pink-400 text-[12px]"></i>
+                                            <strong>{{ $log->admin->nama ?? 'Sistem' }}</strong>
+                                            @if($log->catatan)
+                                            <div style="margin-top:8px; padding:8px 12px; background:#fff; border-radius:8px; border:1px solid var(--border); font-size:12px; color:#4B5563;">
+                                                {{ $log->catatan }}
+                                            </div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                                @endforeach
+                            </div>
+                        </div>
+                        @endif
+
+                        @if($laporan->status === 'selesai')
+                        <div class="form-status" style="margin-top:24px; padding-top:24px; border-top:1px solid var(--border);">
+                            <div style="background:#F0FDF4; border:1px solid #BBF7D0; border-radius:12px; padding:16px 20px; display:flex; align-items:center; gap:12px;">
+                                <div style="width:44px; height:44px; border-radius:50%; background:#22C55E; color:#fff; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                                    <i class="fa-solid fa-lock"></i>
+                                </div>
+                                <div>
+                                    <div style="font-size:14px; font-weight:700; color:#15803D;">Laporan Ditutup</div>
+                                    <div style="font-size:12px; color:#475569; margin-top:2px;">Status ini sudah final dan tidak dapat diubah lagi.</div>
+                                </div>
+                            </div>
+                        </div>
+                        @else
                         <form action="{{ route('admin.laporan-masalah.update-status', $laporan->id_laporan) }}" method="POST" class="form-status">
                             @csrf
                             <div class="fs-grid">
@@ -241,6 +294,7 @@
                                 </button>
                             </div>
                         </form>
+                        @endif
                     </div>
                 </div>
             </div>

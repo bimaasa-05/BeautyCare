@@ -28,6 +28,11 @@ class LaporanMasalah extends Model
         return $this->belongsTo(User::class, 'id_user');
     }
 
+    public function statusLog()
+    {
+        return $this->hasMany(LaporanMasalahStatusLog::class, 'id_laporan')->orderBy('created_at');
+    }
+
     public function scopeBaru($query)
     {
         return $query->where('status', 'baru');
