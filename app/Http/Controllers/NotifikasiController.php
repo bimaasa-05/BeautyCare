@@ -78,6 +78,12 @@ class NotifikasiController extends Controller
                 'beautycian' => 'beautycian.dashboard',
                 'pelanggan' => 'dashboard',
             ],
+            'Laporan' => [
+                'admin' => 'admin.laporan-masalah.index',
+                'kasir' => 'kasir.laporan-masalah.index',
+                'beautycian' => 'beautycian.laporan-masalah.index',
+                'pelanggan' => 'pelanggan.laporan-masalah.index',
+            ],
         ];
 
         if (!isset($map[$type][$role])) {
@@ -107,7 +113,11 @@ class NotifikasiController extends Controller
                     ->where('created_at', '>', $since)
                     ->where(function ($q) {
                         $q->whereNull('aktor_id')
-                            ->orWhereHas('aktor', fn ($a) => $a->where('role', 'pelanggan'));
+                            ->orWhereHas('aktor', fn ($a) => $a->where('role', 'pelanggan'))
+                            ->orWhere(function ($q2) {
+                                $q2->where('type', 'Laporan')
+                                    ->whereHas('aktor', fn ($a) => $a->whereIn('role', ['kasir', 'beautycian']));
+                            });
                     })
                     ->latest()
                     ->take(5)
@@ -130,6 +140,12 @@ class NotifikasiController extends Controller
                     ->get();
 
                 foreach ($aktivitas as $a) {
+                    // Laporan masalah muncul lewat popup Notifikasi (tipe Laporan),
+                    // lewati riwayatnya agar tidak muncul 2 popup untuk 1 laporan
+                    if ($a->tipe === 'Laporan') {
+                        continue;
+                    }
+
                     // Aksi pelanggan yang sama sudah muncul lewat popup Notifikasi,
                     // lewati riwayat duplikat dalam rentang 30 detik (hindari 2 popup utk 1 perubahan)
                     if ($a->role === 'pelanggan' && $a->created_at && $waktuNotifPelanggan) {
