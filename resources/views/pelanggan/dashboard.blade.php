@@ -1003,7 +1003,7 @@
                                     <td>{{ \Carbon\Carbon::parse($rating->created_at)->isoFormat('D MMM YYYY') }}</td>
                                     <td>
                                         <div style="display:flex;gap:6px;align-items:center;">
-                                            <a href="{{ $rating->tipe === 'layanan' ? route('layanan.detail', $rating->id_target) . '#beri-rating' : route('pelanggan.produk.detail', $rating->id_target) . '#ulasan' }}"
+                                            <a href="{{ $rating->tipe === 'layanan' ? ($rating->booking_id ? route('pelanggan.rating.layanan', $rating->booking_id) : route('layanan.detail', $rating->id_target)) : route('pelanggan.produk.detail', $rating->id_target) . '#ulasan' }}"
                                                 class="dash-rate-btn" title="Edit ulasan">
                                                 <i class="fa-solid fa-pen"></i> Edit
                                             </a>
@@ -1050,7 +1050,7 @@
                                     <td>{{ $layanan->nm_layanan }}</td>
                                     <td><span class="badge badge-primary">Layanan</span></td>
                                     <td>
-                                        <a href="{{ route('layanan.detail', $layanan->id_layanan) }}#beri-rating" class="dash-rate-btn primary">
+                                        <a href="{{ $layanan->booking_id ? route('pelanggan.rating.layanan', $layanan->booking_id) : route('layanan.detail', $layanan->id_layanan) }}" class="dash-rate-btn primary">
                                             <i class="fa-solid fa-star"></i> Beri Rating
                                         </a>
                                     </td>
