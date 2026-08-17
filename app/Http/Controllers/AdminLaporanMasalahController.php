@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Helpers\ActivityLogger;
 use App\Models\LaporanMasalah;
+use App\Models\LaporanMasalahStatusLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -48,7 +49,7 @@ class AdminLaporanMasalahController extends Controller
 
     public function show($id)
     {
-        $laporan = LaporanMasalah::with('user')->findOrFail($id);
+        $laporan = LaporanMasalah::with(['user', 'statusLog.admin'])->findOrFail($id);
 
         return view('admin.laporan-masalah.show', compact('laporan'));
     }
@@ -62,10 +63,24 @@ class AdminLaporanMasalahController extends Controller
             'catatan_admin' => 'nullable|string|max:2000',
         ]);
 
+        // Store original values for comparison
+        $originalStatus = $laporan->status;
+        $originalCatatan = $laporan->catatan_admin;
+
         $laporan->update([
             'status' => $validated['status'],
             'catatan_admin' => $validated['catatan_admin'] ?? $laporan->catatan_admin,
         ]);
+
+        // Create status log entry if status changed or catatan added/updated
+        if ($validated['status'] !== $originalStatus || $validated['catatan_admin'] !== $originalCatatan) {
+            LaporanMasalahStatusLog::create([
+                'id_laporan' => $laporan->id_laporan,
+                'status' => $validated['status'],
+                'catatan' => $validated['catatan_admin'],
+                'id_admin' => auth()->id(),
+            ]);
+        }
 
         $label = [
             'baru' => 'Diterima',
@@ -87,6 +102,12 @@ class AdminLaporanMasalahController extends Controller
         buatNotif($laporan->id_user, 'Laporan Masalah ' . $label, $isi, 'Laporan', route($profil));
 
         ActivityLogger::log('Mengubah Status', auth()->user()->nama . ' mengubah status laporan masalah #' . $laporan->id_laporan . ' menjadi ' . $label . ' (' . $laporan->kategori . ')', 'Laporan', $laporan->id_laporan);
+
+        // If status is diproses or selesai, stay on detail page
+        if (in_array($validated['status'], ['diproses', 'selesai'])) {
+            return redirect()->route('admin.laporan-masalah.show', $laporan->id_laporan)
+                ->with('message', 'Status laporan #' . $laporan->id_laporan . ' diperbarui menjadi ' . $label . '.');
+        }
 
         return redirect()->route('admin.laporan-masalah.index')
             ->with('message', 'Status laporan #' . $laporan->id_laporan . ' diperbarui menjadi ' . $label . '.');

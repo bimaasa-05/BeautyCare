@@ -293,6 +293,32 @@
                         </div>
                         @endif
 
+                        @if($item->statusLog->count() > 0)
+                        <div class="li-timeline" style="margin-top:16px; border-top:1px solid var(--border); padding-top:12px;">
+                            <div style="font-size:11px; font-weight:700; color:var(--gray); text-transform:uppercase; letter-spacing:.4px; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+                                <i class="fa-solid fa-history text-pink-400"></i> Riwayat
+                            </div>
+                            @foreach($item->statusLog as $log)
+                            <div class="timeline-mini" style="position:relative; padding-left:24px; margin-bottom:8px;">
+                                <div style="position:absolute; left:0; top:3px; width:8px; height:8px; border-radius:50%; border:2px solid #fff;
+                                    @if($log->status === 'baru') background:#D97706; @elseif($log->status === 'diproses') background:#2563EB; @else background:#22C55E; @endif
+                                    box-shadow:0 0 0 2px @if($log->status === 'baru') #FEF3C7 @elseif($log->status === 'diproses') #DBEAFE @else #E8F8EE @endif;"></div>
+                                <div style="font-size:12px; color:#4B5563; line-height:1.6;">
+                                    <span class="badge-status badge-{{ $log->status }}" style="font-size:10px; padding:2px 8px;">
+                                        {{ ucfirst($log->status) }}
+                                    </span>
+                                    <span style="margin-left:6px; color:var(--gray);">{{ $log->created_at ? $log->created_at->format('d M H:i') : '' }}</span>
+                                    @if($log->catatan)
+                                    <div style="margin-top:4px; padding:6px 10px; background:#F8FAFC; border-radius:8px; font-size:11px; color:#475569; border:1px solid var(--border);">
+                                        {{ $log->catatan }}
+                                    </div>
+                                    @endif
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+                        @endif
+
                         <div class="li-waktu">
                             <i class="fa-regular fa-clock mr-1"></i>
                             Dilaporkan {{ $item->created_at ? $item->created_at->diffForHumans() : '' }}

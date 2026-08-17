@@ -13,7 +13,7 @@ class LaporanMasalahController extends Controller
     public function index()
     {
         $role = auth()->user()->role;
-        $laporan = LaporanMasalah::with('user')
+        $laporan = LaporanMasalah::with(['user', 'statusLog'])
             ->where('id_user', Auth::id())
             ->orderByDesc('id_laporan')
             ->get();
