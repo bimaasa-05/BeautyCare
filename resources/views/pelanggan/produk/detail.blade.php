@@ -1220,11 +1220,33 @@
                                 <i class="fa-solid fa-pen"></i> Rating Anda
                             </div>
                             <div class="pdu-stars" style="font-size:18px;margin-bottom:10px;">{{ str_repeat('★', $ratingSaya->bintang) }}{{ str_repeat('☆', 5 - $ratingSaya->bintang) }}</div>
-                            <p class="pdu-text" style="margin-bottom:12px;">{{ $ratingSaya->komentar ? '"' . $ratingSaya->komentar . '"' : 'Tanpa komentar.' }}</p>
-                            <p style="font-size:13px;color:var(--gray);margin-bottom:12px;">
-                                Anda sudah memberi rating untuk produk ini. Perbarui melalui formulir di bawah, atau
-                                <a href="#" onclick="event.preventDefault(); if(confirm('Hapus rating Anda?')) document.getElementById('hapus-rating-form-produk').submit();" style="color:#DC2626;font-weight:600;">hapus rating</a>.
-                            </p>
+                            <p class="pdu-text" style="margin-bottom:14px;">{{ $ratingSaya->komentar ? '"' . $ratingSaya->komentar . '"' : 'Tanpa komentar.' }}</p>
+                            <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+                                <button type="button" class="rate-edit-btn" onclick="tampilFormEditProduk()">
+                                    <i class="fa-solid fa-pen-to-square"></i> Edit Rating
+                                </button>
+                                <button type="button" class="rate-del-btn" onclick="if(confirm('Hapus rating Anda?')) document.getElementById('hapus-rating-form-produk').submit();">
+                                    <i class="fa-solid fa-trash-can"></i> Hapus
+                                </button>
+                            </div>
+                            <form id="form-edit-produk" action="{{ route('rating.store') }}" method="POST" class="rate-edit-form" style="display:none;">
+                                @csrf
+                                <input type="hidden" name="tipe" value="produk">
+                                <input type="hidden" name="id_target" value="{{ $produk->id_produk }}">
+
+                                <label class="prf-label">Pilih bintang Anda</label>
+                                <div class="prf-stars" id="prfStarEditInput">
+                                    @for ($i = 1; $i <= 5; $i++)
+                                    <button type="button" data-nilai="{{ $i }}" class="{{ $i <= $ratingSaya->bintang ? 'active' : '' }}" onclick="pilihBintangProduk(this, 'prfStarEditInput', 'prfBintangEditValue')">★</button>
+                                    @endfor
+                                </div>
+                                <input type="hidden" name="bintang" id="prfBintangEditValue" value="{{ $ratingSaya->bintang }}">
+
+                                <label class="prf-label">Komentar (opsional)</label>
+                                <textarea name="komentar" maxlength="500" placeholder="Ceritakan pengalaman Anda dengan produk ini...">{{ $ratingSaya->komentar }}</textarea>
+
+                                <button type="submit" class="prf-submit"><i class="fa-solid fa-floppy-disk"></i> Simpan Perubahan</button>
+                            </form>
                             <form id="hapus-rating-form-produk" action="{{ route('rating.destroy', $ratingSaya->id) }}" method="POST" style="display:none;">
                                 @csrf
                                 @method('DELETE')
@@ -1390,13 +1412,20 @@
     const dateEl = document.getElementById('currentDate');
     if (dateEl) dateEl.textContent = now.toLocaleDateString('id-ID', options);
 
-    function pilihBintangProduk(btn) {
+    function pilihBintangProduk(btn, starId, bintangId) {
         var nilai = parseInt(btn.dataset.nilai);
-        document.getElementById('prfBintangValue').value = nilai;
-        var buttons = document.querySelectorAll('#prfStarInput button');
+        document.getElementById(bintangId || 'prfBintangValue').value = nilai;
+        var container = document.getElementById(starId || 'prfStarInput');
+        if (!container) return;
+        var buttons = container.querySelectorAll('button');
         buttons.forEach(function(b) {
             b.classList.toggle('active', parseInt(b.dataset.nilai) <= nilai);
         });
+    }
+
+    function tampilFormEditProduk() {
+        var f = document.getElementById('form-edit-produk');
+        if (f) f.style.display = (f.style.display === 'none' || !f.style.display) ? 'block' : 'none';
     }
     </script>
 

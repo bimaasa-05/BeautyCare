@@ -661,3 +661,53 @@ select.form-input {
   transform: translateY(-1px);
   box-shadow: 0 6px 20px rgba(255, 79, 135, 0.3);
 }
+
+/* ─── Tombol Aksi Rating (Edit / Hapus) ─── */
+.rate-edit-btn,
+.rate-del-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 18px;
+  border-radius: 12px;
+  font-size: 12.5px;
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+  cursor: pointer;
+  text-decoration: none;
+  border: 1.5px solid transparent;
+  transition: all 0.2s ease;
+  line-height: 1.4;
+}
+
+.rate-edit-btn {
+  border-color: var(--primary);
+  background: #FFF5F8;
+  color: var(--primary);
+}
+
+.rate-edit-btn:hover {
+  background: linear-gradient(135deg, var(--primary), #FF7BA6);
+  color: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 79, 135, 0.25);
+}
+
+.rate-del-btn {
+  border-color: #FECACA;
+  background: #FEF2F2;
+  color: #DC2626;
+}
+
+.rate-del-btn:hover {
+  background: #DC2626;
+  color: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
+}
+
+.rate-edit-form {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px dashed var(--border);
+}

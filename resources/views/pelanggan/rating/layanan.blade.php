@@ -550,14 +550,35 @@
                             <div style="color:#F59E0B;font-size:18px;letter-spacing:1px;margin-bottom:10px;">
                                 {{ str_repeat('★', $ratingSaya[$idLayanan]->bintang) }}{{ str_repeat('☆', 5 - $ratingSaya[$idLayanan]->bintang) }}
                             </div>
-                            <p class="lr-note" style="margin-bottom:12px;">
+                            <p class="lr-note" style="margin-bottom:14px;">
                                 {{ $ratingSaya[$idLayanan]->komentar ? '"' . $ratingSaya[$idLayanan]->komentar . '"' : 'Tanpa komentar.' }}
                             </p>
-                            <p class="lr-note" style="margin-bottom:12px;">
-                                <i class="fa-solid fa-circle-info"></i> Anda sudah memberi rating untuk layanan ini.
-                                Perbarui melalui formulir di bawah, atau
-                                <a href="#" onclick="event.preventDefault(); if(confirm('Hapus rating Anda?')) document.getElementById('hapus-rating-form-{{ $idLayanan }}').submit();" style="color:#DC2626;font-weight:600;">hapus rating</a>.
-                            </p>
+                            <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+                                <button type="button" class="rate-edit-btn" onclick="tampilFormEditLayanan({{ $idLayanan }})">
+                                    <i class="fa-solid fa-pen-to-square"></i> Edit Rating
+                                </button>
+                                <button type="button" class="rate-del-btn" onclick="if(confirm('Hapus rating Anda?')) document.getElementById('hapus-rating-form-{{ $idLayanan }}').submit();">
+                                    <i class="fa-solid fa-trash-can"></i> Hapus
+                                </button>
+                            </div>
+                            <form id="form-edit-layanan-{{ $idLayanan }}" action="{{ route('rating.store') }}" method="POST" class="rate-edit-form" style="display:none;">
+                                @csrf
+                                <input type="hidden" name="tipe" value="layanan">
+                                <input type="hidden" name="id_target" value="{{ $idLayanan }}">
+
+                                <label class="lr-form-label">Pilih bintang Anda</label>
+                                <div class="lr-stars" id="starEditInput{{ $idLayanan }}">
+                                    @for ($i = 1; $i <= 5; $i++)
+                                    <button type="button" data-nilai="{{ $i }}" class="{{ $i <= $ratingSaya[$idLayanan]->bintang ? 'active' : '' }}" onclick="pilihBintangLayanan(this, {{ $idLayanan }})">★</button>
+                                    @endfor
+                                </div>
+                                <input type="hidden" name="bintang" id="bintangValueEdit{{ $idLayanan }}" value="{{ $ratingSaya[$idLayanan]->bintang }}">
+
+                                <label class="lr-form-label">Komentar (opsional)</label>
+                                <textarea name="komentar" maxlength="500" placeholder="Ceritakan pengalaman Anda dengan treatment ini...">{{ $ratingSaya[$idLayanan]->komentar }}</textarea>
+
+                                <button type="submit" class="lr-submit"><i class="fa-solid fa-floppy-disk"></i> Simpan Perubahan</button>
+                            </form>
                             <form id="hapus-rating-form-{{ $idLayanan }}" action="{{ route('rating.destroy', $ratingSaya[$idLayanan]->id) }}" method="POST" style="display:none;">
                                 @csrf
                                 @method('DELETE')
@@ -608,9 +629,9 @@
     <script>
     function pilihBintangLayanan(btn, idLayanan) {
         var nilai = parseInt(btn.getAttribute('data-nilai'));
-        var input = document.getElementById('bintangValue' + idLayanan);
+        var input = document.getElementById('bintangValue' + idLayanan) || document.getElementById('bintangValueEdit' + idLayanan);
         if (input) input.value = nilai;
-        var container = document.getElementById('starInput' + idLayanan);
+        var container = document.getElementById('starInput' + idLayanan) || document.getElementById('starEditInput' + idLayanan);
         if (!container) return;
         var buttons = container.querySelectorAll('button');
         buttons.forEach(function(b) {
@@ -618,8 +639,15 @@
         });
     }
 
+    function tampilFormEditLayanan(idLayanan) {
+        var f = document.getElementById('form-edit-layanan-' + idLayanan);
+        if (f) f.style.display = (f.style.display === 'none' || !f.style.display) ? 'block' : 'none';
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('.lr-stars').forEach(function(container) {
+            var hasActive = container.querySelector('button.active');
+            if (hasActive) return;
             var buttons = container.querySelectorAll('button');
             buttons.forEach(function(b, idx) {
                 if (idx === buttons.length - 1) b.classList.add('active');
