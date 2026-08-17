@@ -2160,13 +2160,6 @@
         for (let i = 1; i < jamSelect.options.length; i++) { // i=1 skip placeholder
             const opt = jamSelect.options[i];
             if (!opt.value) continue;
-<<<<<<< HEAD
-            const lewat = jamLewat.indexOf(opt.value) !== -1;
-            const booked = opt.disabled && !lewat;
-            const chip = document.createElement('button');
-            chip.type = 'button';
-            chip.className = 'jam-chip' + (booked ? ' booked' : '') + (lewat ? ' passed' : '');
-=======
 
             const globalPenuh = bookedJamGlobal.indexOf(opt.value) !== -1;
             const karyawanPenuh = bookedByKaryawan.indexOf(opt.value) !== -1;
@@ -2180,7 +2173,6 @@
 
             const chip = document.createElement('button');
             chip.type = 'button';
->>>>>>> dcdf78362ebd328f023e1444d304aa589d9d2db6
             chip.setAttribute('data-jam', opt.value);
             chip.setAttribute('data-start-idx', startIdx);
 
