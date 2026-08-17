@@ -496,10 +496,8 @@
             </div>
 
             @if ($ringkasanRating['jumlah'] > 0)
-                <div class="testimoni-score animate-on-scroll">
-                    <span class="ts-stars">{{ str_repeat('★', (int) round($ringkasanRating['rata'])) }}{{ str_repeat('☆', 5 - (int) round($ringkasanRating['rata'])) }}</span>
-                    <span class="ts-num">{{ number_format($ringkasanRating['rata'], 1, ',', '.') }}/5</span>
-                    <span class="ts-total">Berdasarkan {{ $ringkasanRating['jumlah'] }} ulasan</span>
+                <div class="testimoni-summary animate-on-scroll" style="max-width:420px;margin:0 auto 28px;">
+                    @include('partials.rating-summary', ['ringkasan' => $ringkasanRating])
                 </div>
 
                 <div class="testimoni-slider animate-on-scroll">

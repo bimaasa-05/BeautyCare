@@ -5,6 +5,7 @@
 @section('meta_description', 'Kumpulan rating dan ulasan pelanggan BeautyCare untuk layanan dan produk.')
 
 @push('styles')
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{{ asset('assets/css/landing.css') }}">
     <style>
         .uv-hero {
@@ -196,6 +197,57 @@
             font-size: 14px;
         }
 
+        .uv-summary {
+            max-width: 420px;
+            margin: 22px auto 0;
+        }
+
+        .uv-tools {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .uv-filters {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .filter-tab {
+            padding: 8px 20px;
+            border-radius: 100px;
+            font-size: 12px;
+            font-weight: 600;
+            border: 1.5px solid var(--border);
+            background: var(--white);
+            color: var(--gray);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'Poppins', sans-serif;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+        }
+
+        .filter-tab:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: var(--hover);
+        }
+
+        .filter-tab.active {
+            border-color: var(--primary);
+            background: linear-gradient(135deg, var(--primary), #FF7BA6);
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(255, 79, 135, 0.25);
+        }
+
         @media (max-width: 992px) {
             .uv-grid {
                 grid-template-columns: repeat(2, 1fr);
@@ -205,6 +257,11 @@
         @media (max-width: 576px) {
             .uv-grid {
                 grid-template-columns: 1fr;
+            }
+
+            .uv-tools {
+                flex-direction: column;
+                align-items: flex-start;
             }
         }
     </style>
@@ -217,25 +274,34 @@
         <div class="container">
             <h1>Semua <span>Ulasan</span></h1>
             <p>Pengalaman nyata para pelanggan BeautyCare.</p>
-            <div class="uv-score">
-                <span class="uv-num">{{ number_format($ringkasan['rata'], 1, ',', '.') }}</span>
-                <span class="uv-stars">{{ str_repeat('★', (int) round($ringkasan['rata'])) }}{{ str_repeat('☆', 5 - (int) round($ringkasan['rata'])) }}</span>
-                <span class="uv-total">Berdasarkan {{ $ringkasan['jumlah'] }} ulasan</span>
+            <div class="uv-summary">
+                @include('partials.rating-summary', ['ringkasan' => $ringkasan])
             </div>
         </div>
     </section>
 
     <section class="uv-section">
         <div class="container">
-            <div class="uv-breadcrumb">
-                <a href="{{ route('home') }}">Beranda</a>
-                <span>›</span>
-                <span>Semua Ulasan</span>
+            <div class="uv-tools">
+                <a href="{{ route('home') }}" class="btn-kembali">
+                    <i class="fa-solid fa-arrow-left"></i> Kembali ke Beranda
+                </a>
+                <div class="uv-filters">
+                    <a href="javascript:void(0)" class="filter-tab active" data-tipe="semua" onclick="filterUlasan('semua', this)">
+                        <i class="fa-solid fa-th-large"></i> Semua
+                    </a>
+                    <a href="javascript:void(0)" class="filter-tab" data-tipe="layanan" onclick="filterUlasan('layanan', this)">
+                        <i class="fa-solid fa-spa"></i> Layanan
+                    </a>
+                    <a href="javascript:void(0)" class="filter-tab" data-tipe="produk" onclick="filterUlasan('produk', this)">
+                        <i class="fa-solid fa-cube"></i> Produk
+                    </a>
+                </div>
             </div>
 
             <div class="uv-grid">
                 @forelse($ulasans as $ulasan)
-                    <div class="uv-card">
+                    <div class="uv-card" data-tipe="{{ $ulasan->tipe }}">
                         <span class="uv-objek {{ $ulasan->tipe }}">{{ $ulasan->tipe_label }}</span>
                         <div class="uv-nama-objek">
                             @if ($ulasan->tipe === 'layanan' && \App\Models\Layanan::find($ulasan->id_target))
@@ -271,3 +337,18 @@
         </div>
     </section>
 @endsection
+
+        @push('scripts')
+        <script>
+        function filterUlasan(tipe, tab) {
+            document.querySelectorAll('.filter-tab').forEach(function(t) {
+                t.classList.remove('active');
+                if (t === tab) t.classList.add('active');
+            });
+            document.querySelectorAll('.uv-card').forEach(function(card) {
+                var cardTipe = card.getAttribute('data-tipe');
+                card.style.display = (tipe === 'semua' || cardTipe === tipe) ? '' : 'none';
+            });
+        }
+        </script>
+        @endpush

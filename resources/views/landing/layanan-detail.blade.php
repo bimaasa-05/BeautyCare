@@ -5,6 +5,7 @@
 @section('meta_description', 'Detail layanan ' . $layanan->nm_layanan . ' beserta rating dan ulasan pelanggan BeautyCare.')
 
 @push('styles')
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{{ asset('assets/css/landing.css') }}">
     <style>
         .ld-hero {
@@ -467,6 +468,9 @@
         <div class="container">
             <div class="ld-hero-inner">
                 <div>
+                    <a href="{{ route('home') }}#layanan" class="btn-kembali" style="margin-bottom:14px;display:inline-flex;">
+                        <i class="fa-solid fa-arrow-left"></i> Kembali
+                    </a>
                     <div class="ld-breadcrumb">
                         <a href="{{ route('home') }}">Beranda</a>
                         <span>›</span>
@@ -511,130 +515,12 @@
             <h2 class="ld-section-title"><i class="fa-solid fa-star"></i> Rating &amp; Ulasan Pelanggan</h2>
 
             <div class="ld-rating-grid">
-                <div class="ld-score-box">
-                    <div class="ld-score">{{ number_format($ringkasan['rata'], 1, ',', '.') }}</div>
-                    <div class="ld-stars">{{ str_repeat('★', (int) round($ringkasan['rata'])) }}{{ str_repeat('☆', 5 - (int) round($ringkasan['rata'])) }}</div>
-                    <div class="ld-count">Berdasarkan {{ $ringkasan['jumlah'] }} ulasan</div>
+                @include('partials.rating-summary', ['ringkasan' => $ringkasan])
 
-                    @if ($ringkasan['jumlah'] > 0)
-                        <div style="margin-top:18px;text-align:left;">
-                            @foreach ($ringkasan['distribusi'] as $bintang => $total)
-                                @php
-                                    $persen = $ringkasan['jumlah'] > 0 ? round($total / $ringkasan['jumlah'] * 100) : 0;
-                                @endphp
-                                <div class="ld-dist-item">
-                                    <span>{{ $bintang }} ★</span>
-                                    <div class="ld-dist-bar"><div class="ld-dist-fill" style="width:{{ $persen }}%"></div></div>
-                                    <span>{{ $total }}</span>
-                                </div>
-                            @endforeach
-                        </div>
-                    @endif
-                </div>
-
-                <div>
-                    @if ($ringkasan['jumlah'] > 0)
-                        <div class="ld-ulasan-list">
-                            @forelse($ulasans as $ulasan)
-                                <div class="ld-ulasan-card">
-                                    <div class="ld-ulasan-head">
-                                        <img class="ld-ulasan-avatar" src="{{ $ulasan->foto_pemberi }}"
-                                            alt="{{ $ulasan->nama_pemberi }}" loading="lazy">
-                                        <div>
-                                            <div>
-                                                <span class="ld-ulasan-name">{{ $ulasan->nama_pemberi }}</span>
-                                                <span class="ld-badge-verified"><i class="fa-solid fa-circle-check"></i> Pelanggan Terverifikasi</span>
-                                            </div>
-                                            <div class="ld-ulasan-date">
-                                                {{ \Carbon\Carbon::parse($ulasan->created_at)->isoFormat('D MMM YYYY') }}
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="ld-ulasan-stars">{{ str_repeat('★', $ulasan->bintang) }}{{ str_repeat('☆', 5 - $ulasan->bintang) }}</div>
-                                    @if ($ulasan->komentar)
-                                        <p class="ld-ulasan-text">"{{ $ulasan->komentar }}"</p>
-                                    @endif
-                                </div>
-                            @empty
-                                <div class="ld-empty">Belum ada ulasan untuk layanan ini.</div>
-                            @endforelse
-                        </div>
-                    @else
-                        <div class="ld-empty">
-                            <p style="margin-bottom:8px;"><i class="fa-solid fa-star" style="font-size:28px;color:#F59E0B;"></i></p>
-                            Belum ada ulasan untuk layanan ini. Jadilah yang pertama memberi rating!
-                        </div>
-                    @endif
+                <div class="ld-ulasan-list">
+                    @include('partials.rating-reviews', ['ulasans' => $ulasans, 'empty' => 'Belum ada ulasan untuk layanan ini. Jadilah yang pertama memberi rating!'])
                 </div>
             </div>
-        </div>
-    </section>
-
-    <!-- Form Rating -->
-    <section class="ld-section" id="beri-rating" style="padding-top:0;">
-        <div class="container">
-            <h2 class="ld-section-title"><i class="fa-solid fa-pen"></i> Beri Rating Anda</h2>
-
-            @guest
-                <div class="ld-note">
-                    <i class="fa-solid fa-circle-info"></i> Anda harus
-                    <a href="{{ route('login') }}" style="color:var(--primary);font-weight:600;">masuk</a> sebagai
-                    pelanggan dan telah menyelesaikan treatment ini untuk memberi rating.
-                </div>
-            @elseif (auth()->user()->role !== 'pelanggan')
-                <div class="ld-note">
-                    <i class="fa-solid fa-circle-info"></i> Hanya akun pelanggan yang dapat memberi rating.
-                </div>
-            @elseif (!$bisaRating)
-                <div class="ld-note">
-                    <i class="fa-solid fa-circle-info"></i> Anda baru dapat memberi rating setelah menyelesaikan
-                    treatment <strong>{{ $layanan->nm_layanan }}</strong>.
-                </div>
-            @elseif ($ratingSaya)
-                <div class="ld-form">
-                    <label>Rating Anda saat ini</label>
-                    <div class="ld-star-input" data-readonly="1">
-                        @for ($i = 1; $i <= 5; $i++)
-                            <button type="button" class="{{ $i <= $ratingSaya->bintang ? 'active' : '' }}" disabled>★</button>
-                        @endfor
-                    </div>
-                    <p class="ld-ulasan-text" style="margin-bottom:12px;">
-                        {{ $ratingSaya->komentar ? '"' . $ratingSaya->komentar . '"' : 'Tanpa komentar.' }}
-                    </p>
-                    <p class="ld-note" style="margin-bottom:14px;">
-                        <i class="fa-solid fa-circle-info"></i> Anda sudah memberi rating untuk layanan ini.
-                        Perbarui rating Anda melalui formulir di bawah, atau
-                        <a href="#" onclick="event.preventDefault(); if(confirm('Hapus rating Anda?')) document.getElementById('hapus-rating-form').submit();"
-                            style="color:#DC2626;font-weight:600;text-decoration:underline;">hapus rating</a>.
-                    </p>
-                    <form id="hapus-rating-form" action="{{ route('rating.destroy', $ratingSaya->id) }}" method="POST" style="display:none;">
-                        @csrf
-                        @method('DELETE')
-                    </form>
-                </div>
-            @else
-                <div class="ld-form">
-                    <form action="{{ route('rating.store') }}" method="POST">
-                        @csrf
-                        <input type="hidden" name="tipe" value="layanan">
-                        <input type="hidden" name="id_target" value="{{ $layanan->id_layanan }}">
-
-                        <label>Pilih bintang Anda</label>
-                        <div class="ld-star-input" id="ldStarInput">
-                            @for ($i = 1; $i <= 5; $i++)
-                                <button type="button" data-nilai="{{ $i }}" onclick="pilihBintang(this)">★</button>
-                            @endfor
-                        </div>
-                        <input type="hidden" name="bintang" id="ldBintangValue" value="5">
-
-                        <label>Komentar (opsional)</label>
-                        <textarea name="komentar" maxlength="500"
-                            placeholder="Ceritakan pengalaman Anda dengan treatment ini..."></textarea>
-
-                        <button type="submit" class="ld-btn"><i class="fa-solid fa-paper-plane"></i> Kirim Rating</button>
-                    </form>
-                </div>
-            @endguest
         </div>
     </section>
 
@@ -670,16 +556,4 @@
         </section>
     @endif
 
-    @push('scripts')
-    <script>
-        function pilihBintang(btn) {
-            var nilai = parseInt(btn.dataset.nilai);
-            document.getElementById('ldBintangValue').value = nilai;
-            var buttons = document.querySelectorAll('#ldStarInput button');
-            buttons.forEach(function(b) {
-                b.classList.toggle('active', parseInt(b.dataset.nilai) <= nilai);
-            });
-        }
-    </script>
-    @endpush
 @endsection
