@@ -241,7 +241,7 @@ class AdminPelangganController extends Controller
             $pelanggan->user()->update($userData);
         }
 
-        buatNotif(auth()->id(), 'Pelanggan Diperbarui', 'Data pelanggan ' . $pelanggan->nm_pelanggan . ' berhasil diperbarui', 'Lainnya', route('admin.pelanggan.edit', $pelanggan->id_pelanggan));
+        buatNotif(auth()->id(), 'Pelanggan Diperbarui', 'Data pelanggan ' . $pelanggan->nm_pelanggan . ' berhasil diperbarui', 'Lainnya', route('admin.pelanggan.index'));
 
         return redirect()->route('admin.pelanggan.index')
             ->with('success', 'Pelanggan berhasil diperbarui.');
@@ -284,7 +284,7 @@ class AdminPelangganController extends Controller
         $user->save();
 
         $aksi = $user->status === 'aktif' ? 'diaktifkan' : 'dinonaktifkan';
-        buatNotif($user->id, 'Status Akun', 'Akun Anda telah ' . $aksi . ' oleh ' . auth()->user()->nama, 'Lainnya', route('admin.pelanggan.index'));
+        buatNotif($user->id, 'Status Akun', 'Akun Anda telah ' . $aksi . ' oleh ' . auth()->user()->nama, 'Lainnya', route('pelanggan.profile'));
 
         return redirect()->route('admin.pelanggan.index')
             ->with('success', 'Status pelanggan berhasil ' . $aksi . '.');

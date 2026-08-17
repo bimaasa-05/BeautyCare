@@ -104,7 +104,7 @@ class AdminLayananController extends Controller
 
         $layanan->update($data);
 
-        buatNotif(auth()->id(), 'Layanan Diperbarui', 'Layanan ' . $layanan->nm_layanan . ' berhasil diperbarui', 'Lainnya', route('admin.layanan.edit', $layanan->id_layanan));
+        buatNotif(auth()->id(), 'Layanan Diperbarui', 'Layanan ' . $layanan->nm_layanan . ' berhasil diperbarui', 'Lainnya', route('admin.layanan.index'));
 
         return redirect()->route('admin.layanan.index')
             ->with('success', 'Layanan berhasil diperbarui.');

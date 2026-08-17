@@ -70,7 +70,7 @@ class AdminSupplierController extends Controller
 
         $this->syncProduk($supplier, $request->produk);
 
-        buatNotif(auth()->id(), 'Supplier Diperbarui', 'Supplier ' . $supplier->nm_supplier . ' berhasil diperbarui', 'Lainnya', route('admin.supplier.edit', $supplier->id_supplier));
+        buatNotif(auth()->id(), 'Supplier Diperbarui', 'Supplier ' . $supplier->nm_supplier . ' berhasil diperbarui', 'Lainnya', route('admin.supplier.index'));
 
         return redirect()->route('admin.supplier.index')
             ->with('success', 'Supplier updated successfully.');

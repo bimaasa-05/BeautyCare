@@ -79,7 +79,7 @@ class AdminPromoController extends Controller
 
         $this->syncItems($promo, $request);
 
-        buatNotif(auth()->id(), 'Promo Diperbarui', 'Promo ' . $promo->nm_promo . ' berhasil diperbarui', 'Promo', route('admin.promo.edit', $promo->id_promo));
+        buatNotif(auth()->id(), 'Promo Diperbarui', 'Promo ' . $promo->nm_promo . ' berhasil diperbarui', 'Promo', route('admin.promo.index'));
 
         return redirect()->route('admin.promo.index')
             ->with('success', 'Promo berhasil diperbarui.');

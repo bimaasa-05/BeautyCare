@@ -147,6 +147,16 @@ if (!isset($pageTitle)) {
 </header>
 
 <script>
+function markNotifRead(id) {
+    const bell = document.getElementById('notifBell');
+    const role = bell ? bell.dataset.role : '';
+    fetch('/' + role + '/notifikasi/' + id + '/read', {
+        method: 'GET',
+        headers: { 'Accept': 'application/json' },
+        keepalive: true
+    }).catch(function() {});
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     const bell = document.getElementById('notifBell');
     const dropdown = document.getElementById('notifDropdown');
@@ -180,7 +190,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     const actorFoto = n.aktor_foto ? '/storage/' + n.aktor_foto : null;
                     const actorInitial = n.aktor_nama ? n.aktor_nama.charAt(0).toUpperCase() : '?';
                     const bg = n.status === 0 ? '#FFF5F8' : 'transparent';
-                    html += '<a href="/' + role + '/notifikasi/' + n.id + '/read" class="notif-item" style="display:flex;gap:12px;padding:14px 20px;text-decoration:none;background:' + bg + ';border-bottom:1px solid #f8f8f8;transition:background 0.2s;" onmouseover="this.style.background=\'#FFF5F8\'" onmouseout="this.style.background=\'' + bg + '\'">';
+                    const target = n.target || n.url || ('/' + role + '/notifikasi/' + n.id + '/read');
+                    html += '<a href="' + target + '" class="notif-item" onclick="markNotifRead(' + n.id + ')" style="display:flex;gap:12px;padding:14px 20px;text-decoration:none;background:' + bg + ';border-bottom:1px solid #f8f8f8;transition:background 0.2s;" onmouseover="this.style.background=\'#FFF5F8\'" onmouseout="this.style.background=\'' + bg + '\'">';
                     if (actorFoto) {
                         html += '<div style="width:36px;height:36px;border-radius:50%;flex-shrink:0;overflow:hidden;"><img src="' + actorFoto + '" alt="" style="width:100%;height:100%;object-fit:cover;"></div>';
                     } else {
