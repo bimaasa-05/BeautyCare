@@ -69,8 +69,8 @@
     .photo-card:hover img { transform: scale(1.04); }
     .photo-card .photo-label { position: absolute; left: 12px; bottom: 12px; padding: 6px 14px; font-size: 11px; font-weight: 700; color: #fff; background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(4px); border-radius: 100px; text-align: center; display: inline-flex; align-items: center; gap: 6px; }
     .photo-card .photo-label i { font-size: 8px; }
-    .photo-card.empty-photo { display: flex; align-items: center; justify-content: center; height: 240px; background: #FAFAFA; color: #CBD5E1; flex-direction: column; gap: 8px; border: 2px dashed #E5E7EB; border-radius: 16px; }
-    .photo-card.empty-photo i { font-size: 36px; }
+    .photo-card .empty-photo { display: flex; align-items: center; justify-content: center; height: 240px; background: #FAFAFA; color: #CBD5E1; flex-direction: column; gap: 8px; border: 2px dashed #E5E7EB; border-radius: 16px; }
+    .photo-card .empty-photo i { font-size: 36px; }
 
     .beautycian-strip { display: flex; align-items: center; gap: 14px; padding: 14px 16px; background: linear-gradient(135deg, #FFF5F7, #FDF2F8); border: 1px solid #FBCFE8; border-radius: 14px; margin-bottom: 18px; }
     .beautycian-strip .bs-avatar { width: 52px; height: 52px; border-radius: 50%; object-fit: cover; background: var(--hover); color: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 20px; flex-shrink: 0; border: 2px solid #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.10); }
@@ -138,7 +138,7 @@
         .detail-card .dc-body { padding: 16px; }
         .detail-section { padding: 16px; }
         .photo-pair { grid-template-columns: 1fr; }
-        .photo-card.empty-photo { height: 180px; }
+        .photo-card .empty-photo { height: 180px; }
         .action-bar { flex-wrap: wrap; }
     }
 
