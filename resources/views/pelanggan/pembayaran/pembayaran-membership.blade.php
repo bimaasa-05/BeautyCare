@@ -659,7 +659,7 @@
                                 </div>
                                 @else
                                 <div class="pm-row">
-                                    <span><i class="fa-solid fa-bag-shopping" style="color: var(--primary); width: 16px; margin-right: 4px;"></i> Min. {{ $member->min_transaksi }}x Pembelian Produk</span>
+                                    <span><i class="fa-solid fa-bag-shopping" style="color: var(--primary); width: 16px; margin-right: 4px;"></i> Min. {{ $member->min_transaksi }}x Transaksi</span>
                                     <span class="pm-syarat"><i class="fa-solid fa-check"></i> Terpenuhi</span>
                                 </div>
                                 <div class="pm-row">
