@@ -40,16 +40,10 @@ class MembershipPelangganController extends Controller
         if ($pelanggan) {
             $totalTransaksi = Transaksi::where('id_pelanggan', $pelanggan->id_pelanggan)
                 ->where('status', 'Lunas')
-                ->whereHas('detail', function ($q) {
-                    $q->where('jenis', 'Produk');
-                })
                 ->count();
 
             $totalBelanja = Transaksi::where('id_pelanggan', $pelanggan->id_pelanggan)
                 ->where('status', 'Lunas')
-                ->whereHas('detail', function ($q) {
-                    $q->where('jenis', 'Produk');
-                })
                 ->sum('total');
 
             if ($pelanggan->id_member) {
