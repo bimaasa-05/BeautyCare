@@ -192,29 +192,7 @@
                                     <p class="text-[12px] text-gray-400">
                                         {{ \Carbon\Carbon::parse($transaksi->tanggal)->format('d F Y') }}</p>
 
-                                    @php
-                                        $statusMap = [
-                                            'Pending' => [
-                                                'label' => 'Pending',
-                                                'class' => 'status-proses',
-                                                'icon' => 'fa-regular fa-clock',
-                                            ],
-                                            'Lunas' => [
-                                                'label' => 'Lunas',
-                                                'class' => 'status-selesai',
-                                                'icon' => 'fa-regular fa-circle-check',
-                                            ],
-                                            'Batal' => [
-                                                'label' => 'Batal',
-                                                'class' => 'status-batal',
-                                                'icon' => 'fa-regular fa-circle-xmark',
-                                            ],
-                                        ];
-                                        $s = $statusMap[$transaksi->status] ?? $statusMap['Pending'];
-                                    @endphp
-                                    <span class="mt-3 badge-status {{ $s['class'] }}">
-                                        <i class="{{ $s['icon'] }}"></i> {{ $s['label'] }}
-                                    </span>
+                                    @include('partials.badge-status', ['status' => $transaksi->status])
 
                                     <div class="w-full mt-4 pt-4 border-t border-pink-100/50 text-center">
                                         <p class="text-[11px] text-gray-400">Total Pembayaran</p>
