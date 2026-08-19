@@ -83,13 +83,7 @@
                                 <tr>
                                     <td data-label="" class="py-1.5 text-gray-400">Status</td>
                                     <td data-label="" class="py-1.5">
-                                        @if ($transaksi->status == 'Lunas')
-                                            <span class="badge-status status-selesai"><i class="fa-regular fa-circle-check"></i> Lunas</span>
-                                        @elseif ($transaksi->status == 'Pending')
-                                            <span class="badge-status status-proses"><i class="fa-regular fa-clock"></i> Pending</span>
-                                        @else
-                                            <span class="badge-status bg-red-100 text-red-600"><i class="fa-regular fa-circle-xmark"></i> Batal</span>
-                                        @endif
+                                    @include('partials.badge-status', ['status' => $transaksi->status])
                                     </td>
                                 </tr>
                                 <tr>
