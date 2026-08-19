@@ -418,10 +418,10 @@
                                 </div>
                             </div>
 
-                            @if ($transaksi->metode_byr === 'Saldo Akun')
+                            @if (($transaksi->saldo_terpakai ?? 0) > 0)
                                 <div class="mt-4">
                                     <h4 class="text-[13px] font-bold text-emerald-600 mb-3 flex items-center gap-2">
-                                        <i class="fa-solid fa-wallet"></i> Detail Pembayaran Saldo Akun
+                                        <i class="fa-solid fa-wallet"></i> Penggunaan Saldo Akun (Cashback)
                                     </h4>
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                                         @if ($transaksi->saldo_terpakai > 0)
