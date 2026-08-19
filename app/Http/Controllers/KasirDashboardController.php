@@ -92,13 +92,13 @@ class KasirDashboardController extends Controller
         $produkTerjual = (int) DetailTransaksi::join('transaksi', 'transaksi.id_transaksi', '=', 'detail_transaksi.id_transaksi')
             ->where('transaksi.id_kasir', $userId)
             ->whereDate('transaksi.tanggal', $today)
-            ->where('detail_transaksi.jenis', 'produk')
+            ->where('detail_transaksi.jenis', 'Produk')
             ->sum('detail_transaksi.qty');
 
         $produkTerjualKemarin = (int) DetailTransaksi::join('transaksi', 'transaksi.id_transaksi', '=', 'detail_transaksi.id_transaksi')
             ->where('transaksi.id_kasir', $userId)
             ->whereDate('transaksi.tanggal', $yesterday)
-            ->where('detail_transaksi.jenis', 'produk')
+            ->where('detail_transaksi.jenis', 'Produk')
             ->sum('detail_transaksi.qty');
 
         $produkTerjualGrowth = $produkTerjualKemarin > 0
