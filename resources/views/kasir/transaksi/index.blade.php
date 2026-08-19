@@ -192,13 +192,7 @@
                                              </span>
                                          </td>
                                          <td data-label="Status">
-                                              @php
-                                                  $statusMap = ['Pending' => ['label' => 'Pending', 'class' => 'status-proses', 'icon' => 'fa-regular fa-clock'], 'Lunas' => ['label' => 'Lunas', 'class' => 'status-selesai', 'icon' => 'fa-regular fa-circle-check'], 'Batal' => ['label' => 'Batal', 'class' => 'status-batal', 'icon' => 'fa-regular fa-circle-xmark']];
-                                                  $s = $statusMap[$t->status] ?? $statusMap['Pending'];
-                                              @endphp
-                                             <span class="badge-status {{ $s['class'] }}">
-                                                 <i class="{{ $s['icon'] }}"></i> {{ $s['label'] }}
-                                             </span>
+                                             @include('partials.badge-status', ['status' => $t->status])
                                          </td>
                                          <td data-label="" class="text-center">
                                              <div class="flex items-center justify-center gap-1.5">

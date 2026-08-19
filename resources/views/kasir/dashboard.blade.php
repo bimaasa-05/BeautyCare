@@ -361,8 +361,8 @@
                                             style="color:var(--primary);font-weight:600;">{{ $t->no_invoice }}</span>
                                         <span style="flex:1;">{{ $t->pelanggan->nm_pelanggan ?? 'Umum' }}</span>
                                         <span style="font-weight:500;color:var(--dark);">{{ $fmt($t->total) }}</span>
-                                        <span
-                                            class="badge {{ $t->status == 'Lunas' ? 'badge-success' : ($t->status == 'Pending' ? 'badge-warning' : 'badge-danger') }}">{{ $t->status }}</span>
+                                <span
+                                    class="badge {{ in_array($t->status, ['Lunas', 'DP Dibayar', 'Selesai']) ? 'badge-success' : (in_array($t->status, ['Batal', 'Gagal', 'Dibatalkan', 'Kadaluarsa']) ? 'badge-danger' : 'badge-warning') }}">{{ $t->status }}</span>
                                     </div>
                                 @empty
                                     <div style="text-align:center;padding:16px;color:var(--gray);font-size:13px;">Belum
@@ -460,9 +460,9 @@
                             @forelse($checkinHariIni as $b)
                                 <div class="booking-item">
                                     <img src="{{ $b->pelanggan?->foto_url ?? 'https://ui-avatars.com/api/?name=Unknown&background=FFE5EF&color=FF4F87&size=40' }}"
-                                        alt="{{ $b->pelanggan->nm_pelanggan ?? '-' }}" class="booking-avatar" style="width:40px;height:40px;border-radius:50%;object-fit:cover;flex-shrink:0;">
+                                        alt="{{ $b->pelanggan?->nm_pelanggan ?? '-' }}" class="booking-avatar" style="width:40px;height:40px;border-radius:50%;object-fit:cover;flex-shrink:0;">
                                     <div class="booking-info">
-                                        <h4>{{ $b->pelanggan->nm_pelanggan ?? '-' }}</h4>
+                                        <h4>{{ $b->pelanggan?->nm_pelanggan ?? '-' }}</h4>
                                         <p>{{ $b->detail->pluck('layanan.nm_layanan')->implode(', ') ?: 'Tanpa detail' }}
                                         </p>
                                     </div>
@@ -489,7 +489,7 @@
                                     <img src="https://ui-avatars.com/api/?name={{ urlencode($t->no_invoice) }}&background={{ $t->status == 'Lunas' ? 'E8F5E9&color=4CAF50' : ($t->status == 'Pending' ? 'FFF3E0&color=FF9800' : 'FFEBEE&color=F44336') }}&size=36"
                                         alt="TRX">
                                     <div class="ec-info">
-                                        <h4>{{ $t->no_invoice }} - {{ $t->pelanggan->nm_pelanggan ?? 'Umum' }}</h4>
+                                            <h4>{{ $t->no_invoice }} - {{ $t->pelanggan?->nm_pelanggan ?? 'Umum' }}</h4>
                                         <p>{{ $t->metode_byr }} - {{ $fmt($t->total) }}</p>
                                     </div>
                                     <span
@@ -504,11 +504,10 @@
                     </div>
 
                     <div class="list-widget" style="max-height:440px;display:flex;flex-direction:column;">
-                        <div class="lw-header">
-                            <h3>Notifikasi Stok</h3>
-                            @php $adaStok = route('admin.stok.index'); try{ \Route::currentRouteName(); }catch(\Throwable $e){} @endphp
-                            <span style="font-size:13px;color:var(--gray);font-weight:500;cursor:default;">Kelola</span>
-                        </div>
+                            <div class="lw-header">
+                                <h3>Notifikasi Stok</h3>
+                                <span style="font-size:13px;color:var(--gray);font-weight:500;cursor:default;">Kelola</span>
+                            </div>
                         <div class="stock-grid card-scroll" style="flex:1;">
                             @forelse($stokMenipis as $p)
                                 @php

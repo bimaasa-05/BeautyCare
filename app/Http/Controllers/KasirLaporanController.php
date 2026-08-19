@@ -46,6 +46,7 @@ class KasirLaporanController extends Controller
         $metodeTerbanyak = (clone $queryPendapatan)
             ->select('metode_byr', DB::raw('COUNT(*) as total'))
             ->where('status', 'Lunas')
+            ->whereBetween('tanggal', [$startDate, $endDate])
             ->groupBy('metode_byr')
             ->orderBy('total', 'desc')
             ->first();
