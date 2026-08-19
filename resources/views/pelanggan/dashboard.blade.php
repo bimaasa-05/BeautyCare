@@ -602,6 +602,118 @@
         transform: translateY(-1px);
         box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
     }
+
+    /* ─── Modal Premium (Hapus Rating) ─── */
+    .modal-premium {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(4px);
+        z-index: 200;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        animation: fadeIn 0.2s ease;
+    }
+
+    .modal-premium.show {
+        display: flex;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    .modal-premium .modal-box {
+        background: var(--white);
+        border-radius: 24px;
+        padding: 32px;
+        width: 100%;
+        max-width: 400px;
+        margin: 0 16px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+        animation: scaleIn 0.3s ease;
+    }
+
+    @keyframes scaleIn {
+        from { transform: scale(0.9); opacity: 0; }
+        to { transform: scale(1); opacity: 1; }
+    }
+
+    .modal-premium .modal-box .modal-icon-wrap {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        background: #FEE2E2;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 16px;
+    }
+
+    .modal-premium .modal-box .modal-icon-wrap i {
+        font-size: 28px;
+        color: #DC2626;
+    }
+
+    .modal-premium .modal-box h3 {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--dark);
+        text-align: center;
+        margin-bottom: 8px;
+    }
+
+    .modal-premium .modal-box p {
+        font-size: 13px;
+        color: var(--gray);
+        text-align: center;
+        margin-bottom: 24px;
+        line-height: 1.6;
+    }
+
+    .modal-premium .modal-box .modal-actions {
+        display: flex;
+        gap: 12px;
+    }
+
+    .modal-premium .modal-box .modal-actions .btn-cancel {
+        flex: 1;
+        padding: 11px 20px;
+        border-radius: 12px;
+        border: 1.5px solid var(--border);
+        background: var(--white);
+        color: var(--gray);
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .modal-premium .modal-box .modal-actions .btn-cancel:hover {
+        background: var(--background);
+        border-color: #ddd;
+    }
+
+    .modal-premium .modal-box .modal-actions .btn-danger {
+        flex: 1;
+        padding: 11px 20px;
+        border-radius: 12px;
+        border: none;
+        background: linear-gradient(135deg, #DC2626, #EF4444);
+        color: #fff;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
+    }
+
+    .modal-premium .modal-box .modal-actions .btn-danger:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 20px rgba(220, 38, 38, 0.35);
+    }
     </style>
 </head>
 
@@ -1033,14 +1145,11 @@
                                                 class="dash-rate-btn" title="Edit ulasan">
                                                 <i class="fa-solid fa-pen"></i> Edit
                                             </a>
-                                            <form action="{{ route('rating.destroy', $rating->id) }}" method="POST"
-                                                onsubmit="return confirm('Hapus rating Anda?')" style="margin:0;">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="dash-rate-btn danger" title="Hapus ulasan">
-                                                    <i class="fa-solid fa-trash"></i> Hapus
-                                                </button>
-                                            </form>
+                                            <button type="button" class="dash-rate-btn danger" title="Hapus ulasan"
+                                                data-id="{{ $rating->id }}" data-nama="{{ $rating->nama_objek }}"
+                                                onclick="confirmHapusRating(this)">
+                                                <i class="fa-solid fa-trash"></i> Hapus
+                                            </button>
                                         </div>
                                     </td>
                                 </tr>
@@ -1117,6 +1226,25 @@
                 </div>
             </div>
         </main>
+    </div>
+
+    <!-- ═══ Modal Hapus Rating Premium ═══ -->
+    <div id="deleteRatingModal" class="modal-premium">
+        <div class="modal-box">
+            <form id="deleteRatingForm" method="POST">
+                @csrf
+                @method('DELETE')
+                <div class="modal-icon-wrap">
+                    <i class="fa-solid fa-star"></i>
+                </div>
+                <h3>Hapus Rating</h3>
+                <p id="modalHapusRatingBody">Apakah Anda yakin ingin menghapus rating ini?<br>Tindakan ini tidak dapat dibatalkan.</p>
+                <div class="modal-actions">
+                    <button type="button" onclick="closeDeleteRatingModal()" class="btn-cancel">Tidak Jadi</button>
+                    <button type="submit" class="btn-danger">Ya, Hapus</button>
+                </div>
+            </form>
+        </div>
     </div>
 
     <script>
@@ -1331,6 +1459,30 @@
                 }
             });
         }
+    });
+
+    // ═══ Modal Hapus Rating Premium ═══
+    function confirmHapusRating(btn) {
+        const id = btn.getAttribute('data-id');
+        const nama = (btn.getAttribute('data-nama') || 'rating ini').replace(/[<>&"']/g, function(c) {
+            return { '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;', "'": '&#39;' }[c];
+        });
+        document.getElementById('deleteRatingForm').action = '{{ url('/pelanggan/rating') }}' + '/' + id;
+        document.getElementById('modalHapusRatingBody').innerHTML =
+            'Apakah Anda yakin ingin menghapus rating untuk <strong>' + nama + '</strong>?<br>Tindakan ini tidak dapat dibatalkan.';
+        document.getElementById('deleteRatingModal').classList.add('show');
+    }
+
+    function closeDeleteRatingModal() {
+        document.getElementById('deleteRatingModal').classList.remove('show');
+    }
+
+    document.getElementById('deleteRatingModal').addEventListener('click', function(e) {
+        if (e.target === this) closeDeleteRatingModal();
+    });
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closeDeleteRatingModal();
     });
     </script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
