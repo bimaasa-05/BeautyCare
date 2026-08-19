@@ -548,13 +548,10 @@ class CheckoutController extends Controller
             ->count();
     }
 
-    protected function hitungTotalBelanjaProduk($pelangganId)
+    protected function hitungTotalBelanja($pelangganId)
     {
         return Transaksi::where('id_pelanggan', $pelangganId)
             ->where('status', 'Lunas')
-            ->whereHas('detail', function ($q) {
-                $q->where('jenis', 'Produk');
-            })
             ->sum('total');
     }
 
@@ -570,7 +567,7 @@ class CheckoutController extends Controller
         }
 
         $totalTransaksi = $this->hitungPembelianProduk($pelanggan->id_pelanggan);
-        $totalBelanja = $this->hitungTotalBelanjaProduk($pelanggan->id_pelanggan);
+        $totalBelanja = $this->hitungTotalBelanja($pelanggan->id_pelanggan);
 
         if ($totalTransaksi < (int) $member->min_transaksi || $totalBelanja < (int) $member->min_pembelian) {
             return 'Anda belum memenuhi syarat upgrade ke ' . $member->tingkat . '. Syarat: min. '
