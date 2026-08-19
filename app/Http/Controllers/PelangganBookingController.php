@@ -180,7 +180,7 @@ class PelangganBookingController extends Controller
             return redirect()->back()->withInput()->withErrors(['jam' => 'Jam tersebut sudah dibooking untuk terapis yang dipilih (sudah memperhitungkan durasi layanan). Silakan pilih jam lain.']);
         }
 
-        if (\Carbon\Carbon::parse($request->tanggal . ' ' . $jam)->lte(now())) {
+        if (\Carbon\Carbon::parse($request->tanggal . ' ' . $jam)->addHour()->lte(now())) {
             return redirect()->back()->withInput()->withErrors(['jam' => 'Jam booking sudah lewat. Silakan pilih jam yang masih tersedia.']);
         }
 

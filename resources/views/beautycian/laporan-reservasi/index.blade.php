@@ -12,6 +12,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/dashboard.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/responsive.css') }}">
@@ -44,6 +45,112 @@
         @media (max-width: 1200px) { .search-input-wrap input { width: 180px; } }
         @media (max-width: 768px) { .search-input-wrap input { width: 150px; } }
         @media (max-width: 430px) { .search-input-wrap input { width: 100%; } }
+
+        /* ─── Filter custom select (pola pelanggan custom-select-wrap) ─── */
+        .csw-pill { position: relative; min-width: 150px; }
+        .csw-pill .custom-select-trigger {
+            display: flex; align-items: center; justify-content: space-between; gap: 10px;
+            width: 100%; padding: 8px 16px; border-radius: 100px;
+            border: 1.5px solid #E5E7EB; background: #fff; font-size: 12px;
+            font-family: 'Poppins', sans-serif; color: var(--dark); cursor: pointer;
+            transition: all 0.2s ease; user-select: none; box-sizing: border-box;
+        }
+        .csw-pill .custom-select-trigger:hover { border-color: #FFB6CD; }
+        .csw-pill .custom-select-trigger.open { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(255, 79, 135, 0.1); }
+        .csw-pill .custom-select-trigger .cst-placeholder { color: #bbb; }
+        .csw-pill .custom-select-trigger .cst-text { color: var(--dark); }
+        .csw-pill .custom-select-trigger .cst-arrow { font-size: 11px; color: #999; transition: transform 0.2s ease; flex-shrink: 0; }
+        .csw-pill .custom-select-trigger.open .cst-arrow { transform: rotate(180deg); }
+        .csw-pill .custom-select-dropdown {
+            position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: #fff;
+            border: 1.5px solid var(--border); border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+            z-index: 100; display: none; max-height: 200px; overflow-y: auto; padding: 4px;
+        }
+        .csw-pill .custom-select-dropdown.open { display: block; }
+        .csw-pill .custom-select-dropdown.open-up { top: auto; bottom: calc(100% + 4px); }
+        .csw-pill .custom-select-dropdown .csd-item {
+            padding: 9px 12px; font-size: 12px; border-radius: 8px; cursor: pointer;
+            transition: background 0.15s ease; color: var(--dark);
+        }
+        .csw-pill .custom-select-dropdown .csd-item:hover { background: #FFF0F5; }
+        .csw-pill .custom-select-dropdown .csd-item.selected { background: #FFE4EC; color: var(--primary); font-weight: 600; }
+        .csw-pill .custom-select-dropdown::-webkit-scrollbar { width: 5px; }
+        .csw-pill .custom-select-dropdown::-webkit-scrollbar-thumb { background: #e5e7eb; border-radius: 10px; }
+
+        /* ─── Period Popup (pola pelanggan dashboard) ─── */
+        .period-trigger {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: #fff; border: 1.5px solid #E5E7EB; border-radius: 10px;
+            padding: 8px 14px; font-family: 'Poppins', sans-serif; font-size: 13px;
+            font-weight: 600; color: var(--dark); cursor: pointer;
+            transition: all 0.25s ease; box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+        }
+        .period-trigger:hover { border-color: #FFB6CD; background: #FFF9FB; }
+        .period-trigger > i:first-child { color: var(--primary); }
+        .period-trigger .period-arrow { font-size: 11px; color: var(--gray); transition: transform 0.3s ease; }
+        .period-trigger.open .period-arrow { transform: rotate(180deg); }
+        .period-popup {
+            display: none; position: absolute; top: calc(100% + 6px); right: 0; width: 280px;
+            background: #fff; border-radius: 16px; border: 1px solid #FFD6E6;
+            box-shadow: 0 12px 40px rgba(255, 79, 135, 0.15); z-index: 120; padding: 20px;
+            font-family: 'Poppins', sans-serif; transform-origin: top center;
+            animation: curtainUnroll 0.45s cubic-bezier(0.22, 0.61, 0.36, 1);
+        }
+        .period-popup.open { display: block; }
+        .period-popup.open-up { top: auto; bottom: calc(100% + 6px); transform-origin: bottom center; animation-name: curtainUnrollUp; }
+        @keyframes curtainUnroll {
+            0%   { transform: scaleY(0); opacity: 0.2; }
+            55%  { transform: scaleY(1.03); opacity: 1; }
+            100% { transform: scaleY(1); opacity: 1; }
+        }
+        @keyframes curtainUnrollUp {
+            0%   { transform: scaleY(0); opacity: 0.2; }
+            55%  { transform: scaleY(1.03); opacity: 1; }
+            100% { transform: scaleY(1); opacity: 1; }
+        }
+        .period-popup .pp-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+        .period-popup .pp-icon {
+            width: 34px; height: 34px; border-radius: 10px; background: #FFE3EE; color: var(--primary);
+            display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0;
+        }
+        .period-popup .pp-header h4 { font-size: 14px; font-weight: 700; color: var(--dark); margin: 0; }
+        #periodOptions { display: grid; gap: 6px; margin-bottom: 14px; }
+        .pp-option {
+            display: flex; flex-direction: column; gap: 2px; text-align: left; width: 100%;
+            border: 1.5px solid #F1F2F6; background: #fff; border-radius: 12px; padding: 10px 12px;
+            cursor: pointer; transition: all 0.2s ease; font-family: 'Poppins', sans-serif;
+        }
+        .pp-option:hover { background: #FFF9FB; border-color: #FFB6CD; }
+        .pp-option .po-title { font-size: 13px; font-weight: 700; color: var(--dark); display: flex; align-items: center; gap: 8px; }
+        .pp-option .po-title i { font-size: 11px; color: #fff; opacity: 0; transform: scale(0.5); transition: all 0.2s ease; }
+        .pp-option .po-sub { font-size: 11px; color: var(--gray); font-weight: 500; }
+        .pp-option.selected { border-color: var(--primary); background: linear-gradient(135deg, var(--primary), #FF7BA6); }
+        .pp-option.selected .po-title, .pp-option.selected .po-sub { color: #fff; }
+        .pp-option.selected .po-title i { opacity: 1; transform: scale(1); }
+        .pp-footer { display: flex; gap: 8px; }
+        .pp-today, .pp-oke {
+            flex: 1; border: none; border-radius: 10px; padding: 9px 0; font-family: 'Poppins', sans-serif;
+            font-size: 12px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center;
+            justify-content: center; gap: 6px; transition: all 0.2s ease;
+        }
+        .pp-today { background: #F1F2F6; color: var(--gray); }
+        .pp-today:hover { background: #E5E7EB; color: var(--dark); }
+        .pp-oke { background: linear-gradient(135deg, var(--primary), #FF7BA6); color: #fff; box-shadow: 0 4px 12px rgba(255, 79, 135, 0.3); }
+        .pp-oke:hover { box-shadow: 0 6px 16px rgba(255, 79, 135, 0.4); transform: translateY(-1px); }
+        @media (max-width: 768px) { .period-popup { left: 0; right: auto; } }
+        @media (max-width: 480px) {
+            .period-popup {
+                position: fixed; left: 50%; top: 50%; right: auto; bottom: auto;
+                transform: translate(-50%, -50%); width: calc(100vw - 40px); max-width: 320px;
+                max-height: calc(100vh - 32px); overflow-y: auto;
+                animation: curtainUnrollMobile 0.45s cubic-bezier(0.22, 0.61, 0.36, 1);
+            }
+        }
+        @keyframes curtainUnrollMobile {
+            0%   { transform: translate(-50%, -50%) scaleY(0); opacity: 0.2; }
+            55%  { transform: translate(-50%, -50%) scaleY(1.03); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scaleY(1); opacity: 1; }
+        }
     </style>
 </head>
 
@@ -149,10 +256,24 @@
                         <div class="chart-header">
                             <h3>Grafik Treatment Selesai</h3>
                             <div class="chart-actions">
-                                <select id="chartPeriod" onchange="switchChartPeriod()">
-                                    <option value="month" {{ request('chart_period') == 'month' ? 'selected' : '' }}>Bulan Ini</option>
-                                    <option value="year" {{ request('chart_period') != 'month' ? 'selected' : '' }}>Tahun Ini</option>
-                                </select>
+                                <div style="position:relative;" id="periodWrap">
+                                    <button type="button" class="period-trigger" id="periodTrigger">
+                                        <i class="fa-solid fa-calendar-days"></i>
+                                        <span id="periodLabel">Tahun Ini</span>
+                                        <i class="fa-solid fa-chevron-down period-arrow"></i>
+                                    </button>
+                                    <div class="period-popup" id="periodPopup">
+                                        <div class="pp-header">
+                                            <span class="pp-icon"><i class="fa-solid fa-chart-line"></i></span>
+                                            <h4>Periode Grafik</h4>
+                                        </div>
+                                        <div id="periodOptions"></div>
+                                        <div class="pp-footer">
+                                            <button type="button" class="pp-today" id="periodReset"><i class="fa-solid fa-arrow-rotate-left"></i> Reset</button>
+                                            <button type="button" class="pp-oke" id="periodOke"><i class="fa-solid fa-check"></i> Oke</button>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="chart-body">
@@ -233,13 +354,20 @@
                             </div>
                             <form action="{{ route('beautycian.laporan-reservasi.index') }}" method="GET">
                                 <div class="filter-group">
-                                    <select name="filter_status" onchange="this.form.submit()">
-                                        <option value="">Semua Status</option>
-                                        <option value="dikonfirmasi" {{ request('filter_status') == 'dikonfirmasi' ? 'selected' : '' }}>Dikonfirmasi</option>
-                                        <option value="diproses" {{ request('filter_status') == 'diproses' ? 'selected' : '' }}>Diproses</option>
-                                        <option value="selesai" {{ request('filter_status') == 'selesai' ? 'selected' : '' }}>Selesai</option>
-                                        <option value="dibatalkan" {{ request('filter_status') == 'dibatalkan' ? 'selected' : '' }}>Dibatalkan</option>
-                                    </select>
+                                    <input type="hidden" name="filter_status" id="filterStatusInput" value="{{ request('filter_status') }}">
+                                    <div class="csw-pill" id="filterStatusWrap">
+                                        <div class="custom-select-trigger" id="filterStatusTrigger">
+                                            <span class="cst-placeholder">Semua Status</span>
+                                            <span class="cst-arrow"><i class="fa-solid fa-chevron-down"></i></span>
+                                        </div>
+                                        <div class="custom-select-dropdown" id="filterStatusDropdown">
+                                            <div class="csd-item {{ request('filter_status') == '' ? 'selected' : '' }}" data-value="">Semua Status</div>
+                                            <div class="csd-item {{ request('filter_status') == 'dikonfirmasi' ? 'selected' : '' }}" data-value="dikonfirmasi">Dikonfirmasi</div>
+                                            <div class="csd-item {{ request('filter_status') == 'diproses' ? 'selected' : '' }}" data-value="diproses">Diproses</div>
+                                            <div class="csd-item {{ request('filter_status') == 'selesai' ? 'selected' : '' }}" data-value="selesai">Selesai</div>
+                                            <div class="csd-item {{ request('filter_status') == 'dibatalkan' ? 'selected' : '' }}" data-value="dibatalkan">Dibatalkan</div>
+                                        </div>
+                                    </div>
                                     <div class="search-input-wrap" style="display:inline-block;">
                                         <svg class="si-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
                                         <input type="text" name="search" placeholder="Cari pelanggan..." value="{{ $search ?? '' }}">
@@ -474,14 +602,167 @@
         });
     }
 
-    function switchChartPeriod() {
-        var period = document.getElementById('chartPeriod').value;
-        initChart(period);
-    }
-
     document.addEventListener('DOMContentLoaded', function() {
         initChart('{{ request('chart_period', 'year') }}');
     });
+
+    const periodConfig = [
+        { key: 'month', title: 'Bulan Ini', sub: '1 bulan terakhir' },
+        { key: 'year', title: 'Tahun Ini', sub: '12 bulan terakhir' }
+    ];
+    const periodTrigger = document.getElementById('periodTrigger');
+    const periodPopup = document.getElementById('periodPopup');
+    const periodOptions = document.getElementById('periodOptions');
+    const periodReset = document.getElementById('periodReset');
+    const periodOke = document.getElementById('periodOke');
+    const periodLabel = document.getElementById('periodLabel');
+    const validKeys = periodConfig.map(function(c) { return c.key; });
+    let periodValue = validKeys.indexOf('{{ request('chart_period', 'year') }}') !== -1 ? '{{ request('chart_period', 'year') }}' : 'year';
+
+    const initPeriodCfg = periodConfig.find(function(c) { return c.key === periodValue; });
+    if (initPeriodCfg && periodLabel) periodLabel.textContent = initPeriodCfg.title;
+
+    function buildPeriodOptions() {
+        periodOptions.innerHTML = '';
+        periodConfig.forEach(function(cfg) {
+            const opt = document.createElement('button');
+            opt.type = 'button';
+            opt.className = 'pp-option' + (cfg.key === periodValue ? ' selected' : '');
+            opt.setAttribute('data-key', cfg.key);
+            opt.innerHTML = '<span class="po-title">' + cfg.title + ' <i class="fa-solid fa-check"></i></span><span class="po-sub">' + cfg.sub + '</span>';
+            opt.addEventListener('click', function(e) {
+                e.stopPropagation();
+                periodOptions.querySelectorAll('.pp-option').forEach(function(o) { o.classList.remove('selected'); });
+                opt.classList.add('selected');
+                periodValue = opt.getAttribute('data-key');
+            });
+            periodOptions.appendChild(opt);
+        });
+    }
+
+    function positionPeriodPopup() {
+        if (window.matchMedia('(max-width: 480px)').matches) {
+            periodPopup.classList.remove('open-up');
+            return;
+        }
+        const rect = periodTrigger.getBoundingClientRect();
+        const spaceBelow = window.innerHeight - rect.bottom;
+        const popupH = periodPopup.offsetHeight;
+        if (spaceBelow < popupH + 12 && rect.top > popupH + 12) {
+            periodPopup.classList.add('open-up');
+        } else {
+            periodPopup.classList.remove('open-up');
+        }
+    }
+
+    function openPeriodPopup() {
+        buildPeriodOptions();
+        periodPopup.classList.add('open');
+        periodTrigger.classList.add('open');
+        positionPeriodPopup();
+    }
+
+    function closePeriodPopup() {
+        periodPopup.classList.remove('open');
+        periodTrigger.classList.remove('open');
+    }
+
+    function applyPeriod() {
+        const cfg = periodConfig.find(function(c) { return c.key === periodValue; });
+        if (cfg) periodLabel.textContent = cfg.title;
+        initChart(periodValue);
+        closePeriodPopup();
+    }
+
+    if (periodTrigger && periodPopup) {
+        periodTrigger.addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (periodPopup.classList.contains('open')) {
+                closePeriodPopup();
+            } else {
+                openPeriodPopup();
+            }
+        });
+        periodOke.addEventListener('click', function(e) {
+            e.stopPropagation();
+            applyPeriod();
+        });
+        periodReset.addEventListener('click', function(e) {
+            e.stopPropagation();
+            periodValue = 'year';
+            buildPeriodOptions();
+            applyPeriod();
+        });
+        document.addEventListener('click', function(e) {
+            const wrap = document.getElementById('periodWrap');
+            if (wrap && !wrap.contains(e.target)) {
+                closePeriodPopup();
+            }
+        });
+    }
+
+    function initFilterPill(inputId, wrapId, triggerId, dropdownId) {
+        const input = document.getElementById(inputId);
+        const wrap = document.getElementById(wrapId);
+        const trigger = document.getElementById(triggerId);
+        const dropdown = document.getElementById(dropdownId);
+        if (!input || !wrap || !trigger || !dropdown) return;
+        const placeholderText = trigger.querySelector('.cst-placeholder') ? trigger.querySelector('.cst-placeholder').textContent : 'Semua';
+
+        function syncSelected() {
+            dropdown.querySelectorAll('.csd-item').forEach(function(item) {
+                item.classList.toggle('selected', item.getAttribute('data-value') === input.value);
+            });
+        }
+
+        function updateTrigger() {
+            const selected = dropdown.querySelector('.csd-item.selected');
+            if (selected) {
+                trigger.innerHTML = '<span class="cst-text">' + selected.textContent.trim() + '</span><span class="cst-arrow"><i class="fa-solid fa-chevron-down"></i></span>';
+            } else {
+                trigger.innerHTML = '<span class="cst-placeholder">' + placeholderText + '</span><span class="cst-arrow"><i class="fa-solid fa-chevron-down"></i></span>';
+            }
+        }
+
+        syncSelected();
+        updateTrigger();
+
+        trigger.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const open = dropdown.classList.contains('open');
+            document.querySelectorAll('.custom-select-dropdown.open').forEach(function(d) {
+                if (d.id !== dropdownId) d.classList.remove('open');
+            });
+            document.querySelectorAll('.custom-select-trigger.open').forEach(function(t) {
+                if (t.id !== triggerId) t.classList.remove('open');
+            });
+            dropdown.classList.toggle('open');
+            trigger.classList.toggle('open');
+            if (dropdown.classList.contains('open')) {
+                const rect = dropdown.getBoundingClientRect();
+                const flip = rect.bottom > window.innerHeight - 8 && rect.top > window.innerHeight / 2;
+                dropdown.classList.toggle('open-up', flip);
+            }
+        });
+
+        dropdown.addEventListener('click', function(e) {
+            const item = e.target.closest('.csd-item');
+            if (!item) return;
+            input.value = item.getAttribute('data-value');
+            syncSelected();
+            updateTrigger();
+            dropdown.classList.remove('open');
+            trigger.classList.remove('open');
+            if (input.closest('form')) input.closest('form').submit();
+        });
+
+        document.addEventListener('click', function() {
+            dropdown.classList.remove('open');
+            trigger.classList.remove('open');
+        });
+    }
+
+    initFilterPill('filterStatusInput', 'filterStatusWrap', 'filterStatusTrigger', 'filterStatusDropdown');
     </script>
     <script src="{{ asset('assets/js/beautycian.js') }}"></script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>

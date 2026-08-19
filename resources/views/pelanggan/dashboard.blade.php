@@ -947,7 +947,11 @@
                         </div>
                     </div>
 
-                    <!-- Rekomendasi -->
+                </div>
+
+                <!-- Dashboard Bottom Row: Produk & Rating -->
+                <div class="dashboard-bottom-grid">
+                    <!-- Produk Yang Sering Dibeli -->
                     <div class="list-widget">
                         <div class="lw-header">
                             <h3>Produk Yang Sering Dibeli</h3>
@@ -975,10 +979,9 @@
                             @endforelse
                         </div>
                     </div>
-                </div>
 
-                <!-- Rating Saya -->
-                <div class="dashboard-bottom-grid">
+                    <!-- Rating Saya & Belum Diberi Rating -->
+                    <div style="display:grid;gap:20px;align-content:start;min-width:0;">
                     <div class="table-widget">
                         <div class="tw-header">
                             <h3><i class="fa-solid fa-star" style="color:#F59E0B;font-size:14px;margin-right:4px;"></i> Rating Saya</h3>
@@ -1047,18 +1050,21 @@
                             <thead>
                                 <tr>
                                     <th>Objek</th>
-                                    <th>Jenis</th>
-                                    <th>Aksi</th>
+                                    <th style="text-align:right;">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @php $adaBelum = $belumDirating['layanan']->isNotEmpty() || $belumDirating['produk']->isNotEmpty(); @endphp
                                 @forelse($belumDirating['layanan'] as $layanan)
                                 <tr>
-                                    <td>{{ $layanan->nm_layanan }}</td>
-                                    <td><span class="badge badge-primary">Layanan</span></td>
                                     <td>
-                                        <a href="{{ $layanan->booking_id ? route('pelanggan.rating.layanan', $layanan->booking_id) : route('layanan.detail', $layanan->id_layanan) }}" class="dash-rate-btn primary">
+                                        <div class="td-flex">
+                                            <span class="badge badge-primary" style="margin-right:6px;flex-shrink:0;">Layanan</span>
+                                            <span style="min-width:0;">{{ $layanan->nm_layanan }}</span>
+                                        </div>
+                                    </td>
+                                    <td style="text-align:right;">
+                                        <a href="{{ $layanan->booking_id ? route('pelanggan.rating.layanan', $layanan->booking_id) : route('layanan.detail', $layanan->id_layanan) }}" class="dash-rate-btn primary" style="white-space:nowrap;">
                                             <i class="fa-solid fa-star"></i> Beri Rating
                                         </a>
                                     </td>
@@ -1067,10 +1073,14 @@
                                 @endforelse
                                 @forelse($belumDirating['produk'] as $produk)
                                 <tr>
-                                    <td>{{ $produk->nm_produk }}</td>
-                                    <td><span class="badge badge-success">Produk</span></td>
                                     <td>
-                                        <a href="{{ route('pelanggan.produk.detail', $produk->id_produk) }}#ulasan" class="dash-rate-btn primary">
+                                        <div class="td-flex">
+                                            <span class="badge badge-success" style="margin-right:6px;flex-shrink:0;">Produk</span>
+                                            <span style="min-width:0;">{{ $produk->nm_produk }}</span>
+                                        </div>
+                                    </td>
+                                    <td style="text-align:right;">
+                                        <a href="{{ route('pelanggan.produk.detail', $produk->id_produk) }}#ulasan" class="dash-rate-btn primary" style="white-space:nowrap;">
                                             <i class="fa-solid fa-star"></i> Beri Rating
                                         </a>
                                     </td>
@@ -1079,7 +1089,7 @@
                                 @endforelse
                                 @if (!$adaBelum)
                                 <tr>
-                                    <td colspan="3" style="text-align:center;padding:20px;color:var(--gray);font-size:13px;">
+                                    <td colspan="2" style="text-align:center;padding:20px;color:var(--gray);font-size:13px;">
                                         Tidak ada yang perlu di-rating.
                                     </td>
                                 </tr>
@@ -1087,6 +1097,7 @@
                             </tbody>
                         </table>
                         </div>
+                    </div>
                     </div>
                 </div>
             </div>
