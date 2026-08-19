@@ -513,7 +513,7 @@
                             <div class="author">
                                 <img src="{{ $ulasan->foto_pemberi }}" alt="{{ $ulasan->nama_pemberi }}" loading="lazy">
                                 <div>
-                                    <h4>{{ $ulasan->nama_pemberi }} <span class="badge-verified"><i class="fa-solid fa-circle-check"></i> Terverifikasi</span></h4>
+                                    <h4>{{ $ulasan->nama_pemberi }}</h4>
                                     <p>{{ $ulasan->tipe_label }} — {{ $ulasan->nama_objek }} · {{ \Carbon\Carbon::parse($ulasan->created_at)->isoFormat('D MMM YYYY') }}</p>
                                 </div>
                             </div>

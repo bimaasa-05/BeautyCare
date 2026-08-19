@@ -322,7 +322,6 @@
                             <img class="uv-avatar" src="{{ $ulasan->foto_pemberi }}" alt="{{ $ulasan->nama_pemberi }}" loading="lazy">
                             <div>
                                 <span class="uv-author-name">{{ $ulasan->nama_pemberi }}</span>
-                                <span class="uv-badge-verified"><i class="fa-solid fa-circle-check"></i> Terverifikasi</span>
                                 <div class="uv-author-date">
                                     {{ \Carbon\Carbon::parse($ulasan->created_at)->isoFormat('D MMM YYYY') }}
                                 </div>
