@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="id">
 
 <head>
@@ -72,12 +72,12 @@
         }
 
         ::-webkit-scrollbar-thumb {
-            background: #f0b8cc;
+            background: #ddd;
             border-radius: 10px;
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: #e58cb0;
+            background: #bbb;
         }
 
         /* ============ PAGE HEADER PREMIUM ============ */
