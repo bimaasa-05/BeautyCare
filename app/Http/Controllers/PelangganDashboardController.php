@@ -79,16 +79,28 @@ class PelangganDashboardController extends Controller
             ->take(3)
             ->get();
 
-        $favoritLayananIds = DetailBooking::select('id_layanan')
+        $favoritLayanan = DetailBooking::select('id_layanan', DB::raw('COUNT(*) as total'))
             ->whereHas('booking', fn($q) => $q->where('id_pelanggan', $idPelanggan))
             ->groupBy('id_layanan')
-            ->orderByRaw('COUNT(*) DESC')
+            ->orderBy('total', 'desc')
             ->limit(4)
-            ->pluck('id_layanan');
+            ->get();
 
-        $layananFavorit = Layanan::whereIn('id_layanan', $favoritLayananIds)->get();
+        $layananFavorit = collect();
+        if ($favoritLayanan->isNotEmpty()) {
+            $layananFavoritModel = Layanan::whereIn('id_layanan', $favoritLayanan->pluck('id_layanan'))
+                ->get()
+                ->keyBy('id_layanan');
+            foreach ($favoritLayanan as $f) {
+                if ($l = $layananFavoritModel->get($f->id_layanan)) {
+                    $l->total = $f->total;
+                    $layananFavorit->push($l);
+                }
+            }
+        }
         if ($layananFavorit->isEmpty()) {
             $layananFavorit = Layanan::where('status', 'Tersedia')->inRandomOrder()->take(4)->get();
+            $layananFavorit->each(fn($l) => $l->total = 1);
         }
 
         $produkTerlarisRaw = DB::table('detail_transaksi')

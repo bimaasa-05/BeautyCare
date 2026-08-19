@@ -60,6 +60,10 @@
         border-radius: 0 0 var(--radius-sm) var(--radius-sm);
     }
 
+    .rating-col .table-widget .table-scroll {
+        max-height: 135px;
+    }
+
     .table-widget .table-scroll::-webkit-scrollbar {
         width: 4px;
     }
@@ -121,6 +125,16 @@
 
     .dashboard-bottom-row .list-widget .stock-grid {
         flex: 1;
+    }
+
+    .dashboard-bottom-grid .list-widget {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .dashboard-bottom-grid .list-widget .stock-grid {
+        flex: 1;
+        grid-auto-rows: 1fr;
     }
 
     .mb-progres {
@@ -206,8 +220,19 @@
         gap: 8px;
     }
 
-    #miniChartFavorit .bar {
+    #miniChartFavorit .mc-col {
         flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 8px;
+    }
+
+    #miniChartFavorit .bar {
+        flex: 0 0 auto;
+        width: 100%;
         max-width: 34px;
         min-width: 14px;
         height: 0;
@@ -221,18 +246,10 @@
     #miniChartFavorit .bar.bar-info    { background: linear-gradient(180deg, #3B82F6, #60A5FA); }
     #miniChartFavorit .bar.bar-warning { background: linear-gradient(180deg, #F59E0B, #FBBF24); }
 
-    .mini-chart-card .mc-labels {
-        display: flex;
-        justify-content: space-between;
-        gap: 6px;
+    #miniChartFavorit .mc-label {
+        width: 100%;
         font-size: 11px;
         color: var(--gray);
-        margin-top: 8px;
-    }
-
-    .mini-chart-card .mc-labels span {
-        flex: 1;
-        min-width: 0;
         text-align: center;
         white-space: nowrap;
         overflow: hidden;
@@ -721,16 +738,14 @@
                             </div>
                             <div class="mc-body" id="miniChartFavorit" style="min-height:140px;">
                                 @php
-                                    $maxHeight = $layananFavorit->max('harga') ?: 1;
+                                    $maxHeight = max($layananFavorit->max('total') ?: 0, 1);
                                     $colors = ['bar-primary', 'bar-success', 'bar-info', 'bar-warning'];
                                 @endphp
                                 @foreach($layananFavorit as $i => $fav)
-                                <span class="bar {{ $colors[$i % 4] }}" data-height="{{ round(($fav->harga / $maxHeight) * 80) }}"></span>
-                                @endforeach
-                            </div>
-                            <div class="mc-labels">
-                                @foreach($layananFavorit as $fav)
-                                <span title="{{ $fav->nm_layanan }}">{{ $fav->nm_layanan }}</span>
+                                <div class="mc-col">
+                                    <span class="bar {{ $colors[$i % 4] }}" data-height="{{ round(($fav->total / $maxHeight) * 80) }}"></span>
+                                    <span class="mc-label" title="{{ $fav->nm_layanan }}">{{ $fav->nm_layanan }}</span>
+                                </div>
                                 @endforeach
                             </div>
                         </div>
@@ -981,7 +996,7 @@
                     </div>
 
                     <!-- Rating Saya & Belum Diberi Rating -->
-                    <div style="display:grid;gap:20px;align-content:start;min-width:0;">
+                    <div class="rating-col" style="display:grid;gap:20px;align-content:start;min-width:0;">
                     <div class="table-widget">
                         <div class="tw-header">
                             <h3><i class="fa-solid fa-star" style="color:#F59E0B;font-size:14px;margin-right:4px;"></i> Rating Saya</h3>
