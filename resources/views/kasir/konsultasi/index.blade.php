@@ -83,7 +83,7 @@
                         </h3>
                         <p class="text-[12px] text-gray-400 mt-0.5">
                             <i class="fa-regular fa-circle-check text-pink-300 mr-1"></i>
-                            Konfirmasi dan tugaskan konsultasi member ke beautycian
+                            Konfirmasi dan tugaskan konsultasi member ke beautician
                         </p>
                     </div>
 
@@ -256,7 +256,7 @@
                     <i class="fa-solid fa-user-check"></i>
                 </div>
                 <h3 id="konfirmasiTitle">Konfirmasi Konsultasi</h3>
-                <p id="konfirmasiBody">Pilih beautycian yang akan menangani konsultasi ini.</p>
+                <p id="konfirmasiBody">Pilih beautician yang akan menangani konsultasi ini.</p>
                 <select name="id_karyawan" id="konfirmasiKaryawan" required>
                     <option value="">— Pilih Beautycian —</option>
                     @foreach($karyawan as $b)
@@ -296,7 +296,7 @@
     function bukaKonfirmasi(id, topik) {
         document.getElementById('konfirmasiForm').action = baseUrl + '/' + id + '/konfirmasi';
         document.getElementById('konfirmasiTitle').textContent = 'Konfirmasi Konsultasi';
-        document.getElementById('konfirmasiBody').innerHTML = 'Pilih beautycian untuk menangani konsultasi "<strong>' + topik + '</strong>".';
+        document.getElementById('konfirmasiBody').innerHTML = 'Pilih beautician untuk menangani konsultasi "<strong>' + topik + '</strong>".';
         document.getElementById('konfirmasiModal').classList.add('show');
     }
     function tutupKonfirmasi() {
@@ -305,7 +305,7 @@
     function bukaTolak(id, topik) {
         document.getElementById('tolakForm').action = baseUrl + '/' + id + '/tolak';
         document.getElementById('tolakTitle').textContent = 'Tolak Konsultasi';
-        document.getElementById('tolakBody').innerHTML = 'Tolak konsultasi "<strong>' + topik + '</strong>"? Kuota pelanggan tidak terpakai.';
+        document.getElementById('tolakBody').innerHTML = 'Tolak konsultasi "<strong>' + topik + '</strong>"?;'
         document.getElementById('tolakModal').classList.add('show');
     }
     function tutupTolak() {
