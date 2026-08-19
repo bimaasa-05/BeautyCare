@@ -513,7 +513,20 @@
                             <div class="author">
                                 <img src="{{ $ulasan->foto_pemberi }}" alt="{{ $ulasan->nama_pemberi }}" loading="lazy">
                                 <div>
-                                    <h4>{{ $ulasan->nama_pemberi }}</h4>
+                                    <h4>{{ $ulasan->nama_pemberi }}
+                                        @if ($ulasan->tingkat_member)
+                                            <span class="tier-badge {{ strtolower($ulasan->tingkat_member) }}">
+                                                @if ($ulasan->tingkat_member === 'Silver')
+                                                    <i class="fa-solid fa-crown"></i>
+                                                @elseif ($ulasan->tingkat_member === 'Gold')
+                                                    <i class="fa-solid fa-trophy"></i>
+                                                @elseif ($ulasan->tingkat_member === 'Platinum')
+                                                    <i class="fa-solid fa-gem"></i>
+                                                @endif
+                                                {{ $ulasan->tingkat_member }}
+                                            </span>
+                                        @endif
+                                    </h4>
                                     <p>{{ $ulasan->tipe_label }} — {{ $ulasan->nama_objek }} · {{ \Carbon\Carbon::parse($ulasan->created_at)->isoFormat('D MMM YYYY') }}</p>
                                 </div>
                             </div>
