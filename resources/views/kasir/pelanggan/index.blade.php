@@ -119,8 +119,8 @@
                             <div class="relative">
                                 <i class="fa-solid fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-[12px]"></i>
                                 <input type="text" placeholder="Cari pelanggan..." name="keyword"
-                                    class="bg-gray-50 border border-gray-100 text-[12px] rounded-full pl-9 pr-4 py-2 w-[220px] focus:outline-none focus:border-pink-300 transition-all placeholder-gray-400"
-                                    value={{ Request()->keyword }}>
+class="bg-gray-50 border border-gray-100 text-[12px] rounded-full pl-9 pr-4 py-2 w-[220px] focus:outline-none focus:border-pink-300 transition-all placeholder-gray-400"
+                                    value="{{ Request()->keyword }}">
                             </div>
                             <a href="{{ route('kasir.pelanggan.create') }}"
                                 class="flex items-center gap-2 bg-[#FF4F87] text-white text-[12px] font-semibold px-4 py-2 rounded-full hover:bg-[#ff3a78] transition-all shadow-sm hover:shadow-md hover:shadow-pink-200">
@@ -134,7 +134,7 @@
                                         class="text-[11px] font-bold text-gray-400 uppercase border-b border-gray-100 bg-pink-50/30">
                                         <th class="py-3 px-4 w-10">#</th>
                                         <th class="py-3 px-4">Nama Lengkap</th>
-                                        <th class="py-3 px-4">Nomor Hp</th>
+                                        <th class="py-3 px-4">Nomor HP</th>
                                         <th class="py-3 px-4">Email</th>
                                         <th class="py-3 px-4">Alamat</th>
                                         <th class="py-3 px-4">Member ID</th>
@@ -156,7 +156,7 @@
                                                         class="font-semibold text-gray-800">{{ $p->nm_pelanggan }}</span>
                                                 </div>
                                             </td>
-                                            <td class="py-3.5 px-4 text-gray-500 font-medium" data-label="Nomor Hp">{{ $p->no_hp ?? '-' }}
+                                            <td class="py-3.5 px-4 text-gray-500 font-medium" data-label="Nomor HP">{{ $p->no_hp ?? '-' }}
                                             </td>
                                             <td class="py-3.5 px-4 font-medium text-gray-500" data-label="Email">{{ $p->email }}</td>
                                             <td class="py-3.5 px-4 font-medium text-gray-500 max-w-[150px] truncate" data-label="Alamat">
