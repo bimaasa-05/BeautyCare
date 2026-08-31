@@ -118,7 +118,7 @@ class CheckoutController extends Controller
             ? ['diskon' => 0, 'aktif' => false, 'level' => null, 'diskon_pct' => 0, 'sisa' => 0]
             : $this->hitungDiskonMember($pelanggan, $subtotal);
 
-        return view('pelanggan.checkout.index', compact('items', 'subtotal', 'claimedPromos', 'banks', 'bankTujuan', 'memberInfo', 'isMembership', 'membership', 'saldo'));
+        return view('pelanggan.checkout.index', compact('items', 'subtotal', 'claimedPromos', 'banks', 'bankTujuan', 'memberInfo', 'isMembership', 'membership', 'saldo', 'pelanggan'));
     }
 
     public function pembayaranMembership(Request $request)
@@ -147,6 +147,11 @@ class CheckoutController extends Controller
         $pelanggan = $this->getOrCreatePelanggan(auth()->user());
         $saldo = (float) $pelanggan->saldo;
         $isRenewal = (int) $pelanggan->id_member === (int) $member->id_member;
+
+        // Validasi alamat - pelanggan harus memiliki alamat sebelum checkout membership
+        if (empty($pelanggan->alamat)) {
+            return back()->with('error', 'Alamat Anda belum diisi. Silakan tambahkan alamat pada profil Anda sebelum melakukan pemesanan.');
+        }
 
         return view('pelanggan.pembayaran.pembayaran-membership', compact('member', 'items', 'subtotal', 'banks', 'bankTujuan', 'isRenewal', 'saldo'));
     }
@@ -180,6 +185,11 @@ class CheckoutController extends Controller
 
         $user = auth()->user();
         $pelanggan = $this->getOrCreatePelanggan($user);
+
+        // Validasi alamat - pelanggan harus memiliki alamat sebelum checkout
+        if (empty($pelanggan->alamat)) {
+            return back()->with('error', 'Alamat Anda belum diisi. Silakan tambahkan alamat pada profil Anda sebelum melakukan pemesanan.');
+        }
 
         $isMembership = (bool) $request->beli_membership;
 
