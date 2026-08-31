@@ -116,7 +116,7 @@ class AdminBeautycianController extends Controller
 
         $beautician->update($request->all());
 
-        buatNotif(auth()->id(), 'Karyawan Diperbarui', 'Karyawan ' . ($beautician->user->nama ?? '') . ' berhasil diperbarui', 'Lainnya', route('admin.karyawan.edit', $beautician->id_karyawan));
+        buatNotif(auth()->id(), 'Karyawan Diperbarui', 'Karyawan ' . ($beautician->user->nama ?? '') . ' berhasil diperbarui', 'Lainnya', route('admin.karyawan.index'));
 
         return redirect()->route('admin.karyawan.index')
             ->with('success', 'Karyawan berhasil diperbarui.');

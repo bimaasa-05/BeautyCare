@@ -11,6 +11,10 @@ class AdminUserController extends Controller
 {
     public function index(Request $request)
     {
+        User::where('status', 'suspend')
+            ->where('suspend_until', '<=', now())
+            ->update(['status' => 'aktif', 'suspend_until' => null]);
+
         $users = User::orderBy('created_at', 'desc');
 
         if ($request->filled('search')) {
@@ -108,7 +112,13 @@ class AdminUserController extends Controller
         $user->update($data);
 
         buatNotif(auth()->id(), 'User Diperbarui', 'User ' . $user->nama . ' berhasil diperbarui', 'Lainnya', route('admin.user.index'));
-        buatNotif($user->id, 'Akun Diperbarui', 'Data akun Anda telah diperbarui oleh ' . auth()->user()->nama, 'Lainnya', route('admin.user.edit', $user->id));
+        $profilUser = match ($user->role) {
+            'admin' => 'admin.profile',
+            'kasir' => 'kasir.profile',
+            'beautycian' => 'beautycian.profile',
+            default => 'pelanggan.profile',
+        };
+        buatNotif($user->id, 'Akun Diperbarui', 'Data akun Anda telah diperbarui oleh ' . auth()->user()->nama, 'Lainnya', route($profilUser));
 
         return redirect()->route('admin.user.index')
             ->with('success', 'User berhasil diperbarui.');
@@ -133,15 +143,27 @@ class AdminUserController extends Controller
     {
         $request->validate([
             'status' => 'required|in:aktif,non_aktif,suspend,menunggu_persetujuan',
-            'suspend_until' => 'nullable|date|after:now',
+            'suspend_until' => 'nullable|date',
         ]);
 
         $user->status = $request->status;
-        $user->suspend_until = ($request->status === 'suspend' && $request->suspend_until) ? $request->suspend_until : null;
+
+        if ($request->status === 'suspend' && $request->suspend_until) {
+            $user->suspend_until = \Carbon\Carbon::parse($request->suspend_until);
+        } else {
+            $user->suspend_until = null;
+        }
+
         $user->save();
 
         $label = $request->status === 'aktif' ? 'diaktifkan' : ($request->status === 'suspend' ? 'disuspend' : 'dinonaktifkan');
-        buatNotif($user->id, 'Status Akun', 'Akun Anda telah ' . $label . ' oleh ' . auth()->user()->nama, 'Lainnya', route('admin.user.index'));
+        $profil = match ($user->role) {
+            'admin' => 'admin.profile',
+            'kasir' => 'kasir.profile',
+            'beautycian' => 'beautycian.profile',
+            default => 'pelanggan.profile',
+        };
+        buatNotif($user->id, 'Status Akun', 'Akun Anda telah ' . $label . ' oleh ' . auth()->user()->nama, 'Lainnya', route($profil));
 
         return redirect()->route('admin.user.index')
             ->with('success', 'Status user berhasil diperbarui.');

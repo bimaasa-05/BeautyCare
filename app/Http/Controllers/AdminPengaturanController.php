@@ -14,7 +14,6 @@ class AdminPengaturanController extends Controller
         if (!$pengaturan) {
             $pengaturan = Pengaturan::create([
                 'push_notification' => true,
-                'sms_notifikasi' => false,
                 'email_laporan' => true,
                 'konfirmasi_otomatis' => true,
                 'nama_salon' => 'BeautyCare Premium',
@@ -31,7 +30,6 @@ class AdminPengaturanController extends Controller
     {
         $request->validate([
             'push_notification' => 'nullable|boolean',
-            'sms_notifikasi' => 'nullable|boolean',
             'email_laporan' => 'nullable|boolean',
             'konfirmasi_otomatis' => 'nullable|boolean',
             'nama_salon' => 'nullable|string|max:100',
@@ -53,7 +51,7 @@ class AdminPengaturanController extends Controller
             $pengaturan = new Pengaturan();
         }
 
-        foreach (['push_notification', 'sms_notifikasi', 'email_laporan', 'konfirmasi_otomatis'] as $field) {
+        foreach (['push_notification', 'email_laporan', 'konfirmasi_otomatis'] as $field) {
             if ($request->has($field)) {
                 $pengaturan->$field = $request->boolean($field);
             }

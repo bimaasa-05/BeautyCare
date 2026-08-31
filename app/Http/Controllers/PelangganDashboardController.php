@@ -196,6 +196,12 @@ class PelangganDashboardController extends Controller
             ->latest()
             ->get();
 
+        $ratingSaya->each(function ($rating) use ($idPelanggan) {
+            if ($rating->tipe === Rating::TIPE_LAYANAN) {
+                $rating->booking_id = Rating::bookingLayananTerbaru($idPelanggan, $rating->id_target)?->id_booking;
+            }
+        });
+
         $belumDirating = Rating::belumDirating(auth()->id(), $idPelanggan);
 
         return view('pelanggan.dashboard', compact(

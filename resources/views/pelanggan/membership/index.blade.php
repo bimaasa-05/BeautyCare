@@ -958,7 +958,7 @@
                                 </div>
                                 <div class="mt-syarat">
                                     <div class="mt-syarat-row">
-                                        <span class="mt-syarat-text"><i class="fa-solid fa-bag-shopping"></i> Min. {{ $member->min_transaksi }}x Pembelian Produk</span>
+                                        <span class="mt-syarat-text"><i class="fa-solid fa-bag-shopping"></i> Min. {{ $member->min_transaksi }}x Transaksi</span>
                                         @if($showSyarat)
                                         <span class="mt-syarat-status {{ $meetsTransaksi ? 'ok' : 'kurang' }}">{{ $meetsTransaksi ? 'Terpenuhi' : 'Kurang ' . $kurangTransaksi . 'x' }}</span>
                                         @endif

@@ -63,6 +63,8 @@ class BookingSlot
 
     /**
      * Slot jam yang sudah lewat dari waktu sekarang (H:i).
+     * Slot X:00 dianggap lewat hanya setelah 1 jam penuh berlalu (now >= X+1:00),
+     * sehingga misal pukul 08.xx slot 08.00 masih bisa dipilih, baru terkunci saat pukul 09.00.
      * Hanya relevan untuk tanggal hari ini; tanggal lain mengembalikan [].
      */
     public static function jamLewat($tanggal = null)
@@ -74,7 +76,9 @@ class BookingSlot
         $now = now();
         return array_values(array_filter(
             self::slotJam(),
-            fn ($slot) => \Carbon\Carbon::parse($now->toDateString() . ' ' . $slot)->lte($now)
+            fn ($slot) => \Carbon\Carbon::parse($now->toDateString() . ' ' . $slot)
+                ->addHour()
+                ->lte($now)
         ));
     }
 

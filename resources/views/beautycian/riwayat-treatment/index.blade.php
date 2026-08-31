@@ -10,6 +10,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/dashboard.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/responsive.css') }}">
@@ -25,6 +26,37 @@
         .doc-badge { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 100px; font-size: 11px; font-weight: 600; }
         .doc-badge.has-doc { background: #D1FAE5; color: #059669; }
         .doc-badge.no-doc { background: #FEF3C7; color: #D97706; }
+
+        /* ─── Filter custom select (pola pelanggan custom-select-wrap) ─── */
+        .csw-pill { position: relative; min-width: 150px; }
+        .csw-pill .custom-select-trigger {
+            display: flex; align-items: center; justify-content: space-between; gap: 10px;
+            width: 100%; padding: 8px 16px; border-radius: 100px;
+            border: 1.5px solid #E5E7EB; background: #fff; font-size: 12px;
+            font-family: 'Poppins', sans-serif; color: var(--dark); cursor: pointer;
+            transition: all 0.2s ease; user-select: none; box-sizing: border-box;
+        }
+        .csw-pill .custom-select-trigger:hover { border-color: #FFB6CD; }
+        .csw-pill .custom-select-trigger.open { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(255, 79, 135, 0.1); }
+        .csw-pill .custom-select-trigger .cst-placeholder { color: #bbb; }
+        .csw-pill .custom-select-trigger .cst-text { color: var(--dark); }
+        .csw-pill .custom-select-trigger .cst-arrow { font-size: 11px; color: #999; transition: transform 0.2s ease; flex-shrink: 0; }
+        .csw-pill .custom-select-trigger.open .cst-arrow { transform: rotate(180deg); }
+        .csw-pill .custom-select-dropdown {
+            position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: #fff;
+            border: 1.5px solid var(--border); border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+            z-index: 100; display: none; max-height: 200px; overflow-y: auto; padding: 4px;
+        }
+        .csw-pill .custom-select-dropdown.open { display: block; }
+        .csw-pill .custom-select-dropdown.open-up { top: auto; bottom: calc(100% + 4px); }
+        .csw-pill .custom-select-dropdown .csd-item {
+            padding: 9px 12px; font-size: 12px; border-radius: 8px; cursor: pointer;
+            transition: background 0.15s ease; color: var(--dark);
+        }
+        .csw-pill .custom-select-dropdown .csd-item:hover { background: #FFF0F5; }
+        .csw-pill .custom-select-dropdown .csd-item.selected { background: #FFE4EC; color: var(--primary); font-weight: 600; }
+        .csw-pill .custom-select-dropdown::-webkit-scrollbar { width: 5px; }
+        .csw-pill .custom-select-dropdown::-webkit-scrollbar-thumb { background: #e5e7eb; border-radius: 10px; }
     </style>
 </head>
 
@@ -129,12 +161,19 @@
                         <div class="bc-actions">
                             <form action="{{ route('beautycian.riwayat-treatment.index') }}" method="GET">
                                 <div class="filter-group">
-                                    <select name="filter_bulan" onchange="this.form.submit()">
-                                        <option value="">Semua Bulan</option>
-                                        @foreach($bulanList as $val => $label)
-                                        <option value="{{ $val }}" {{ request('filter_bulan') == $val ? 'selected' : '' }}>{{ $label }}</option>
-                                        @endforeach
-                                    </select>
+                                    <input type="hidden" name="filter_bulan" id="filterBulanInput" value="{{ request('filter_bulan') }}">
+                                    <div class="csw-pill" id="filterBulanWrap">
+                                        <div class="custom-select-trigger" id="filterBulanTrigger">
+                                            <span class="cst-placeholder">Semua Bulan</span>
+                                            <span class="cst-arrow"><i class="fa-solid fa-chevron-down"></i></span>
+                                        </div>
+                                        <div class="custom-select-dropdown" id="filterBulanDropdown">
+                                            <div class="csd-item {{ request('filter_bulan') == '' ? 'selected' : '' }}" data-value="">Semua Bulan</div>
+                                            @foreach($bulanList as $val => $label)
+                                            <div class="csd-item {{ request('filter_bulan') == $val ? 'selected' : '' }}" data-value="{{ $val }}">{{ $label }}</div>
+                                            @endforeach
+                                        </div>
+                                    </div>
                                     <div class="search-input-wrap" style="display:inline-block;">
                                         <svg class="si-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
                                         <input type="text" name="search" placeholder="Cari pelanggan..." value="{{ $search }}">
@@ -270,6 +309,70 @@
 
     <script src="{{ asset('assets/js/beautycian.js') }}"></script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
+    <script>
+        function initFilterPill(inputId, wrapId, triggerId, dropdownId) {
+            const input = document.getElementById(inputId);
+            const wrap = document.getElementById(wrapId);
+            const trigger = document.getElementById(triggerId);
+            const dropdown = document.getElementById(dropdownId);
+            if (!input || !wrap || !trigger || !dropdown) return;
+            const placeholderText = trigger.querySelector('.cst-placeholder') ? trigger.querySelector('.cst-placeholder').textContent : 'Semua';
+
+            function syncSelected() {
+                dropdown.querySelectorAll('.csd-item').forEach(function(item) {
+                    item.classList.toggle('selected', item.getAttribute('data-value') === input.value);
+                });
+            }
+
+            function updateTrigger() {
+                const selected = dropdown.querySelector('.csd-item.selected');
+                if (selected) {
+                    trigger.innerHTML = '<span class="cst-text">' + selected.textContent.trim() + '</span><span class="cst-arrow"><i class="fa-solid fa-chevron-down"></i></span>';
+                } else {
+                    trigger.innerHTML = '<span class="cst-placeholder">' + placeholderText + '</span><span class="cst-arrow"><i class="fa-solid fa-chevron-down"></i></span>';
+                }
+            }
+
+            syncSelected();
+            updateTrigger();
+
+            trigger.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const open = dropdown.classList.contains('open');
+                document.querySelectorAll('.custom-select-dropdown.open').forEach(function(d) {
+                    if (d.id !== dropdownId) d.classList.remove('open');
+                });
+                document.querySelectorAll('.custom-select-trigger.open').forEach(function(t) {
+                    if (t.id !== triggerId) t.classList.remove('open');
+                });
+                dropdown.classList.toggle('open');
+                trigger.classList.toggle('open');
+                if (dropdown.classList.contains('open')) {
+                    const rect = dropdown.getBoundingClientRect();
+                    const flip = rect.bottom > window.innerHeight - 8 && rect.top > window.innerHeight / 2;
+                    dropdown.classList.toggle('open-up', flip);
+                }
+            });
+
+            dropdown.addEventListener('click', function(e) {
+                const item = e.target.closest('.csd-item');
+                if (!item) return;
+                input.value = item.getAttribute('data-value');
+                syncSelected();
+                updateTrigger();
+                dropdown.classList.remove('open');
+                trigger.classList.remove('open');
+                if (input.closest('form')) input.closest('form').submit();
+            });
+
+            document.addEventListener('click', function() {
+                dropdown.classList.remove('open');
+                trigger.classList.remove('open');
+            });
+        }
+
+        initFilterPill('filterBulanInput', 'filterBulanWrap', 'filterBulanTrigger', 'filterBulanDropdown');
+    </script>
 </body>
 
 </html>
