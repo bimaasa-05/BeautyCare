@@ -53,7 +53,7 @@ class AdminUserController extends Controller
             'password' => 'required|string|min:6',
             'no_hp'    => 'nullable|string|max:20',
             'role'     => 'required|in:admin,kasir,beautycian,pelanggan',
-            'status'   => 'required|in:aktif,non_aktif,suspend,menunggu_persetujuan',
+            'status'   => 'required|in:aktif,non_aktif,suspend,menunggu_persetujuan,menunggu_verifikasi',
             'suspend_until' => 'nullable|date|after:now',
             'foto'     => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
@@ -87,7 +87,7 @@ class AdminUserController extends Controller
             'password' => 'nullable|string|min:6',
             'no_hp'    => 'nullable|string|max:20',
             'role'     => 'required|in:admin,kasir,beautycian,pelanggan',
-            'status'   => 'required|in:aktif,non_aktif,suspend,menunggu_persetujuan',
+            'status'   => 'required|in:aktif,non_aktif,suspend,menunggu_persetujuan,menunggu_verifikasi',
             'suspend_until' => 'nullable|date|after:now',
             'foto'     => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
@@ -138,7 +138,7 @@ class AdminUserController extends Controller
     public function updateStatus(Request $request, User $user)
     {
         $request->validate([
-            'status' => 'required|in:aktif,non_aktif,suspend,menunggu_persetujuan',
+            'status' => 'required|in:aktif,non_aktif,suspend,menunggu_persetujuan,menunggu_verifikasi',
             'suspend_until' => 'nullable|date|after:now',
         ]);
 
