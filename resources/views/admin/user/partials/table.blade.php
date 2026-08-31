@@ -21,21 +21,19 @@
     </td>
     <td class="py-3.5 px-4" data-label="Status">
         <div class="flex flex-col gap-1">
-            <form action="{{ route('admin.user.update-status', $user->id) }}" method="POST" class="inline-flex items-center gap-1">
+            <form action="{{ route('admin.user.update-status', $user->id) }}" method="POST" class="inline-flex items-center gap-1 status-form">
                 @csrf
-                <select name="status" onchange="this.form.submit()"
-                    class="text-[11px] font-semibold px-2 py-1 rounded-full border-0 cursor-pointer appearance-none
+                <select name="status"
+                    class="text-[11px] font-semibold px-2 py-1 rounded-full border-0 cursor-pointer appearance-none status-select
                     @if ($user->status === 'aktif') bg-emerald-50 text-emerald-600
                     @elseif ($user->status === 'suspend') bg-amber-50 text-amber-600
                     @elseif ($user->status === 'menunggu_persetujuan') bg-blue-50 text-blue-600
-                    @elseif ($user->status === 'menunggu_verifikasi') bg-indigo-50 text-indigo-600
                     @elseif ($user->status === 'non_aktif') bg-gray-50 text-gray-600
-                    @else bg-red-50 text-red-600 @endif">
+                    @else bg-gray-50 text-gray-600 @endif">
                     <option value="aktif" {{ $user->status === 'aktif' ? 'selected' : '' }}>Aktif</option>
                     <option value="non_aktif" {{ $user->status === 'non_aktif' ? 'selected' : '' }}>Non Aktif</option>
                     <option value="suspend" {{ $user->status === 'suspend' ? 'selected' : '' }}>Suspend</option>
                     <option value="menunggu_persetujuan" {{ $user->status === 'menunggu_persetujuan' ? 'selected' : '' }}>Menunggu Persetujuan</option>
-                    <option value="menunggu_verifikasi" {{ $user->status === 'menunggu_verifikasi' ? 'selected' : '' }}>Menunggu Verifikasi</option>
                 </select>
             </form>
             @if ($user->status === 'suspend' && $user->suspend_until)

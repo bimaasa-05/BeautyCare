@@ -54,8 +54,8 @@ class VerificationController extends Controller
         }
 
         $user = User::where('email', $email)->first();
-        if (! $user || $user->status !== 'menunggu_verifikasi') {
-            return redirect()->route('login')->with('status', 'Akun tidak ditemukan atau sudah diverifikasi.');
+        if (! $user || $user->status !== 'menunggu_persetujuan') {
+            return redirect()->route('login')->with('status', 'Akun tidak ditemukan atau sudah diproses.');
         }
 
         return view('login.otp-verification', compact('email'));
@@ -81,11 +81,11 @@ class VerificationController extends Controller
 
         $user = User::where('email', $request->email)->first();
 
-        if (! $user || $user->status !== 'menunggu_verifikasi') {
+        if (! $user || $user->status !== 'menunggu_persetujuan') {
             return redirect()->route('login')->withErrors(['email' => 'Akun tidak ditemukan atau sudah diproses. Silakan masuk.']);
         }
 
-        $user->update(['status' => 'aktif', 'email_verified_at' => now()]);
+        $user->update(['email_verified_at' => now()]);
 
         $existingPelanggan = Pelanggan::where('email', $user->email)->whereNull('id_user')->first();
         if ($existingPelanggan) {
@@ -101,13 +101,15 @@ class VerificationController extends Controller
             ]);
         }
 
-        buatNotifRole('admin', 'Pelanggan Baru Terverifikasi', $user->nama . ' (' . $user->email . ') baru saja mendaftar dan verifikasi email berhasil.', 'Registrasi', route('admin.pelanggan.index'));
+        buatNotifRole('admin', 'Pelanggan Terverifikasi', $user->nama . ' (' . $user->email . ') telah memverifikasi email dan menunggu persetujuan admin.', 'Registrasi', route('admin.pelanggan.index'));
 
         Auth::login($user);
 
         session()->forget(['otp_email']);
 
-        return LoginSupport::afterLogin($user, $request);
+        return redirect()->route('login')->withErrors([
+            'email' => 'Verifikasi email berhasil! Akun Anda sedang menunggu persetujuan admin. Silakan hubungi admin.',
+        ]);
     }
 
     public function resend(Request $request): RedirectResponse
@@ -116,7 +118,7 @@ class VerificationController extends Controller
             'email' => ['required', 'email'],
         ]);
 
-        if (! User::where('email', $request->email)->where('status', 'menunggu_verifikasi')->exists()) {
+        if (! User::where('email', $request->email)->where('status', 'menunggu_persetujuan')->exists()) {
             return redirect()->route('verification.otp.show', ['email' => $request->email])
                 ->withErrors(['email' => 'Akun tidak ditemukan atau sudah diverifikasi.']);
         }

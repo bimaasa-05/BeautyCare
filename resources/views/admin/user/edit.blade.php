@@ -265,7 +265,6 @@
                                     <option value="non_aktif" {{ old('status', $user->status) == 'non_aktif' ? 'selected' : '' }}>Non Aktif</option>
                                     <option value="suspend" {{ old('status', $user->status) == 'suspend' ? 'selected' : '' }}>Suspend</option>
                                     <option value="menunggu_persetujuan" {{ old('status', $user->status) == 'menunggu_persetujuan' ? 'selected' : '' }}>Menunggu Persetujuan</option>
-                                    <option value="menunggu_verifikasi" {{ old('status', $user->status) == 'menunggu_verifikasi' ? 'selected' : '' }}>Menunggu Verifikasi</option>
                                 </select>
                                 @error('status')
                                     <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>

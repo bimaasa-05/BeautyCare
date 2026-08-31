@@ -29,10 +29,6 @@ class LoginSupport
             return 'Akun Anda sedang menunggu persetujuan admin. Silakan hubungi admin.';
         }
 
-        if ($user->status === 'menunggu_verifikasi') {
-            return 'Akun Anda belum diverifikasi. Silakan cek email Anda untuk kode verifikasi dan selesaikan verifikasi.';
-        }
-
         return 'Akun Anda belum diaktifkan oleh admin. Silakan hubungi admin.';
     }
 

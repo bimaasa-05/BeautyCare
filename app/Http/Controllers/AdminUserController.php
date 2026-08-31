@@ -11,6 +11,10 @@ class AdminUserController extends Controller
 {
     public function index(Request $request)
     {
+        User::where('status', 'suspend')
+            ->where('suspend_until', '<=', now())
+            ->update(['status' => 'aktif', 'suspend_until' => null]);
+
         $users = User::orderBy('created_at', 'desc');
 
         if ($request->filled('search')) {
@@ -53,7 +57,7 @@ class AdminUserController extends Controller
             'password' => 'required|string|min:6',
             'no_hp'    => 'nullable|string|max:20',
             'role'     => 'required|in:admin,kasir,beautycian,pelanggan',
-            'status'   => 'required|in:aktif,non_aktif,suspend,menunggu_persetujuan,menunggu_verifikasi',
+            'status'   => 'required|in:aktif,non_aktif,suspend,menunggu_persetujuan',
             'suspend_until' => 'nullable|date|after:now',
             'foto'     => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
@@ -87,7 +91,7 @@ class AdminUserController extends Controller
             'password' => 'nullable|string|min:6',
             'no_hp'    => 'nullable|string|max:20',
             'role'     => 'required|in:admin,kasir,beautycian,pelanggan',
-            'status'   => 'required|in:aktif,non_aktif,suspend,menunggu_persetujuan,menunggu_verifikasi',
+            'status'   => 'required|in:aktif,non_aktif,suspend,menunggu_persetujuan',
             'suspend_until' => 'nullable|date|after:now',
             'foto'     => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
@@ -138,12 +142,18 @@ class AdminUserController extends Controller
     public function updateStatus(Request $request, User $user)
     {
         $request->validate([
-            'status' => 'required|in:aktif,non_aktif,suspend,menunggu_persetujuan,menunggu_verifikasi',
-            'suspend_until' => 'nullable|date|after:now',
+            'status' => 'required|in:aktif,non_aktif,suspend,menunggu_persetujuan',
+            'suspend_until' => 'nullable|date',
         ]);
 
         $user->status = $request->status;
-        $user->suspend_until = ($request->status === 'suspend' && $request->suspend_until) ? $request->suspend_until : null;
+
+        if ($request->status === 'suspend' && $request->suspend_until) {
+            $user->suspend_until = \Carbon\Carbon::parse($request->suspend_until);
+        } else {
+            $user->suspend_until = null;
+        }
+
         $user->save();
 
         $label = $request->status === 'aktif' ? 'diaktifkan' : ($request->status === 'suspend' ? 'disuspend' : 'dinonaktifkan');

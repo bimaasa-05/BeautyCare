@@ -38,7 +38,7 @@ class RegisteredUserController extends Controller
             'no_hp' => $request->no_hp,
             'password' => Hash::make($request->password),
             'role' => 'pelanggan',
-            'status' => 'menunggu_verifikasi',
+            'status' => 'menunggu_persetujuan',
         ]);
 
         VerificationController::kirimOtp($user->email);
@@ -57,11 +57,11 @@ class RegisteredUserController extends Controller
             ]);
         }
 
-        buatNotifRole('admin', 'Pelanggan Baru Mendaftar', $request->name.' ('.$request->email.') baru saja mendaftar dan menunggu verifikasi OTP.', 'Registrasi', route('admin.pelanggan.index'));
+        buatNotifRole('admin', 'Pelanggan Baru Mendaftar', $request->name.' ('.$request->email.') baru saja mendaftar dan menunggu persetujuan admin.', 'Registrasi', route('admin.pelanggan.index'));
 
         event(new Registered($user));
 
-        $pesan = 'Akun Anda sedang menunggu persetujuan admin. atau silahkan hubungi admin dengan klik icon WhatsApp yang ada di bawah ini';
+        $pesan = 'Akun Anda telah dibuat. Silakan verifikasi email Anda terlebih dahulu.';
 
         return \redirect()->route('login')->withErrors(['email' => $pesan]);
     }
