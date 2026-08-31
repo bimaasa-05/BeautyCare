@@ -358,7 +358,7 @@
                 }
             </style>
 
-            <div id="suspendModal" class="absolute inset-0 bg-black/40 backdrop-blur-sm z-[9999] hidden items-center justify-center">
+            <div id="suspendModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[9999] hidden items-center justify-center">
                 <div class="bg-white rounded-xl p-4 w-[280px] shadow-2xl" style="animation: cpScaleIn 0.25s ease;">
                     <h3 class="text-[13px] font-bold text-gray-800 mb-3">Suspend Sampai</h3>
                     <input type="datetime-local" id="suspendUntilInput"
@@ -448,9 +448,13 @@
         var confirmBtn = document.getElementById('suspendConfirmBtn');
         var cancelBtn = document.getElementById('suspendCancelBtn');
         var pendingForm = null;
+        var pendingSelect = null;
+        var previousValue = null;
 
-        function showModal(form) {
+        function showModal(form, select) {
             pendingForm = form;
+            pendingSelect = select;
+            previousValue = select.dataset.prevValue || select.options[0].value;
             var now = new Date();
             now.setDate(now.getDate() + 1);
             now.setHours(23, 59, 0, 0);
@@ -464,7 +468,12 @@
         function hideModal() {
             modal.classList.add('hidden');
             modal.classList.remove('flex');
+            if (pendingSelect && previousValue) {
+                pendingSelect.value = previousValue;
+            }
             pendingForm = null;
+            pendingSelect = null;
+            previousValue = null;
         }
 
         confirmBtn.addEventListener('click', function () {
@@ -478,7 +487,11 @@
             }
             hidden.value = input.value;
             var formToSubmit = pendingForm;
-            hideModal();
+            pendingForm = null;
+            pendingSelect = null;
+            previousValue = null;
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
             formToSubmit.submit();
         });
 
@@ -492,7 +505,7 @@
             if (!form) return;
             if (sel.value === 'suspend') {
                 e.preventDefault();
-                showModal(form);
+                showModal(form, sel);
             } else {
                 form.submit();
             }

@@ -23,7 +23,7 @@
         <div class="flex flex-col gap-1">
             <form action="{{ route('admin.user.update-status', $user->id) }}" method="POST" class="inline-flex items-center gap-1 status-form">
                 @csrf
-                <select name="status"
+                <select name="status" data-prev-value="{{ $user->status }}"
                     class="text-[11px] font-semibold px-2 py-1 rounded-full border-0 cursor-pointer appearance-none status-select
                     @if ($user->status === 'aktif') bg-emerald-50 text-emerald-600
                     @elseif ($user->status === 'suspend') bg-amber-50 text-amber-600
