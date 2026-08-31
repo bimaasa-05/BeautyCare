@@ -12,7 +12,6 @@ class Pengaturan extends Model
 
     protected $fillable = [
         'push_notification',
-        'sms_notifikasi',
         'email_laporan',
         'konfirmasi_otomatis',
         'nama_salon',
@@ -30,7 +29,6 @@ class Pengaturan extends Model
 
     protected $casts = [
         'push_notification' => 'boolean',
-        'sms_notifikasi' => 'boolean',
         'email_laporan' => 'boolean',
         'konfirmasi_otomatis' => 'boolean',
     ];

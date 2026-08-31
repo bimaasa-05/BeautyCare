@@ -194,7 +194,7 @@
     <div class="dashboard-layout">
         @include('layouts.sidebar')
 
-        <main class="main-content">
+        <main class="main-content" style="position: relative;">
             @include('layouts.header2')
 
             <!-- Dashboard Content -->
@@ -350,6 +350,33 @@
                 </div>
 
             </div>
+
+            <style>
+                @keyframes cpScaleIn {
+                    from { transform: scale(0.92); opacity: 0; }
+                    to { transform: scale(1); opacity: 1; }
+                }
+            </style>
+
+            <div id="suspendModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[9999] hidden items-center justify-center">
+                <div class="bg-white rounded-xl p-4 w-[280px] shadow-2xl" style="animation: cpScaleIn 0.25s ease;">
+                    <h3 class="text-[13px] font-bold text-gray-800 mb-3">Suspend Sampai</h3>
+                    <input type="datetime-local" id="suspendUntilInput"
+                        class="w-full bg-gray-50 border border-gray-200 text-[12px] rounded-lg px-3 py-2 mb-3 focus:outline-none focus:border-amber-300 transition-all">
+                    <div class="flex gap-2">
+                        <button type="button" id="suspendCancelBtn"
+                            class="flex-1 px-3 py-1.5 rounded-lg text-[12px] font-semibold border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 cursor-pointer">
+                            Batal
+                        </button>
+                        <button type="button" id="suspendConfirmBtn"
+                            class="flex-1 px-3 py-1.5 rounded-lg text-[12px] font-semibold text-white cursor-pointer"
+                            style="background: linear-gradient(135deg, #D97706, #F59E0B);">
+                            Konfirmasi
+                        </button>
+                    </div>
+                </div>
+            </div>
+
         </main>
     </div>
 
@@ -413,6 +440,78 @@
     </script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
     @include('partials.confirm-modal')
+
+    <script>
+    (function () {
+        var modal = document.getElementById('suspendModal');
+        var input = document.getElementById('suspendUntilInput');
+        var confirmBtn = document.getElementById('suspendConfirmBtn');
+        var cancelBtn = document.getElementById('suspendCancelBtn');
+        var pendingForm = null;
+        var pendingSelect = null;
+        var previousValue = null;
+
+        function showModal(form, select) {
+            pendingForm = form;
+            pendingSelect = select;
+            previousValue = select.dataset.prevValue || select.options[0].value;
+            var now = new Date();
+            now.setDate(now.getDate() + 1);
+            now.setHours(23, 59, 0, 0);
+            var offset = now.getTimezoneOffset();
+            var local = new Date(now.getTime() - (offset * 60000));
+            input.value = local.toISOString().slice(0, 16);
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function hideModal() {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            if (pendingSelect && previousValue) {
+                pendingSelect.value = previousValue;
+            }
+            pendingForm = null;
+            pendingSelect = null;
+            previousValue = null;
+        }
+
+        confirmBtn.addEventListener('click', function () {
+            if (!pendingForm) return;
+            var hidden = pendingForm.querySelector('input[name="suspend_until"]');
+            if (!hidden) {
+                hidden = document.createElement('input');
+                hidden.type = 'hidden';
+                hidden.name = 'suspend_until';
+                pendingForm.appendChild(hidden);
+            }
+            hidden.value = input.value;
+            var formToSubmit = pendingForm;
+            pendingForm = null;
+            pendingSelect = null;
+            previousValue = null;
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            formToSubmit.submit();
+        });
+
+        cancelBtn.addEventListener('click', hideModal);
+        modal.addEventListener('click', function (e) { if (e.target === modal) hideModal(); });
+
+        document.addEventListener('change', function (e) {
+            var sel = e.target.closest('.status-select');
+            if (!sel) return;
+            var form = sel.closest('.status-form');
+            if (!form) return;
+            if (sel.value === 'suspend') {
+                e.preventDefault();
+                showModal(form, sel);
+            } else {
+                form.submit();
+            }
+        }, true);
+    })();
+    </script>
 </body>
 
 </html>

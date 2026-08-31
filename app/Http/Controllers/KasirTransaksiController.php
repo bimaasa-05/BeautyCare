@@ -96,6 +96,10 @@ class KasirTransaksiController extends Controller
         }
         $kembali = max(0, $dibayar - $total);
 
+        if ($status === 'Lunas' && $dibayar < $total) {
+            return back()->withInput()->with('error', 'Nominal dibayar kurang dari total tagihan. Periksa kembali jumlah pembayaran.');
+        }
+
         $data = [
             'id_booking' => null,
             'id_pelanggan' => $request->id_pelanggan,
@@ -336,6 +340,10 @@ class KasirTransaksiController extends Controller
         }
         $kembali = max(0, $dibayar - $total);
 
+        if ($status === 'Lunas' && $dibayar < $total) {
+            return back()->withInput()->with('error', 'Nominal dibayar kurang dari total tagihan. Periksa kembali jumlah pembayaran.');
+        }
+
         $data = [
             'id_pelanggan' => $request->id_pelanggan,
             'tanggal' => $request->tanggal,
@@ -427,6 +435,10 @@ class KasirTransaksiController extends Controller
     {
         $transaksi = Transaksi::with('detail')->findOrFail($id);
 
+        if (in_array($transaksi->status, ['Lunas', 'DP Dibayar'])) {
+            return redirect('/kasir/transaksi')->with('error', 'Transaksi berstatus ' . $transaksi->status . ' tidak bisa dihapus. Ubah status transaksi ke Batal jika perlu.');
+        }
+
         foreach ($transaksi->detail as $detail) {
             if ($detail->jenis === 'Produk') {
                 $produk = Produk::find($detail->id_item);
@@ -441,6 +453,7 @@ class KasirTransaksiController extends Controller
         if ($transaksi->bukti_bayar) {
             \Illuminate\Support\Facades\Storage::disk('public')->delete($transaksi->bukti_bayar);
         }
+        Pembayaran::where('id_transaksi', $id)->delete();
         $transaksi->delete();
         return redirect('/kasir/transaksi')->with('message', 'Transaksi berhasil dihapus');
     }

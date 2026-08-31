@@ -40,6 +40,12 @@ class KasirCheckinController extends Controller
     public function checkIn($id)
     {
         $booking = Booking::findOrFail($id);
+
+        if (!in_array($booking->status, ['menunggu', 'dikonfirmasi'])) {
+            return redirect()->route('kasir.checkin.index')
+                ->with('error', 'Booking ini tidak bisa di-check in pada status saat ini.');
+        }
+
         $booking->update(['status' => 'diproses', 'jam_mulai_aktual' => now()]);
 
         ActivityLogger::log('Check In', auth()->user()->nama . ' check in pelanggan ' . ($booking->pelanggan->nm_pelanggan ?? '-'), 'Reservasi', $id);
@@ -56,6 +62,12 @@ class KasirCheckinController extends Controller
     public function undoCheckIn($id)
     {
         $booking = Booking::findOrFail($id);
+
+        if ($booking->status !== 'diproses') {
+            return redirect()->route('kasir.checkin.index')
+                ->with('error', 'Check in tidak bisa dibatalkan pada status saat ini.');
+        }
+
         $booking->update(['status' => 'dikonfirmasi', 'jam_mulai_aktual' => null]);
 
         ActivityLogger::log('Batalkan Check In', auth()->user()->nama . ' membatalkan check in pelanggan ' . ($booking->pelanggan->nm_pelanggan ?? '-'), 'Reservasi', $id);

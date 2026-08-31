@@ -275,7 +275,7 @@
                                     <div @click="cat = cat === 'cash' ? '' : 'cash'"
                                         class="bg-slate-50/50 px-6 py-4 flex items-center justify-between cursor-pointer select-none border-b border-slate-100 hover:bg-slate-50 transition-colors">
                                         <div class="flex items-center gap-3">
-                                            <span class="text-lg">💵</span>
+                                            <span class="text-lg"><i class="fa-solid fa-money-bill-wave"></i></span>
                                             <div>
                                                 <h3 class="text-xs font-black text-slate-800 uppercase tracking-wider">Tunai</h3>
                                                 <p class="text-[10px] text-slate-400 font-semibold mt-0.5">Pembayaran langsung dengan uang tunai</p>
@@ -331,7 +331,7 @@
                                     <div @click="cat = cat === 'bank' ? '' : 'bank'"
                                         class="bg-slate-50/50 px-6 py-4 flex items-center justify-between cursor-pointer select-none border-b border-slate-100 hover:bg-slate-50 transition-colors">
                                         <div class="flex items-center gap-3">
-                                            <span class="text-lg">🏦</span>
+                                            <span class="text-lg"><i class="fa-solid fa-building-columns"></i></span>
                                             <div>
                                                 <h3 class="text-xs font-black text-slate-800 uppercase tracking-wider">Bank Transfer (Virtual Account)</h3>
                                                 <p class="text-[10px] text-slate-400 font-semibold mt-0.5">Transfer melalui rekening bank BRI, BCA, Mandiri, BNI, atau BSI</p>
@@ -431,7 +431,7 @@
                                                             <span class="bank-card-name">{{ strtoupper($ew->nama_bank) }}</span>
                                                             <span class="bank-card-chip"><i class="fa-solid fa-wallet"></i></span>
                                                         </div>
-                                                        <div class="bank-card-label">No Rekening</div>
+                                                        <div class="bank-card-label">No. HP / WhatsApp</div>
                                                         <div class="bank-card-va">{{ $ew->nomor_telepon ?? '-' }}</div>
                                                         <div class="bank-card-owner">
                                                             <span>Atas Nama</span>
@@ -460,7 +460,6 @@
                                             <option value="Batal" {{ old('status') == 'Batal' ? 'selected' : '' }}>Batal</option>
                                         </select>
                                         <p class="text-[11px] text-gray-400 mt-1">Dibayar otomatis: <b>Rp {{ number_format($totalBayar, 0, ',', '.') }}</b> — tanpa kembalian</p>
-                                        <p class="text-[11px] text-gray-400 mt-1">Dibayar otomatis: <b>Rp {{ number_format($sisaBayar, 0, ',', '.') }}</b> — tanpa kembalian</p>
                                     </div>
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div class="form-group">

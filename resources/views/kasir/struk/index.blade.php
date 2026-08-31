@@ -36,8 +36,10 @@
         $pg = \Illuminate\Support\Facades\DB::table('pengaturan')->first();
         $namaToko = ($pg->nama_salon ?? '') ?: 'BeautyCare Official';
         $telpToko = ($pg->telepon ?? '') ?: '0101010001';
-        $alamat1 = 'Jl. Bandung dan Indramayu';
-        $alamat2 = 'Sahabatan, Kota, oslo';
+        $alamatRaw = trim((string) ($pg->alamat ?? ''));
+        $alamatLines = $alamatRaw === '' ? [] : preg_split('/\r\n|\r|\n/', $alamatRaw, -1, PREG_SPLIT_NO_EMPTY);
+        $alamat1 = $alamatLines[0] ?? 'Jl. Bandung dan Indramayu';
+        $alamat2 = $alamatLines[1] ?? 'Sahabatan, Kota';
 
         // ===== Konstanta =====
         $sep   = str_repeat('-', 32);

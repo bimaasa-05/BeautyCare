@@ -57,7 +57,7 @@
                     <td>{{ \Carbon\Carbon::parse($t->tanggal)->format('d/m/Y') }}</td>
                     <td>Rp {{ number_format($t->total, 0, ',', '.') }}</td>
                     <td>{{ $t->metode_byr }}</td>
-                    <td class="status-{{ strtolower($t->status) }}">{{ $t->status }}</td>
+                    <td class="{{ in_array($t->status, ['Lunas', 'DP Dibayar', 'Selesai']) ? 'status-lunas' : (in_array($t->status, ['Batal', 'Gagal', 'Dibatalkan']) ? 'status-batal' : 'status-pending') }}">{{ $t->status }}</td>
                 </tr>
             @empty
                 <tr>

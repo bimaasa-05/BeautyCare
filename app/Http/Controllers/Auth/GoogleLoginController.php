@@ -60,15 +60,10 @@ class GoogleLoginController extends Controller
                 'email_verified_at' => $user->email_verified_at ?? now(),
             ]);
 
-            if ($user->status === 'menunggu_verifikasi') {
-                $result = VerificationController::kirimOtp($user->email);
-
-                $status = $result === 'reuse'
-                    ? 'Akun Anda belum diverifikasi. Gunakan kode verifikasi yang telah dikirim sebelumnya.'
-                    : 'Akun Anda belum diverifikasi. Kode verifikasi baru telah dikirim ke email Anda.';
-
-                return redirect()->route('verification.otp.show', ['email' => $user->email])
-                    ->with('status', $status);
+            if ($user->status === 'menunggu_persetujuan') {
+                return redirect()->route('login')->withErrors([
+                    'email' => 'Akun Anda sedang menunggu persetujuan admin. Silakan hubungi admin.',
+                ]);
             }
 
             Auth::login($user, true);
@@ -89,14 +84,26 @@ class GoogleLoginController extends Controller
             'no_hp' => null,
             'password' => Hash::make($tempPassword),
             'role' => 'pelanggan',
-            'status' => 'menunggu_verifikasi',
+            'status' => 'aktif',
+            'email_verified_at' => now(),
             'provider' => 'google',
             'provider_id' => $g->getId(),
             'avatar' => $g->getAvatar(),
         ]);
 
-        VerificationController::kirimOtp($user->email);
+        Pelanggan::create([
+            'nm_pelanggan' => $googleNama,
+            'email' => $g->getEmail(),
+            'no_hp' => '',
+            'alamat' => '',
+            'catatan_alergi' => '',
+            'id_user' => $user->id,
+        ]);
 
-        return redirect()->route('verification.otp.show', ['email' => $user->email]);
+        buatNotifRole('admin', 'Pelanggan Baru via Google', $googleNama . ' (' . $g->getEmail() . ') baru saja mendaftar menggunakan akun Google.', 'Registrasi', route('admin.pelanggan.index'));
+
+        Auth::login($user, true);
+
+        return LoginSupport::afterLogin($user, $request);
     }
 }

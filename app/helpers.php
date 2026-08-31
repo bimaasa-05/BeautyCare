@@ -94,6 +94,27 @@ if (!function_exists('hitungMutasiStokBaru')) {
     }
 }
 
+if (!function_exists('hitungLaporanBaru')) {
+    function hitungLaporanBaru()
+    {
+        static $cached = null;
+
+        if ($cached !== null) {
+            return $cached;
+        }
+
+        $user = auth()->user();
+
+        if (!$user || $user->role !== 'admin') {
+            return 0;
+        }
+
+        $cached = \App\Models\LaporanMasalah::where('status', 'baru')->count();
+
+        return $cached;
+    }
+}
+
 if (!function_exists('formatRupiahSingkat')) {
     function formatRupiahSingkat($nominal)
     {

@@ -226,7 +226,7 @@
                                     <div @click="cat = cat === 'cash' ? '' : 'cash'"
                                         class="bg-slate-50/50 px-6 py-4 flex items-center justify-between cursor-pointer select-none border-b border-slate-100 hover:bg-slate-50 transition-colors">
                                         <div class="flex items-center gap-3">
-                                            <span class="text-lg">💵</span>
+                                            <span class="text-lg"><i class="fa-solid fa-money-bill-wave"></i></span>
                                             <div>
                                                 <h3 class="text-xs font-black text-slate-800 uppercase tracking-wider">Tunai</h3>
                                                 <p class="text-[10px] text-slate-400 font-semibold mt-0.5">Pembayaran langsung dengan uang tunai</p>
@@ -255,7 +255,7 @@
                                     <div @click="cat = cat === 'bank' ? '' : 'bank'"
                                         class="bg-slate-50/50 px-6 py-4 flex items-center justify-between cursor-pointer select-none border-b border-slate-100 hover:bg-slate-50 transition-colors">
                                         <div class="flex items-center gap-3">
-                                            <span class="text-lg">🏦</span>
+                                            <span class="text-lg"><i class="fa-solid fa-building-columns"></i></span>
                                             <div>
                                                 <h3 class="text-xs font-black text-slate-800 uppercase tracking-wider">Bank Transfer (Virtual Account)</h3>
                                                 <p class="text-[10px] text-slate-400 font-semibold mt-0.5">Transfer melalui rekening bank BRI, BCA, Mandiri, BNI, atau BSI</p>
@@ -345,7 +345,7 @@
                                                             <span class="bank-card-name">{{ strtoupper($ew->nama_bank) }}</span>
                                                             <span class="bank-card-chip"><i class="fa-solid fa-wallet"></i></span>
                                                         </div>
-                                                        <div class="bank-card-label">No Rekening</div>
+                                                        <div class="bank-card-label">No. HP / WhatsApp</div>
                                                         <div class="bank-card-va">{{ $ew->nomor_telepon ?? '-' }}</div>
                                                         <div class="bank-card-owner">
                                                             <span>Atas Nama</span>

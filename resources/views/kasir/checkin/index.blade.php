@@ -70,7 +70,7 @@
                         </h3>
                         <p class="text-[12px] text-gray-400 mt-0.5">
                             <i class="fa-solid fa-calendar text-pink-300 mr-1"></i>
-                            <span id="currentDate"></span> — <span class="text-pink-400 font-medium">{{ $TotalHariIni }} reservasi</span>
+                            <span id="currentDateInline"></span> — <span class="text-pink-400 font-medium">{{ $TotalHariIni }} reservasi</span>
                         </p>
                     </div>
 
@@ -257,7 +257,7 @@
     <script>
         const now = new Date();
         const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-        const dateEl = document.getElementById('currentDate');
+        const dateEl = document.getElementById('currentDateInline');
         if (dateEl) dateEl.textContent = now.toLocaleDateString('id-ID', options);
     </script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>

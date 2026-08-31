@@ -300,13 +300,7 @@
                                                     </span>
                                                 </td>
                                                 <td class="py-3.5 px-4" data-label="Status">
-                                                    @if ($t->status == 'Lunas')
-                                                        <span class="badge-status status-selesai"><i class="fa-regular fa-circle-check"></i> Lunas</span>
-                                                    @elseif ($t->status == 'Pending')
-                                                        <span class="badge-status status-proses"><i class="fa-regular fa-clock"></i> Pending</span>
-                                                    @else
-                                                        <span class="badge-status status-batal"><i class="fa-regular fa-circle-xmark"></i> Batal</span>
-                                                    @endif
+                                                    @include('partials.badge-status', ['status' => $t->status])
                                                 </td>
                                                 <td class="py-3.5 px-4 text-center" data-label="">
                                                     <a href="{{ route('kasir.riwayat-transaksi.show', $t->id_transaksi) }}"

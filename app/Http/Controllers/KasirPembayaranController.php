@@ -49,7 +49,7 @@ class KasirPembayaranController extends Controller
         $totalSudahDibayar = Transaksi::where('status', 'Lunas')->count();
 
         $pesananOnlineCount = Transaksi::where('sumber', 'online')
-            ->whereIn('status', ['Menunggu Pembayaran', 'Sedang Diproses'])
+            ->where('status', 'Sedang Diproses')
             ->count();
 
         return view('kasir.pembayaran.index', compact('reservasiSelesai', 'totalTagihan', 'totalSudahDibayar', 'pesananOnlineCount'));
@@ -199,7 +199,7 @@ class KasirPembayaranController extends Controller
     {
         $pesanan = Transaksi::with(['pelanggan', 'user', 'detail', 'pembayaran', 'booking.detail.layanan'])
             ->where('sumber', 'online')
-            ->whereIn('status', ['Menunggu Pembayaran', 'Sedang Diproses'])
+            ->where('status', 'Sedang Diproses')
             ->orderBy('id_transaksi', 'desc')
             ->get();
 
@@ -217,7 +217,7 @@ class KasirPembayaranController extends Controller
 
         $transaksi = Transaksi::with(['detail', 'pembayaran'])->findOrFail($id);
 
-        if ($transaksi->sumber !== 'online' || !in_array($transaksi->status, ['Sedang Diproses', 'Menunggu Pembayaran'])) {
+        if ($transaksi->sumber !== 'online' || $transaksi->status !== 'Sedang Diproses') {
             return back()->with('error', 'Status pesanan tidak valid untuk verifikasi.');
         }
 

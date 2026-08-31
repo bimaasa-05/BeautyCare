@@ -196,14 +196,7 @@
                                         <td class="py-3 px-4 text-gray-500" data-label="Tanggal">{{ \Carbon\Carbon::parse($i->tanggal)->format('d/m/Y') }}</td>
                                         <td class="py-3 px-4 text-right font-semibold text-gray-700" data-label="Total">Rp {{ number_format($i->total, 0, ',', '.') }}</td>
                                         <td class="py-3 px-4 text-center" data-label="Status">
-                                            <span class="badge-status {{ $i->status == 'Lunas' ? 'badge-lunas' : 'badge-pending' }}">
-                                                @if ($i->status == 'Lunas')
-                                                    <i class="fa-regular fa-circle-check"></i>
-                                                @else
-                                                    <i class="fa-regular fa-clock"></i>
-                                                @endif
-                                                {{ $i->status }}
-                                            </span>
+                                            @include('partials.badge-status', ['status' => $i->status])
                                         </td>
                                         <td class="py-3 px-4 text-center" data-label="">
                                             <a href="{{ route('kasir.invoice.show', $i->id_transaksi) }}" target="_blank"

@@ -171,12 +171,7 @@ class PembayaranController extends Controller
 
         $transaksi->update(['bukti_bayar' => $path]);
 
-        $petugas = \App\Models\User::whereIn('role', ['kasir', 'admin'])->get();
-        foreach ($petugas as $petugasUser) {
-            buatNotif($petugasUser->id, 'Bukti Bayar Baru', ($transaksi->user->nama ?? 'Pelanggan') . ' mengunggah bukti bayar pesanan ' . $transaksi->no_invoice . '.', 'Transaksi', route('kasir.pembayaran.pesanan-online'));
-        }
-
-        return back()->with('message', 'Bukti pembayaran berhasil diunggah. Kasir akan segera memverifikasi.');
+        return back()->with('message', 'Bukti pembayaran berhasil diunggah. Klik "Saya Sudah Bayar" untuk mengirim konfirmasi ke kasir.');
     }
 
     public function batal(Request $request, $id)

@@ -47,6 +47,8 @@ use App\Http\Controllers\KasirKonsultasiController;
 use App\Http\Controllers\BeautycianKonsultasiController;
 use App\Http\Controllers\AdminKonsultasiController;
 use App\Http\Controllers\AdminLeaderboardController;
+use App\Http\Controllers\LaporanMasalahController;
+use App\Http\Controllers\AdminLaporanMasalahController;
 use App\Http\Controllers\RealtimeController;
 use Illuminate\Support\Facades\Route;
 
@@ -243,6 +245,11 @@ Route::middleware('auth')->group(function () {
         //Route Konsultasi Admin
         Route::get('/admin/konsultasi', [AdminKonsultasiController::class, 'index'])->name('admin.konsultasi.index');
 
+        //Route Laporan Masalah Admin
+        Route::get('/admin/laporan-masalah', [AdminLaporanMasalahController::class, 'index'])->name('admin.laporan-masalah.index');
+        Route::get('/admin/laporan-masalah/{id}', [AdminLaporanMasalahController::class, 'show'])->name('admin.laporan-masalah.show')->where('id', '[0-9]+');
+        Route::post('/admin/laporan-masalah/{id}/status', [AdminLaporanMasalahController::class, 'updateStatus'])->name('admin.laporan-masalah.update-status');
+
         //Route Papan Peringkat
         Route::get('/admin/leaderboard', [AdminLeaderboardController::class, 'index'])->name('admin.leaderboard.index');
     });
@@ -337,6 +344,10 @@ Route::middleware('auth')->group(function () {
         Route::get('/kasir/konsultasi', [KasirKonsultasiController::class, 'index'])->name('kasir.konsultasi.index');
         Route::post('/kasir/konsultasi/{id}/konfirmasi', [KasirKonsultasiController::class, 'konfirmasi'])->name('kasir.konsultasi.konfirmasi');
         Route::post('/kasir/konsultasi/{id}/tolak', [KasirKonsultasiController::class, 'tolak'])->name('kasir.konsultasi.tolak');
+
+        //Route Laporan Masalah Kasir
+        Route::get('/kasir/laporan-masalah', [LaporanMasalahController::class, 'index'])->name('kasir.laporan-masalah.index');
+        Route::post('/kasir/laporan-masalah', [LaporanMasalahController::class, 'store'])->name('kasir.laporan-masalah.store');
     });
     //--------------------------------------------------
     //Route BeautyCian
@@ -391,6 +402,10 @@ Route::middleware('auth')->group(function () {
         //Route Konsultasi Beautycian
         Route::get('/beautycian/konsultasi', [BeautycianKonsultasiController::class, 'index'])->name('beautycian.konsultasi.index');
         Route::post('/beautycian/konsultasi/{id}/selesai', [BeautycianKonsultasiController::class, 'selesai'])->name('beautycian.konsultasi.selesai');
+
+        //Route Laporan Masalah Beautycian
+        Route::get('/beautycian/laporan-masalah', [LaporanMasalahController::class, 'index'])->name('beautycian.laporan-masalah.index');
+        Route::post('/beautycian/laporan-masalah', [LaporanMasalahController::class, 'store'])->name('beautycian.laporan-masalah.store');
     });
     //--------------------------------------------------
     //Route Pelangggan
@@ -426,6 +441,10 @@ Route::middleware('auth')->group(function () {
         Route::get('/pelanggan/konsultasi', [KonsultasiPelangganController::class, 'index'])->name('pelanggan.konsultasi.index');
         Route::get('/pelanggan/konsultasi/create', [KonsultasiPelangganController::class, 'create'])->name('pelanggan.konsultasi.create');
         Route::post('/pelanggan/konsultasi', [KonsultasiPelangganController::class, 'store'])->name('pelanggan.konsultasi.store');
+
+        //Route Laporan Masalah Pelanggan
+        Route::get('/pelanggan/laporan-masalah', [LaporanMasalahController::class, 'index'])->name('pelanggan.laporan-masalah.index');
+        Route::post('/pelanggan/laporan-masalah', [LaporanMasalahController::class, 'store'])->name('pelanggan.laporan-masalah.store');
 
         //Route Saldo Akun
         Route::get('/pelanggan/saldo', [App\Http\Controllers\PelangganSaldoController::class, 'index'])->name('pelanggan.saldo.index');

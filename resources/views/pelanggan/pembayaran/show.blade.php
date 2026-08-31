@@ -951,9 +951,6 @@
                         <div class="sc-info">
                             <div class="sc-invoice"><i class="fa-solid fa-receipt"></i> {{ $transaksi->no_invoice }}
                             </div>
-                            <div class="sc-total">Rp {{ number_format($transaksi->total, 0, ',', '.') }}</div>
-                            <div class="sc-meta">{{ $transaksi->pembayaran->provider }} &bull; Dibuat
-                                {{ \Carbon\Carbon::parse($transaksi->tanggal)->isoFormat('D MMM YYYY') }}</div>
                         </div>
 
                         @if ($transaksi->status === 'Menunggu Pembayaran')
@@ -1100,7 +1097,7 @@
                     @if ($demoMode)
                         <div class="pay-demo-note">
                             <i class="fa-solid fa-info-circle cd-label"></i>
-                            <span> {{ $transaksi->bukti_bayar ? 'style="display:none"' : '' }} Upload bukti pembayaran
+                            <span> {{ $transaksi->bukti_bayar ? '' : '' }} Upload bukti pembayaran
                                 di atas agar
                                 tombol "Saya Sudah Bayar" aktif.</span>
                         </div>

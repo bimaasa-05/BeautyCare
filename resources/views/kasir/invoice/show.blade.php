@@ -89,15 +89,18 @@
         </button>
     </div>
 
-    <div class="invoice-page p-4 sm:p-8">
+         <div class="invoice-page p-4 sm:p-8">
+        @php
+            $pg = \Illuminate\Support\Facades\DB::table('pengaturan')->first();
+        @endphp
         <div class="invoice-card p-6 sm:p-10">
 
             <div class="flex justify-between items-start border-b-2 border-[#FF4F87] pb-6 mb-6 invoice-header-flex">
                 <div>
-                    <h1 class="text-[28px] font-extrabold text-[#FF4F87] tracking-wide m-0">BEAUTYCARE</h1>
-                    <p class="text-[12px] text-gray-500 mt-1">Salon &amp; Beauty Treatment</p>
-                    <p class="text-[11px] text-gray-400 mt-1">Jl. Contoh No. 123, Kota</p>
-                    <p class="text-[11px] text-gray-400">Telp: 0812-3456-7890 | info@beautycare.com</p>
+                    <h1 class="text-[28px] font-extrabold text-[#FF4F87] tracking-wide m-0">{{ ($pg->nama_salon ?? '') ?: 'BEAUTYCARE' }}</h1>
+                    <p class="text-[12px] text-gray-500 mt-1">{{ ($pg->nama_salon ? 'Salon &amp; Beauty Treatment' : 'Salon &amp; Beauty Treatment') }}</p>
+                    <p class="text-[11px] text-gray-400 mt-1">{{ ($pg->alamat ?? '') ?: 'Jl. Contoh No. 123, Kota' }}</p>
+                    <p class="text-[11px] text-gray-400">Telp: {{ ($pg->telepon ?? '') ?: '0101010001' }} | {{ ($pg->email ?? '') ?: 'info@beautycare.com' }}</p>
                 </div>
                 <div class="text-right">
                     <h2 class="text-[22px] font-bold text-gray-800 uppercase tracking-[3px] m-0">INVOICE</h2>
@@ -125,17 +128,7 @@
                         <tr>
                             <td data-label="" class="text-gray-400 pr-4">Status</td>
                             <td data-label="">
-                                @php
-                                    $statusMap = [
-                                        'Pending' => ['label' => 'Pending', 'class' => 'status-proses', 'icon' => 'fa-regular fa-clock'],
-                                        'Lunas' => ['label' => 'Lunas', 'class' => 'status-selesai', 'icon' => 'fa-regular fa-circle-check'],
-                                        'Batal' => ['label' => 'Batal', 'class' => 'status-batal', 'icon' => 'fa-regular fa-circle-xmark'],
-                                    ];
-                                    $s = $statusMap[$transaksi->status] ?? $statusMap['Pending'];
-                                @endphp
-                                <span class="badge-status {{ $s['class'] }}">
-                                    <i class="{{ $s['icon'] }}"></i> {{ $s['label'] }}
-                                </span>
+                                @include('partials.badge-status', ['status' => $transaksi->status])
                             </td>
                         </tr>
                         @if ($transaksi->kasir || $transaksi->user)
