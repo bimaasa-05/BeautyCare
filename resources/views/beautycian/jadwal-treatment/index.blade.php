@@ -353,7 +353,6 @@
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
     <script>
         function updateCountdowns() {
-            const now = new Date();
             document.querySelectorAll('.countdown-row').forEach(function(row) {
                 const end = new Date((row.dataset.akhir || '').replace(' ', 'T'));
                 const diff = Math.max(0, end - now);

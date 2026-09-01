@@ -55,7 +55,6 @@
         }
     }
 
-
     ::-webkit-scrollbar {
         width: 6px;
         height: 6px;
@@ -1415,17 +1414,6 @@
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') closeDeleteModal();
     });
-
-    const now = new Date();
-    const options = {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-    };
-    const dateEl = document.getElementById('currentDate');
-    if (dateEl) dateEl.textContent = now.toLocaleDateString('id-ID', options);
-
     // ═══ Search Real-time ═══
     function cariBooking() {
         var keyword = document.getElementById('searchBooking').value.toLowerCase().trim();

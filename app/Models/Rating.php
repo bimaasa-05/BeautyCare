@@ -76,6 +76,11 @@ class Rating extends Model
         return $this->tipe === self::TIPE_LAYANAN ? 'Layanan' : 'Produk';
     }
 
+    public function getTingkatMemberAttribute(): ?string
+    {
+        return $this->pelanggan?->membershipAktif()?->tingkat;
+    }
+
     /**
      * Ringkasan rating sebuah objek: rata-rata, jumlah, distribusi per bintang.
      */
@@ -111,7 +116,7 @@ class Rating extends Model
      */
     public static function terbaru(string $tipe, $idTarget, int $limit = 10)
     {
-        return static::with('user')
+        return static::with(['user', 'pelanggan.membership'])
             ->where('tipe', $tipe)
             ->where('id_target', (int) $idTarget)
             ->where('status', 'aktif')
@@ -125,7 +130,7 @@ class Rating extends Model
      */
     public static function semuaTerbaru(int $limit = 20)
     {
-        return static::with('user')
+        return static::with(['user', 'pelanggan.membership'])
             ->where('status', 'aktif')
             ->latest()
             ->limit($limit)

@@ -288,17 +288,6 @@
             clearTimeout(searchTimer);
             searchTimer = setTimeout(fetchBeautician, 400);
         });
-
-        // Set current date
-        const now = new Date();
-        const options = {
-            weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        };
-        document.getElementById('currentDate').textContent = now.toLocaleDateString('id-ID', options);
-
         // Auto-refresh status otomatis (Tersedia/Sibuk) tanpa reload halaman
         setInterval(fetchBeautician, 45000);
     </script>

@@ -943,7 +943,7 @@
 
         /* ─── Sticky Footer Mobile/Tablet: satu baris ringkas ─── */
         @media (max-width: 1024px) {
-            .keranjang-footer.footer-fixed {
+            .keranjang-footer {
                 flex-direction: row;
                 flex-wrap: nowrap;
                 text-align: left;
@@ -953,27 +953,27 @@
                 padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px));
             }
 
-            .keranjang-footer.footer-fixed .kf-total-label {
+            .keranjang-footer .kf-total-label {
                 font-size: 10px;
             }
 
-            .keranjang-footer.footer-fixed .kf-total {
+            .keranjang-footer .kf-total {
                 font-size: 17px;
                 line-height: 1.25;
             }
 
-            .keranjang-footer.footer-fixed .kf-total span {
+            .keranjang-footer .kf-total span {
                 font-size: 11px;
             }
 
-            .keranjang-footer.footer-fixed .kf-buttons {
+            .keranjang-footer .kf-buttons {
                 flex-wrap: nowrap;
                 justify-content: flex-end;
                 gap: 6px;
                 margin-left: auto;
             }
 
-            .keranjang-footer.footer-fixed .btn-belanja {
+            .keranjang-footer .btn-belanja {
                 flex: none;
                 padding: 8px 14px;
                 font-size: 12px;
@@ -983,7 +983,7 @@
         }
 
         @media (max-width: 420px) {
-            .keranjang-footer.footer-fixed .btn-belanja-outline {
+            .keranjang-footer .btn-belanja-outline {
                 width: 38px;
                 height: 38px;
                 padding: 0;
@@ -991,7 +991,7 @@
                 font-size: 0;
             }
 
-            .keranjang-footer.footer-fixed .btn-belanja-outline i {
+            .keranjang-footer .btn-belanja-outline i {
                 font-size: 13px;
             }
         }

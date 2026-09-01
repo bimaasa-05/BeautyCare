@@ -268,12 +268,9 @@
     </div>
 
     <script>
-        const now = new Date();
         const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-        document.getElementById('currentDate').textContent = now.toLocaleDateString('id-ID', options);
 
         function updateCountdowns() {
-            const now = new Date();
             document.querySelectorAll('.countdown-row').forEach(function(row) {
                 const end = new Date((row.dataset.akhir || '').replace(' ', 'T'));
                 const diff = Math.max(0, end - now);

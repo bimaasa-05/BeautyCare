@@ -346,14 +346,7 @@
   box-shadow: 0 2px 6px rgba(220, 38, 38, 0.4);
 }
 
-.navbar-top .date-display {
-  font-size: 13px;
-  color: var(--gray);
-  padding: 0 8px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
+
 
 .navbar-top .user-profile {
   display: flex;

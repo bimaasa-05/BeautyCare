@@ -466,16 +466,6 @@
             </main>
 
             <script>
-                const now = new Date();
-                const options = {
-                    weekday: 'long',
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                };
-                const dateEl = document.getElementById('currentDate');
-                if (dateEl) dateEl.textContent = now.toLocaleDateString('id-ID', options);
-
                 document.getElementById('searchSupplier').addEventListener('input', function () {
                     const q = this.value.toLowerCase();
                     document.querySelectorAll('.supplier-row').forEach(function (row) {
