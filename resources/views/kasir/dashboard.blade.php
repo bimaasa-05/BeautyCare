@@ -560,14 +560,19 @@
                                     </div>
                                     <div class="stock-info">
                                         <h4>{{ $p->nm_produk }}</h4>
-                                        <p>{{ $p->kategori->nm_kategori ?? 'Uncategorized' }} - Sisa
+                                        <p>{{ $p->kategori && $p->kategori->nm_kategori ? $p->kategori->nm_kategori : 'Tidak Berkategori' }} - Sisa {{ $stok }}</p>
                                             {{ $stok }}</p>
                                     </div>
                                     <div class="stock-bar">
                                         <div class="fill {{ $barClass }}" style="width:{{ $barW }}%">
                                         </div>
                                     </div>
-                                    <span class="stock-qty">{{ $stok }}</span>
+                                    <div class="flex items-center gap-2">
+                                        <span class="stock-qty">{{ $stok }}</span>
+                                        @if ($stok <= 0)
+                                            <span class="text-[10px] font-bold text-red-500 bg-red-50 px-2 py-0.5 rounded-full">HABIS</span>
+                                        @endif
+                                    </div>
                                 </div>
                             @empty
                                 <div style="text-align:center;padding:24px;color:var(--gray);font-size:13px;">
