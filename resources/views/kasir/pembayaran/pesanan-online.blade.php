@@ -246,12 +246,12 @@
                                     <th class="py-3 px-4">Tanggal</th>
                                     <th class="py-3 px-4">Metode</th>
                                     <th class="py-3 px-4 text-right">Total</th>
-                                    <th class="py-3 px-4 text-center">Status</th>
+                                    <th class="py-3 px-4">Kasir</th>
                                     <th class="py-3 px-4 text-center">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody class="text-[13px] text-gray-700 divide-y divide-gray-50">
-                                @forelse($pesanan as $index => $p)
+                                    </tr>
+                                    </thead>
+                                    <tbody class="text-[13px] text-gray-700 divide-y divide-gray-50">
+                                    @forelse($pesanan as $index => $p)
                                     <tr class="hover:bg-pink-50/40 transition-all">
                                         <td class="py-3 px-4 text-gray-400" data-label="#">{{ $index + 1 }}</td>
                                         <td class="py-3 px-4" data-label="No. Invoice">
@@ -316,11 +316,12 @@
                                         </td>
                                         <td class="py-3 px-4 text-right font-bold text-gray-800" data-label="Total">Rp
                                             {{ number_format($p->total, 0, ',', '.') }}</td>
-                                        <td class="py-3 px-4 text-center" data-label="Status">
-                                            <span class="badge-status badge-diproses">
-                                                <span class="w-1.5 h-1.5 rounded-full bg-current"></span>
-                                                Sedang Diproses
-                                            </span>
+                                        <td class="py-3 px-4" data-label="Kasir">
+                                            @if($p->kasir)
+                                                <span class="font-medium text-gray-700">{{ $p->kasir->nama }}</span>
+                                            @else
+                                                <span class="text-gray-400 italic text-[12px]">Belum ada</span>
+                                            @endif
                                         </td>
                                         <td class="py-3 px-4" data-label="">
                                             <div class="flex items-center justify-center gap-2">
@@ -370,11 +371,11 @@
                                                     </button>
                                                 </form>
                                             </div>
-                                        </td>
-                                    </tr>
+                                    </td>
+                                </tr>
                                 @empty
-                                    <tr>
-                                        <td colspan="8" class="py-16 text-center">
+                                <tr>
+                                    <td colspan="8" class="py-16 text-center">
                                             <div
                                                 class="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-pink-50 to-pink-100 rounded-full flex items-center justify-center">
                                                 <i class="fa-solid fa-globe text-pink-300 text-3xl"></i>
