@@ -61,8 +61,9 @@ class RegisteredUserController extends Controller
 
         event(new Registered($user));
 
-        $pesan = 'Akun Anda telah dibuat. Silakan verifikasi email Anda terlebih dahulu.';
+        session(['otp_email' => $user->email]);
 
-        return \redirect()->route('login')->withErrors(['email' => $pesan]);
+        return \redirect()->route('verification.otp.show', ['email' => $user->email])
+            ->with('status', 'Akun Anda telah dibuat. Silakan verifikasi email Anda terlebih dahulu.');
     }
 }
