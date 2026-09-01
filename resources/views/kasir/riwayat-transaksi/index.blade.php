@@ -174,9 +174,11 @@
                                                 $metodeIcon = match($t->metode_byr) {
                                                     'Tunai' => 'fa-solid fa-money-bill-wave text-emerald-500',
                                                     'Transfer' => 'fa-solid fa-building-columns text-purple-500',
+                                                    'BCA' => 'fa-solid fa-building-columns text-sky-500',
                                                     'Debit' => 'fa-solid fa-credit-card text-amber-500',
                                                     'E-Wallet' => 'fa-solid fa-wallet text-pink-500',
-                                                    default => 'fa-regular fa-circle text-gray-400',
+                                                    'QRIS' => 'fa-solid fa-qrcode text-pink-500',
+                                                    default => 'fa-solid fa-credit-card text-gray-400',
                                                 };
                                             @endphp
                                             <span class="inline-flex items-center gap-1.5 text-[12px] font-medium text-gray-600">
@@ -191,7 +193,7 @@
                                             <div class="flex items-center justify-center gap-2">
                                                 <a href="{{ route('kasir.riwayat-transaksi.show', $t->id_transaksi) }}"
                                                     class="w-7 h-7 text-blue-500 bg-blue-50 hover:bg-blue-100 rounded-md transition-colors flex items-center justify-center"
-                                                    title="Detail"><i class="fa-regular fa-eye text-xs"></i></a>
+                                                    title="Detail"><i class="fa-solid fa-eye text-xs"></i></a>
                                             </div>
                                         </td>
                                     </tr>
