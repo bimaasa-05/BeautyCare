@@ -16,6 +16,8 @@
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/dashboard.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/responsive.css') . '?v=3' }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/components/dropdown.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -99,36 +101,8 @@
             background: #F9A8D4;
         }
 
-        select.dropdown-pink {
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23EC4899' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 12px center;
-            background-color: #fff;
-            padding: 8px 14px;
-            padding-right: 36px;
-            border: 1.5px solid #FCE7F3;
-            border-radius: 10px;
-            font-size: 12px;
-            color: #EC4899;
-            font-weight: 500;
-            font-family: var(--font-primary);
-            min-width: 130px;
-            cursor: pointer;
-        }
-
-        select.dropdown-pink:hover {
-            border-color: #FCE7F3;
-            background-color: #fff;
-            color: #EC4899;
-            box-shadow: none;
-        }
-
-        select.dropdown-pink:focus {
-            border-color: #FCE7F3;
-            box-shadow: none;
-            outline: none;
-        }
+        /* unified period dropdown — dari beautycian/dashboard.blade.php:39-112 */
+        .chart-actions { flex-shrink: 0; }
 
         .chart-card .chart-actions {
             flex-shrink: 0;
@@ -306,16 +280,24 @@
                                 {{ $periode == '30hari' ? '30 Hari' : ($periode == '3bulan' ? '3 Bulan' : ($periode == 'tahunini' ? '1 Tahun' : '7 Hari')) }}
                             </h3>
                             <div class="chart-actions">
-                                <select id="periodSelect" class="dropdown-pink"
-                                    onchange="changeSalesPeriod(this.value)">
-                                    <option value="7hari" {{ $periode == '7hari' ? 'selected' : '' }}>7 Hari</option>
-                                    <option value="30hari" {{ $periode == '30hari' ? 'selected' : '' }}>30 Hari
-                                    </option>
-                                    <option value="3bulan" {{ $periode == '3bulan' ? 'selected' : '' }}>3 Bulan
-                                    </option>
-                                    <option value="tahunini" {{ $periode == 'tahunini' ? 'selected' : '' }}>1 Tahun
-                                    </option>
-                                </select>
+                                <div style="position:relative;" id="salesPeriodWrap">
+                                    <button type="button" class="period-trigger" id="salesPeriodTrigger">
+                                        <i class="fa-solid fa-calendar-days"></i>
+                                        <span id="salesPeriodLabel">{{ $periode == '30hari' ? '30 Hari' : ($periode == '3bulan' ? '3 Bulan' : ($periode == 'tahunini' ? 'Tahun Ini' : '7 Hari')) }}</span>
+                                        <i class="fa-solid fa-chevron-down period-arrow"></i>
+                                    </button>
+                                    <div class="period-popup" id="salesPeriodPopup">
+                                        <div class="pp-header">
+                                            <span class="pp-icon"><i class="fa-solid fa-chart-line"></i></span>
+                                            <h4>Periode Grafik</h4>
+                                        </div>
+                                        <div id="salesPeriodOptions" class="pp-options"></div>
+                                        <div class="pp-footer">
+                                            <button type="button" class="pp-today" id="salesPeriodReset"><i class="fa-solid fa-arrow-rotate-left"></i> Reset</button>
+                                            <button type="button" class="pp-oke" id="salesPeriodOke"><i class="fa-solid fa-check"></i> Oke</button>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="chart-body">
@@ -329,17 +311,24 @@
                             <div class="mc-header">
                                 <h3>Metode Pembayaran</h3>
                                 <div class="chart-actions">
-                                    <select id="paymentPeriodSelect" class="dropdown-pink"
-                                        onchange="changePaymentPeriod(this.value)">
-                                        <option value="7hari" {{ $paymentPeriode == '7hari' ? 'selected' : '' }}>7
-                                            Hari</option>
-                                        <option value="30hari" {{ $paymentPeriode == '30hari' ? 'selected' : '' }}>30
-                                            Hari</option>
-                                        <option value="3bulan" {{ $paymentPeriode == '3bulan' ? 'selected' : '' }}>3
-                                            Bulan</option>
-                                        <option value="tahunini"
-                                            {{ $paymentPeriode == 'tahunini' ? 'selected' : '' }}>1 Tahun</option>
-                                    </select>
+                                    <div style="position:relative;" id="paymentPeriodWrap">
+                                        <button type="button" class="period-trigger" id="paymentPeriodTrigger">
+                                            <i class="fa-solid fa-calendar-days"></i>
+                                            <span id="paymentPeriodLabel">{{ $paymentPeriode == '30hari' ? '30 Hari' : ($paymentPeriode == '3bulan' ? '3 Bulan' : ($paymentPeriode == 'tahunini' ? 'Tahun Ini' : '7 Hari')) }}</span>
+                                            <i class="fa-solid fa-chevron-down period-arrow"></i>
+                                        </button>
+                                        <div class="period-popup" id="paymentPeriodPopup">
+                                            <div class="pp-header">
+                                                <span class="pp-icon"><i class="fa-solid fa-chart-line"></i></span>
+                                                <h4>Periode Pembayaran</h4>
+                                            </div>
+                                            <div id="paymentPeriodOptions" class="pp-options"></div>
+                                            <div class="pp-footer">
+                                                <button type="button" class="pp-today" id="paymentPeriodReset"><i class="fa-solid fa-arrow-rotate-left"></i> Reset</button>
+                                                <button type="button" class="pp-oke" id="paymentPeriodOke"><i class="fa-solid fa-check"></i> Oke</button>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="mc-body">
@@ -586,19 +575,8 @@
         </main>
     </div>
 
+    <script src="{{ asset('assets/js/components/dropdown.js') }}"></script>
     <script>
-        function changeSalesPeriod(value) {
-            var pp = '{{ $paymentPeriode ?? '7hari' }}';
-            document.getElementById('periodSelect').value = value;
-            updateSalesChart(value);
-        }
-
-        function changePaymentPeriod(value) {
-            var p = '{{ $periode ?? '7hari' }}';
-            document.getElementById('paymentPeriodSelect').value = value;
-            updatePaymentChart(value);
-        }
-
         const now = new Date();
         const options = {
             weekday: 'long',
@@ -659,6 +637,7 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    layout: { padding: { left: 0, right: 0, top: 0, bottom: 0 } },
                     animation: {
                         y: {
                             type: 'number',
@@ -805,22 +784,99 @@
             const data = allSalesChartData[period];
             if (!data) return;
             const periodNames = { '7hari': '7 Hari', '30hari': '30 Hari', '3bulan': '3 Bulan', 'tahunini': '1 Tahun' };
-            const heading = document.querySelector('#periodSelect').closest('.chart-card').querySelector('.chart-header h3');
+            const wrap = document.getElementById('salesPeriodWrap');
+            const heading = wrap ? wrap.closest('.chart-card').querySelector('.chart-header h3') : document.querySelector('.chart-card .chart-header h3');
             if (heading) heading.textContent = 'Grafik Penjualan ' + (periodNames[period] || period);
             initSalesChart(data.labels, data.values);
+            fitSalesChart();
         }
 
         function updatePaymentChart(period) {
             const data = allPaymentChartData[period];
             if (!data) return;
             const periodNames = { '7hari': '7 Hari', '30hari': '30 Hari', '3bulan': '3 Bulan', 'tahunini': '1 Tahun' };
-            const heading = document.querySelector('#paymentPeriodSelect').closest('.mini-chart-card').querySelector('.mc-header h3');
+            const wrap = document.getElementById('paymentPeriodWrap');
+            const heading = wrap ? wrap.closest('.mini-chart-card').querySelector('.mc-header h3') : document.querySelector('.mini-chart-card .mc-header h3');
             if (heading) heading.textContent = 'Metode Pembayaran ' + (periodNames[period] || period);
             initPaymentChart(data.labels, data.values);
+            fitPaymentChart();
+        }
+
+        // ——— Unified fitChart (dari fix grafik sebelumnya) ———
+        function fitChart(canvasId, getInstance) {
+            const canvas = document.getElementById(canvasId);
+            const inst = getInstance();
+            if (!canvas || !inst) return;
+            const rect = canvas.parentElement.getBoundingClientRect();
+            if (rect.width <= 0 || rect.height <= 0) return;
+            const w = Math.round(rect.width);
+            const h = Math.round(rect.height);
+            const cur = canvas.getBoundingClientRect();
+            if (Math.abs(cur.width - w) <= 2 && Math.abs(cur.height - h) <= 2) return;
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = Math.round(w * dpr);
+            canvas.height = Math.round(h * dpr);
+            canvas.style.width = w + 'px';
+            canvas.style.height = h + 'px';
+            const yScale = inst.scales && inst.scales.y;
+            if (yScale && yScale.width > 0) {
+                inst.options.layout = inst.options.layout || {};
+                inst.options.layout.padding = inst.options.layout.padding || {};
+                inst.options.layout.padding.left = 0;
+                inst.options.layout.padding.right = Math.ceil(yScale.width) + 8;
+            }
+            inst.resize(w, h);
+        }
+        function fitSalesChart(){ fitChart('chartPendapatan', function(){ return salesChartInstance; }); }
+        function fitPaymentChart(){ fitChart('chartPembayaran', function(){ return paymentChartInstance; }); }
+        function fitAllCharts(){ fitSalesChart(); fitPaymentChart(); }
+        function bindChartResize(canvasId, getInstance){
+            const canvas = document.getElementById(canvasId);
+            if (!canvas || !canvas.parentElement || typeof ResizeObserver === 'undefined') return;
+            new ResizeObserver(function(){ fitChart(canvasId, getInstance); }).observe(canvas.parentElement);
+        }
+        function watchChartSize(canvasId, getInstance){
+            let checks=0; const timer=setInterval(function(){
+                const canvas=document.getElementById(canvasId); const inst=getInstance();
+                if(canvas&&inst){
+                    const rect=canvas.parentElement.getBoundingClientRect();
+                    const cur=canvas.getBoundingClientRect();
+                    if(Math.abs(cur.height-rect.height)>2||Math.abs(cur.width-rect.width)>2) fitChart(canvasId,getInstance);
+                }
+                checks++; if(checks>=8) clearInterval(timer);
+            },1000);
         }
 
         initSalesChart(salesChartLabels, salesChartRevenue);
         initPaymentChart(paymentLabels, paymentValues);
+
+        // ——— Unified period dropdown (beautycian pattern) ———
+        const kasirPeriodConfig = [
+            {key:'7hari', title:'7 Hari', sub:'7 hari terakhir'},
+            {key:'30hari', title:'30 Hari', sub:'30 hari terakhir'},
+            {key:'3bulan', title:'3 Bulan', sub:'3 bulan terakhir'},
+            {key:'tahunini', title:'Tahun Ini', sub:'1 Jan - hari ini'}
+        ];
+        initPeriodDropdown({
+            wrapId:'salesPeriodWrap', triggerId:'salesPeriodTrigger', popupId:'salesPeriodPopup',
+            optionsId:'salesPeriodOptions', labelId:'salesPeriodLabel', resetId:'salesPeriodReset', okeId:'salesPeriodOke',
+            defaultValue:'{{ $periode }}', periodConfig:kasirPeriodConfig, onChange:updateSalesChart
+        });
+        initPeriodDropdown({
+            wrapId:'paymentPeriodWrap', triggerId:'paymentPeriodTrigger', popupId:'paymentPeriodPopup',
+            optionsId:'paymentPeriodOptions', labelId:'paymentPeriodLabel', resetId:'paymentPeriodReset', okeId:'paymentPeriodOke',
+            defaultValue:'{{ $paymentPeriode }}', periodConfig:kasirPeriodConfig, onChange:updatePaymentChart
+        });
+
+        bindChartResize('chartPendapatan', function(){ return salesChartInstance; });
+        bindChartResize('chartPembayaran', function(){ return paymentChartInstance; });
+        requestAnimationFrame(fitAllCharts);
+        setTimeout(fitAllCharts, 300);
+        if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitAllCharts);
+        window.addEventListener('load', fitAllCharts);
+        window.addEventListener('resize', fitAllCharts);
+        watchChartSize('chartPendapatan', function(){ return salesChartInstance; });
+        watchChartSize('chartPembayaran', function(){ return paymentChartInstance; });
     </script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
 </body>
