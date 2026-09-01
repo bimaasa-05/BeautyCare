@@ -57,13 +57,18 @@ class GoogleLoginController extends Controller
                 'provider' => 'google',
                 'provider_id' => $g->getId(),
                 'avatar' => $g->getAvatar(),
-                'email_verified_at' => $user->email_verified_at ?? now(),
             ]);
 
-            if ($user->status === 'menunggu_persetujuan') {
-                return redirect()->route('login')->withErrors([
-                    'email' => 'Akun Anda sedang menunggu persetujuan admin. Silakan hubungi admin.',
-                ]);
+            if (! $user->hasVerifiedEmail()) {
+                \App\Http\Controllers\Auth\VerificationController::kirimOtp($user->email, true);
+                session(['otp_email' => $user->email]);
+                return redirect()->route('verification.otp.show', ['email' => $user->email])
+                    ->with('status', 'Kode OTP verifikasi telah dikirim ke email Google Anda. Silakan verifikasi.');
+            }
+
+            $rejected = LoginSupport::rejectNonActive($user, $request);
+            if ($rejected) {
+                return $rejected;
             }
 
             Auth::login($user, true);
@@ -84,26 +89,31 @@ class GoogleLoginController extends Controller
             'no_hp' => null,
             'password' => Hash::make($tempPassword),
             'role' => 'pelanggan',
-            'status' => 'aktif',
-            'email_verified_at' => now(),
+            'status' => 'menunggu_persetujuan',
+            'email_verified_at' => null,
             'provider' => 'google',
             'provider_id' => $g->getId(),
             'avatar' => $g->getAvatar(),
         ]);
 
-        Pelanggan::create([
-            'nm_pelanggan' => $googleNama,
-            'email' => $g->getEmail(),
-            'no_hp' => '',
-            'alamat' => '',
-            'catatan_alergi' => '',
-            'id_user' => $user->id,
-        ]);
+        $existingPelanggan = Pelanggan::where('email', $g->getEmail())->whereNull('id_user')->first();
+        if ($existingPelanggan) {
+            $existingPelanggan->update(['id_user' => $user->id]);
+        } else {
+            Pelanggan::create([
+                'nm_pelanggan' => $googleNama,
+                'email' => $g->getEmail(),
+                'no_hp' => '',
+                'alamat' => '',
+                'catatan_alergi' => '',
+                'id_user' => $user->id,
+            ]);
+        }
 
-        buatNotifRole('admin', 'Pelanggan Baru via Google', $googleNama . ' (' . $g->getEmail() . ') baru saja mendaftar menggunakan akun Google.', 'Registrasi', route('admin.pelanggan.index'));
+        \App\Http\Controllers\Auth\VerificationController::kirimOtp($user->email, true);
+        session(['otp_email' => $user->email]);
 
-        Auth::login($user, true);
-
-        return LoginSupport::afterLogin($user, $request);
+        return redirect()->route('verification.otp.show', ['email' => $user->email])
+            ->with('status', 'Kode OTP verifikasi telah dikirim ke email Google Anda. Silakan verifikasi untuk mengaktifkan akun.');
     }
 }
