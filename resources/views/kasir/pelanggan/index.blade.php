@@ -105,16 +105,6 @@
                     <div style="position:absolute;pointer-events:none;opacity:0.08;font-size:70px;top:-5px;right:-5px;">👥</div>
                     <div style="position:absolute;pointer-events:none;opacity:0.08;font-size:45px;bottom:-5px;left:-5px;">🌸</div>
                     <div>
-                        <div class="mb-6">
-                            <h3 class="text-[16px] font-bold text-gray-800">
-                                <i class="fa-solid fa-users text-pink-500 mr-2"></i>Data Pelanggan
-                            </h3>
-                            <p class="text-[12px] text-gray-400 mt-0.5">
-                                <i class="fa-regular fa-circle-check text-pink-300 mr-1"></i>
-                                Total {{ $TotalPelanggan }} pelanggan terdaftar
-                            </p>
-                        </div>
-
                         <form action="" method="GET" class="flex flex-wrap items-center justify-end gap-2 mb-4 filter-bar">
                             <div class="relative">
                                 <i class="fa-solid fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-[12px]"></i>
@@ -122,13 +112,76 @@
 class="bg-gray-50 border border-gray-100 text-[12px] rounded-full pl-9 pr-4 py-2 w-[220px] focus:outline-none focus:border-pink-300 transition-all placeholder-gray-400"
                                     value="{{ Request()->keyword }}">
                             </div>
+                            <input type="date" name="dari" value="{{ $dari ?? '' }}"
+                                class="bg-gray-50 border border-gray-100 text-[12px] rounded-full px-3 py-2 w-[140px] focus:outline-none focus:border-pink-300 transition-all">
+                            <span class="text-gray-400 text-[12px]">—</span>
+                            <input type="date" name="sampai" value="{{ $sampai ?? '' }}"
+                                class="bg-gray-50 border border-gray-100 text-[12px] rounded-full px-3 py-2 w-[140px] focus:outline-none focus:border-pink-300 transition-all">
+                            <button type="submit"
+                                class="bg-pink-50 text-pink-600 text-[12px] font-semibold px-4 py-2 rounded-full hover:bg-pink-100 transition-colors border border-pink-200">
+                                <i class="fa-solid fa-filter mr-1"></i> Filter
+                            </button>
+                            @if (request()->keyword || request()->dari || request()->sampai)
+                                <a href="{{ route('kasir.pelanggan.index') }}"
+                                    class="text-gray-400 hover:text-gray-600 text-[12px] px-1">
+                                <i class="fa-solid fa-rotate-right"></i>
+                            </a>
+                            @endif
                             <a href="{{ route('kasir.pelanggan.create') }}"
                                 class="flex items-center gap-2 bg-[#FF4F87] text-white text-[12px] font-semibold px-4 py-2 rounded-full hover:bg-[#ff3a78] transition-all shadow-sm hover:shadow-md hover:shadow-pink-200">
                                 <i class="fa-solid fa-plus"></i> Tambah
                             </a>
                         </form>
 
-                        <div class="overflow-x-auto"><table class="w-full text-left border-collapse table-card-mobile">
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
+                            <div class="bg-gradient-to-br from-pink-50 to-white rounded-xl p-4 border border-pink-100">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Total Pelanggan</p>
+                                        <p class="text-[26px] font-bold text-gray-800 mt-1">{{ $TotalPelanggan }}</p>
+                                    </div>
+                                    <div class="w-11 h-11 rounded-full bg-pink-100 flex items-center justify-center">
+                                        <i class="fa-solid fa-users text-pink-500 text-lg"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-gradient-to-br from-blue-50 to-white rounded-xl p-4 border border-blue-100">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Pelanggan Baru</p>
+                                        <p class="text-[26px] font-bold text-blue-600 mt-1">{{ $PelangganBaru }}</p>
+                                    </div>
+                                    <div class="w-11 h-11 rounded-full bg-blue-100 flex items-center justify-center">
+                                        <i class="fa-solid fa-user-plus text-blue-500 text-lg"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-gradient-to-br from-amber-50 to-white rounded-xl p-4 border border-amber-100">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Pelanggan Member</p>
+                                        <p class="text-[26px] font-bold text-amber-600 mt-1">{{ $PelangganMember }}</p>
+                                    </div>
+                                    <div class="w-11 h-11 rounded-full bg-amber-100 flex items-center justify-center">
+                                        <i class="fa-solid fa-gem text-amber-500 text-lg"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-gradient-to-br from-emerald-50 to-white rounded-xl p-4 border border-emerald-100">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Transaksi (Periode)</p>
+                                        <p class="text-[26px] font-bold text-emerald-600 mt-1">{{ $TransaksiPelanggan }}</p>
+                                    </div>
+                                    <div class="w-11 h-11 rounded-full bg-emerald-100 flex items-center justify-center">
+                                        <i class="fa-solid fa-receipt text-emerald-500 text-lg"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-6"><table class="w-full text-left border-collapse table-card-mobile">
                                 <thead>
                                     <tr
                                         class="text-[11px] font-bold text-gray-400 uppercase border-b border-gray-100 bg-pink-50/30">
