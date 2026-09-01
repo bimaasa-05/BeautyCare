@@ -257,9 +257,6 @@
   .search-box {
     min-width: 140px;
   }
-  .navbar-top .date-display {
-    display: none;
-  }
   .navbar-top .user-profile .up-info {
     display: none;
   }
@@ -413,9 +410,6 @@
   }
   .navbar-top .page-title {
     display: none;
-  }
-  .navbar-top .date-display {
-    display: none !important;
   }
   .search-box {
     min-width: 100px;

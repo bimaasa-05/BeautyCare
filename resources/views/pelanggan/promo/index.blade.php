@@ -55,7 +55,6 @@
         }
     }
 
-
     ::-webkit-scrollbar {
         width: 6px;
         height: 6px;
@@ -555,16 +554,6 @@
     </div>
 
     <script>
-    const now = new Date();
-    const options = {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-    };
-    const dateEl = document.getElementById('currentDate');
-    if (dateEl) dateEl.textContent = now.toLocaleDateString('id-ID', options);
-
     document.querySelectorAll('.promo-btn-claim[data-id]:not([disabled])').forEach(btn => {
         btn.addEventListener('click', function() {
             const id = this.dataset.id;

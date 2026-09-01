@@ -457,6 +457,118 @@
             font-size: 18px;
         }
     }
+
+    /* ─── Modal Premium (Hapus Rating) ─── */
+    .modal-premium {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(4px);
+        z-index: 200;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        animation: fadeIn 0.2s ease;
+    }
+
+    .modal-premium.show {
+        display: flex;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    .modal-premium .modal-box {
+        background: var(--white);
+        border-radius: 24px;
+        padding: 32px;
+        width: 100%;
+        max-width: 400px;
+        margin: 0 16px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+        animation: scaleIn 0.3s ease;
+    }
+
+    @keyframes scaleIn {
+        from { transform: scale(0.9); opacity: 0; }
+        to { transform: scale(1); opacity: 1; }
+    }
+
+    .modal-premium .modal-box .modal-icon-wrap {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        background: #FEE2E2;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 16px;
+    }
+
+    .modal-premium .modal-box .modal-icon-wrap i {
+        font-size: 28px;
+        color: #DC2626;
+    }
+
+    .modal-premium .modal-box h3 {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--dark);
+        text-align: center;
+        margin-bottom: 8px;
+    }
+
+    .modal-premium .modal-box p {
+        font-size: 13px;
+        color: var(--gray);
+        text-align: center;
+        margin-bottom: 24px;
+        line-height: 1.6;
+    }
+
+    .modal-premium .modal-box .modal-actions {
+        display: flex;
+        gap: 12px;
+    }
+
+    .modal-premium .modal-box .modal-actions .btn-cancel {
+        flex: 1;
+        padding: 11px 20px;
+        border-radius: 12px;
+        border: 1.5px solid var(--border);
+        background: var(--white);
+        color: var(--gray);
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .modal-premium .modal-box .modal-actions .btn-cancel:hover {
+        background: var(--background);
+        border-color: #ddd;
+    }
+
+    .modal-premium .modal-box .modal-actions .btn-danger {
+        flex: 1;
+        padding: 11px 20px;
+        border-radius: 12px;
+        border: none;
+        background: linear-gradient(135deg, #DC2626, #EF4444);
+        color: #fff;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
+    }
+
+    .modal-premium .modal-box .modal-actions .btn-danger:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 20px rgba(220, 38, 38, 0.35);
+    }
     </style>
 </head>
 
@@ -557,7 +669,7 @@
                                 <button type="button" class="rate-edit-btn" onclick="tampilFormEditLayanan({{ $idLayanan }})">
                                     <i class="fa-solid fa-pen-to-square"></i> Edit Rating
                                 </button>
-                                <button type="button" class="rate-del-btn" onclick="if(confirm('Hapus rating Anda?')) document.getElementById('hapus-rating-form-{{ $idLayanan }}').submit();">
+                                <button type="button" class="rate-del-btn" data-form="hapus-rating-form-{{ $idLayanan }}" data-nama="{{ $layanan->nm_layanan }}" onclick="confirmHapusRating(this)">
                                     <i class="fa-solid fa-trash-can"></i> Hapus
                                 </button>
                             </div>
@@ -626,6 +738,21 @@
         </main>
     </div>
 
+    <!-- ═══ Modal Hapus Rating Premium ═══ -->
+    <div id="hapusRatingModal" class="modal-premium">
+        <div class="modal-box">
+            <div class="modal-icon-wrap">
+                <i class="fa-solid fa-star"></i>
+            </div>
+            <h3>Hapus Rating</h3>
+            <p id="modalHapusRatingBody">Apakah Anda yakin ingin menghapus rating ini?<br>Tindakan ini tidak dapat dibatalkan.</p>
+            <div class="modal-actions">
+                <button type="button" onclick="closeHapusRatingModal()" class="btn-cancel">Tidak Jadi</button>
+                <button type="button" onclick="hapusRatingConfirm()" class="btn-danger">Ya, Hapus</button>
+            </div>
+        </div>
+    </div>
+
     <script>
     function pilihBintangLayanan(btn, idLayanan) {
         var nilai = parseInt(btn.getAttribute('data-nilai'));
@@ -644,6 +771,36 @@
         if (f) f.style.display = (f.style.display === 'none' || !f.style.display) ? 'block' : 'none';
     }
 
+    // ═══ Modal Hapus Rating Premium ═══
+    var deleteRatingFormId = null;
+
+    function confirmHapusRating(btn) {
+        deleteRatingFormId = btn.getAttribute('data-form');
+        var nama = (btn.getAttribute('data-nama') || 'rating ini').replace(/[<>&"']/g, function(c) {
+            return { '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;', "'": '&#39;' }[c];
+        });
+        document.getElementById('modalHapusRatingBody').innerHTML =
+            'Apakah Anda yakin ingin menghapus rating untuk <strong>' + nama + '</strong>?<br>Tindakan ini tidak dapat dibatalkan.';
+        document.getElementById('hapusRatingModal').classList.add('show');
+    }
+
+    function closeHapusRatingModal() {
+        document.getElementById('hapusRatingModal').classList.remove('show');
+        deleteRatingFormId = null;
+    }
+
+    function hapusRatingConfirm() {
+        if (deleteRatingFormId) document.getElementById(deleteRatingFormId).submit();
+    }
+
+    document.getElementById('hapusRatingModal').addEventListener('click', function(e) {
+        if (e.target === this) closeHapusRatingModal();
+    });
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closeHapusRatingModal();
+    });
+
     document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('.lr-stars').forEach(function(container) {
             var hasActive = container.querySelector('button.active');
@@ -654,16 +811,6 @@
             });
         });
     });
-
-    const now = new Date();
-    const options = {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-    };
-    const dateEl = document.getElementById('currentDate');
-    if (dateEl) dateEl.textContent = now.toLocaleDateString('id-ID', options);
     </script>
 
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>

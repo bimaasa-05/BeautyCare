@@ -197,7 +197,6 @@
         <main class="main-content">
             @include('layouts.header2')
 
-
             <main class="flex-1 overflow-y-auto p-4 sm:p-5 lg:p-6">
 
             <div class="page-header-premium">
@@ -457,16 +456,6 @@
     </div>
 
     <script>
-        const now = new Date();
-        const options = {
-            weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        };
-        const dateEl = document.getElementById('currentDate');
-        if (dateEl) dateEl.textContent = now.toLocaleDateString('id-ID', options);
-
         var stokFilter = 'all';
 
         function setStokFilter(mode, el) {

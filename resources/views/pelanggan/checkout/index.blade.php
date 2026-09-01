@@ -624,6 +624,12 @@
                 </div>
                 @endif
 
+                @if(empty($pelanggan->alamat))
+                <div class="alert-box alert-error">
+                    <i class="fa-solid fa-triangle-exclamation"></i> Alamat Anda belum diisi. Silakan tambahkan alamat pada <a href="{{ route('pelanggan.profile') }}" style="font-weight:700;color:#B91C1C;text-decoration:underline;">profil Anda</a> sebelum melakukan pemesanan agar pesanan dapat diproses.
+                </div>
+                @endif
+
                 <form action="{{ route('pelanggan.checkout.store') }}" method="POST" id="checkoutForm">
                     @csrf
                     <input type="hidden" name="metode" id="inpMetode">
@@ -1040,16 +1046,6 @@
             alert('Silakan pilih bank untuk transfer.');
         }
     });
-
-    const now = new Date();
-    const options = {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-    };
-    const dateEl = document.getElementById('currentDate');
-    if (dateEl) dateEl.textContent = now.toLocaleDateString('id-ID', options);
     </script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
 </body>

@@ -118,7 +118,7 @@ class CheckoutController extends Controller
             ? ['diskon' => 0, 'aktif' => false, 'level' => null, 'diskon_pct' => 0, 'sisa' => 0]
             : $this->hitungDiskonMember($pelanggan, $subtotal);
 
-        return view('pelanggan.checkout.index', compact('items', 'subtotal', 'claimedPromos', 'banks', 'bankTujuan', 'memberInfo', 'isMembership', 'membership', 'saldo'));
+        return view('pelanggan.checkout.index', compact('items', 'subtotal', 'claimedPromos', 'banks', 'bankTujuan', 'memberInfo', 'isMembership', 'membership', 'saldo', 'pelanggan'));
     }
 
     public function pembayaranMembership(Request $request)
@@ -147,6 +147,11 @@ class CheckoutController extends Controller
         $pelanggan = $this->getOrCreatePelanggan(auth()->user());
         $saldo = (float) $pelanggan->saldo;
         $isRenewal = (int) $pelanggan->id_member === (int) $member->id_member;
+
+        // Validasi alamat - pelanggan harus memiliki alamat sebelum checkout membership
+        if (empty($pelanggan->alamat)) {
+            return back()->with('error', 'Alamat Anda belum diisi. Silakan tambahkan alamat pada profil Anda sebelum melakukan pemesanan.');
+        }
 
         return view('pelanggan.pembayaran.pembayaran-membership', compact('member', 'items', 'subtotal', 'banks', 'bankTujuan', 'isRenewal', 'saldo'));
     }
@@ -180,6 +185,11 @@ class CheckoutController extends Controller
 
         $user = auth()->user();
         $pelanggan = $this->getOrCreatePelanggan($user);
+
+        // Validasi alamat - pelanggan harus memiliki alamat sebelum checkout
+        if (empty($pelanggan->alamat)) {
+            return back()->with('error', 'Alamat Anda belum diisi. Silakan tambahkan alamat pada profil Anda sebelum melakukan pemesanan.');
+        }
 
         $isMembership = (bool) $request->beli_membership;
 
@@ -538,24 +548,14 @@ class CheckoutController extends Controller
             ->update(['status' => 'digunakan']);
     }
 
-    protected function hitungPembelianProduk($pelangganId)
+    protected function hitungPembelianProduk(Pelanggan $pelanggan)
     {
-        return Transaksi::where('id_pelanggan', $pelangganId)
-            ->where('status', 'Lunas')
-            ->whereHas('detail', function ($q) {
-                $q->where('jenis', 'Produk');
-            })
-            ->count();
+        return $pelanggan->totalPembelianProduk();
     }
 
-    protected function hitungTotalBelanjaProduk($pelangganId)
+    protected function hitungTotalBelanja(Pelanggan $pelanggan)
     {
-        return Transaksi::where('id_pelanggan', $pelangganId)
-            ->where('status', 'Lunas')
-            ->whereHas('detail', function ($q) {
-                $q->where('jenis', 'Produk');
-            })
-            ->sum('total');
+        return $pelanggan->totalBelanjaProduk();
     }
 
     protected function cekSyaratMembership(?Pelanggan $pelanggan, Membership $member): ?string
@@ -569,8 +569,8 @@ class CheckoutController extends Controller
             return null;
         }
 
-        $totalTransaksi = $this->hitungPembelianProduk($pelanggan->id_pelanggan);
-        $totalBelanja = $this->hitungTotalBelanjaProduk($pelanggan->id_pelanggan);
+        $totalTransaksi = $this->hitungPembelianProduk($pelanggan);
+        $totalBelanja = $this->hitungTotalBelanja($pelanggan);
 
         if ($totalTransaksi < (int) $member->min_transaksi || $totalBelanja < (int) $member->min_pembelian) {
             return 'Anda belum memenuhi syarat upgrade ke ' . $member->tingkat . '. Syarat: min. '
@@ -628,7 +628,7 @@ class CheckoutController extends Controller
         $result['level'] = $member->tingkat;
         $result['diskon_pct'] = (float) $member->diskon;
 
-        $jmlPembelian = $this->hitungPembelianProduk($pelanggan->id_pelanggan);
+        $jmlPembelian = $this->hitungPembelianProduk($pelanggan);
 
         if ($jmlPembelian >= (int) $member->min_transaksi) {
             $result['aktif'] = true;

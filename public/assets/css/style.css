@@ -589,10 +589,117 @@ select.form-input {
   background: #f3f4f6;
 }
 
+.rs-review-name-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
 .rs-review-name {
   font-size: 14px;
   font-weight: 600;
   color: var(--dark);
+}
+
+/* Badge Tingkat Membership - Premium & Mencolok */
+.tier-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 14px;
+  border-radius: 100px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  letter-spacing: 0.3px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+  overflow: hidden;
+  animation: tierBadgeIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.tier-badge::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 100px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.tier-badge:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
+}
+
+.tier-badge:hover::before {
+  opacity: 1;
+}
+
+.tier-badge:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.tier-badge i {
+  font-size: 11px;
+  animation: iconFloat 2.5s ease-in-out infinite;
+}
+
+@keyframes iconFloat {
+  0%, 100% { transform: translateY(0) rotate(-2deg); }
+  50% { transform: translateY(-3px) rotate(2deg); }
+}
+
+@keyframes tierBadgeIn {
+  0% { opacity: 0; transform: translateY(6px) scale(0.9); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Silver - Elegant & Cool */
+.tier-badge.silver {
+  background: linear-gradient(135deg, #E2E8F0 0%, #F1F5F9 50%, #E2E8F0 100%);
+  color: #475569;
+  border: 1.5px solid #CBD5E1;
+}
+
+.tier-badge.silver::before {
+  background: linear-gradient(135deg, rgba(148, 163, 184, 0.4), rgba(203, 213, 225, 0.6));
+}
+
+.tier-badge.silver:hover {
+  box-shadow: 0 6px 24px rgba(100, 116, 139, 0.35);
+}
+
+/* Gold - Warm & Premium */
+.tier-badge.gold {
+  background: linear-gradient(135deg, #FDE68A 0%, #FBBF24 50%, #FDE68A 100%);
+  color: #92400E;
+  border: 1.5px solid #FCD34D;
+}
+
+.tier-badge.gold::before {
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.4), rgba(253, 211, 77, 0.6));
+}
+
+.tier-badge.gold:hover {
+  box-shadow: 0 6px 24px rgba(245, 158, 11, 0.45);
+}
+
+/* Platinum - Exclusive & Luxury */
+.tier-badge.platinum {
+  background: linear-gradient(135deg, #E0E7FF 0%, #A5B4FC 50%, #C7D2FE 100%);
+  color: #4338CA;
+  border: 1.5px solid #A5B4FC;
+}
+
+.tier-badge.platinum::before {
+  background: linear-gradient(135deg, rgba(165, 180, 252, 0.4), rgba(199, 210, 254, 0.6));
+}
+
+.tier-badge.platinum:hover {
+  box-shadow: 0 6px 24px rgba(99, 102, 241, 0.45);
 }
 
 .rs-review-verified {

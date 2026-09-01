@@ -164,7 +164,6 @@
         <main class="main-content">
             @include('layouts.header2')
 
-
             <div class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 space-y-4 sm:space-y-6">
 
             <div class="page-header-premium">
@@ -678,18 +677,6 @@
             const qs = params.toString();
             window.location.href = '{{ route('admin.transaksi.export') }}' + (qs ? '?' + qs : '');
         }
-
-        // Set current date
-        const now = new Date();
-        const options = {
-            weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        };
-        const dateEl = document.getElementById('currentDate');
-        if (dateEl) dateEl.textContent = now.toLocaleDateString('id-ID', options);
-
         // Tambah transaksi modal
         function openTambahModal() {
             const modal = document.getElementById('modalTambah');

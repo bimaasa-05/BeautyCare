@@ -777,23 +777,12 @@
     </div>
 
     <script>
-    const now = new Date();
-    const options = {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-    };
-    const dateEl = document.getElementById('currentDate');
-    if (dateEl) dateEl.textContent = now.toLocaleDateString('id-ID', options);
-
     const params = new URLSearchParams(window.location.search);
     if (params.get('print') === '1') {
         window.print();
     }
 
     function updateCountdowns() {
-        const now = new Date();
         document.querySelectorAll('.countdown-row').forEach(function(row) {
             const end = new Date((row.dataset.akhir || '').replace(' ', 'T'));
             const diff = Math.max(0, end - now);

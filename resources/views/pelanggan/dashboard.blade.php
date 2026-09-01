@@ -60,6 +60,10 @@
         border-radius: 0 0 var(--radius-sm) var(--radius-sm);
     }
 
+    .rating-col .table-widget .table-scroll {
+        max-height: 135px;
+    }
+
     .table-widget .table-scroll::-webkit-scrollbar {
         width: 4px;
     }
@@ -121,6 +125,16 @@
 
     .dashboard-bottom-row .list-widget .stock-grid {
         flex: 1;
+    }
+
+    .dashboard-bottom-grid .list-widget {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .dashboard-bottom-grid .list-widget .stock-grid {
+        flex: 1;
+        grid-auto-rows: 1fr;
     }
 
     .mb-progres {
@@ -206,8 +220,19 @@
         gap: 8px;
     }
 
-    #miniChartFavorit .bar {
+    #miniChartFavorit .mc-col {
         flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 8px;
+    }
+
+    #miniChartFavorit .bar {
+        flex: 0 0 auto;
+        width: 100%;
         max-width: 34px;
         min-width: 14px;
         height: 0;
@@ -221,18 +246,10 @@
     #miniChartFavorit .bar.bar-info    { background: linear-gradient(180deg, #3B82F6, #60A5FA); }
     #miniChartFavorit .bar.bar-warning { background: linear-gradient(180deg, #F59E0B, #FBBF24); }
 
-    .mini-chart-card .mc-labels {
-        display: flex;
-        justify-content: space-between;
-        gap: 6px;
+    #miniChartFavorit .mc-label {
+        width: 100%;
         font-size: 11px;
         color: var(--gray);
-        margin-top: 8px;
-    }
-
-    .mini-chart-card .mc-labels span {
-        flex: 1;
-        min-width: 0;
         text-align: center;
         white-space: nowrap;
         overflow: hidden;
@@ -585,6 +602,118 @@
         transform: translateY(-1px);
         box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
     }
+
+    /* ─── Modal Premium (Hapus Rating) ─── */
+    .modal-premium {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(4px);
+        z-index: 200;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        animation: fadeIn 0.2s ease;
+    }
+
+    .modal-premium.show {
+        display: flex;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    .modal-premium .modal-box {
+        background: var(--white);
+        border-radius: 24px;
+        padding: 32px;
+        width: 100%;
+        max-width: 400px;
+        margin: 0 16px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+        animation: scaleIn 0.3s ease;
+    }
+
+    @keyframes scaleIn {
+        from { transform: scale(0.9); opacity: 0; }
+        to { transform: scale(1); opacity: 1; }
+    }
+
+    .modal-premium .modal-box .modal-icon-wrap {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        background: #FEE2E2;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 16px;
+    }
+
+    .modal-premium .modal-box .modal-icon-wrap i {
+        font-size: 28px;
+        color: #DC2626;
+    }
+
+    .modal-premium .modal-box h3 {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--dark);
+        text-align: center;
+        margin-bottom: 8px;
+    }
+
+    .modal-premium .modal-box p {
+        font-size: 13px;
+        color: var(--gray);
+        text-align: center;
+        margin-bottom: 24px;
+        line-height: 1.6;
+    }
+
+    .modal-premium .modal-box .modal-actions {
+        display: flex;
+        gap: 12px;
+    }
+
+    .modal-premium .modal-box .modal-actions .btn-cancel {
+        flex: 1;
+        padding: 11px 20px;
+        border-radius: 12px;
+        border: 1.5px solid var(--border);
+        background: var(--white);
+        color: var(--gray);
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .modal-premium .modal-box .modal-actions .btn-cancel:hover {
+        background: var(--background);
+        border-color: #ddd;
+    }
+
+    .modal-premium .modal-box .modal-actions .btn-danger {
+        flex: 1;
+        padding: 11px 20px;
+        border-radius: 12px;
+        border: none;
+        background: linear-gradient(135deg, #DC2626, #EF4444);
+        color: #fff;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
+    }
+
+    .modal-premium .modal-box .modal-actions .btn-danger:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 20px rgba(220, 38, 38, 0.35);
+    }
     </style>
 </head>
 
@@ -721,16 +850,14 @@
                             </div>
                             <div class="mc-body" id="miniChartFavorit" style="min-height:140px;">
                                 @php
-                                    $maxHeight = $layananFavorit->max('harga') ?: 1;
+                                    $maxHeight = max($layananFavorit->max('total') ?: 0, 1);
                                     $colors = ['bar-primary', 'bar-success', 'bar-info', 'bar-warning'];
                                 @endphp
                                 @foreach($layananFavorit as $i => $fav)
-                                <span class="bar {{ $colors[$i % 4] }}" data-height="{{ round(($fav->harga / $maxHeight) * 80) }}"></span>
-                                @endforeach
-                            </div>
-                            <div class="mc-labels">
-                                @foreach($layananFavorit as $fav)
-                                <span title="{{ $fav->nm_layanan }}">{{ $fav->nm_layanan }}</span>
+                                <div class="mc-col">
+                                    <span class="bar {{ $colors[$i % 4] }}" data-height="{{ round(($fav->total / $maxHeight) * 80) }}"></span>
+                                    <span class="mc-label" title="{{ $fav->nm_layanan }}">{{ $fav->nm_layanan }}</span>
+                                </div>
                                 @endforeach
                             </div>
                         </div>
@@ -981,7 +1108,7 @@
                     </div>
 
                     <!-- Rating Saya & Belum Diberi Rating -->
-                    <div style="display:grid;gap:20px;align-content:start;min-width:0;">
+                    <div class="rating-col" style="display:grid;gap:20px;align-content:start;min-width:0;">
                     <div class="table-widget">
                         <div class="tw-header">
                             <h3><i class="fa-solid fa-star" style="color:#F59E0B;font-size:14px;margin-right:4px;"></i> Rating Saya</h3>
@@ -1018,14 +1145,11 @@
                                                 class="dash-rate-btn" title="Edit ulasan">
                                                 <i class="fa-solid fa-pen"></i> Edit
                                             </a>
-                                            <form action="{{ route('rating.destroy', $rating->id) }}" method="POST"
-                                                onsubmit="return confirm('Hapus rating Anda?')" style="margin:0;">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="dash-rate-btn danger" title="Hapus ulasan">
-                                                    <i class="fa-solid fa-trash"></i> Hapus
-                                                </button>
-                                            </form>
+                                            <button type="button" class="dash-rate-btn danger" title="Hapus ulasan"
+                                                data-id="{{ $rating->id }}" data-nama="{{ $rating->nama_objek }}"
+                                                onclick="confirmHapusRating(this)">
+                                                <i class="fa-solid fa-trash"></i> Hapus
+                                            </button>
                                         </div>
                                     </td>
                                 </tr>
@@ -1104,6 +1228,25 @@
         </main>
     </div>
 
+    <!-- ═══ Modal Hapus Rating Premium ═══ -->
+    <div id="deleteRatingModal" class="modal-premium">
+        <div class="modal-box">
+            <form id="deleteRatingForm" method="POST">
+                @csrf
+                @method('DELETE')
+                <div class="modal-icon-wrap">
+                    <i class="fa-solid fa-star"></i>
+                </div>
+                <h3>Hapus Rating</h3>
+                <p id="modalHapusRatingBody">Apakah Anda yakin ingin menghapus rating ini?<br>Tindakan ini tidak dapat dibatalkan.</p>
+                <div class="modal-actions">
+                    <button type="button" onclick="closeDeleteRatingModal()" class="btn-cancel">Tidak Jadi</button>
+                    <button type="submit" class="btn-danger">Ya, Hapus</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
     const chartMonths = @json($chartMonths);
     const chartCounts = @json($chartCounts);
@@ -1179,16 +1322,6 @@
     }
 
     document.addEventListener('DOMContentLoaded', function() {
-        const now = new Date();
-        const options = {
-            weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        };
-        const dateEl = document.getElementById('currentDate');
-        if (dateEl) dateEl.textContent = now.toLocaleDateString('id-ID', options);
-
         document.querySelectorAll('.mb-fill').forEach(function(fill) {
             var width = parseInt(fill.getAttribute('data-width')) || 0;
             setTimeout(function() { fill.style.width = width + '%'; }, 200);
@@ -1214,7 +1347,6 @@
         ];
 
         function monthRangeLabel(months) {
-            const now = new Date();
             const start = new Date(now.getFullYear(), now.getMonth() - (months - 1), 1);
             const fmt = { month: 'short', year: 'numeric' };
             return start.toLocaleDateString('id-ID', fmt) + ' \u2014 ' + now.toLocaleDateString('id-ID', fmt);
@@ -1316,6 +1448,30 @@
                 }
             });
         }
+    });
+
+    // ═══ Modal Hapus Rating Premium ═══
+    function confirmHapusRating(btn) {
+        const id = btn.getAttribute('data-id');
+        const nama = (btn.getAttribute('data-nama') || 'rating ini').replace(/[<>&"']/g, function(c) {
+            return { '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;', "'": '&#39;' }[c];
+        });
+        document.getElementById('deleteRatingForm').action = '{{ url('/pelanggan/rating') }}' + '/' + id;
+        document.getElementById('modalHapusRatingBody').innerHTML =
+            'Apakah Anda yakin ingin menghapus rating untuk <strong>' + nama + '</strong>?<br>Tindakan ini tidak dapat dibatalkan.';
+        document.getElementById('deleteRatingModal').classList.add('show');
+    }
+
+    function closeDeleteRatingModal() {
+        document.getElementById('deleteRatingModal').classList.remove('show');
+    }
+
+    document.getElementById('deleteRatingModal').addEventListener('click', function(e) {
+        if (e.target === this) closeDeleteRatingModal();
+    });
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closeDeleteRatingModal();
     });
     </script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>

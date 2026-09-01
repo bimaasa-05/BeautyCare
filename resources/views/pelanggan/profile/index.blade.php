@@ -55,7 +55,6 @@
         }
     }
 
-
     ::-webkit-scrollbar {
         width: 6px;
         height: 6px;
@@ -848,16 +847,6 @@
             ? '<i class="fa-regular fa-pen-to-square"></i> Edit'
             : '<i class="fa-solid fa-xmark"></i> Batal';
     }
-
-    const now = new Date();
-    const options = {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-    };
-    const dateEl = document.getElementById('currentDate');
-    if (dateEl) dateEl.textContent = now.toLocaleDateString('id-ID', options);
     </script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
 </body>

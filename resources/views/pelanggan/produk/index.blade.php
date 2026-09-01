@@ -55,7 +55,6 @@
         }
     }
 
-
     ::-webkit-scrollbar {
         width: 6px;
         height: 6px;
@@ -633,8 +632,6 @@
         flex-shrink: 0;
     }
 
-
-
     @media (max-width: 768px) {
         .produk-grid {
             grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
@@ -971,16 +968,6 @@
     });
 
     document.querySelector('.search-input-wrap input').addEventListener('input', applyFilters);
-
-    const now = new Date();
-    const options = {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-    };
-    const dateEl = document.getElementById('currentDate');
-    if (dateEl) dateEl.textContent = now.toLocaleDateString('id-ID', options);
     </script>
 
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
