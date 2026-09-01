@@ -86,9 +86,20 @@
                                     @include('partials.badge-status', ['status' => $transaksi->status])
                                     </td>
                                 </tr>
+                                @php
+                                    $metodeShowIcon = match($transaksi->metode_byr) {
+                                        'Tunai' => 'fa-solid fa-money-bill-wave text-emerald-500',
+                                        'Transfer' => 'fa-solid fa-building-columns text-purple-500',
+                                        'BCA' => 'fa-solid fa-building-columns text-sky-500',
+                                        'Debit' => 'fa-solid fa-credit-card text-amber-500',
+                                        'E-Wallet' => 'fa-solid fa-wallet text-pink-500',
+                                        'QRIS' => 'fa-solid fa-qrcode text-pink-500',
+                                        default => 'fa-solid fa-credit-card text-gray-400',
+                                    };
+                                @endphp
                                 <tr>
                                     <td data-label="" class="py-1.5 text-gray-400">Metode</td>
-                                    <td data-label="" class="py-1.5 font-medium text-gray-700">{{ $transaksi->metode_byr }}</td>
+                                    <td data-label="" class="py-1.5 font-medium text-gray-700"><i class="{{ $metodeShowIcon }} mr-1"></i>{{ $transaksi->metode_byr }}</td>
                                 </tr>
                                 <tr>
                                     <td data-label="" class="py-1.5 text-gray-400">Catatan</td>
