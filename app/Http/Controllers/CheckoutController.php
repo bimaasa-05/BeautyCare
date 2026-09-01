@@ -548,21 +548,14 @@ class CheckoutController extends Controller
             ->update(['status' => 'digunakan']);
     }
 
-    protected function hitungPembelianProduk($pelangganId)
+    protected function hitungPembelianProduk(Pelanggan $pelanggan)
     {
-        return Transaksi::where('id_pelanggan', $pelangganId)
-            ->where('status', 'Lunas')
-            ->whereHas('detail', function ($q) {
-                $q->where('jenis', 'Produk');
-            })
-            ->count();
+        return $pelanggan->totalPembelianProduk();
     }
 
-    protected function hitungTotalBelanja($pelangganId)
+    protected function hitungTotalBelanja(Pelanggan $pelanggan)
     {
-        return Transaksi::where('id_pelanggan', $pelangganId)
-            ->where('status', 'Lunas')
-            ->sum('total');
+        return $pelanggan->totalBelanjaProduk();
     }
 
     protected function cekSyaratMembership(?Pelanggan $pelanggan, Membership $member): ?string
@@ -576,8 +569,8 @@ class CheckoutController extends Controller
             return null;
         }
 
-        $totalTransaksi = $this->hitungPembelianProduk($pelanggan->id_pelanggan);
-        $totalBelanja = $this->hitungTotalBelanja($pelanggan->id_pelanggan);
+        $totalTransaksi = $this->hitungPembelianProduk($pelanggan);
+        $totalBelanja = $this->hitungTotalBelanja($pelanggan);
 
         if ($totalTransaksi < (int) $member->min_transaksi || $totalBelanja < (int) $member->min_pembelian) {
             return 'Anda belum memenuhi syarat upgrade ke ' . $member->tingkat . '. Syarat: min. '
@@ -635,7 +628,7 @@ class CheckoutController extends Controller
         $result['level'] = $member->tingkat;
         $result['diskon_pct'] = (float) $member->diskon;
 
-        $jmlPembelian = $this->hitungPembelianProduk($pelanggan->id_pelanggan);
+        $jmlPembelian = $this->hitungPembelianProduk($pelanggan);
 
         if ($jmlPembelian >= (int) $member->min_transaksi) {
             $result['aktif'] = true;

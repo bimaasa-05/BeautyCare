@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Transaksi;
 
 class Pelanggan extends Model
 {
@@ -57,6 +58,20 @@ class Pelanggan extends Model
     public function booking()
     {
         return $this->hasMany(Booking::class, 'id_pelanggan', 'id_pelanggan');
+    }
+
+    public function totalPembelianProduk()
+    {
+        return Transaksi::where('id_pelanggan', $this->id_pelanggan)
+            ->where('status', 'Lunas')
+            ->count();
+    }
+
+    public function totalBelanjaProduk()
+    {
+        return Transaksi::where('id_pelanggan', $this->id_pelanggan)
+            ->where('status', 'Lunas')
+            ->sum('total');
     }
 
     /**

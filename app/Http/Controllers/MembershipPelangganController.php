@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Membership;
 use App\Models\Notifikasi;
 use App\Models\Pelanggan;
-use App\Models\Transaksi;
 use Illuminate\Support\Facades\Auth;
 
 class MembershipPelangganController extends Controller
@@ -38,13 +37,9 @@ class MembershipPelangganController extends Controller
         $sisaDetikMember = 0;
 
         if ($pelanggan) {
-            $totalTransaksi = Transaksi::where('id_pelanggan', $pelanggan->id_pelanggan)
-                ->where('status', 'Lunas')
-                ->count();
+            $totalTransaksi = $pelanggan->totalPembelianProduk();
 
-            $totalBelanja = Transaksi::where('id_pelanggan', $pelanggan->id_pelanggan)
-                ->where('status', 'Lunas')
-                ->sum('total');
+            $totalBelanja = $pelanggan->totalBelanjaProduk();
 
             if ($pelanggan->id_member) {
                 $member = Membership::find($pelanggan->id_member);
