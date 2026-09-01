@@ -1,0 +1,79 @@
+/* =============================================
+   BEAUTYCARE - UNIFIED DROPDOWN (Period Popup)
+   Source: beautycian/dashboard.blade.php:39-112
+   Used by: kasir, beautycian, pelanggan, admin dashboards
+   ============================================= */
+.period-trigger {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: #fff; border: 1.5px solid #E5E7EB; border-radius: 10px;
+    padding: 8px 14px; font-family: 'Poppins', sans-serif; font-size: 13px;
+    font-weight: 600; color: var(--dark); cursor: pointer;
+    transition: all 0.25s ease; box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+.period-trigger:hover { border-color: #FFB6CD; background: #FFF9FB; }
+.period-trigger > i:first-child { color: var(--primary); }
+.period-trigger .period-arrow { font-size: 11px; color: var(--gray); transition: transform 0.3s ease; }
+.period-trigger.open .period-arrow { transform: rotate(180deg); }
+.period-popup {
+    display: none; position: absolute; top: calc(100% + 6px); right: 0; width: 280px;
+    background: #fff; border-radius: 16px; border: 1px solid #FFD6E6;
+    box-shadow: 0 12px 40px rgba(255, 79, 135, 0.15); z-index: 120; padding: 20px;
+    font-family: 'Poppins', sans-serif; transform-origin: top center;
+    animation: curtainUnroll 0.45s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+.period-popup.open { display: block; }
+.period-popup.open-up { top: auto; bottom: calc(100% + 6px); transform-origin: bottom center; animation-name: curtainUnrollUp; }
+@keyframes curtainUnroll {
+    0%   { transform: scaleY(0); opacity: 0.2; }
+    55%  { transform: scaleY(1.03); opacity: 1; }
+    100% { transform: scaleY(1); opacity: 1; }
+}
+@keyframes curtainUnrollUp {
+    0%   { transform: scaleY(0); opacity: 0.2; }
+    55%  { transform: scaleY(1.03); opacity: 1; }
+    100% { transform: scaleY(1); opacity: 1; }
+}
+.period-popup .pp-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+.period-popup .pp-icon {
+    width: 34px; height: 34px; border-radius: 10px; background: #FFE3EE; color: var(--primary);
+    display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0;
+}
+.period-popup .pp-header h4 { font-size: 14px; font-weight: 700; color: var(--dark); margin: 0; }
+.period-popup .pp-options { display: grid; gap: 6px; margin-bottom: 14px; }
+#periodOptions { display: grid; gap: 6px; margin-bottom: 14px; }
+.pp-option {
+    display: flex; flex-direction: column; gap: 2px; text-align: left; width: 100%;
+    border: 1.5px solid #F1F2F6; background: #fff; border-radius: 12px; padding: 10px 12px;
+    cursor: pointer; transition: all 0.2s ease; font-family: 'Poppins', sans-serif;
+}
+.pp-option:hover { background: #FFF9FB; border-color: #FFB6CD; }
+.pp-option .po-title { font-size: 13px; font-weight: 700; color: var(--dark); display: flex; align-items: center; gap: 8px; }
+.pp-option .po-title i { font-size: 11px; color: #fff; opacity: 0; transform: scale(0.5); transition: all 0.2s ease; }
+.pp-option .po-sub { font-size: 11px; color: var(--gray); font-weight: 500; }
+.pp-option.selected { border-color: var(--primary); background: linear-gradient(135deg, var(--primary), #FF7BA6); }
+.pp-option.selected .po-title, .pp-option.selected .po-sub { color: #fff; }
+.pp-option.selected .po-title i { opacity: 1; transform: scale(1); }
+.pp-footer { display: flex; gap: 8px; }
+.pp-today, .pp-oke {
+    flex: 1; border: none; border-radius: 10px; padding: 9px 0; font-family: 'Poppins', sans-serif;
+    font-size: 12px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center;
+    justify-content: center; gap: 6px; transition: all 0.2s ease;
+}
+.pp-today { background: #F1F2F6; color: var(--gray); }
+.pp-today:hover { background: #E5E7EB; color: var(--dark); }
+.pp-oke { background: linear-gradient(135deg, var(--primary), #FF7BA6); color: #fff; box-shadow: 0 4px 12px rgba(255, 79, 135, 0.3); }
+.pp-oke:hover { box-shadow: 0 6px 16px rgba(255, 79, 135, 0.4); transform: translateY(-1px); }
+@media (max-width: 768px) { .period-popup { left: 0; right: auto; } }
+@media (max-width: 480px) {
+    .period-popup {
+        position: fixed; left: 50%; top: 50%; right: auto; bottom: auto;
+        transform: translate(-50%, -50%); width: calc(100vw - 40px); max-width: 320px;
+        max-height: calc(100vh - 32px); overflow-y: auto;
+        animation: curtainUnrollMobile 0.45s cubic-bezier(0.22, 0.61, 0.36, 1);
+    }
+}
+@keyframes curtainUnrollMobile {
+    0%   { transform: translate(-50%, -50%) scaleY(0); opacity: 0.2; }
+    55%  { transform: translate(-50%, -50%) scaleY(1.03); opacity: 1; }
+    100% { transform: translate(-50%, -50%) scaleY(1); opacity: 1; }
+}
