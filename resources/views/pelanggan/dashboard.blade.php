@@ -1322,16 +1322,6 @@
     }
 
     document.addEventListener('DOMContentLoaded', function() {
-        const now = new Date();
-        const options = {
-            weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        };
-        const dateEl = document.getElementById('currentDate');
-        if (dateEl) dateEl.textContent = now.toLocaleDateString('id-ID', options);
-
         document.querySelectorAll('.mb-fill').forEach(function(fill) {
             var width = parseInt(fill.getAttribute('data-width')) || 0;
             setTimeout(function() { fill.style.width = width + '%'; }, 200);
@@ -1357,7 +1347,6 @@
         ];
 
         function monthRangeLabel(months) {
-            const now = new Date();
             const start = new Date(now.getFullYear(), now.getMonth() - (months - 1), 1);
             const fmt = { month: 'short', year: 'numeric' };
             return start.toLocaleDateString('id-ID', fmt) + ' \u2014 ' + now.toLocaleDateString('id-ID', fmt);

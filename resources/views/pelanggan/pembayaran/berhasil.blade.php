@@ -267,16 +267,6 @@
             window.location.href = '{{ $transaksi->id_booking ? route("pelanggan.booking.detail", $transaksi->id_booking) : route("pelanggan.pesanan.index") }}';
         }
     }, 1000);
-
-    const now = new Date();
-    const options = {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-    };
-    const dateEl = document.getElementById('currentDate');
-    if (dateEl) dateEl.textContent = now.toLocaleDateString('id-ID', options);
     </script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
 </body>

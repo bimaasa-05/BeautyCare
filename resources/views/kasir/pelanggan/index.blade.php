@@ -229,16 +229,7 @@ class="bg-gray-50 border border-gray-100 text-[12px] rounded-full pl-9 pr-4 py-2
         </main>
     </div>
 
-    <script>
-        const now = new Date();
-        const options = {
-            weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        };
-        document.getElementById('currentDate').textContent = now.toLocaleDateString('id-ID', options);
-    </script>
+    
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
     @include('partials.confirm-modal')
 </body>

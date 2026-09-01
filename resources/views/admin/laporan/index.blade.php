@@ -114,7 +114,6 @@
         <main class="main-content">
             @include('layouts.header2')
 
-
             <div class="dashboard-content">
 
             <div class="page-header-premium">
@@ -372,11 +371,7 @@
             },
             options: commonOptions
         });
-
-        const now = new Date();
         const dateOpts = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-        const dateEl = document.getElementById('currentDate');
-        if (dateEl) dateEl.textContent = now.toLocaleDateString('id-ID', dateOpts);
     </script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
 </body>

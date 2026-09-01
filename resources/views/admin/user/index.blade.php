@@ -427,16 +427,6 @@
             clearTimeout(searchTimer);
             searchTimer = setTimeout(fetchUser, 400);
         });
-
-        // Set current date
-        const now = new Date();
-        const options = {
-            weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        };
-        document.getElementById('currentDate').textContent = now.toLocaleDateString('id-ID', options);
     </script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
     @include('partials.confirm-modal')
@@ -455,7 +445,6 @@
             pendingForm = form;
             pendingSelect = select;
             previousValue = select.dataset.prevValue || select.options[0].value;
-            var now = new Date();
             now.setDate(now.getDate() + 1);
             now.setHours(23, 59, 0, 0);
             var offset = now.getTimezoneOffset();

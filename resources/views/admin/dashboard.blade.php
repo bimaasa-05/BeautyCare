@@ -952,9 +952,7 @@
     </style>
 
     <script>
-    const now = new Date();
     const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-    document.getElementById('currentDate').textContent = now.toLocaleDateString('id-ID', options);
 
     Chart.defaults.font.family = "'Poppins', sans-serif";
     Chart.defaults.color = '#9CA3AF';
@@ -1176,7 +1174,6 @@
             let current = config.defaultValue;
 
             function periodConfigs() {
-                const now = new Date();
                 const fmt = { day: 'numeric', month: 'short', year: 'numeric' };
                 const rangeLabel = function(daysBack) {
                     const start = new Date(now.getFullYear(), now.getMonth(), now.getDate() - daysBack);

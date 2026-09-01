@@ -55,7 +55,6 @@
         }
     }
 
-
     ::-webkit-scrollbar {
         width: 6px;
         height: 6px;
@@ -1063,16 +1062,6 @@
     </div>
 
     <script>
-    const now = new Date();
-    const options = {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-    };
-    const dateEl = document.getElementById('currentDate');
-    if (dateEl) dateEl.textContent = now.toLocaleDateString('id-ID', options);
-
     document.querySelectorAll('.pg-fill').forEach(function(fill) {
         var width = parseInt(fill.getAttribute('data-width')) || 0;
         setTimeout(function() { fill.style.width = width + '%'; }, 200);

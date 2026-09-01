@@ -159,7 +159,6 @@
         <main class="main-content">
             @include('layouts.header2')
 
-
             <!-- Dashboard Content -->
             <div class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
 
@@ -321,22 +320,10 @@
         function setDefaultSuspendUntil() {
             const input = document.getElementById('suspendUntil');
             if (!input.value) {
-                const now = new Date();
                 now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
                 input.min = now.toISOString().slice(0, 16);
             }
         }
-
-        const now = new Date();
-        const options = {
-            weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-            timeZone: 'Asia/Jakarta',
-        };
-        const dateEl = document.getElementById('currentDate');
-        if (dateEl) dateEl.textContent = now.toLocaleDateString('id-ID', options);
     </script>
     @include('partials.password-strength')
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>

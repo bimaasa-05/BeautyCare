@@ -159,7 +159,6 @@
         <main class="main-content">
             @include('layouts.header2')
 
-
             <!-- Dashboard Content -->
             <div class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
 
@@ -279,17 +278,7 @@
         </main>
     </div>
 
-    <script>
-        const now = new Date();
-        const options = {
-            weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        };
-        const dateEl = document.getElementById('currentDate');
-        if (dateEl) dateEl.textContent = now.toLocaleDateString('id-ID', options);
-    </script>
+    
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             function formatHarga(input) {
