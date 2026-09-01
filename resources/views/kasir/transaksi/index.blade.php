@@ -177,17 +177,21 @@
                                          <td class="text-gray-500" data-label="Tanggal">{{ \Carbon\Carbon::parse($t->tanggal)->format('d/m/Y') }}</td>
                                          <td class="font-semibold text-gray-800" data-label="Total">Rp {{ number_format($t->total, 0, ',', '.') }}</td>
                                          <td data-label="Metode">
-                                             <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-medium 
-                                                  @if($t->metode_byr == 'Tunai') bg-blue-50 text-blue-600
-                                                  @elseif($t->metode_byr == 'E-Wallet') bg-teal-50 text-teal-600
-                                                 @elseif($t->metode_byr == 'Transfer') bg-purple-50 text-purple-600
-                                                 @elseif($t->metode_byr == 'Debit') bg-amber-50 text-amber-600
-                                                 @else bg-red-50 text-red-600 @endif">
-                                                  @if($t->metode_byr == 'Tunai') <i class="fa-solid fa-money-bill-wave text-[10px]"></i>
-                                                  @elseif($t->metode_byr == 'E-Wallet') <i class="fa-solid fa-wallet text-[10px]"></i>
-                                                 @elseif($t->metode_byr == 'Transfer') <i class="fa-solid fa-building-columns text-[10px]"></i>
-                                                 @elseif($t->metode_byr == 'Debit') <i class="fa-solid fa-credit-card text-[10px]"></i>
-                                                 @else <i class="fa-solid fa-credit-card text-[10px]"></i> @endif
+                                              <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-medium 
+                                                   @if($t->metode_byr == 'Tunai') bg-emerald-50 text-emerald-600
+                                                   @elseif($t->metode_byr == 'E-Wallet') bg-pink-50 text-pink-600
+                                                  @elseif($t->metode_byr == 'Transfer') bg-purple-50 text-purple-600
+                                                  @elseif($t->metode_byr == 'BCA') bg-sky-50 text-sky-600
+                                                  @elseif($t->metode_byr == 'Debit') bg-amber-50 text-amber-600
+                                                  @elseif($t->metode_byr == 'QRIS') bg-pink-50 text-pink-600
+                                                  @else bg-gray-50 text-gray-600 @endif">
+                                                   @if($t->metode_byr == 'Tunai') <i class="fa-solid fa-money-bill-wave text-[10px]"></i>
+                                                   @elseif($t->metode_byr == 'E-Wallet') <i class="fa-solid fa-wallet text-[10px]"></i>
+                                                  @elseif($t->metode_byr == 'Transfer') <i class="fa-solid fa-building-columns text-[10px]"></i>
+                                                  @elseif($t->metode_byr == 'BCA') <i class="fa-solid fa-building-columns text-[10px]"></i>
+                                                  @elseif($t->metode_byr == 'Debit') <i class="fa-solid fa-credit-card text-[10px]"></i>
+                                                  @elseif($t->metode_byr == 'QRIS') <i class="fa-solid fa-qrcode text-[10px]"></i>
+                                                  @else <i class="fa-solid fa-credit-card text-[10px]"></i> @endif
                                                  {{ $t->metode_byr }}
                                              </span>
                                          </td>

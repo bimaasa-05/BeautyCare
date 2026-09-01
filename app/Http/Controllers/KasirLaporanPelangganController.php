@@ -15,61 +15,58 @@ class KasirLaporanPelangganController extends Controller
 {
     public function index(Request $request)
     {
-        $userId = auth()->id();
         $periode = $request->get('periode', '30hari');
         $dateRange = $this->getDateRange($periode);
         $startDate = $dateRange['start'];
         $endDate = $dateRange['end'];
 
-        $totalPelanggan = Pelanggan::whereHas('transaksi', function ($q) use ($userId) {
-            $q->where('id_kasir', $userId)->where('jenis_transaksi', '!=', 'Pengeluaran');
+        $totalPelanggan = Pelanggan::whereHas('transaksi', function ($q) {
+            $q->where('id_kasir', auth()->id())->where('jenis_transaksi', '!=', 'Pengeluaran');
         })->count();
 
-        $pelangganBaru = Pelanggan::whereHas('transaksi', function ($q) use ($userId, $startDate, $endDate) {
-            $q->where('id_kasir', $userId)->where('jenis_transaksi', '!=', 'Pengeluaran')
+        $pelangganBaru = Pelanggan::whereHas('transaksi', function ($q) use ($startDate, $endDate) {
+            $q->where('id_kasir', auth()->id())->where('jenis_transaksi', '!=', 'Pengeluaran')
                 ->whereBetween('tanggal', [$startDate, $endDate]);
-        })->whereBetween('created_at', [$startDate . ' 00:00:00', $endDate . ' 23:59:59'])
-            ->count();
+        })->count();
 
         $pelangganMember = Pelanggan::whereNotNull('id_member')
-            ->whereHas('transaksi', function ($q) use ($userId) {
-                $q->where('id_kasir', $userId)->where('jenis_transaksi', '!=', 'Pengeluaran');
+            ->whereHas('transaksi', function ($q) {
+                $q->where('id_kasir', auth()->id())->where('jenis_transaksi', '!=', 'Pengeluaran');
             })->count();
 
         $transaksiPelanggan = Transaksi::whereNotNull('id_pelanggan')
-            ->where('id_kasir', $userId)
+            ->where('id_kasir', auth()->id())
             ->where('jenis_transaksi', '!=', 'Pengeluaran')
             ->whereBetween('tanggal', [$startDate, $endDate])
             ->count();
 
         $prevStart = $this->getPreviousPeriodStart($periode, $startDate);
-        $prevPelangganBaru = Pelanggan::whereHas('transaksi', function ($q) use ($userId, $prevStart, $startDate) {
-            $q->where('id_kasir', $userId)->where('jenis_transaksi', '!=', 'Pengeluaran')
+        $prevPelangganBaru = Pelanggan::whereHas('transaksi', function ($q) use ($prevStart, $startDate) {
+            $q->where('id_kasir', auth()->id())->where('jenis_transaksi', '!=', 'Pengeluaran')
                 ->whereBetween('tanggal', [$prevStart, $startDate]);
-        })->whereBetween('created_at', [$prevStart . ' 00:00:00', $startDate . ' 23:59:59'])
-            ->count();
+        })->count();
         $pelangganBaruGrowth = $prevPelangganBaru > 0 ? round((($pelangganBaru - $prevPelangganBaru) / $prevPelangganBaru) * 100) : 0;
 
-        [$chartLabels, $chartData] = $this->getChartData($userId, $startDate, $endDate, $periode);
+        [$chartLabels, $chartData] = $this->getChartData($startDate, $endDate, $periode);
 
-        [$memberLabels, $memberValues] = $this->getMembershipDistribution($userId);
+        [$memberLabels, $memberValues] = $this->getMembershipDistribution();
 
         $search = $request->keyword;
         $dari = $request->dari;
         $sampai = $request->sampai;
 
         $pelanggan = Pelanggan::with('membership')
-            ->withCount(['transaksi as total_transaksi' => function ($q) use ($userId) {
-                $q->where('id_kasir', $userId)->where('jenis_transaksi', '!=', 'Pengeluaran');
+            ->withCount(['transaksi as total_transaksi' => function ($q) {
+                $q->where('id_kasir', auth()->id())->where('jenis_transaksi', '!=', 'Pengeluaran');
             }])
-            ->withSum(['transaksi as total_belanja' => function ($q) use ($userId) {
-                $q->where('id_kasir', $userId)->where('jenis_transaksi', '!=', 'Pengeluaran')->where('status', 'Lunas');
+            ->withSum(['transaksi as total_belanja' => function ($q) {
+                $q->where('id_kasir', auth()->id())->where('jenis_transaksi', '!=', 'Pengeluaran')->where('status', 'Lunas');
             }], 'total')
-            ->withMax(['transaksi as tgl_terakhir' => function ($q) use ($userId) {
-                $q->where('id_kasir', $userId)->where('jenis_transaksi', '!=', 'Pengeluaran');
+            ->withMax(['transaksi as tgl_terakhir' => function ($q) {
+                $q->where('id_kasir', auth()->id())->where('jenis_transaksi', '!=', 'Pengeluaran');
             }], 'tanggal')
-            ->whereHas('transaksi', function ($q) use ($userId) {
-                $q->where('id_kasir', $userId)->where('jenis_transaksi', '!=', 'Pengeluaran');
+            ->whereHas('transaksi', function ($q) {
+                $q->where('id_kasir', auth()->id())->where('jenis_transaksi', '!=', 'Pengeluaran');
             })
             ->when($search, function ($q, $search) {
                 $q->where(function ($sub) use ($search) {
@@ -79,13 +76,21 @@ class KasirLaporanPelangganController extends Controller
                 });
             })
             ->when($dari, function ($q, $dari) {
-                $q->whereDate('created_at', '>=', $dari);
+                $q->whereHas('transaksi', function ($sub) use ($dari) {
+                    $sub->where('id_kasir', auth()->id())
+                        ->where('jenis_transaksi', '!=', 'Pengeluaran')
+                        ->whereDate('tanggal', '>=', $dari);
+                });
             })
             ->when($sampai, function ($q, $sampai) {
-                $q->whereDate('created_at', '<=', $sampai);
+                $q->whereHas('transaksi', function ($sub) use ($sampai) {
+                    $sub->where('id_kasir', auth()->id())
+                        ->where('jenis_transaksi', '!=', 'Pengeluaran')
+                        ->whereDate('tanggal', '<=', $sampai);
+                });
             })
             ->orderBy('id_pelanggan', 'desc')
-            ->paginate(15);
+            ->paginate(15)->appends($request->only(['periode', 'keyword', 'dari', 'sampai']));
 
         $fmt = function ($amount) {
             if ($amount >= 1000000000) {
@@ -108,16 +113,16 @@ class KasirLaporanPelangganController extends Controller
         ));
     }
 
-    private function getChartData($userId, $startDate, $endDate, $periode)
+    private function getChartData($startDate, $endDate, $periode)
     {
         if ($periode === '7hari' || $periode === '30hari') {
             $data = Pelanggan::select(
                     DB::raw('DATE(created_at) as label'),
                     DB::raw('COUNT(*) as total')
                 )
-                ->whereHas('transaksi', function ($q) use ($userId, $startDate, $endDate) {
-                    $q->where('id_kasir', $userId)->where('jenis_transaksi', '!=', 'Pengeluaran')
-                        ->whereBetween('tanggal', [$startDate . ' 00:00:00', $endDate . ' 23:59:59']);
+                ->whereHas('transaksi', function ($q) use ($startDate, $endDate) {
+                    $q->where('id_kasir', auth()->id())->where('jenis_transaksi', '!=', 'Pengeluaran')
+                        ->whereBetween('tanggal', [$startDate, $endDate]);
                 })
                 ->whereBetween('created_at', [$startDate . ' 00:00:00', $endDate . ' 23:59:59'])
                 ->groupBy(DB::raw('DATE(created_at)'))
@@ -142,9 +147,9 @@ class KasirLaporanPelangganController extends Controller
                 DB::raw("DATE_FORMAT(created_at, '%Y-%m') as label"),
                 DB::raw('COUNT(*) as total')
             )
-            ->whereHas('transaksi', function ($q) use ($userId, $startDate, $endDate) {
-                $q->where('id_kasir', $userId)->where('jenis_transaksi', '!=', 'Pengeluaran')
-                    ->whereBetween('tanggal', [$startDate . ' 00:00:00', $endDate . ' 23:59:59']);
+            ->whereHas('transaksi', function ($q) use ($startDate, $endDate) {
+                $q->where('id_kasir', auth()->id())->where('jenis_transaksi', '!=', 'Pengeluaran')
+                    ->whereBetween('tanggal', [$startDate, $endDate]);
             })
             ->whereBetween('created_at', [$startDate . ' 00:00:00', $endDate . ' 23:59:59'])
             ->groupBy('label')
@@ -166,9 +171,9 @@ class KasirLaporanPelangganController extends Controller
         return [$labels, $values];
     }
 
-    private function getMembershipDistribution($userId)
+    private function getMembershipDistribution()
     {
-        $pelangganKasir = Transaksi::where('id_kasir', $userId)
+        $pelangganKasir = Transaksi::where('id_kasir', auth()->id())
             ->whereNotNull('id_pelanggan')
             ->distinct()
             ->pluck('id_pelanggan');
@@ -184,8 +189,8 @@ class KasirLaporanPelangganController extends Controller
         $values = $data->pluck('total')->toArray();
 
         $nonMember = Pelanggan::whereNull('id_member')
-            ->whereHas('transaksi', function ($q) use ($userId) {
-                $q->where('id_kasir', $userId)->where('jenis_transaksi', '!=', 'Pengeluaran');
+            ->whereHas('transaksi', function ($q) {
+                $q->where('id_kasir', auth()->id())->where('jenis_transaksi', '!=', 'Pengeluaran');
             })->count();
         if ($nonMember > 0) {
             $labels[] = 'Non Member';
@@ -218,45 +223,43 @@ class KasirLaporanPelangganController extends Controller
 
     public function exportPDF(Request $request)
     {
-        $userId = auth()->id();
         $periode = $request->get('periode', '30hari');
         $dateRange = $this->getDateRange($periode);
         $startDate = $dateRange['start'];
         $endDate = $dateRange['end'];
 
-        $totalPelanggan = Pelanggan::whereHas('transaksi', function ($q) use ($userId) {
-            $q->where('id_kasir', $userId)->where('jenis_transaksi', '!=', 'Pengeluaran');
+        $totalPelanggan = Pelanggan::whereHas('transaksi', function ($q) {
+            $q->where('id_kasir', auth()->id())->where('jenis_transaksi', '!=', 'Pengeluaran');
         })->count();
 
-        $pelangganBaru = Pelanggan::whereHas('transaksi', function ($q) use ($userId, $startDate, $endDate) {
-            $q->where('id_kasir', $userId)->where('jenis_transaksi', '!=', 'Pengeluaran')
+        $pelangganBaru = Pelanggan::whereHas('transaksi', function ($q) use ($startDate, $endDate) {
+            $q->where('id_kasir', auth()->id())->where('jenis_transaksi', '!=', 'Pengeluaran')
                 ->whereBetween('tanggal', [$startDate, $endDate]);
-        })->whereBetween('created_at', [$startDate . ' 00:00:00', $endDate . ' 23:59:59'])
-            ->count();
+        })->count();
 
         $pelangganMember = Pelanggan::whereNotNull('id_member')
-            ->whereHas('transaksi', function ($q) use ($userId) {
-                $q->where('id_kasir', $userId)->where('jenis_transaksi', '!=', 'Pengeluaran');
+            ->whereHas('transaksi', function ($q) {
+                $q->where('id_kasir', auth()->id())->where('jenis_transaksi', '!=', 'Pengeluaran');
             })->count();
 
         $transaksiPelanggan = Transaksi::whereNotNull('id_pelanggan')
-            ->where('id_kasir', $userId)
+            ->where('id_kasir', auth()->id())
             ->where('jenis_transaksi', '!=', 'Pengeluaran')
             ->whereBetween('tanggal', [$startDate, $endDate])
             ->count();
 
         $pelanggan = Pelanggan::with('membership')
-            ->withCount(['transaksi as total_transaksi' => function ($q) use ($userId) {
-                $q->where('id_kasir', $userId)->where('jenis_transaksi', '!=', 'Pengeluaran');
+            ->withCount(['transaksi as total_transaksi' => function ($q) {
+                $q->where('id_kasir', auth()->id())->where('jenis_transaksi', '!=', 'Pengeluaran');
             }])
-            ->withSum(['transaksi as total_belanja' => function ($q) use ($userId) {
-                $q->where('id_kasir', $userId)->where('jenis_transaksi', '!=', 'Pengeluaran')->where('status', 'Lunas');
+            ->withSum(['transaksi as total_belanja' => function ($q) {
+                $q->where('id_kasir', auth()->id())->where('jenis_transaksi', '!=', 'Pengeluaran')->where('status', 'Lunas');
             }], 'total')
-            ->withMax(['transaksi as tgl_terakhir' => function ($q) use ($userId) {
-                $q->where('id_kasir', $userId)->where('jenis_transaksi', '!=', 'Pengeluaran');
+            ->withMax(['transaksi as tgl_terakhir' => function ($q) {
+                $q->where('id_kasir', auth()->id())->where('jenis_transaksi', '!=', 'Pengeluaran');
             }], 'tanggal')
-            ->whereHas('transaksi', function ($q) use ($userId) {
-                $q->where('id_kasir', $userId)->where('jenis_transaksi', '!=', 'Pengeluaran');
+            ->whereHas('transaksi', function ($q) {
+                $q->where('id_kasir', auth()->id())->where('jenis_transaksi', '!=', 'Pengeluaran');
             })
             ->orderBy('id_pelanggan', 'desc')
             ->get();

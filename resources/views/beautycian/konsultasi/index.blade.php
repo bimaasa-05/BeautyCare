@@ -1,16 +1,15 @@
 <!DOCTYPE html>
 <html lang="id">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Konsultasi Pelanggan - BeautyCare</title>
     @include('partials.head-meta')
-
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/dashboard.css') }}">
@@ -92,6 +91,8 @@
     .btn-konsul:hover { transform: translateY(-1px); }
     .btn-wa { background: #25D366; color: #fff; box-shadow: 0 4px 12px rgba(37,211,102,.3); }
     .btn-wa:hover { background: #1EBE5C; color: #fff; }
+    .btn-wa-web { background: #fff; color: #25D366; border: 1.5px solid #25D366; }
+    .btn-wa-web:hover { background: #F0FFF4; color: #1EBE5C; }
     .btn-selesai { background: #10B981; color: #fff; box-shadow: 0 4px 12px rgba(16,185,129,.25); }
     .btn-selesai:hover { color: #fff; }
     .btn-outline-konsul { background: transparent; color: var(--gray); border: 1.5px solid var(--border); }
@@ -205,8 +206,16 @@
                     </div>
                     <div class="kc-actions">
                         @if($item->pelanggan && $item->pelanggan->no_hp)
-                        <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $item->pelanggan->no_hp) }}?text={{ urlencode('Halo ' . ($item->pelanggan->nm_pelanggan ?? '') . ', saya dari BeautyCare. Konsultasi Anda "' . $item->topik . '" siap saya tangani.') }}"
-                            target="_blank" rel="noopener" class="btn-konsul btn-wa">
+                        @php
+                            $waRawPhone = preg_replace('/[^0-9]/', '', $item->pelanggan->no_hp);
+                            $waPhone = str_starts_with($waRawPhone, '0') ? '62' . substr($waRawPhone, 1) : $waRawPhone;
+                            $waRawText = 'Halo ' . ($item->pelanggan->nm_pelanggan ?? '') . ', saya dari BeautyCare. Konsultasi Anda "' . $item->topik . '" siap saya tangani.';
+                        @endphp
+                        <a href="https://wa.me/{{ $waPhone }}?text={{ rawurlencode($waRawText) }}"
+                            class="btn-konsul btn-wa"
+                            target="_blank" rel="noopener"
+                            title="Hubungi via WhatsApp (support 08 & +62)"
+                            onclick="event.preventDefault(); openWhatsAppApp('{{ $waPhone }}', {{ \Illuminate\Support\Js::from($waRawText) }});">
                             <i class="fa-brands fa-whatsapp"></i> Hubungi via WhatsApp
                         </a>
                         @endif
@@ -264,8 +273,22 @@
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') tutupSelesai();
     });
+
+    // Buka WhatsApp universal: wa.me di tab baru + coba wa:// via iframe (tanpa ganti halaman → tidak blank hitam)
+    // Support 08 & +62 sudah dinormalisasi di PHP ke 62...
+    function openWhatsAppApp(phone, rawText) {
+        var text = encodeURIComponent(rawText);
+        var waMe = 'https://wa.me/' + phone + '?text=' + text;
+        var waApp = 'whatsapp://send?phone=' + phone + '&text=' + text;
+        var win = window.open(waMe, '_blank', 'noopener');
+        var iframe = document.createElement('iframe');
+        iframe.style.display = 'none';
+        iframe.src = waApp;
+        document.body.appendChild(iframe);
+        setTimeout(function(){ if (iframe.parentNode) iframe.parentNode.removeChild(iframe); }, 1500);
+        if (!win) window.location.href = waMe;
+    }
     </script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
 </body>
-
 </html>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Pelanggan;
 use App\Models\Membership;
+use App\Models\Transaksi;
 use App\Helpers\ActivityLogger;
 use Illuminate\Http\Request;
 
@@ -12,13 +13,27 @@ class KasirPelangganController extends Controller
     public function index(Request $request)
     {
         $search = $request->keyword;
-
+        $dari = $request->dari;
+        $sampai = $request->sampai;
 
         $TotalPelanggan = Pelanggan::count();
+
+        // Periode: default 30 hari terakhir kalau nggak diisi
+        $startDate = $dari ?: date('Y-m-d', strtotime('-30 days'));
+        $endDate = $sampai ?: date('Y-m-d');
+
+        $PelangganBaru = Pelanggan::whereBetween('created_at', [$startDate . ' 00:00:00', $endDate . ' 23:59:59'])->count();
+
+        $PelangganMember = Pelanggan::whereNotNull('id_member')->count();
+
+        $TransaksiPelanggan = Transaksi::whereNotNull('id_pelanggan')
+            ->whereBetween('tanggal', [$startDate, $endDate])
+            ->count();
+
         $pelanggan = Pelanggan::when($search, function ($query, $search) {
             return $query->where('nm_pelanggan', 'like', "%{$search}%")->orwhere('no_hp', 'like', "%{$search}%")->orwhere('email', 'like', "%{$search}%");
         })->orderBy('id_pelanggan', 'desc')->paginate(10);
-        return view('kasir.pelanggan.index', compact('pelanggan', 'TotalPelanggan'));
+        return view('kasir.pelanggan.index', compact('pelanggan', 'TotalPelanggan', 'PelangganBaru', 'PelangganMember', 'TransaksiPelanggan', 'startDate', 'endDate', 'dari', 'sampai'));
     }
 
     public function create()
