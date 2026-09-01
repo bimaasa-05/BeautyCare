@@ -54,7 +54,7 @@ class VerificationController extends Controller
         }
 
         $user = User::where('email', $email)->first();
-        if (! $user || $user->status !== 'menunggu_persetujuan') {
+        if (! $user || ! in_array($user->status, ['menunggu_persetujuan', 'menunggu_verifikasi'])) {
             return redirect()->route('login')->with('status', 'Akun tidak ditemukan atau sudah diproses.');
         }
 
@@ -81,8 +81,8 @@ class VerificationController extends Controller
 
         $user = User::where('email', $request->email)->first();
 
-        if (! $user || $user->status !== 'menunggu_persetujuan') {
-            return redirect()->route('login')->withErrors(['email' => 'Akun tidak ditemukan atau sudah diproses. Silakan masuk.']);
+        if (! $user) {
+            return redirect()->route('login')->withErrors(['email' => 'Akun tidak ditemukan.']);
         }
 
         $user->update(['email_verified_at' => now()]);
@@ -101,6 +101,19 @@ class VerificationController extends Controller
             ]);
         }
 
+        // Google users: langsung aktif setelah OTP, tidak perlu approval admin
+        if ($user->provider === 'google') {
+            $user->update(['status' => 'aktif']);
+
+            buatNotifRole('admin', 'Pelanggan Baru via Google', $user->nama . ' (' . $user->email . ') telah verifikasi OTP dan aktif.', 'Registrasi', route('admin.pelanggan.index'));
+
+            Auth::login($user);
+            session()->forget(['otp_email']);
+
+            return LoginSupport::afterLogin($user, $request);
+        }
+
+        // Manual register: tetap menunggu persetujuan admin
         buatNotifRole('admin', 'Pelanggan Terverifikasi', $user->nama . ' (' . $user->email . ') telah memverifikasi email dan menunggu persetujuan admin.', 'Registrasi', route('admin.pelanggan.index'));
 
         Auth::login($user);
@@ -118,7 +131,7 @@ class VerificationController extends Controller
             'email' => ['required', 'email'],
         ]);
 
-        if (! User::where('email', $request->email)->where('status', 'menunggu_persetujuan')->exists()) {
+        if (! User::where('email', $request->email)->whereIn('status', ['menunggu_persetujuan', 'menunggu_verifikasi'])->exists()) {
             return redirect()->route('verification.otp.show', ['email' => $request->email])
                 ->withErrors(['email' => 'Akun tidak ditemukan atau sudah diverifikasi.']);
         }
