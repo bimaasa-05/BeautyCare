@@ -36,6 +36,13 @@ class LoginSupport
     {
         self::reactivateIfUnblocked($user);
 
+        if (! $user->hasVerifiedEmail()) {
+            self::logoutAndFlush($request);
+            return back()->withErrors([
+                'email' => 'Email Anda belum terverifikasi. Silakan cek email dan masukkan kode OTP.',
+            ]);
+        }
+
         if ($user->status !== 'aktif') {
             self::logoutAndFlush($request);
 
