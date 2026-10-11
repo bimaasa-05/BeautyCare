@@ -428,7 +428,7 @@
                                 <i class="fa-solid fa-ban"></i> Akun Disuspend
                             </div>
                             <div>{{ $firstError }}</div>
-                            @if ($pengaturan && $pengaturan->telepon)
+                            @if (isset($pengaturan) && $pengaturan->telepon)
                                 <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $pengaturan->telepon) }}" target="_blank" class="whatsapp-btn">
                                     <i class="fa-brands fa-whatsapp"></i> Hubungi Admin via WhatsApp
                                 </a>
@@ -440,7 +440,7 @@
                                 <i class="fa-solid fa-clock"></i> Menunggu Persetujuan
                             </div>
                             <div class="waiting-message">{{ $firstError }}</div>
-                            @if ($pengaturan && $pengaturan->telepon)
+                            @if (isset($pengaturan) && $pengaturan->telepon)
                                 <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $pengaturan->telepon) }}" target="_blank" class="whatsapp-btn">
                                     <i class="fa-brands fa-whatsapp"></i> Hubungi Admin via WhatsApp
                                 </a>
@@ -452,7 +452,7 @@
                                 <i class="fa-solid fa-user-slash"></i> Akun Nonaktif
                             </div>
                             <div>{!! $firstError !!}</div>
-                            @if ($pengaturan && $pengaturan->telepon)
+                            @if (isset($pengaturan) && $pengaturan->telepon)
                                 <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $pengaturan->telepon) }}" target="_blank" class="whatsapp-btn">
                                     <i class="fa-brands fa-whatsapp"></i> Hubungi Admin via WhatsApp
                                 </a>

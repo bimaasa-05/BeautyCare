@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('no_hp', 20)->nullable();
             $table->string('password');
             $table->enum('role', ['admin', 'kasir', 'beautycian', 'pelanggan',])->default('pelanggan');
-            $table->timestamp('email_verifi ed_at')->nullable();
+            $table->timestamp('email_verified_at')->nullable();
             $table->string('foto', 255)->nullable();
             $table->enum('status', ['aktif', 'non_aktif', 'suspend'])->default('non_aktif');
             $table->rememberToken();

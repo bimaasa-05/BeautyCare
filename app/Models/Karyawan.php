@@ -20,7 +20,6 @@ class Karyawan extends Model
         'komisi',
         'tgl_masuk',
         'status',
-        'role',
     ];
 
     public function user()

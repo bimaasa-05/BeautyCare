@@ -668,7 +668,7 @@ function onJenisChange(select) {
                 layananFields.style.display = 'flex';
                 // Set default jam to now
                 if (!jamInput.value) {
-                    jamInput.value = now.toTimeString().slice(0,5);
+                    jamInput.value = new Date().toTimeString().slice(0,5);
                 }
                 row.querySelector('.item-jam-hidden').value = jamInput.value || '';
                 row.querySelector('.item-karyawan-hidden').value = karyawanSelect.value || '';
@@ -880,6 +880,7 @@ function onJenisChange(select) {
 
         // ========== Auto-fill No Referensi ==========
         function generateNoReferensi() {
+            const now = new Date();
             const y = now.getFullYear();
             const m = String(now.getMonth() + 1).padStart(2, '0');
             const d = String(now.getDate()).padStart(2, '0');

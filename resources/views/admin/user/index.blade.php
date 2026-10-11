@@ -445,6 +445,7 @@
             pendingForm = form;
             pendingSelect = select;
             previousValue = select.dataset.prevValue || select.options[0].value;
+            var now = new Date();
             now.setDate(now.getDate() + 1);
             now.setHours(23, 59, 0, 0);
             var offset = now.getTimezoneOffset();

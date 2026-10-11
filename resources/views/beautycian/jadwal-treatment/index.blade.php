@@ -355,7 +355,7 @@
         function updateCountdowns() {
             document.querySelectorAll('.countdown-row').forEach(function(row) {
                 const end = new Date((row.dataset.akhir || '').replace(' ', 'T'));
-                const diff = Math.max(0, end - now);
+                const diff = Math.max(0, end - new Date());
                 const h = String(Math.floor(diff / 3600000)).padStart(2, '0');
                 const m = String(Math.floor((diff % 3600000) / 60000)).padStart(2, '0');
                 const s = String(Math.floor((diff % 60000) / 1000)).padStart(2, '0');

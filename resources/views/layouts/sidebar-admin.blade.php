@@ -18,7 +18,7 @@
     </div>
 
     <div class="sidebar-profile">
-        <img src="{{ auth()->user()->foto ? asset('storage/' . auth()->user()->foto) : asset('assets/img/default-avatar.png') }}"
+        <img src="{{ auth()->user()->foto_url }}"
             alt="Profile">
         <div class="sp-info">
             <h4>{{ auth()->user()->nama }}</h4>

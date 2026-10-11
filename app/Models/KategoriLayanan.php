@@ -12,7 +12,6 @@ class KategoriLayanan extends Model
 
     protected $fillable = [
         'nm_layanan',
-        'deskripsi',
         'status',
     ];
 

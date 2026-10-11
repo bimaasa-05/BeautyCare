@@ -518,7 +518,7 @@
                 <button type="button" class="modal-close">&times;</button>
             </div>
             <div class="modal-body">
-                @if ($pengaturan && $pengaturan->syarat_ketentuan)
+                @if (isset($pengaturan) && $pengaturan->syarat_ketentuan)
                     {{ $pengaturan->syarat_ketentuan }}
                 @else
                     <p>Konten Syarat &amp; Ketentuan belum tersedia.</p>
@@ -544,7 +544,7 @@
                 <button type="button" class="modal-close">&times;</button>
             </div>
             <div class="modal-body">
-                @if ($pengaturan && $pengaturan->kebijakan_privasi)
+                @if (isset($pengaturan) && $pengaturan->kebijakan_privasi)
                     {{ $pengaturan->kebijakan_privasi }}
                 @else
                     <p>Konten Kebijakan Privasi belum tersedia.</p>

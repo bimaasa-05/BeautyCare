@@ -320,6 +320,7 @@
         function setDefaultSuspendUntil() {
             const input = document.getElementById('suspendUntil');
             if (!input.value) {
+                const now = new Date();
                 now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
                 input.min = now.toISOString().slice(0, 16);
             }

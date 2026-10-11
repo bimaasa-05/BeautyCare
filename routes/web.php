@@ -101,8 +101,8 @@ Route::middleware('auth')->group(function () {
     //Notifikasi
     Route::get('/notif/get', [NotifikasiController::class, 'getNotif'])->name('notif.get');
     Route::get('/notif/aktivitas-baru', [NotifikasiController::class, 'popupAktivitas'])->name('notif.aktivitas-baru');
-    Route::get('/{role}/notifikasi/{id}/read', [NotifikasiController::class, 'markRead'])->whereIn('role', ['admin', 'kasir', 'beautycian', 'pelanggan'])->name('notif.read');
-    Route::post('/{role}/notifikasi/mark-all-read', [NotifikasiController::class, 'markAllRead'])->whereIn('role', ['admin', 'kasir', 'beautycian', 'pelanggan'])->name('notif.mark-all-read');
+    Route::get('/{role}/notifikasi/{id}/read', [NotifikasiController::class, 'markRead'])->whereIn('role', ['admin', 'kasir', 'beautycian', 'pelanggan'])->middleware('role:admin,kasir,beautycian,pelanggan')->name('notif.read');
+    Route::post('/{role}/notifikasi/mark-all-read', [NotifikasiController::class, 'markAllRead'])->whereIn('role', ['admin', 'kasir', 'beautycian', 'pelanggan'])->middleware('role:admin,kasir,beautycian,pelanggan')->name('notif.mark-all-read');
 
     //Akses Login -- Rolee --- Admin
     Route::middleware(['role:admin'])->group(function () {
@@ -162,7 +162,6 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/membership/create', [AdminMembershipController::class, 'create'])->name('admin.membership.create');
         Route::post('/admin/membership', [AdminMembershipController::class, 'store'])->name('admin.membership.store');
         Route::get('/admin/membership/{id}/edit', [AdminMembershipController::class, 'edit'])->name('admin.membership.edit');
-        Route::put('/admin/membership/{id}/status', [AdminMembershipController::class, 'updateStatus'])->name('admin.membership.status');
         Route::put('/admin/membership/{id}', [AdminMembershipController::class, 'update'])->name('admin.membership.update');
         Route::delete('/admin/membership/{id}', [AdminMembershipController::class, 'destroy'])->name('admin.membership.destroy');
 

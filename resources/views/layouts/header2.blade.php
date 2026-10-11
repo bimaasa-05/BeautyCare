@@ -87,7 +87,7 @@ if (!isset($pageTitle)) {
 
         <div class="profile-dropdown-wrapper">
             <div class="user-profile" id="profileTrigger">
-                <img src="{{ auth()->user()->foto ? asset('storage/' . auth()->user()->foto) : asset('assets/img/default-avatar.png') }}"
+                <img src="{{ auth()->user()->foto_url }}"
                     alt="Profile">
                 <div class="up-info">
                     <h4>{{ auth()->user()->nama }}</h4>
