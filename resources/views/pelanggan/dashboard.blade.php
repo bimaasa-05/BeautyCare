@@ -1347,6 +1347,7 @@
         ];
 
         function monthRangeLabel(months) {
+            const now = new Date();
             const start = new Date(now.getFullYear(), now.getMonth() - (months - 1), 1);
             const fmt = { month: 'short', year: 'numeric' };
             return start.toLocaleDateString('id-ID', fmt) + ' \u2014 ' + now.toLocaleDateString('id-ID', fmt);
