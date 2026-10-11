@@ -1172,6 +1172,7 @@
             if (!wrap || !trigger || !popup || !optionsEl || !resetBtn || !okeBtn || !labelEl) return;
 
             let current = config.defaultValue;
+            const now = new Date();
 
             function periodConfigs() {
                 const fmt = { day: 'numeric', month: 'short', year: 'numeric' };
