@@ -38,14 +38,12 @@ class Rating extends Model
 
     public function layanan()
     {
-        return $this->belongsTo(Layanan::class, 'id_target', 'id_layanan')
-            ->where('tipe', self::TIPE_LAYANAN);
+        return $this->belongsTo(Layanan::class, 'id_target', 'id_layanan');
     }
 
     public function produk()
     {
-        return $this->belongsTo(Produk::class, 'id_target', 'id_produk')
-            ->where('tipe', self::TIPE_PRODUK);
+        return $this->belongsTo(Produk::class, 'id_target', 'id_produk');
     }
 
     public function getNamaPemberiAttribute(): string
