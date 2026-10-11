@@ -301,7 +301,7 @@ class PelangganController extends Controller
         }
         return Pelanggan::firstOrCreate(
             ['id_user' => $user->id],
-            ['nm_pelanggan' => $user->nama, 'email' => $user->email, 'no_hp' => $user->no_hp ?? '']
+            ['nm_pelanggan' => $user->nama, 'email' => $user->email, 'no_hp' => $user->no_hp ?? '', 'alamat' => '', 'catatan_alergi' => '']
         )->id_pelanggan;
     }
 }
