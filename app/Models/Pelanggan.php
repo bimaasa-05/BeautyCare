@@ -22,7 +22,6 @@ class Pelanggan extends Model
         'catatan_alergi',
         'foto',
         'id_user',
-        'saldo',
     ];
 
     public function user()
